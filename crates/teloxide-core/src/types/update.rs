@@ -3,9 +3,10 @@ use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 
 use crate::types::{
-    BusinessConnection, CallbackQuery, Chat, ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest,
-    ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message, MessageReactionCountUpdated,
-    MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
+    ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
+    MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery,
+    ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -69,6 +70,9 @@ pub enum UpdateKind {
 
     /// New version of a message from a connected business account
     EditedBusinessMessage(Message),
+
+    /// Messages were deleted from a connected business account
+    DeletedBusinessMessages(BusinessMessagesDeleted),
 
     /// A reaction to a message was changed by a user. The bot must be an
     /// administrator in the chat and must explicitly specify
@@ -188,7 +192,9 @@ impl Update {
             ChatBoost(b) => return b.boost.source.user(),
             RemovedChatBoost(b) => return b.source.user(),
 
-            MessageReactionCount(_) | Poll(_) | Error(_) => return None,
+            MessageReactionCount(_) | DeletedBusinessMessages(_) | Poll(_) | Error(_) => {
+                return None
+            }
         };
 
         Some(from)
@@ -281,6 +287,7 @@ impl Update {
 
             UpdateKind::MessageReactionCount(_)
             | UpdateKind::BusinessConnection(_)
+            | UpdateKind::DeletedBusinessMessages(_)
             | UpdateKind::Error(_) => i6(empty()),
         }
     }
@@ -305,6 +312,7 @@ impl Update {
             MessageReactionCount(r) => &r.chat,
             ChatBoost(b) => &b.chat,
             RemovedChatBoost(b) => &b.chat,
+            DeletedBusinessMessages(m) => &m.chat,
 
             InlineQuery(_)
             | BusinessConnection(_)
@@ -385,6 +393,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
                         "edited_business_message" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedBusinessMessage)
                         }
+                        "deleted_business_messages" => map
+                            .next_value::<BusinessMessagesDeleted>()
+                            .ok()
+                            .map(UpdateKind::DeletedBusinessMessages),
                         "message_reaction" => map
                             .next_value::<MessageReactionUpdated>()
                             .ok()
@@ -467,37 +479,40 @@ impl Serialize for UpdateKind {
             UpdateKind::EditedBusinessMessage(v) => {
                 s.serialize_newtype_variant(name, 6, "edited_business_message", v)
             }
+            UpdateKind::DeletedBusinessMessages(v) => {
+                s.serialize_newtype_variant(name, 7, "deleted_business_messages", v)
+            }
             UpdateKind::MessageReaction(v) => {
-                s.serialize_newtype_variant(name, 7, "message_reaction", v)
+                s.serialize_newtype_variant(name, 8, "message_reaction", v)
             }
             UpdateKind::MessageReactionCount(v) => {
-                s.serialize_newtype_variant(name, 8, "message_reaction_count", v)
+                s.serialize_newtype_variant(name, 9, "message_reaction_count", v)
             }
-            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 9, "inline_query", v),
+            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 10, "inline_query", v),
             UpdateKind::ChosenInlineResult(v) => {
-                s.serialize_newtype_variant(name, 10, "chosen_inline_result", v)
+                s.serialize_newtype_variant(name, 11, "chosen_inline_result", v)
             }
             UpdateKind::CallbackQuery(v) => {
-                s.serialize_newtype_variant(name, 11, "callback_query", v)
+                s.serialize_newtype_variant(name, 12, "callback_query", v)
             }
             UpdateKind::ShippingQuery(v) => {
-                s.serialize_newtype_variant(name, 12, "shipping_query", v)
+                s.serialize_newtype_variant(name, 13, "shipping_query", v)
             }
             UpdateKind::PreCheckoutQuery(v) => {
-                s.serialize_newtype_variant(name, 13, "pre_checkout_query", v)
+                s.serialize_newtype_variant(name, 14, "pre_checkout_query", v)
             }
-            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 14, "poll", v),
-            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 15, "poll_answer", v),
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 15, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 16, "poll_answer", v),
             UpdateKind::MyChatMember(v) => {
-                s.serialize_newtype_variant(name, 16, "my_chat_member", v)
+                s.serialize_newtype_variant(name, 17, "my_chat_member", v)
             }
-            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 17, "chat_member", v),
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 18, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
-                s.serialize_newtype_variant(name, 18, "chat_join_request", v)
+                s.serialize_newtype_variant(name, 19, "chat_join_request", v)
             }
-            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 19, "chat_boost", v),
+            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 20, "chat_boost", v),
             UpdateKind::RemovedChatBoost(v) => {
-                s.serialize_newtype_variant(name, 20, "removed_chat_boost", v)
+                s.serialize_newtype_variant(name, 21, "removed_chat_boost", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }

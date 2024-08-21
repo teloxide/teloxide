@@ -68,6 +68,7 @@ impl EventKind for Kind {
             BusinessConnection,
             BusinessMessage,
             EditedBusinessMessage,
+            DeletedBusinessMessages,
             MessageReaction,
             MessageReactionCount,
             InlineQuery,

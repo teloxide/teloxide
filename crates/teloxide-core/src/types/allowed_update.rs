@@ -10,6 +10,7 @@ pub enum AllowedUpdate {
     BusinessConnection,
     BusinessMessage,
     EditedBusinessMessage,
+    DeletedBusinessMessages,
     MessageReaction,
     MessageReactionCount,
     InlineQuery,
