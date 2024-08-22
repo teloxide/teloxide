@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Chat, MessageId};
 
+/// This object is received when messages are deleted from a connected business
+/// account.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessMessagesDeleted {
     /// Unique identifier of the business connection.

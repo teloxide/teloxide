@@ -284,7 +284,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -453,7 +453,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -593,7 +593,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -701,7 +701,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -796,7 +796,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -914,7 +914,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1025,7 +1025,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1111,7 +1111,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1196,7 +1196,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1336,7 +1336,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1394,7 +1394,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1448,7 +1448,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1485,7 +1485,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1514,7 +1514,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1614,7 +1614,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1693,7 +1693,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1812,7 +1812,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1873,7 +1873,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -3776,7 +3776,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -3817,10 +3817,11 @@ Schema(
             names: ("uploadStickerFile", "UploadStickerFile", "upload_sticker_file"),
             return_ty: RawTy("FileMeta"),
             doc: Doc(
-                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet] and [AddStickerToSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
+                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet], [AddStickerToSet] or [ReplaceStickerInSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
                 md_links: {
                     "CreateNewStickerSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.CreateNewStickerSet.html",
                     "AddStickerToSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html",
+                    "ReplaceStickerInSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.ReplaceStickerInSet.html",
                     "File": "https://core.telegram.org/bots/api#file"
                 }
             ),
@@ -4529,7 +4530,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.",
+                        md: "A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account.",
                         md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"},
                     ),
                 ),

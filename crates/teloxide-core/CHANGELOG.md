@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `Birthdate` struct and corresponding field `birthdate` in `ChatPrivate`
   - Add `request_name`, `request_username` and `request_photo` fields to `KeyboardButtonRequestUsers` struct
   - Add `request_title`, `request_username` and `request_photo` fields to `KeyboardButtonRequestChat` struct
-  - Add `SharedUser` struct and add corresponding field `users` to `UsersShared` struct
+  - Add `SharedUser` struct
   - Add `title`, `username` and `photo` fields to `ChatShared` struct
   - Add `format` field to `InputSticker` struct
   - Add `format` parameter to `SetStickerSetThumbnail` method
@@ -40,7 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BusinessConnection` struct
   - Add `BusinessMessagesDeleted` struct
   - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
-
 
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
@@ -57,13 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove `flags` field from `StickerSet` struct
   - Remove `sticker_format` parameter from `CreateNewStickerSet` method
 
-[pr1146]: https://github.com/teloxide/teloxide/pull/1146
-
 ### Breaking Changes
 
 - Support for TBA 7.2 ([#1146](pr1146))
   - Wrap `Public` variant of `ChatKind` in `Box`
+  - Replaced `user_ids` with `users` in `UsersShared` struct
 
+[pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
 ## 0.10.1 - 2024-08-17

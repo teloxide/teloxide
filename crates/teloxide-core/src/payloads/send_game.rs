@@ -29,7 +29,7 @@ impl_payload! {
             pub protect_content: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
-            /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
+            /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             pub reply_markup: ReplyMarkup [into],

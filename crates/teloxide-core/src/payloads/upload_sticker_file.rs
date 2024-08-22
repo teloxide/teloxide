@@ -6,10 +6,11 @@ use crate::types::{FileMeta, InputFile, StickerFormat, UserId};
 
 impl_payload! {
     @[multipart = sticker]
-    /// Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet] and [AddStickerToSet] methods (the file can be used multiple times). Returns the uploaded [`File`] on success.
+    /// Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet], [AddStickerToSet] or [ReplaceStickerInSet] methods (the file can be used multiple times). Returns the uploaded [`File`] on success.
     ///
     /// [CreateNewStickerSet]: https://docs.rs/teloxide/latest/teloxide/payloads/struct.CreateNewStickerSet.html
     /// [AddStickerToSet]: https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html
+    /// [ReplaceStickerInSet]: https://docs.rs/teloxide/latest/teloxide/payloads/struct.ReplaceStickerInSet.html
     /// [`File`]: crate::types::File
     #[derive(Debug, Clone, Serialize)]
     pub UploadStickerFile (UploadStickerFileSetters) => FileMeta {

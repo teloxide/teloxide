@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{User, UserId};
 
+/// Describes the connection of the bot with a business account.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessConnection {
     /// Unique identifier of the business connection

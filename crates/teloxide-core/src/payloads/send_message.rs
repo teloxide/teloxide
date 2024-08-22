@@ -40,7 +40,7 @@ impl_payload! {
             pub protect_content: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
-            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
+            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards
