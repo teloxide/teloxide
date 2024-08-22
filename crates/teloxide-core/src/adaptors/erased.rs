@@ -754,7 +754,7 @@ trait ErasableRequester<'a> {
 
     fn get_business_connection(
         &self,
-        business_connection_id: String,
+        business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err>;
 
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err>;
@@ -1619,7 +1619,7 @@ where
 
     fn get_business_connection(
         &self,
-        business_connection_id: String,
+        business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err> {
         Requester::get_business_connection(self, business_connection_id).erase()
     }

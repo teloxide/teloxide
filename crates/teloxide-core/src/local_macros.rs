@@ -1072,9 +1072,9 @@ macro_rules! requester_forward {
     (@method get_business_connection $body:ident $ty:ident) => {
         type GetBusinessConnection = $ty![GetBusinessConnection];
 
-        fn get_business_connection<BCI>(&self, business_connection_id: BCI) -> Self::GetBusinessConnection where BCI: Into<String> {
+        fn get_business_connection(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessConnection {
             let this = self;
-            $body!(get_business_connection this (business_connection_id: BCI))
+            $body!(get_business_connection this (business_connection_id: BusinessConnectionId))
         }
     };
     (@method get_my_commands $body:ident $ty:ident) => {

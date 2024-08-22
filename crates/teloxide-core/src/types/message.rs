@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, Chat, ChatBoostAdded, ChatId, ChatShared, Contact, Dice,
-    Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited,
-    ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway,
-    GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
+    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBoostAdded, ChatId, ChatShared,
+    Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
+    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
+    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
     LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
     MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
     ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
@@ -63,7 +63,7 @@ pub struct Message {
     /// received. If non-empty, the message belongs to a chat of the
     /// corresponding business account that is independent from any potential
     /// bot chat which might share the same identifier.
-    pub business_connection_id: Option<String>,
+    pub business_connection_id: Option<BusinessConnectionId>,
 
     #[serde(flatten)]
     pub kind: MessageKind,

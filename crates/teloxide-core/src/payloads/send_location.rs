@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId};
+use crate::types::{
+    BusinessConnectionId, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send point on the map. On success, the sent [`Message`] is returned.
@@ -20,7 +22,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
-            pub business_connection_id: String [into],
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// The radius of uncertainty for the location, measured in meters; 0-1500

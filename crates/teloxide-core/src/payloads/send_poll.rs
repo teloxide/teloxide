@@ -4,7 +4,8 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 use crate::types::{
-    Message, MessageEntity, ParseMode, PollType, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    BusinessConnectionId, Message, MessageEntity, ParseMode, PollType, Recipient, ReplyMarkup,
+    ReplyParameters, ThreadId,
 };
 
 impl_payload! {
@@ -23,7 +24,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
-            pub business_connection_id: String [into],
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// True, if the poll needs to be anonymous, defaults to True

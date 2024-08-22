@@ -834,9 +834,10 @@ pub trait Requester {
     type GetBusinessConnection: Request<Payload = GetBusinessConnection, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetBusinessConnection`].
-    fn get_business_connection<B>(&self, business_connection_id: B) -> Self::GetBusinessConnection
-    where
-        B: Into<String>;
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessConnection;
 
     type GetMyCommands: Request<Payload = GetMyCommands, Err = Self::Err>;
 

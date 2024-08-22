@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{InputFile, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId};
+use crate::types::{
+    BusinessConnectionId, InputFile, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     @[multipart = sticker]
@@ -21,7 +23,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
-            pub business_connection_id: String [into],
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Emoji associated with the sticker; only for just uploaded stickers

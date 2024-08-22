@@ -226,7 +226,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -527,7 +527,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -617,7 +617,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -722,7 +722,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -820,7 +820,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -936,7 +936,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1050,7 +1050,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1135,7 +1135,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1218,7 +1218,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1268,7 +1268,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1536,7 +1536,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1635,7 +1635,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1714,7 +1714,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1833,7 +1833,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -1894,7 +1894,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the action will be sent"),
                 ),
                 Param(
@@ -3061,7 +3061,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: String,
+                    ty: RawTy("BusinessConnectionId"),
                     descr: Doc(md: "Unique identifier of the business connection"),
                 ),
             ],
@@ -3728,7 +3728,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(
@@ -4490,7 +4490,7 @@ Schema(
             params: [
                 Param(
                     name: "business_connection_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
                 ),
                 Param(

@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{ChatAction, Recipient, ThreadId, True};
+use crate::types::{BusinessConnectionId, ChatAction, Recipient, ThreadId, True};
 
 impl_payload! {
     /// Use this method when you need to tell the user that something is happening on the bot's side. The status is set for 5 seconds or less (when a message arrives from your bot, Telegram clients clear its typing status). Returns True on success.
@@ -31,7 +31,7 @@ impl_payload! {
         }
         optional {
             /// Unique identifier of the business connection on behalf of which the action will be sent
-            pub business_connection_id: String [into],
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread; supergroups only
             pub message_thread_id: ThreadId,
         }

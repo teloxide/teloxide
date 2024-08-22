@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::BusinessConnection;
+use crate::types::{BusinessConnection, BusinessConnectionId};
 
 impl_payload! {
     /// Use this method to get information about the connection of the bot with a business account. Returns a BusinessConnection object on success.
@@ -10,7 +10,7 @@ impl_payload! {
     pub GetBusinessConnection (GetBusinessConnectionSetters) => BusinessConnection {
         required {
             /// Unique identifier of the business connection
-            pub business_connection_id: String [into],
+            pub business_connection_id: BusinessConnectionId,
         }
     }
 }

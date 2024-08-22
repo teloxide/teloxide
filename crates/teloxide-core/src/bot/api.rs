@@ -5,8 +5,9 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId, UserId,
+        BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
+        InputMedia, InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId,
+        UserId,
     },
     Bot,
 };
@@ -883,10 +884,10 @@ impl Requester for Bot {
 
     type GetBusinessConnection = JsonRequest<payloads::GetBusinessConnection>;
 
-    fn get_business_connection<B>(&self, business_connection_id: B) -> Self::GetBusinessConnection
-    where
-        B: Into<String>,
-    {
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessConnection {
         Self::GetBusinessConnection::new(
             self.clone(),
             payloads::GetBusinessConnection::new(business_connection_id),

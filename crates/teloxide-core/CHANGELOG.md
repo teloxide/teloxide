@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `title`, `username` and `photo` fields to `ChatShared` struct
   - Add `format` field to `InputSticker` struct
   - Add `format` parameter to `SetStickerSetThumbnail` method
+  - Add `BusinessConnectionId` struct
   - Add `business_connection_id` parameter to `SendMessage`, `SendPhoto`, `SendVideo`, `SendAnimation`, `SendAudio`, `SendDocument`, `SendSticker`, `SendVideoNote`, `SendVoice`, `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`, `SendGame`, and `SendMediaGroup` methods
   - Add `sender_business_bot` and `business_connection_id` fields to `Message` struct
   - Add `BusinessIntro` struct and corresponding field `business_intro` to `ChatPrivate` struct
