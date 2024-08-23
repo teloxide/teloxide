@@ -469,13 +469,14 @@ mod test {
     use crate::types::{
         Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourcePremium,
         ChatBoostUpdated, ChatFullInfo, ChatId, ChatKind, ChatPrivate, ChatPublic,
-        LinkPreviewOptions, MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind,
-        MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel, PublicChatKind,
-        PublicChatSupergroup, ReactionCount, ReactionType, Update, UpdateId, UpdateKind, User,
-        UserId,
+        LinkPreviewOptions, MaybeAnonymousUser, MediaKind, MediaText, Message, MessageCommon,
+        MessageId, MessageKind, MessageReactionCountUpdated, MessageReactionUpdated,
+        PublicChatChannel, PublicChatKind, PublicChatSupergroup, ReactionCount, ReactionType,
+        Update, UpdateId, UpdateKind, User, UserId,
     };
 
     use chrono::DateTime;
+    use pretty_assertions::assert_eq;
 
     // TODO: more tests for deserialization
     #[test]
@@ -892,7 +893,7 @@ mod test {
                     chat_full_info: ChatFullInfo::default(),
                 },
                 message_id: MessageId(35),
-                user: Some(User {
+                actor: MaybeAnonymousUser::User(User {
                     id: UserId(1459074222),
                     is_bot: false,
                     first_name: "shadowchain".to_owned(),
@@ -902,10 +903,81 @@ mod test {
                     is_premium: true,
                     added_to_attachment_menu: false,
                 }),
-                actor_chat: None,
                 date: DateTime::from_timestamp(1721306082, 0).unwrap(),
                 old_reaction: vec![],
                 new_reaction: vec![ReactionType::Emoji { emoji: "🌭".to_owned() }],
+            }),
+        };
+
+        let actual = serde_json::from_str::<Update>(json).unwrap();
+        assert_eq!(expected, actual);
+
+        let json = r#"
+        {
+            "update_id": 767844136,
+            "message_reaction": {
+                "chat": {
+                    "id": -1002199793788,
+                    "title": "тест",
+                    "type": "supergroup"
+                },
+                "message_id": 2,
+                "actor_chat": {
+                    "id": -1002199793788,
+                    "title": "тест",
+                    "type": "supergroup"
+                },
+                "date": 1723798597,
+                "old_reaction": [
+                    {
+                        "type": "emoji",
+                        "emoji": "❤"
+                    }
+                ],
+                "new_reaction": []
+            }
+        }
+        "#;
+        let chat = Chat {
+            id: ChatId(-1002199793788),
+            kind: ChatKind::Public(ChatPublic {
+                title: Some("тест".to_owned()),
+                kind: PublicChatKind::Supergroup(PublicChatSupergroup {
+                    username: None,
+                    active_usernames: None,
+                    is_forum: false,
+                    sticker_set_name: None,
+                    can_set_sticker_set: None,
+                    permissions: None,
+                    slow_mode_delay: None,
+                    linked_chat_id: None,
+                    location: None,
+                    join_to_send_messages: None,
+                    join_by_request: None,
+                    custom_emoji_sticker_set_name: None,
+                    unrestrict_boost_count: None,
+                }),
+                description: None,
+                invite_link: None,
+                has_protected_content: None,
+            }),
+            photo: None,
+            available_reactions: None,
+            pinned_message: None,
+            message_auto_delete_time: None,
+            has_hidden_members: false,
+            has_aggressive_anti_spam_enabled: false,
+            chat_full_info: ChatFullInfo::default(),
+        };
+        let expected = Update {
+            id: UpdateId(767844136),
+            kind: UpdateKind::MessageReaction(MessageReactionUpdated {
+                chat: chat.clone(),
+                message_id: MessageId(2),
+                actor: MaybeAnonymousUser::Chat(chat),
+                date: DateTime::from_timestamp(1723798597, 0).unwrap(),
+                old_reaction: vec![ReactionType::Emoji { emoji: "❤".to_owned() }],
+                new_reaction: vec![],
             }),
         };
 

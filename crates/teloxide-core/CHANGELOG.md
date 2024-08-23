@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 
+### Changed
+
+- `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
+
+[pr1134]: https://github.com/teloxide/teloxide/pull/1134
+
 ## 0.10.1 - 2024-08-17
 
 ### Fixed
