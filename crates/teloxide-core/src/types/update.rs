@@ -954,6 +954,8 @@ mod test {
                     location: None,
                     join_to_send_messages: None,
                     join_by_request: None,
+                    custom_emoji_sticker_set_name: None,
+                    unrestrict_boost_count: None,
                 }),
                 description: None,
                 invite_link: None,

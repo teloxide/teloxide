@@ -47,10 +47,10 @@ impl MessageReactionUpdated {
 #[derive(Deserialize)]
 struct ActorDe {
     /// The user that changed the reaction, if the user isn't anonymous
-    pub user: Option<User>,
+    user: Option<User>,
     /// The chat on behalf of which the reaction was changed, if the user is
     /// anonymous
-    pub actor_chat: Option<Chat>,
+    actor_chat: Option<Chat>,
 }
 
 fn deserialize_actor<'d, D: Deserializer<'d>>(d: D) -> Result<MaybeAnonymousUser, D::Error> {
