@@ -831,6 +831,14 @@ pub trait Requester {
     where
         C: IntoIterator<Item = BotCommand>;
 
+    type GetBusinessConnection: Request<Payload = GetBusinessConnection, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetBusinessConnection`].
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessConnection;
+
     type GetMyCommands: Request<Payload = GetMyCommands, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetMyCommands`].
@@ -1071,7 +1079,6 @@ pub trait Requester {
         name: N,
         title: T,
         stickers: S,
-        sticker_format: StickerFormat,
     ) -> Self::CreateNewStickerSet
     where
         N: Into<String>,
@@ -1108,6 +1115,20 @@ pub trait Requester {
     where
         S: Into<String>;
 
+    type ReplaceStickerInSet: Request<Payload = ReplaceStickerInSet, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReplaceStickerInSet`].
+    fn replace_sticker_in_set<N, O>(
+        &self,
+        user_id: UserId,
+        name: N,
+        old_sticker: O,
+        sticker: InputSticker,
+    ) -> Self::ReplaceStickerInSet
+    where
+        N: Into<String>,
+        O: Into<String>;
+
     type SetStickerSetThumbnail: Request<Payload = SetStickerSetThumbnail, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetStickerSetThumbnail`].
@@ -1115,6 +1136,7 @@ pub trait Requester {
         &self,
         name: N,
         user_id: UserId,
+        format: StickerFormat,
     ) -> Self::SetStickerSetThumbnail
     where
         N: Into<String>;
@@ -1372,6 +1394,7 @@ macro_rules! forward_all {
             answer_callback_query,
             get_user_chat_boosts,
             set_my_commands,
+            get_business_connection,
             get_my_commands,
             set_my_name,
             get_my_name,
@@ -1405,6 +1428,7 @@ macro_rules! forward_all {
             add_sticker_to_set,
             set_sticker_position_in_set,
             delete_sticker_from_set,
+            replace_sticker_in_set,
             set_sticker_set_thumbnail,
             set_custom_emoji_sticker_set_thumbnail,
             set_sticker_set_title,

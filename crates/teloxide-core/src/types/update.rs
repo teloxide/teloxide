@@ -3,9 +3,10 @@ use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 
 use crate::types::{
-    CallbackQuery, Chat, ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated,
-    ChosenInlineResult, InlineQuery, Message, MessageReactionCountUpdated, MessageReactionUpdated,
-    Poll, PollAnswer, PreCheckoutQuery, ShippingQuery, User,
+    BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
+    ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
+    MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery,
+    ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -59,6 +60,19 @@ pub enum UpdateKind {
 
     /// New version of a channel post that is known to the bot and was edited.
     EditedChannelPost(Message),
+
+    /// The bot was connected to or disconnected from a business account, or a
+    /// user edited an existing connection with the bot
+    BusinessConnection(BusinessConnection),
+
+    /// New non-service message from a connected business account
+    BusinessMessage(Message),
+
+    /// New version of a message from a connected business account
+    EditedBusinessMessage(Message),
+
+    /// Messages were deleted from a connected business account
+    DeletedBusinessMessages(BusinessMessagesDeleted),
 
     /// A reaction to a message was changed by a user. The bot must be an
     /// administrator in the chat and must explicitly specify
@@ -156,9 +170,14 @@ impl Update {
         use UpdateKind::*;
 
         let from = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => {
-                m.from.as_ref()?
-            }
+            Message(m)
+            | EditedMessage(m)
+            | ChannelPost(m)
+            | EditedChannelPost(m)
+            | BusinessMessage(m)
+            | EditedBusinessMessage(m) => m.from.as_ref()?,
+
+            BusinessConnection(conn) => &conn.user,
 
             CallbackQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
@@ -173,7 +192,9 @@ impl Update {
             ChatBoost(b) => return b.boost.source.user(),
             RemovedChatBoost(b) => return b.source.user(),
 
-            MessageReactionCount(_) | Poll(_) | Error(_) => return None,
+            MessageReactionCount(_) | DeletedBusinessMessages(_) | Poll(_) | Error(_) => {
+                return None
+            }
         };
 
         Some(from)
@@ -221,7 +242,9 @@ impl Update {
             UpdateKind::Message(message)
             | UpdateKind::EditedMessage(message)
             | UpdateKind::ChannelPost(message)
-            | UpdateKind::EditedChannelPost(message) => i0(message.mentioned_users()),
+            | UpdateKind::EditedChannelPost(message)
+            | UpdateKind::BusinessMessage(message)
+            | UpdateKind::EditedBusinessMessage(message) => i0(message.mentioned_users()),
 
             UpdateKind::MessageReaction(answer) => {
                 if let Some(user) = answer.user() {
@@ -262,7 +285,10 @@ impl Update {
                 i6(empty())
             }
 
-            UpdateKind::MessageReactionCount(_) | UpdateKind::Error(_) => i6(empty()),
+            UpdateKind::MessageReactionCount(_)
+            | UpdateKind::BusinessConnection(_)
+            | UpdateKind::DeletedBusinessMessages(_)
+            | UpdateKind::Error(_) => i6(empty()),
         }
     }
 
@@ -272,7 +298,12 @@ impl Update {
         use UpdateKind::*;
 
         let chat = match &self.kind {
-            Message(m) | EditedMessage(m) | ChannelPost(m) | EditedChannelPost(m) => &m.chat,
+            Message(m)
+            | EditedMessage(m)
+            | ChannelPost(m)
+            | EditedChannelPost(m)
+            | BusinessMessage(m)
+            | EditedBusinessMessage(m) => &m.chat,
             CallbackQuery(q) => q.message.as_ref()?.chat(),
             ChatMember(m) => &m.chat,
             MyChatMember(m) => &m.chat,
@@ -281,8 +312,10 @@ impl Update {
             MessageReactionCount(r) => &r.chat,
             ChatBoost(b) => &b.chat,
             RemovedChatBoost(b) => &b.chat,
+            DeletedBusinessMessages(m) => &m.chat,
 
             InlineQuery(_)
+            | BusinessConnection(_)
             | ChosenInlineResult(_)
             | ShippingQuery(_)
             | PreCheckoutQuery(_)
@@ -350,6 +383,20 @@ impl<'de> Deserialize<'de> for UpdateKind {
                         "edited_channel_post" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedChannelPost)
                         }
+                        "business_connection" => map
+                            .next_value::<BusinessConnection>()
+                            .ok()
+                            .map(UpdateKind::BusinessConnection),
+                        "business_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::BusinessMessage)
+                        }
+                        "edited_business_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::EditedBusinessMessage)
+                        }
+                        "deleted_business_messages" => map
+                            .next_value::<BusinessMessagesDeleted>()
+                            .ok()
+                            .map(UpdateKind::DeletedBusinessMessages),
                         "message_reaction" => map
                             .next_value::<MessageReactionUpdated>()
                             .ok()
@@ -423,37 +470,49 @@ impl Serialize for UpdateKind {
             UpdateKind::EditedChannelPost(v) => {
                 s.serialize_newtype_variant(name, 3, "edited_channel_post", v)
             }
+            UpdateKind::BusinessConnection(v) => {
+                s.serialize_newtype_variant(name, 4, "business_connection", v)
+            }
+            UpdateKind::BusinessMessage(v) => {
+                s.serialize_newtype_variant(name, 5, "business_message", v)
+            }
+            UpdateKind::EditedBusinessMessage(v) => {
+                s.serialize_newtype_variant(name, 6, "edited_business_message", v)
+            }
+            UpdateKind::DeletedBusinessMessages(v) => {
+                s.serialize_newtype_variant(name, 7, "deleted_business_messages", v)
+            }
             UpdateKind::MessageReaction(v) => {
-                s.serialize_newtype_variant(name, 4, "message_reaction", v)
+                s.serialize_newtype_variant(name, 8, "message_reaction", v)
             }
             UpdateKind::MessageReactionCount(v) => {
-                s.serialize_newtype_variant(name, 5, "message_reaction_count", v)
+                s.serialize_newtype_variant(name, 9, "message_reaction_count", v)
             }
-            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 6, "inline_query", v),
+            UpdateKind::InlineQuery(v) => s.serialize_newtype_variant(name, 10, "inline_query", v),
             UpdateKind::ChosenInlineResult(v) => {
-                s.serialize_newtype_variant(name, 7, "chosen_inline_result", v)
+                s.serialize_newtype_variant(name, 11, "chosen_inline_result", v)
             }
             UpdateKind::CallbackQuery(v) => {
-                s.serialize_newtype_variant(name, 8, "callback_query", v)
+                s.serialize_newtype_variant(name, 12, "callback_query", v)
             }
             UpdateKind::ShippingQuery(v) => {
-                s.serialize_newtype_variant(name, 9, "shipping_query", v)
+                s.serialize_newtype_variant(name, 13, "shipping_query", v)
             }
             UpdateKind::PreCheckoutQuery(v) => {
-                s.serialize_newtype_variant(name, 10, "pre_checkout_query", v)
+                s.serialize_newtype_variant(name, 14, "pre_checkout_query", v)
             }
-            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 11, "poll", v),
-            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 12, "poll_answer", v),
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 15, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 16, "poll_answer", v),
             UpdateKind::MyChatMember(v) => {
-                s.serialize_newtype_variant(name, 13, "my_chat_member", v)
+                s.serialize_newtype_variant(name, 17, "my_chat_member", v)
             }
-            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 14, "chat_member", v),
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 18, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
-                s.serialize_newtype_variant(name, 15, "chat_join_request", v)
+                s.serialize_newtype_variant(name, 19, "chat_join_request", v)
             }
-            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 16, "chat_boost", v),
+            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 20, "chat_boost", v),
             UpdateKind::RemovedChatBoost(v) => {
-                s.serialize_newtype_variant(name, 17, "removed_chat_boost", v)
+                s.serialize_newtype_variant(name, 21, "removed_chat_boost", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }
@@ -535,6 +594,11 @@ mod test {
                         bio: None,
                         has_private_forwards: None,
                         has_restricted_voice_and_video_messages: None,
+                        personal_chat: None,
+                        birthdate: None,
+                        business_intro: None,
+                        business_location: None,
+                        business_opening_hours: None,
                     }),
                     photo: None,
                     available_reactions: None,
@@ -544,6 +608,7 @@ mod test {
                     has_aggressive_anti_spam_enabled: false,
                     chat_full_info: ChatFullInfo::default(),
                 },
+                sender_business_bot: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
@@ -567,6 +632,8 @@ mod test {
                     author_signature: None,
                     is_automatic_forward: false,
                     has_protected_content: false,
+                    is_from_offline: false,
+                    business_connection_id: None,
                 }),
             }),
         };
@@ -589,7 +656,7 @@ mod test {
                 "from": {
                     "first_name": "Wert",
                     "id": 6962620676,
-                    "is_bot": false, 
+                    "is_bot": false,
                     "username": "WertCrypto"
                 },
                 "message_id": 134545,
@@ -631,7 +698,7 @@ mod test {
                 "from": {
                     "first_name": "the Cable Guy",
                     "id": 5964236329,
-                    "is_bot": false, 
+                    "is_bot": false,
                     "language_code":"en",
                     "username": "spacewhaleblues"
                 },
@@ -648,7 +715,7 @@ mod test {
                     "from": {
                         "first_name": "Wert",
                         "id": 6962620676,
-                        "is_bot": false, 
+                        "is_bot": false,
                         "username": "WertCrypto"
                     },
                     "message_id": 134545,
@@ -863,7 +930,7 @@ mod test {
             kind: UpdateKind::MessageReaction(MessageReactionUpdated {
                 chat: Chat {
                     id: ChatId(-1002184233434),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                             username: None,
@@ -883,7 +950,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -940,7 +1007,7 @@ mod test {
         "#;
         let chat = Chat {
             id: ChatId(-1002199793788),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: Some("тест".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
@@ -960,7 +1027,7 @@ mod test {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             photo: None,
             available_reactions: None,
             pinned_message: None,
@@ -1023,7 +1090,7 @@ mod test {
             kind: UpdateKind::MessageReactionCount(MessageReactionCountUpdated {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1032,7 +1099,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -1096,7 +1163,7 @@ mod test {
             kind: UpdateKind::ChatBoost(ChatBoostUpdated {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1105,7 +1172,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -1171,7 +1238,7 @@ mod test {
             kind: UpdateKind::RemovedChatBoost(ChatBoostRemoved {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -1180,7 +1247,7 @@ mod test {
                         description: None,
                         invite_link: None,
                         has_protected_content: None,
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,

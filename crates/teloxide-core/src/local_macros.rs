@@ -1069,6 +1069,14 @@ macro_rules! requester_forward {
             $body!(set_my_commands this (commands: C))
         }
     };
+    (@method get_business_connection $body:ident $ty:ident) => {
+        type GetBusinessConnection = $ty![GetBusinessConnection];
+
+        fn get_business_connection(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessConnection {
+            let this = self;
+            $body!(get_business_connection this (business_connection_id: BusinessConnectionId))
+        }
+    };
     (@method get_my_commands $body:ident $ty:ident) => {
         type GetMyCommands = $ty![GetMyCommands];
 
@@ -1308,11 +1316,11 @@ macro_rules! requester_forward {
     (@method create_new_sticker_set $body:ident $ty:ident) => {
         type CreateNewStickerSet = $ty![CreateNewStickerSet];
 
-        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat) -> Self::CreateNewStickerSet where N: Into<String>,
+        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S) -> Self::CreateNewStickerSet where N: Into<String>,
         T: Into<String>,
         S: IntoIterator<Item = InputSticker> {
             let this = self;
-            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat))
+            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S))
         }
     };
     (@method add_sticker_to_set $body:ident $ty:ident) => {
@@ -1339,12 +1347,21 @@ macro_rules! requester_forward {
             $body!(delete_sticker_from_set this (sticker: S))
         }
     };
+    (@method replace_sticker_in_set $body:ident $ty:ident) => {
+        type ReplaceStickerInSet = $ty![ReplaceStickerInSet];
+
+        fn replace_sticker_in_set<N, O>(&self, user_id: UserId, name: N, old_sticker: O, sticker: InputSticker) -> Self::ReplaceStickerInSet where N: Into<String>,
+        O: Into<String> {
+            let this = self;
+            $body!(replace_sticker_in_set this (user_id: UserId, name: N, old_sticker: O, sticker: InputSticker))
+        }
+    };
     (@method set_sticker_set_thumbnail $body:ident $ty:ident) => {
         type SetStickerSetThumbnail = $ty![SetStickerSetThumbnail];
 
-        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail where N: Into<String> {
+        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId, format: StickerFormat) -> Self::SetStickerSetThumbnail where N: Into<String> {
             let this = self;
-            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId))
+            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId, format: StickerFormat))
         }
     };
     (@method set_custom_emoji_sticker_set_thumbnail $body:ident $ty:ident) => {
@@ -1515,7 +1532,7 @@ fn codegen_requester_forward() {
 
             convert_params.sort_unstable();
 
-            let prefixes: IndexMap<_, _> = convert_params
+            let mut prefixes: IndexMap<_, _> = convert_params
                 .iter()
                 .copied()
                 // Workaround to output the last type as the first letter
@@ -1523,6 +1540,18 @@ fn codegen_requester_forward() {
                 .tuple_windows()
                 .map(|(l, r)| (l, min_prefix(l, r)))
                 .collect();
+
+            // FIXME: This hard-coded value has been set to avoid conflicting generic
+            // parameter 'B' with impl<B> Requester... in all the adaptors and other places
+            //
+            // One fix could be to take full abbrevation for all the parameters instead of
+            // just the first character. Other fix is to change the generic parameter name
+            // in all the impl blocks to something like 'Z' because that is very less likely
+            // to conflict in future.
+            if prefixes.contains_key("business_connection_id") {
+                prefixes["business_connection_id"] = "BCI";
+            }
+            let prefixes = prefixes;
 
             let args = m
                 .params

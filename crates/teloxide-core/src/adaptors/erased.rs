@@ -262,6 +262,7 @@ where
         answer_callback_query,
         get_user_chat_boosts,
         set_my_commands,
+        get_business_connection,
         get_my_commands,
         set_my_name,
         get_my_name,
@@ -295,6 +296,7 @@ where
         add_sticker_to_set,
         set_sticker_position_in_set,
         delete_sticker_from_set,
+        replace_sticker_in_set,
         set_sticker_set_thumbnail,
         set_custom_emoji_sticker_set_thumbnail,
         set_sticker_set_title,
@@ -750,6 +752,11 @@ trait ErasableRequester<'a> {
         commands: Vec<BotCommand>,
     ) -> ErasedRequest<'a, SetMyCommands, Self::Err>;
 
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err>;
+
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err>;
 
     fn set_my_name(&self) -> ErasedRequest<'a, SetMyName, Self::Err>;
@@ -882,7 +889,6 @@ trait ErasableRequester<'a> {
         name: String,
         title: String,
         stickers: Vec<InputSticker>,
-        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err>;
 
     fn add_sticker_to_set(
@@ -903,10 +909,19 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, DeleteStickerFromSet, Self::Err>;
 
+    fn replace_sticker_in_set(
+        &self,
+        user_id: UserId,
+        name: String,
+        old_sticker: String,
+        sticker: InputSticker,
+    ) -> ErasedRequest<'a, ReplaceStickerInSet, Self::Err>;
+
     fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
+        format: StickerFormat,
     ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err>;
 
     fn set_custom_emoji_sticker_set_thumbnail(
@@ -1602,6 +1617,13 @@ where
         Requester::set_my_commands(self, commands).erase()
     }
 
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessConnection, Self::Err> {
+        Requester::get_business_connection(self, business_connection_id).erase()
+    }
+
     fn get_my_commands(&self) -> ErasedRequest<'a, GetMyCommands, Self::Err> {
         Requester::get_my_commands(self).erase()
     }
@@ -1792,10 +1814,8 @@ where
         name: String,
         title: String,
         stickers: Vec<InputSticker>,
-        sticker_format: StickerFormat,
     ) -> ErasedRequest<'a, CreateNewStickerSet, Self::Err> {
-        Requester::create_new_sticker_set(self, user_id, name, title, stickers, sticker_format)
-            .erase()
+        Requester::create_new_sticker_set(self, user_id, name, title, stickers).erase()
     }
 
     fn add_sticker_to_set(
@@ -1822,12 +1842,23 @@ where
         Requester::delete_sticker_from_set(self, sticker).erase()
     }
 
+    fn replace_sticker_in_set(
+        &self,
+        user_id: UserId,
+        name: String,
+        old_sticker: String,
+        sticker: InputSticker,
+    ) -> ErasedRequest<'a, ReplaceStickerInSet, Self::Err> {
+        Requester::replace_sticker_in_set(self, user_id, name, old_sticker, sticker).erase()
+    }
+
     fn set_sticker_set_thumbnail(
         &self,
         name: String,
         user_id: UserId,
+        format: StickerFormat,
     ) -> ErasedRequest<'a, SetStickerSetThumbnail, Self::Err> {
-        Requester::set_sticker_set_thumbnail(self, name, user_id).erase()
+        Requester::set_sticker_set_thumbnail(self, name, user_id, format).erase()
     }
 
     fn set_custom_emoji_sticker_set_thumbnail(

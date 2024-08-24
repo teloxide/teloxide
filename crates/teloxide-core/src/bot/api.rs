@@ -5,8 +5,9 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, ChatId, ChatPermissions, InlineQueryResult, InputFile, InputMedia,
-        InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId, UserId,
+        BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
+        InputMedia, InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId,
+        UserId,
     },
     Bot,
 };
@@ -881,6 +882,18 @@ impl Requester for Bot {
         Self::SetMyCommands::new(self.clone(), payloads::SetMyCommands::new(commands))
     }
 
+    type GetBusinessConnection = JsonRequest<payloads::GetBusinessConnection>;
+
+    fn get_business_connection(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessConnection {
+        Self::GetBusinessConnection::new(
+            self.clone(),
+            payloads::GetBusinessConnection::new(business_connection_id),
+        )
+    }
+
     type GetMyCommands = JsonRequest<payloads::GetMyCommands>;
 
     fn get_my_commands(&self) -> Self::GetMyCommands {
@@ -1173,7 +1186,7 @@ impl Requester for Bot {
         &self,
         user_id: UserId,
         sticker: InputFile,
-        sticker_format: crate::types::StickerFormat,
+        sticker_format: StickerFormat,
     ) -> Self::UploadStickerFile {
         Self::UploadStickerFile::new(
             self.clone(),
@@ -1189,7 +1202,6 @@ impl Requester for Bot {
         name: N,
         title: T,
         stickers: S,
-        sticker_format: StickerFormat,
     ) -> Self::CreateNewStickerSet
     where
         N: Into<String>,
@@ -1198,7 +1210,7 @@ impl Requester for Bot {
     {
         Self::CreateNewStickerSet::new(
             self.clone(),
-            payloads::CreateNewStickerSet::new(user_id, name, title, stickers, sticker_format),
+            payloads::CreateNewStickerSet::new(user_id, name, title, stickers),
         )
     }
 
@@ -1244,15 +1256,44 @@ impl Requester for Bot {
         Self::DeleteStickerFromSet::new(self.clone(), payloads::DeleteStickerFromSet::new(sticker))
     }
 
+    type ReplaceStickerInSet = JsonRequest<payloads::ReplaceStickerInSet>;
+
+    fn replace_sticker_in_set<N, O>(
+        &self,
+        user_id: UserId,
+        name: N,
+        old_sticker: O,
+        sticker: InputSticker,
+    ) -> Self::ReplaceStickerInSet
+    where
+        N: Into<String>,
+        O: Into<String>,
+    {
+        Self::ReplaceStickerInSet::new(
+            self.clone(),
+            payloads::ReplaceStickerInSet {
+                user_id,
+                name: name.into(),
+                old_sticker: old_sticker.into(),
+                sticker,
+            },
+        )
+    }
+
     type SetStickerSetThumbnail = MultipartRequest<payloads::SetStickerSetThumbnail>;
 
-    fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail
+    fn set_sticker_set_thumbnail<N>(
+        &self,
+        name: N,
+        user_id: UserId,
+        format: StickerFormat,
+    ) -> Self::SetStickerSetThumbnail
     where
         N: Into<String>,
     {
         Self::SetStickerSetThumbnail::new(
             self.clone(),
-            payloads::SetStickerSetThumbnail::new(name, user_id),
+            payloads::SetStickerSetThumbnail::new(name, user_id, format),
         )
     }
 
