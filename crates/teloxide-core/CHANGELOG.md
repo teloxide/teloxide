@@ -45,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
+- Environment bumps: ([#1147][pr1147])
+  - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
+  - Some dependencies was bumped: `reqwest` to `0.12.7` and `ron` to `0.8.1`
+  - `tokio` version was explicitly specified as `1.39` and feature `io-util` was enabled for it
 
 - Support for TBA 7.2 ([#1146](pr1146))
   - Remove `flags` field from `StickerSet` struct
@@ -55,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
+[pr1147]: https://github.com/teloxide/teloxide/pull/1147
 
 ### Removed
 
