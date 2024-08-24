@@ -609,7 +609,6 @@ mod test {
                     chat_full_info: ChatFullInfo::default(),
                 },
                 sender_business_bot: None,
-                business_connection_id: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
@@ -634,6 +633,7 @@ mod test {
                     is_automatic_forward: false,
                     has_protected_content: false,
                     is_from_offline: false,
+                    business_connection_id: None,
                 }),
             }),
         };

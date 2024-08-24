@@ -190,7 +190,6 @@ mod tests {
                 sender_chat: None,
                 is_topic_message: false,
                 sender_business_bot: None,
-                business_connection_id: None,
                 date,
                 chat: Chat {
                     id: ChatId(109_998_024),
@@ -239,6 +238,7 @@ mod tests {
                     reply_to_story: None,
                     sender_boost_count: None,
                     is_from_offline: false,
+                    business_connection_id: None,
                 }),
             }),
         }

@@ -59,12 +59,6 @@ pub struct Message {
     /// connected business account.
     pub sender_business_bot: Option<User>,
 
-    /// Unique identifier of the business connection from which the message was
-    /// received. If non-empty, the message belongs to a chat of the
-    /// corresponding business account that is independent from any potential
-    /// bot chat which might share the same identifier.
-    pub business_connection_id: Option<BusinessConnectionId>,
-
     #[serde(flatten)]
     pub kind: MessageKind,
 }
@@ -170,6 +164,12 @@ pub struct MessageCommon {
     /// an away or a greeting business message, or as a scheduled message
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_from_offline: bool,
+
+    /// Unique identifier of the business connection from which the message was
+    /// received. If non-empty, the message belongs to a chat of the
+    /// corresponding business account that is independent from any potential
+    /// bot chat which might share the same identifier.
+    pub business_connection_id: Option<BusinessConnectionId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -1917,7 +1917,6 @@ mod tests {
                     chat_full_info: ChatFullInfo::default()
                 },
                 sender_business_bot: None,
-                business_connection_id: None,
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared {
                         request_id: RequestId(348349),
@@ -2590,7 +2589,6 @@ mod tests {
                     },
                     via_bot: None,
                     sender_business_bot: None,
-                    business_connection_id: None,
                     kind: MessageKind::Giveaway(MessageGiveaway {
                         giveaway: Giveaway {
                             chats: vec![Chat {
