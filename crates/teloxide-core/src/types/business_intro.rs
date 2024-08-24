@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::Sticker;
 
 /// An introduction for a Business.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct BusinessIntro {
     /// Title text of the business intro
     pub title: Option<String>,
