@@ -26,6 +26,7 @@ pub struct Me {
 
     /// `true`, if the bot can be connected to a Telegram Business account to
     /// receive its messages.
+    #[serde(default)]
     pub can_connect_to_business: bool,
 }
 
