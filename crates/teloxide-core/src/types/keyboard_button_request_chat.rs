@@ -130,22 +130,22 @@ impl KeyboardButtonRequestChat {
 
     /// Setter for `request_title` field.
     #[must_use]
-    pub fn request_title(mut self, value: bool) -> Self {
-        self.request_title = value;
+    pub fn request_title(mut self) -> Self {
+        self.request_title = true;
         self
     }
 
     /// Setter for `request_username` field.
     #[must_use]
-    pub fn request_username(mut self, value: bool) -> Self {
-        self.request_username = value;
+    pub fn request_username(mut self) -> Self {
+        self.request_username = true;
         self
     }
 
     /// Setter for `request_photo` field.
     #[must_use]
-    pub fn request_photo(mut self, value: bool) -> Self {
-        self.request_photo = value;
+    pub fn request_photo(mut self) -> Self {
+        self.request_photo = true;
         self
     }
 }

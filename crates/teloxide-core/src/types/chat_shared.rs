@@ -15,14 +15,11 @@ pub struct ChatShared {
     pub chat_id: ChatId,
 
     /// Title of the chat, if it was requested.
-    #[serde(default)]
     pub title: Option<String>,
 
     /// Username of the chat, if it was requested.
-    #[serde(default)]
     pub username: Option<String>,
 
     /// Available sizes of the chat photo, if it was requested.
-    #[serde(default)]
     pub photo: Option<Vec<PhotoSize>>,
 }

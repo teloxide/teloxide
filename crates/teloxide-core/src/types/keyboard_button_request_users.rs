@@ -83,22 +83,22 @@ impl KeyboardButtonRequestUsers {
 
     /// Setter for `request_name` field
     #[must_use]
-    pub fn request_name(mut self, value: bool) -> Self {
-        self.request_name = Some(value);
+    pub fn request_name(mut self) -> Self {
+        self.request_name = Some(true);
         self
     }
 
     /// Setter for `request_username` field
     #[must_use]
-    pub fn request_username(mut self, value: bool) -> Self {
-        self.request_username = Some(value);
+    pub fn request_username(mut self) -> Self {
+        self.request_username = Some(true);
         self
     }
 
     /// Setter for `request_photo` field
     #[must_use]
-    pub fn request_photo(mut self, value: bool) -> Self {
-        self.request_photo = Some(value);
+    pub fn request_photo(mut self) -> Self {
+        self.request_photo = Some(true);
         self
     }
 }

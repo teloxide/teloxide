@@ -12,18 +12,14 @@ pub struct SharedUser {
     pub user_id: UserId,
 
     /// First name of the user, if it was requested by the bot
-    #[serde(default)]
     pub first_name: Option<String>,
 
     /// Last name of the user, if it was requested by the bot
-    #[serde(default)]
     pub last_name: Option<String>,
 
     /// Username of the user, if it was requested by the bot
-    #[serde(default)]
     pub username: Option<String>,
 
     /// Available sizes of the chat photo, if it was requested
-    #[serde(default)]
     pub photo: Option<Vec<PhotoSize>>,
 }
