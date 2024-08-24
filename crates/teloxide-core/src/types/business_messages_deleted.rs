@@ -7,7 +7,6 @@ use crate::types::{BusinessConnectionId, Chat, MessageId};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessMessagesDeleted {
     /// Unique identifier of the business connection.
-    #[serde(flatten)]
     pub business_connection_id: BusinessConnectionId,
 
     /// Information about a chat in the business account. The bot may not have
