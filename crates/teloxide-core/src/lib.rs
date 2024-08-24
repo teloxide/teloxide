@@ -7,7 +7,7 @@
 //!```toml
 //! teloxide-core = "0.10.1"
 //! ```
-//! _Compiler support: requires rustc 1.70+_.
+//! _Compiler support: requires rustc 1.80+_.
 //!
 //! ```
 //! # async {
