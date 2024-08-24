@@ -19,7 +19,10 @@ impl_payload! {
             ///
             /// [Botfather]: https://t.me/botfather
             pub provider_token: String [into],
-            /// Three-letter ISO 4217 currency code, see more on currencies
+            /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].
+            ///
+            /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
+            /// [Telegram Stars]: https://t.me/BotNews/90
             pub currency: String [into],
             /// Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
             pub prices: Vec<LabeledPrice> [collect],

@@ -16,7 +16,11 @@ pub struct Invoice {
     /// invoice.
     pub start_parameter: String,
 
-    /// Three-letter ISO 4217 currency code.
+    /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
+    /// `XTR` for payments in [Telegram Stars].
+    ///
+    /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
+    /// [Telegram Stars]: https://t.me/BotNews/90
     pub currency: String,
 
     /// Total price in the smallest units of the currency (integer, **not**

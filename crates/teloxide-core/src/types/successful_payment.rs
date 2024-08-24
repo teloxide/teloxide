@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Currency, OrderInfo};
+use crate::types::OrderInfo;
 
 /// This object contains basic information about a successful payment.
 ///
@@ -8,10 +8,12 @@ use crate::types::{Currency, OrderInfo};
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct SuccessfulPayment {
-    /// Three-letter ISO 4217 [currency] code.
+    /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
+    /// "XTR" for payments in [Telegram Stars].
     ///
-    /// [currency]: https://core.telegram.org/bots/payments#supported-currencies
-    pub currency: Currency,
+    /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
+    /// [Telegram Stars]: https://t.me/BotNews/90
+    pub currency: String,
 
     /// Total price in the smallest units of the currency (integer, not
     /// float/double). For example, for a price of `US$ 1.45` pass `amount =
