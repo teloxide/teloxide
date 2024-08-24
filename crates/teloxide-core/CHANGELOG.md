@@ -56,6 +56,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
+### Removed
+
+- `Currency` enum removed, its usages replaced with `String`.
+
 ## 0.10.1 - 2024-08-17
 
 ### Fixed
