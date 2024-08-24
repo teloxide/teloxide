@@ -1,13 +1,13 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{User, UserId};
+use crate::types::{BusinessConnectionId, User, UserId};
 
 /// Describes the connection of the bot with a business account.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessConnection {
     /// Unique identifier of the business connection
-    pub id: String,
+    pub id: BusinessConnectionId,
 
     /// Business account user that created the business connection
     pub user: User,
