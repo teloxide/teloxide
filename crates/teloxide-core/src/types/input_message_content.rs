@@ -1,7 +1,7 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Currency, LabeledPrice, LinkPreviewOptions, MessageEntity, ParseMode};
+use crate::types::{LabeledPrice, LinkPreviewOptions, MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -329,10 +329,12 @@ pub struct InputMessageContentInvoice {
     /// [@Botfather]: https://t.me/Botfather
     pub provider_token: String,
 
-    /// Three-letter ISO 4217 currency code, see [more on currencies]
+    /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
+    /// `XTR` for payments in [Telegram Stars].
     ///
     /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
-    pub currency: Currency,
+    /// [Telegram Stars]: https://t.me/BotNews/90
+    pub currency: String,
 
     /// Price breakdown, list of components (e.g. product price, tax, discount,
     /// delivery cost, delivery tax, bonus, etc.)
@@ -396,12 +398,12 @@ pub struct InputMessageContentInvoice {
 }
 
 impl InputMessageContentInvoice {
-    pub fn new<T, D, PA, PT, PR>(
+    pub fn new<T, D, PA, PT, C, PR>(
         title: T,
         description: D,
         payload: PA,
         provider_token: PT,
-        currency: Currency,
+        currency: C,
         prices: PR,
     ) -> Self
     where
@@ -409,12 +411,14 @@ impl InputMessageContentInvoice {
         D: Into<String>,
         PA: Into<String>,
         PT: Into<String>,
+        C: Into<String>,
         PR: IntoIterator<Item = LabeledPrice>,
     {
         let title = title.into();
         let description = description.into();
         let payload = payload.into();
         let provider_token = provider_token.into();
+        let currency = currency.into();
         let prices = prices.into_iter().collect();
 
         Self {
@@ -474,8 +478,11 @@ impl InputMessageContentInvoice {
     }
 
     #[must_use]
-    pub fn currency(mut self, val: Currency) -> Self {
-        self.currency = val;
+    pub fn currency<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.currency = val.into();
         self
     }
 
