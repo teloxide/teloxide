@@ -32,16 +32,16 @@ pub struct KeyboardButtonRequestUsers {
     pub max_quantity: u8,
 
     /// Pass `true` to request the users' first and last names
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub request_name: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_name: bool,
 
     /// Pass `true` to request the users' username
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub request_username: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_username: bool,
 
     /// Pass `true` to request the users' photos
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub request_photo: Option<bool>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub request_photo: bool,
 }
 
 impl KeyboardButtonRequestUsers {
@@ -52,9 +52,9 @@ impl KeyboardButtonRequestUsers {
             user_is_bot: None,
             user_is_premium: None,
             max_quantity: 1,
-            request_name: None,
-            request_username: None,
-            request_photo: None,
+            request_name: false,
+            request_username: false,
+            request_photo: false,
         }
     }
 
@@ -84,21 +84,21 @@ impl KeyboardButtonRequestUsers {
     /// Setter for `request_name` field
     #[must_use]
     pub fn request_name(mut self) -> Self {
-        self.request_name = Some(true);
+        self.request_name = true;
         self
     }
 
     /// Setter for `request_username` field
     #[must_use]
     pub fn request_username(mut self) -> Self {
-        self.request_username = Some(true);
+        self.request_username = true;
         self
     }
 
     /// Setter for `request_photo` field
     #[must_use]
     pub fn request_photo(mut self) -> Self {
-        self.request_photo = Some(true);
+        self.request_photo = true;
         self
     }
 }
