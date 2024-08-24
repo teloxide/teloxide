@@ -42,28 +42,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BusinessMessagesDeleted` struct
   - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
 
-[pr1131]: https://github.com/teloxide/teloxide/pull/1131
-[pr1146]: https://github.com/teloxide/teloxide/pull/1146
-
 ### Changed
 
 - `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
 
-[pr1134]: https://github.com/teloxide/teloxide/pull/1134
-
-### Removed
-
 - Support for TBA 7.2 ([#1146](pr1146))
   - Remove `flags` field from `StickerSet` struct
   - Remove `sticker_format` parameter from `CreateNewStickerSet` method
-
-### Breaking Changes
-
-- Support for TBA 7.2 ([#1146](pr1146))
   - Wrap `Public` variant of `ChatKind` in `Box`
   - Replaced `user_ids` with `users` in `UsersShared` struct
 
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
+[pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 
 ## 0.10.1 - 2024-08-17
