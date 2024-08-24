@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ChatFullInfo, ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds,
-    True, User,
+    Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, ChatFullInfo, ChatId,
+    ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, True, User,
 };
 
 /// This object represents a chat.
@@ -63,7 +63,7 @@ pub struct Chat {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
-    Public(ChatPublic),
+    Public(Box<ChatPublic>),
     Private(ChatPrivate),
 }
 
@@ -133,6 +133,36 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub has_restricted_voice_and_video_messages: Option<True>,
+
+    /// For private chats, the personal channel of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub personal_chat: Option<Box<Chat>>,
+
+    /// For private chats, the date of birth of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub birthdate: Option<Birthdate>,
+
+    /// For private chats with business accounts, the intro of the business.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_intro: Option<BusinessIntro>,
+
+    /// For private chats with business accounts, the location of the business.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_location: Option<BusinessLocation>,
+
+    /// For private chats with business accounts, the opening hours of the
+    /// business. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_opening_hours: Option<BusinessOpeningHours>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -256,20 +286,29 @@ impl Chat {
 
     #[must_use]
     pub fn is_group(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Group(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
-        )
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_channel(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Channel(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
@@ -563,7 +602,7 @@ impl Chat {
 }
 
 mod serde_helper {
-    use crate::types::True;
+    use crate::types::{Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, True};
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -584,6 +623,11 @@ mod serde_helper {
         bio: Option<String>,
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
+        personal_chat: Option<Box<super::Chat>>,
+        birthdate: Option<Birthdate>,
+        business_intro: Option<BusinessIntro>,
+        business_location: Option<BusinessLocation>,
+        business_opening_hours: Option<BusinessOpeningHours>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -596,6 +640,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -605,6 +654,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }
         }
     }
@@ -618,6 +672,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -628,6 +687,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }
         }
     }
@@ -643,7 +707,7 @@ mod tests {
     fn channel_de() {
         let expected = Chat {
             id: ChatId(-1),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: None,
                 kind: PublicChatKind::Channel(PublicChatChannel {
                     username: Some("channel_name".into()),
@@ -652,7 +716,7 @@ mod tests {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             photo: None,
             available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
             pinned_message: None,
@@ -690,6 +754,11 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
+                    personal_chat: None,
+                    birthdate: None,
+                    business_intro: None,
+                    business_location: None,
+                    business_opening_hours: None,
                 }),
                 photo: None,
                 available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
@@ -728,6 +797,11 @@ mod tests {
                 bio: None,
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
+                personal_chat: None,
+                birthdate: None,
+                business_intro: None,
+                business_location: None,
+                business_opening_hours: None,
             }),
             photo: None,
             available_reactions: None,

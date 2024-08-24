@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, Chat, ChatBoostAdded, ChatId, ChatShared, Contact, Dice,
-    Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited,
-    ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway,
-    GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
+    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBoostAdded, ChatId, ChatShared,
+    Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
+    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
+    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
     LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
     MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
     ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
@@ -53,6 +53,11 @@ pub struct Message {
 
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
+
+    /// The bot that actually sent the message on behalf of the business
+    /// account. Available only for outgoing messages sent on behalf of the
+    /// connected business account.
+    pub sender_business_bot: Option<User>,
 
     #[serde(flatten)]
     pub kind: MessageKind,
@@ -154,6 +159,17 @@ pub struct MessageCommon {
     /// `true`, if the message can't be forwarded.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_protected_content: bool,
+
+    /// `true`, if the message was sent by an implicit action, for example, as
+    /// an away or a greeting business message, or as a scheduled message
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_from_offline: bool,
+
+    /// Unique identifier of the business connection from which the message was
+    /// received. If non-empty, the message belongs to a chat of the
+    /// corresponding business account that is independent from any potential
+    /// bot chat which might share the same identifier.
+    pub business_connection_id: Option<BusinessConnectionId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -1885,7 +1901,12 @@ mod tests {
                         username: Some("aka_dude".to_string()),
                         bio: None,
                         has_private_forwards: None,
-                        has_restricted_voice_and_video_messages: None
+                        has_restricted_voice_and_video_messages: None,
+                        personal_chat: None,
+                        birthdate: None,
+                        business_intro: None,
+                        business_location: None,
+                        business_opening_hours: None,
                     }),
                     photo: None,
                     available_reactions: None,
@@ -1895,10 +1916,14 @@ mod tests {
                     has_hidden_members: false,
                     chat_full_info: ChatFullInfo::default()
                 },
+                sender_business_bot: None,
                 kind: MessageKind::ChatShared(MessageChatShared {
                     chat_shared: ChatShared {
                         request_id: RequestId(348349),
-                        chat_id: ChatId(384939)
+                        chat_id: ChatId(384939),
+                        title: None,
+                        username: None,
+                        photo: None,
                     }
                 }),
                 via_bot: None
@@ -2108,7 +2133,7 @@ mod tests {
 
         let group = Chat {
             id: ChatId(-1001160242915),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: Some("a".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
@@ -2128,7 +2153,7 @@ mod tests {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             message_auto_delete_time: None,
             photo: None,
             available_reactions: None,
@@ -2413,7 +2438,7 @@ mod tests {
             &Giveaway {
                 chats: vec![Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -2422,7 +2447,7 @@ mod tests {
                         description: None,
                         invite_link: None,
                         has_protected_content: None
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,
@@ -2522,7 +2547,7 @@ mod tests {
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
+                        kind: ChatKind::Public(Box::new(ChatPublic {
                             title: Some("Test".to_owned()),
                             kind: PublicChatKind::Channel(PublicChatChannel {
                                 linked_chat_id: None,
@@ -2531,7 +2556,7 @@ mod tests {
                             description: None,
                             invite_link: None,
                             has_protected_content: None
-                        }),
+                        })),
                         chat_full_info: ChatFullInfo::default(),
                         available_reactions: None,
                         photo: None,
@@ -2544,7 +2569,7 @@ mod tests {
                     date: DateTime::from_timestamp(1721161230, 0).unwrap(),
                     chat: Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
+                        kind: ChatKind::Public(Box::new(ChatPublic {
                             title: Some("Test".to_owned()),
                             kind: PublicChatKind::Channel(PublicChatChannel {
                                 username: None,
@@ -2553,7 +2578,7 @@ mod tests {
                             description: None,
                             invite_link: None,
                             has_protected_content: None
-                        }),
+                        })),
                         photo: None,
                         available_reactions: None,
                         pinned_message: None,
@@ -2563,11 +2588,12 @@ mod tests {
                         chat_full_info: ChatFullInfo::default()
                     },
                     via_bot: None,
+                    sender_business_bot: None,
                     kind: MessageKind::Giveaway(MessageGiveaway {
                         giveaway: Giveaway {
                             chats: vec![Chat {
                                 id: ChatId(-1002236736395),
-                                kind: ChatKind::Public(ChatPublic {
+                                kind: ChatKind::Public(Box::new(ChatPublic {
                                     title: Some("Test".to_owned()),
                                     kind: PublicChatKind::Channel(PublicChatChannel {
                                         username: None,
@@ -2576,7 +2602,7 @@ mod tests {
                                     description: None,
                                     invite_link: None,
                                     has_protected_content: None
-                                }),
+                                })),
                                 photo: None,
                                 available_reactions: None,
                                 pinned_message: None,
@@ -2668,7 +2694,7 @@ mod tests {
             &GiveawayWinners {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(ChatPublic {
+                    kind: ChatKind::Public(Box::new(ChatPublic {
                         title: Some("Test".to_owned()),
                         kind: PublicChatKind::Channel(PublicChatChannel {
                             username: None,
@@ -2677,7 +2703,7 @@ mod tests {
                         description: None,
                         invite_link: None,
                         has_protected_content: None
-                    }),
+                    })),
                     photo: None,
                     available_reactions: None,
                     pinned_message: None,

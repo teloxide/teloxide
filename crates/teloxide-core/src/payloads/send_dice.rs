@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{DiceEmoji, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId};
+use crate::types::{
+    BusinessConnectionId, DiceEmoji, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send an animated emoji that will display a random value. On success, the sent [`Message`] is returned.
@@ -15,6 +17,8 @@ impl_payload! {
             pub chat_id: Recipient [into],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Emoji on which the dice throw animation is based. Currently, must be one of “🎲”, “🎯”, “🏀”, “⚽”, “🎳”, or “🎰”. Dice can have values 1-6 for “🎲”, “🎯” and “🎳”, values 1-5 for “🏀” and “⚽”, and values 1-64 for “🎰”. Defaults to “🎲”
@@ -27,7 +31,7 @@ impl_payload! {
             pub protect_content: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
-            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
+            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards

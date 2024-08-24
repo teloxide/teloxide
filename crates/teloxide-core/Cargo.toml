@@ -95,6 +95,7 @@ ron = "0.7"
 indexmap = { version = "1.9", features = ["serde-1"] }
 aho-corasick = "0.7"
 itertools = "0.10"
+pretty_assertions = "1.4.0"
 
 
 [package.metadata.docs.rs]

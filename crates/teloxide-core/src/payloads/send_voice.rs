@@ -3,7 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    InputFile, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    BusinessConnectionId, InputFile, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup,
+    ReplyParameters, ThreadId,
 };
 
 impl_payload! {
@@ -24,6 +25,8 @@ impl_payload! {
             pub voice: InputFile,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Voice message caption, 0-1024 characters after entities parsing
@@ -42,7 +45,7 @@ impl_payload! {
             pub disable_notification: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
-            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
+            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards

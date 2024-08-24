@@ -29,7 +29,7 @@ pub struct ForceReply {
     /// (has reply_to_message_id), sender of the original message.
     ///
     /// [`Message`]: crate::types::Message
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub selective: bool,
 }
 
@@ -52,5 +52,22 @@ impl ForceReply {
     #[must_use]
     pub fn selective(self) -> Self {
         Self { selective: true, ..self }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize() {
+        let data = r#"
+        {
+            "force_reply": true,
+            "input_field_placeholder": "placeholder",
+            "selective": false
+        }
+        "#;
+        serde_json::from_str::<ForceReply>(data).unwrap();
     }
 }

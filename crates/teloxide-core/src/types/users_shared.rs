@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{RequestId, UserId};
+use crate::types::{RequestId, SharedUser};
 
 /// This object contains information about the users whose identifiers were
 /// shared with the bot using a [KeyboardButtonRequestUsers] button.
@@ -11,5 +11,5 @@ pub struct UsersShared {
     /// Identifier of the request
     pub request_id: RequestId,
     /// Identifiers of the shared users
-    pub user_ids: Vec<UserId>,
+    pub users: Vec<SharedUser>,
 }

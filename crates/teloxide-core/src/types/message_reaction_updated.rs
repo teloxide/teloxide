@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
-use crate::types::{Chat, MessageId, ReactionType, User};
+use crate::types::{Chat, MaybeAnonymousUser, MessageId, ReactionType, User};
 
 /// This object represents a change of a reaction on a message performed by a
 /// user.
@@ -15,12 +15,11 @@ pub struct MessageReactionUpdated {
     #[serde(flatten)]
     pub message_id: MessageId,
 
-    /// The user that changed the reaction, if the user isn't anonymous
-    pub user: Option<User>,
-
-    /// The chat on behalf of which the reaction was changed, if the user is
-    /// anonymous
-    pub actor_chat: Option<Chat>,
+    /// The [`MaybeAnonymousUser::User`] that changed the reaction, if the user
+    /// isn't anonymous or the [`MaybeAnonymousUser::Chat`] on behalf of
+    /// which the reaction was changed, if the user is anonymous
+    #[serde(deserialize_with = "deserialize_actor", flatten)]
+    pub actor: MaybeAnonymousUser,
 
     /// Date of the change in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
@@ -35,14 +34,29 @@ pub struct MessageReactionUpdated {
 
 impl MessageReactionUpdated {
     #[must_use]
-    pub fn actor_chat(&self) -> Option<&Chat> {
-        self.actor_chat.as_ref()
+    pub fn chat(&self) -> Option<&Chat> {
+        self.actor.chat()
     }
 
     #[must_use]
     pub fn user(&self) -> Option<&User> {
-        self.user.as_ref()
+        self.actor.user()
     }
+}
+
+#[derive(Deserialize)]
+struct ActorDe {
+    /// The user that changed the reaction, if the user isn't anonymous
+    user: Option<User>,
+    /// The chat on behalf of which the reaction was changed, if the user is
+    /// anonymous
+    actor_chat: Option<Chat>,
+}
+
+fn deserialize_actor<'d, D: Deserializer<'d>>(d: D) -> Result<MaybeAnonymousUser, D::Error> {
+    let ActorDe { user, actor_chat } = ActorDe::deserialize(d)?;
+
+    Ok(actor_chat.map(MaybeAnonymousUser::Chat).or(user.map(MaybeAnonymousUser::User)).unwrap())
 }
 
 #[cfg(test)]
@@ -50,7 +64,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserialize() {
+    fn deserialize_user() {
         let data = r#"
         {
             "chat": {
@@ -77,6 +91,37 @@ mod tests {
             ]
         }
         "#;
-        serde_json::from_str::<MessageReactionUpdated>(data).unwrap();
+        let message_reaction_update = serde_json::from_str::<MessageReactionUpdated>(data).unwrap();
+
+        assert!(message_reaction_update.actor.is_user());
+    }
+
+    #[test]
+    fn deserialize_chat() {
+        let data = r#"{
+            "chat": {
+                "id": -1002199793788,
+                "title": "тест",
+                "type": "supergroup"
+            },
+            "message_id": 2,
+            "actor_chat": {
+                "id": -1002199793788,
+                "title": "тест",
+                "type": "supergroup"
+            },
+            "date": 1723798597,
+            "old_reaction": [
+                {
+                    "type": "emoji",
+                    "emoji": "❤"
+                }
+            ],
+            "new_reaction": []
+        }"#;
+
+        let message_reaction_update = serde_json::from_str::<MessageReactionUpdated>(data).unwrap();
+
+        assert!(message_reaction_update.actor.is_chat())
     }
 }

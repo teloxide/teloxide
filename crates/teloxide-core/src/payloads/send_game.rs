@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{ChatId, Message, ReplyMarkup, ReplyParameters, ThreadId};
+use crate::types::{BusinessConnectionId, ChatId, Message, ReplyMarkup, ReplyParameters, ThreadId};
 
 impl_payload! {
     /// Use this method to send a game. On success, the sent [`Message`] is returned.
@@ -17,6 +17,8 @@ impl_payload! {
             pub game_short_name: String [into],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -27,7 +29,7 @@ impl_payload! {
             pub protect_content: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
-            /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.
+            /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             pub reply_markup: ReplyMarkup [into],
