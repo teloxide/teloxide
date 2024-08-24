@@ -1007,7 +1007,7 @@ mod test {
         "#;
         let chat = Chat {
             id: ChatId(-1002199793788),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: Some("тест".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
@@ -1027,7 +1027,7 @@ mod test {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             photo: None,
             available_reactions: None,
             pinned_message: None,

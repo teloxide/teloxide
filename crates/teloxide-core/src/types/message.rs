@@ -169,6 +169,7 @@ pub struct MessageCommon {
     /// received. If non-empty, the message belongs to a chat of the
     /// corresponding business account that is independent from any potential
     /// bot chat which might share the same identifier.
+    #[serde(flatten)]
     pub business_connection_id: Option<BusinessConnectionId>,
 }
 
