@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Location;
 
+/// Details about the location of a Business
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessLocation {
     /// Address of the business.

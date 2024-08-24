@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+/// Time intervals used to describe the opening hours of a Business.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessOpeningHoursInterval {
     /// The minute's sequence number in a week, starting on Monday, marking the
