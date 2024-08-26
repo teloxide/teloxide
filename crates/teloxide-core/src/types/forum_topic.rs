@@ -1,6 +1,6 @@
-use crate::types::ThreadId;
-
 use serde::{Deserialize, Serialize};
+
+use crate::types::{Rgb, ThreadId};
 
 /// This object represents a forum topic.
 ///
@@ -16,9 +16,7 @@ pub struct ForumTopic {
     pub name: String,
 
     /// Color of the topic icon in RGB format.
-    // FIXME: use/add a specialized rgb color type?
-    #[serde(with = "crate::types::serde_rgb")]
-    pub icon_color: [u8; 3],
+    pub icon_color: Rgb,
 
     /// Unique identifier of the custom emoji shown as the topic icon.
     // FIXME: CustomEmojiId

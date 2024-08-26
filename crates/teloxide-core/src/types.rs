@@ -128,6 +128,7 @@ pub use reply_markup::*;
 pub use reply_parameters::*;
 pub use request_id::*;
 pub use response_parameters::*;
+pub use rgb::*;
 pub use sent_web_app_message::*;
 pub use shared_user::*;
 pub use shipping_address::*;
@@ -262,6 +263,7 @@ mod reply_markup;
 mod reply_parameters;
 mod request_id;
 mod response_parameters;
+mod rgb;
 mod sent_web_app_message;
 mod shared_user;
 mod shipping_address;
@@ -542,69 +544,5 @@ pub(crate) mod option_msg_id_as_int {
             assert_eq!(id.id, Some(MessageId(123)));
             assert_eq!(serde_json::to_string(&id).unwrap(), json.to_owned());
         }
-    }
-}
-
-pub(crate) mod serde_rgb {
-    use serde::{de::Visitor, Deserializer, Serializer};
-
-    pub fn serialize<S: Serializer>(&this: &[u8; 3], s: S) -> Result<S::Ok, S::Error> {
-        s.serialize_u32(to_u32(this))
-    }
-
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<[u8; 3], D::Error> {
-        struct V;
-
-        impl Visitor<'_> for V {
-            type Value = [u8; 3];
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("an integer represeting an RGB color")
-            }
-
-            fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(from_u32(v))
-            }
-
-            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                self.visit_u32(v.try_into().map_err(|_| E::custom("rgb value doesn't fit u32"))?)
-            }
-        }
-        d.deserialize_u32(V)
-    }
-
-    fn to_u32([r, g, b]: [u8; 3]) -> u32 {
-        u32::from_be_bytes([0, r, g, b])
-    }
-
-    fn from_u32(rgb: u32) -> [u8; 3] {
-        let [_, r, g, b] = rgb.to_be_bytes();
-        [r, g, b]
-    }
-
-    #[test]
-    fn bytes() {
-        assert_eq!(to_u32([0xAA, 0xBB, 0xCC]), 0x00AABBCC);
-        assert_eq!(from_u32(0x00AABBCC), [0xAA, 0xBB, 0xCC]);
-    }
-
-    #[test]
-    fn json() {
-        #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-        struct Struct {
-            #[serde(with = "self")]
-            color: [u8; 3],
-        }
-
-        let json = format!(r#"{{"color":{}}}"#, 0x00AABBCC);
-        let Struct { color } = serde_json::from_str(&json).unwrap();
-
-        assert_eq!(color, [0xAA, 0xBB, 0xCC])
     }
 }
