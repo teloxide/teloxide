@@ -2631,10 +2631,10 @@ Schema(
         ),
         Method(
             names: ("getChat", "GetChat", "get_chat"),
-            return_ty: RawTy("Chat"),
+            return_ty: RawTy("ChatFullInfo"),
             doc: Doc(
-                md: "Use this method to get up to date information about the chat (current name of the user for one-on-one conversations, current username of a user, group or channel, etc.). Returns a [Chat] object on success.",
-                md_links: {"Chat": "https://core.telegram.org/bots/api#chat"},
+                md: "Use this method to get up to date information about the chat (current name of the user for one-on-one conversations, current username of a user, group or channel, etc.). Returns a [ChatFullInfo] object on success.",
+                md_links: {"ChatFullInfo": "https://core.telegram.org/bots/api#chatfullinfo"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#getchat",
             tg_category: "Available methods",
