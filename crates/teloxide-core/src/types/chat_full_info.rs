@@ -73,6 +73,10 @@ pub struct ChatFullInfo {
     /// only to chat administrators.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_visible_history: bool,
+
+    /// The maximum number of reactions that can be set on a message in the
+    /// chat
+    pub max_reaction_count: u8,
 }
 
 #[serde_with::skip_serializing_none]
@@ -677,6 +681,7 @@ mod tests {
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: DateTime::from_timestamp(1720708004, 0),
             has_visible_history: false,
+            max_reaction_count: 0,
         };
         let actual = from_str(
             r#"{
@@ -689,7 +694,8 @@ mod tests {
                         "emoji": "🌭"
                     }
                 ],
-                "emoji_status_expiration_date": 1720708004
+                "emoji_status_expiration_date": 1720708004,
+                "max_reaction_count": 0
             }"#,
         )
         .unwrap();
@@ -725,6 +731,7 @@ mod tests {
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: DateTime::from_timestamp(1720708004, 0),
             has_visible_history: false,
+            max_reaction_count: 0,
         };
         eprintln!("{}", to_string(&chat).unwrap());
         assert_eq!(
@@ -735,7 +742,8 @@ mod tests {
                     "type": "private",
                     "username": "username",
                     "first_name": "Anon",
-                    "emoji_status_expiration_date": 1720708004
+                    "emoji_status_expiration_date": 1720708004,
+                    "max_reaction_count": 0
                 }"#
             )
             .unwrap()
@@ -771,6 +779,7 @@ mod tests {
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: None,
             has_visible_history: false,
+            max_reaction_count: 0,
         };
 
         let json = to_string(&chat).unwrap();
