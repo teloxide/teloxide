@@ -53,6 +53,5 @@ impl ChatMemberUpdated {
             &self.new_chat_member.user,
         ]
         .into_iter()
-        .chain(self.chat.mentioned_users())
     }
 }

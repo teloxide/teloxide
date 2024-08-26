@@ -1811,7 +1811,7 @@ impl Message {
     /// This might be useful to track information about users.
     ///
     /// Note that this function may return quite a few users as it scans
-    /// replies, pinned messages, message entities and more. Also note that this
+    /// replies, message entities and more. Also note that this
     /// function can return duplicate users.
     pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
         use crate::util::{flatten, mentioned_users_from_entities};
@@ -1821,12 +1821,10 @@ impl Message {
         self.from
             .iter()
             .chain(self.via_bot.as_ref())
-            .chain(self.chat.mentioned_users_rec())
             .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
             .chain(flatten(self.new_chat_members()))
             .chain(self.left_chat_member())
             .chain(self.forward_from_user())
-            .chain(flatten(self.forward_from_chat().map(Chat::mentioned_users_rec)))
             .chain(flatten(self.game().map(Game::mentioned_users)))
             .chain(flatten(self.entities().map(mentioned_users_from_entities)))
             .chain(flatten(self.caption_entities().map(mentioned_users_from_entities)))
@@ -1939,22 +1937,7 @@ mod tests {
                         first_name: Some("Андрей".to_string()),
                         last_name: Some("Власов".to_string()),
                         username: Some("aka_dude".to_string()),
-                        bio: None,
-                        has_private_forwards: None,
-                        has_restricted_voice_and_video_messages: None,
-                        personal_chat: None,
-                        birthdate: None,
-                        business_intro: None,
-                        business_location: None,
-                        business_opening_hours: None,
                     }),
-                    photo: None,
-                    available_reactions: None,
-                    has_aggressive_anti_spam_enabled: false,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    chat_full_info: ChatFullInfo::default()
                 },
                 sender_business_bot: None,
                 kind: MessageKind::ChatShared(MessageChatShared {
@@ -2173,34 +2156,13 @@ mod tests {
 
         let group = Chat {
             id: ChatId(-1001160242915),
-            kind: ChatKind::Public(Box::new(ChatPublic {
+            kind: ChatKind::Public(ChatPublic {
                 title: Some("a".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
-                    sticker_set_name: None,
-                    can_set_sticker_set: None,
-                    custom_emoji_sticker_set_name: None,
-                    permissions: None,
-                    slow_mode_delay: None,
-                    unrestrict_boost_count: None,
-                    linked_chat_id: None,
-                    location: None,
-                    join_by_request: None,
-                    join_to_send_messages: None,
-                    active_usernames: None,
                     is_forum: false,
                 }),
-                description: None,
-                invite_link: None,
-                has_protected_content: None,
-            })),
-            message_auto_delete_time: None,
-            photo: None,
-            available_reactions: None,
-            pinned_message: None,
-            has_hidden_members: false,
-            has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo::default(),
+            }),
         };
 
         assert!(message.from.as_ref().unwrap().is_anonymous());
@@ -2479,23 +2441,10 @@ mod tests {
             &Giveaway {
                 chats: vec![Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(Box::new(ChatPublic {
+                    kind: ChatKind::Public(ChatPublic {
                         title: Some("Test".to_owned()),
-                        kind: PublicChatKind::Channel(PublicChatChannel {
-                            username: None,
-                            linked_chat_id: None
-                        }),
-                        description: None,
-                        invite_link: None,
-                        has_protected_content: None
-                    })),
-                    photo: None,
-                    available_reactions: None,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo::default()
+                        kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                    }),
                 }],
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
                 winner_count: 1,
@@ -2588,45 +2537,19 @@ mod tests {
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(Box::new(ChatPublic {
+                        kind: ChatKind::Public(ChatPublic {
                             title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel {
-                                linked_chat_id: None,
-                                username: None
-                            }),
-                            description: None,
-                            invite_link: None,
-                            has_protected_content: None
-                        })),
-                        chat_full_info: ChatFullInfo::default(),
-                        available_reactions: None,
-                        photo: None,
-                        has_aggressive_anti_spam_enabled: false,
-                        has_hidden_members: false,
-                        message_auto_delete_time: None,
-                        pinned_message: None
+                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                        }),
                     }),
                     is_topic_message: false,
                     date: DateTime::from_timestamp(1721161230, 0).unwrap(),
                     chat: Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(Box::new(ChatPublic {
+                        kind: ChatKind::Public(ChatPublic {
                             title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel {
-                                username: None,
-                                linked_chat_id: None
-                            }),
-                            description: None,
-                            invite_link: None,
-                            has_protected_content: None
-                        })),
-                        photo: None,
-                        available_reactions: None,
-                        pinned_message: None,
-                        message_auto_delete_time: None,
-                        has_hidden_members: false,
-                        has_aggressive_anti_spam_enabled: false,
-                        chat_full_info: ChatFullInfo::default()
+                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                        }),
                     },
                     via_bot: None,
                     sender_business_bot: None,
@@ -2634,23 +2557,12 @@ mod tests {
                         giveaway: Giveaway {
                             chats: vec![Chat {
                                 id: ChatId(-1002236736395),
-                                kind: ChatKind::Public(Box::new(ChatPublic {
+                                kind: ChatKind::Public(ChatPublic {
                                     title: Some("Test".to_owned()),
                                     kind: PublicChatKind::Channel(PublicChatChannel {
                                         username: None,
-                                        linked_chat_id: None
                                     }),
-                                    description: None,
-                                    invite_link: None,
-                                    has_protected_content: None
-                                })),
-                                photo: None,
-                                available_reactions: None,
-                                pinned_message: None,
-                                message_auto_delete_time: None,
-                                has_hidden_members: false,
-                                has_aggressive_anti_spam_enabled: false,
-                                chat_full_info: ChatFullInfo::default()
+                                }),
                             }],
                             winners_selection_date: DateTime::from_timestamp(1721162701, 0)
                                 .unwrap(),
@@ -2735,23 +2647,10 @@ mod tests {
             &GiveawayWinners {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(Box::new(ChatPublic {
+                    kind: ChatKind::Public(ChatPublic {
                         title: Some("Test".to_owned()),
-                        kind: PublicChatKind::Channel(PublicChatChannel {
-                            username: None,
-                            linked_chat_id: None
-                        }),
-                        description: None,
-                        invite_link: None,
-                        has_protected_content: None
-                    })),
-                    photo: None,
-                    available_reactions: None,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo::default()
+                        kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                    }),
                 },
                 giveaway_message_id: MessageId(27),
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
