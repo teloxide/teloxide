@@ -9,10 +9,12 @@ pub struct Tag<'a> {
 }
 
 impl<'a> Tag<'a> {
+    #[inline(always)]
     pub const fn start(kind: Kind<'a>, offset: usize, index: usize) -> Self {
         Self { place: Place::Start, kind, offset, index }
     }
 
+    #[inline(always)]
     pub const fn end(kind: Kind<'a>, offset: usize, index: usize) -> Self {
         Self { place: Place::End, kind, offset, index }
     }
@@ -74,6 +76,7 @@ pub struct SimpleTag {
 }
 
 impl SimpleTag {
+    #[inline]
     pub const fn new(start: &'static str, end: &'static str) -> Self {
         Self { start, end }
     }
@@ -94,6 +97,7 @@ pub struct ComplexTag {
 }
 
 impl ComplexTag {
+    #[inline]
     pub const fn new(start: &'static str, middle: &'static str, end: &'static str) -> Self {
         Self { start, middle, end }
     }

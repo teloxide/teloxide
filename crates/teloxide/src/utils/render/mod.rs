@@ -142,12 +142,14 @@ impl<'a> Render<'a> {
 
     /// Render and return the text as **Html-formatted** string.
     #[must_use]
+    #[inline]
     pub fn as_html(&self) -> String {
         self.format(&html::HTML)
     }
 
     /// Render and return the text as **Markdown-formatted** string.
     #[must_use]
+    #[inline]
     pub fn as_markdown(&self) -> String {
         self.format(&markdown::MARKDOWN)
     }
