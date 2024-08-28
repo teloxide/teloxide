@@ -2,6 +2,8 @@ use serde::Serialize;
 
 use crate::types::{InputFile, MaskPosition};
 
+use super::StickerFormat;
+
 /// This object describes a sticker to be added to a sticker set.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
@@ -15,6 +17,10 @@ pub struct InputSticker {
     ///
     /// More information on Sending Files <https://core.telegram.org/bots/api#sending-files>
     pub sticker: InputFile,
+
+    /// Format of the added sticker, must be one of "static" for a .WEBP or .PNG
+    /// image, "animated" for a .TGS animation, "video" for a WEBM video
+    pub format: StickerFormat,
 
     /// List of 1-20 emoji associated with the sticker
     pub emoji_list: Vec<String>,

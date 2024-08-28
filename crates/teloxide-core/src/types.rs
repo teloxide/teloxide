@@ -3,16 +3,29 @@
 pub use allowed_update::*;
 pub use animation::*;
 pub use audio::*;
+pub use birthdate::*;
 pub use bot_command::*;
 pub use bot_command_scope::*;
 pub use bot_description::*;
 pub use bot_name::*;
 pub use bot_short_description::*;
+pub use business_connection::*;
+pub use business_connection_id::*;
+pub use business_intro::*;
+pub use business_location::*;
+pub use business_messages_deleted::*;
+pub use business_opening_hours::*;
+pub use business_opening_hours_interval::*;
 pub use callback_game::*;
 pub use callback_query::*;
 pub use chat::*;
 pub use chat_action::*;
 pub use chat_administrator_rights::*;
+pub use chat_boost::*;
+pub use chat_boost_added::*;
+pub use chat_boost_removed::*;
+pub use chat_boost_source::*;
+pub use chat_boost_updated::*;
 pub use chat_full_info::*;
 pub use chat_invite_link::*;
 pub use chat_join_request::*;
@@ -30,6 +43,7 @@ pub use dice_emoji::*;
 pub use document::*;
 pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
+pub use external_reply_info::*;
 pub use file::*;
 pub use force_reply::*;
 pub use forum_topic::*;
@@ -41,6 +55,11 @@ pub use game::*;
 pub use game_high_score::*;
 pub use general_forum_topic_hidden::*;
 pub use general_forum_topic_unhidden::*;
+pub use giveaway::*;
+pub use giveaway_completed::*;
+pub use giveaway_created::*;
+pub use giveaway_winners::*;
+pub use inaccessible_message::*;
 pub use inline_keyboard_button::*;
 pub use inline_keyboard_markup::*;
 pub use inline_query::*;
@@ -74,17 +93,23 @@ pub use invoice::*;
 pub use keyboard_button::*;
 pub use keyboard_button_poll_type::*;
 pub use keyboard_button_request_chat::*;
-pub use keyboard_button_request_user::*;
+pub use keyboard_button_request_users::*;
 pub use label_price::*;
+pub use link_preview_options::*;
 pub use location::*;
 pub use login_url::*;
 pub use mask_position::*;
+pub use maybe_anonymous_user::*;
+pub use maybe_inaccessible_message::*;
 pub use me::*;
 pub use menu_button::*;
 pub use message::*;
 pub use message_auto_delete_timer_changed::*;
 pub use message_entity::*;
 pub use message_id::*;
+pub use message_origin::*;
+pub use message_reaction_count_updated::*;
+pub use message_reaction_updated::*;
 pub use order_info::*;
 pub use parse_mode::*;
 pub use passport_data::*;
@@ -96,27 +121,35 @@ pub use poll_answer::*;
 pub use poll_type::*;
 pub use pre_checkout_query::*;
 pub use proximity_alert_triggered::*;
+pub use reaction_type::*;
 pub use reply_keyboard_markup::*;
 pub use reply_keyboard_remove::*;
 pub use reply_markup::*;
+pub use reply_parameters::*;
+pub use request_id::*;
 pub use response_parameters::*;
+pub use rgb::*;
 pub use sent_web_app_message::*;
+pub use shared_user::*;
 pub use shipping_address::*;
 pub use shipping_option::*;
 pub use shipping_query::*;
 pub use sticker::*;
 pub use sticker_set::*;
 pub use story::*;
+pub use story_id::*;
 pub use successful_payment::*;
 pub use switch_inline_query_chosen_chat::*;
 pub use target_message::*;
+pub use text_quote::*;
 pub use thread_id::*;
 pub use unit_false::*;
 pub use unit_true::*;
 pub use update::*;
 pub use user::*;
+pub use user_chat_boosts::*;
 pub use user_profile_photos::*;
-pub use user_shared::*;
+pub use users_shared::*;
 pub use venue::*;
 pub use video::*;
 pub use video_chat_ended::*;
@@ -133,16 +166,28 @@ pub use write_access_allowed::*;
 mod allowed_update;
 mod animation;
 mod audio;
+mod birthdate;
 mod bot_command;
 mod bot_command_scope;
 mod bot_description;
 mod bot_name;
 mod bot_short_description;
+mod business_connection;
+mod business_connection_id;
+mod business_intro;
+mod business_location;
+mod business_messages_deleted;
+mod business_opening_hours;
+mod business_opening_hours_interval;
 mod callback_game;
 mod callback_query;
 mod chat;
 mod chat_action;
 mod chat_administrator_rights;
+mod chat_boost;
+mod chat_boost_removed;
+mod chat_boost_source;
+mod chat_boost_updated;
 mod chat_full_info;
 mod chat_invite_link;
 mod chat_join_request;
@@ -158,6 +203,7 @@ mod contact;
 mod dice;
 mod dice_emoji;
 mod document;
+mod external_reply_info;
 mod file;
 mod force_reply;
 mod forum_topic;
@@ -169,6 +215,11 @@ mod game;
 mod game_high_score;
 mod general_forum_topic_hidden;
 mod general_forum_topic_unhidden;
+mod giveaway;
+mod giveaway_completed;
+mod giveaway_created;
+mod giveaway_winners;
+mod inaccessible_message;
 mod inline_keyboard_button;
 mod inline_keyboard_markup;
 mod inline_query_results_button;
@@ -180,17 +231,23 @@ mod invoice;
 mod keyboard_button;
 mod keyboard_button_poll_type;
 mod keyboard_button_request_chat;
-mod keyboard_button_request_user;
+mod keyboard_button_request_users;
 mod label_price;
+mod link_preview_options;
 mod location;
 mod login_url;
 mod mask_position;
+mod maybe_anonymous_user;
+mod maybe_inaccessible_message;
 mod me;
 mod menu_button;
 mod message;
 mod message_auto_delete_timer_changed;
 mod message_entity;
 mod message_id;
+mod message_origin;
+mod message_reaction_count_updated;
+mod message_reaction_updated;
 mod order_info;
 mod parse_mode;
 mod photo_size;
@@ -199,11 +256,16 @@ mod poll_answer;
 mod poll_type;
 mod pre_checkout_query;
 mod proximity_alert_triggered;
+mod reaction_type;
 mod reply_keyboard_markup;
 mod reply_keyboard_remove;
 mod reply_markup;
+mod reply_parameters;
+mod request_id;
 mod response_parameters;
+mod rgb;
 mod sent_web_app_message;
+mod shared_user;
 mod shipping_address;
 mod shipping_option;
 mod shipping_query;
@@ -213,13 +275,15 @@ mod story;
 mod successful_payment;
 mod switch_inline_query_chosen_chat;
 mod target_message;
+mod text_quote;
 mod thread_id;
 mod unit_false;
 mod unit_true;
 mod update;
 mod user;
+mod user_chat_boosts;
 mod user_profile_photos;
-mod user_shared;
+mod users_shared;
 mod venue;
 mod video;
 mod video_chat_ended;
@@ -233,6 +297,7 @@ mod web_app_info;
 mod webhook_info;
 mod write_access_allowed;
 
+mod chat_boost_added;
 mod inline_query;
 mod inline_query_result;
 mod inline_query_result_article;
@@ -255,6 +320,7 @@ mod inline_query_result_photo;
 mod inline_query_result_venue;
 mod inline_query_result_video;
 mod inline_query_result_voice;
+mod story_id;
 
 mod encrypted_credentials;
 mod encrypted_passport_element;
@@ -262,10 +328,9 @@ mod passport_data;
 mod passport_element_error;
 mod passport_file;
 
-pub use non_telegram_types::{country_code::*, currency::*, until_date::*};
+pub use non_telegram_types::{country_code::*, until_date::*};
 mod non_telegram_types {
     pub(super) mod country_code;
-    pub(super) mod currency;
     pub(crate) mod mime;
     pub(super) mod until_date;
 }
@@ -280,7 +345,11 @@ pub use recipient::*;
 pub use seconds::*;
 pub use user_id::*;
 
-use serde::Serialize;
+use serde_with::with_prefix;
+
+// Deserialization prefix for giveaway_message_id field used in GiveawayWinners
+// and ChatBoostSourceGiveaway
+with_prefix!(prefix_giveaway_message_id "giveaway_");
 
 /// Converts an `i64` timestamp to a `choro::DateTime`, producing serde error
 /// for invalid timestamps
@@ -403,6 +472,45 @@ pub(crate) mod option_url_from_string {
     }
 }
 
+// Issue https://github.com/teloxide/teloxide/issues/1135
+// Workaround to avoid flattening with serde-multipart requests (involving
+// file-manipulations)
+pub(crate) mod msg_id_as_int {
+    use crate::types::MessageId;
+
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    pub(crate) fn serialize<S>(MessageId(id): &MessageId, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        id.serialize(serializer)
+    }
+
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<MessageId, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        i32::deserialize(deserializer).map(MessageId)
+    }
+
+    #[test]
+    fn test() {
+        #[derive(Serialize, Deserialize)]
+        struct Struct {
+            #[serde(with = "crate::types::msg_id_as_int")]
+            message_id: MessageId,
+        }
+
+        {
+            let json = r#"{"message_id":123}"#;
+            let s: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(s.message_id, MessageId(123));
+            assert_eq!(serde_json::to_string(&s).unwrap(), json.to_owned());
+        }
+    }
+}
+
 pub(crate) mod option_msg_id_as_int {
     use crate::types::MessageId;
 
@@ -436,79 +544,5 @@ pub(crate) mod option_msg_id_as_int {
             assert_eq!(id.id, Some(MessageId(123)));
             assert_eq!(serde_json::to_string(&id).unwrap(), json.to_owned());
         }
-    }
-}
-
-pub(crate) fn serialize_reply_to_message_id<S>(
-    this: &Option<MessageId>,
-    serializer: S,
-) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    this.map(|MessageId(id)| id).serialize(serializer)
-}
-
-pub(crate) mod serde_rgb {
-    use serde::{de::Visitor, Deserializer, Serializer};
-
-    pub fn serialize<S: Serializer>(&this: &[u8; 3], s: S) -> Result<S::Ok, S::Error> {
-        s.serialize_u32(to_u32(this))
-    }
-
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<[u8; 3], D::Error> {
-        struct V;
-
-        impl Visitor<'_> for V {
-            type Value = [u8; 3];
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("an integer represeting an RGB color")
-            }
-
-            fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                Ok(from_u32(v))
-            }
-
-            fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
-            where
-                E: serde::de::Error,
-            {
-                self.visit_u32(v.try_into().map_err(|_| E::custom("rgb value doesn't fit u32"))?)
-            }
-        }
-        d.deserialize_u32(V)
-    }
-
-    fn to_u32([r, g, b]: [u8; 3]) -> u32 {
-        u32::from_be_bytes([0, r, g, b])
-    }
-
-    fn from_u32(rgb: u32) -> [u8; 3] {
-        let [_, r, g, b] = rgb.to_be_bytes();
-        [r, g, b]
-    }
-
-    #[test]
-    fn bytes() {
-        assert_eq!(to_u32([0xAA, 0xBB, 0xCC]), 0x00AABBCC);
-        assert_eq!(from_u32(0x00AABBCC), [0xAA, 0xBB, 0xCC]);
-    }
-
-    #[test]
-    fn json() {
-        #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-        struct Struct {
-            #[serde(with = "self")]
-            color: [u8; 3],
-        }
-
-        let json = format!(r#"{{"color":{}}}"#, 0x00AABBCC);
-        let Struct { color } = serde_json::from_str(&json).unwrap();
-
-        assert_eq!(color, [0xAA, 0xBB, 0xCC])
     }
 }

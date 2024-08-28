@@ -54,18 +54,12 @@ where
     tokio::spawn(async move {
         let tcp_listener = tokio::net::TcpListener::bind(address)
             .await
-            .map_err(|err| {
-                stop_token.stop();
-                err
-            })
+            .inspect_err(|_| stop_token.stop())
             .expect("Couldn't bind to the address");
         axum::serve(tcp_listener, app)
             .with_graceful_shutdown(stop_flag)
             .await
-            .map_err(|err| {
-                stop_token.stop();
-                err
-            })
+            .inspect_err(|_| stop_token.stop())
             .expect("Axum server error");
     });
 

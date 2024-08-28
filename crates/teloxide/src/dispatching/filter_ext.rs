@@ -1,4 +1,6 @@
 #![allow(clippy::redundant_closure_call)]
+// Required for the `filter_from` currently
+#![allow(deprecated)]
 
 use dptree::{di::DependencyMap, Handler};
 
@@ -68,6 +70,7 @@ macro_rules! define_message_ext {
     }
 }
 
+// FIXME: change macro so that we can filter things without getters
 // May be expanded in the future.
 define_message_ext! {
     // MessageCommon
@@ -92,7 +95,8 @@ define_message_ext! {
     (filter_migration_from, Message::migrate_from_chat_id),
     (filter_migration_to, Message::migrate_to_chat_id),
     (filter_reply_to_message, Message::reply_to_message),
-    (filter_forward_from, Message::forward_from),
+    (filter_forward_origin, Message::forward_origin),
+    (filter_reply_to_story, Message::reply_to_story),
     // Rest variants of a MessageKind
     (filter_new_chat_members, Message::new_chat_members),
     (filter_left_chat_member, Message::left_chat_member),
@@ -111,12 +115,17 @@ define_message_ext! {
     (filter_passport_data, Message::passport_data),
     (filter_dice, Message::dice),
     (filter_proximity_alert_triggered, Message::proximity_alert_triggered),
+    (filter_boost_added, Message::boost_added),
     (filter_forum_topic_created, Message::forum_topic_created),
     (filter_forum_topic_edited, Message::forum_topic_edited),
     (filter_forum_topic_closed, Message::forum_topic_closed),
     (filter_forum_topic_reopened, Message::forum_topic_reopened),
     (filter_general_forum_topic_hidden, Message::general_forum_topic_hidden),
     (filter_general_forum_topic_unhidden, Message::general_forum_topic_unhidden),
+    (filter_giveaway, Message::giveaway),
+    (filter_giveaway_completed, Message::giveaway_completed),
+    (filter_giveaway_created, Message::giveaway_created),
+    (filter_giveaway_winners, Message::giveaway_winners),
     (filter_video_chat_scheduled, Message::video_chat_scheduled),
     (filter_video_chat_started, Message::video_chat_started),
     (filter_video_chat_ended, Message::video_chat_ended),
@@ -146,6 +155,12 @@ define_update_ext! {
     (filter_edited_message, UpdateKind::EditedMessage, EditedMessage),
     (filter_channel_post, UpdateKind::ChannelPost, ChannelPost),
     (filter_edited_channel_post, UpdateKind::EditedChannelPost, EditedChannelPost),
+    (filter_business_connection, UpdateKind::BusinessConnection, BusinessConnection),
+    (filter_business_message, UpdateKind::BusinessMessage, BusinessMessage),
+    (filter_edited_business_message, UpdateKind::EditedBusinessMessage, EditedBusinessMessage),
+    (filter_deleted_business_messages, UpdateKind::DeletedBusinessMessages, DeletedBusinessMessages),
+    (filter_message_reaction_updated, UpdateKind::MessageReaction, MessageReaction),
+    (filter_message_reaction_count_updated, UpdateKind::MessageReactionCount, MessageReactionCount),
     (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),
     (filter_chosen_inline_result, UpdateKind::ChosenInlineResult, ChosenInlineResult),
     (filter_callback_query, UpdateKind::CallbackQuery, CallbackQuery),
@@ -156,4 +171,6 @@ define_update_ext! {
     (filter_my_chat_member, UpdateKind::MyChatMember, MyChatMember),
     (filter_chat_member, UpdateKind::ChatMember, ChatMember),
     (filter_chat_join_request, UpdateKind::ChatJoinRequest, ChatJoinRequest),
+    (filter_chat_boost, UpdateKind::ChatBoost, ChatBoost),
+    (filter_removed_chat_boost, UpdateKind::RemovedChatBoost, RemovedChatBoost),
 }

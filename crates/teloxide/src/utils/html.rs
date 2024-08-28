@@ -14,6 +14,16 @@ pub fn bold(s: &str) -> String {
     format!("<b>{s}</b>")
 }
 
+/// Applies the block quotation style to the string.
+///
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using its output does nothing useful"]
+pub fn blockquote(s: &str) -> String {
+    format!("<blockquote>{s}</blockquote>")
+}
+
 /// Applies the italic font style to the string.
 ///
 /// Passed string will not be automatically escaped because it can contain

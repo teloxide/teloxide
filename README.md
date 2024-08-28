@@ -1,5 +1,3 @@
-> [v0.11 -> v0.12 migration guide >>](MIGRATION_GUIDE.md#011---012)
-
 <div align="center">
   <img src="./media/teloxide-logo.png" width="250"/>
   <h1><code>teloxide</code></h1>
@@ -13,7 +11,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%206.9%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%207.2%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
@@ -58,7 +56,7 @@ $ set TELOXIDE_TOKEN=<Your token here>
 $ $env:TELOXIDE_TOKEN=<Your token here>
 ```
 
- 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.70):
+ 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.80):
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -72,9 +70,9 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.12", features = ["macros"] }
+teloxide = { version = "0.13", features = ["macros"] }
 log = "0.4"
-pretty_env_logger = "0.4"
+pretty_env_logger = "0.5"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ```
 
@@ -356,7 +354,7 @@ Feel free to propose your own bot to our collection!
 
 </details>
 
-See [1600+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
+See [1900+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 

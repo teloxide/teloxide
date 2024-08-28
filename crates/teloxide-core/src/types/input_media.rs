@@ -43,7 +43,7 @@ pub struct InputMediaPhoto {
     pub caption_entities: Option<Vec<MessageEntity>>,
 
     /// Pass `true` if the photo needs to be covered with a spoiler animation.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_spoiler: bool,
 }
 
@@ -131,7 +131,7 @@ pub struct InputMediaVideo {
     pub supports_streaming: Option<bool>,
 
     /// Pass `true` if the video needs to be covered with a spoiler animation.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_spoiler: bool,
 }
 
@@ -254,7 +254,7 @@ pub struct InputMediaAnimation {
 
     /// Pass `true` if the animation needs to be covered with a spoiler
     /// animation.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_spoiler: bool,
 }
 

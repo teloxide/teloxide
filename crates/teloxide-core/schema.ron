@@ -1,14 +1,14 @@
 //! This file is written in [RON] (Rusty Object Notation).
-//! 
-//! This "schema" is a formalized version of the 
+//!
+//! This "schema" is a formalized version of the
 //! [telegram bot api documentation][tbadoc] which is not machine readable.
 //! (note: this schema currently covers only API methods and **not** types).
-//! 
+//!
 //! Also, note that this file is **hand written** and may contain typos,
 //! deviations from original doc, and other kinds of typical human errors.
 //! If you found an error please open an issue (or make a PR) on [github].
-//! 
-//! This schema is targeting code generation for API wrappers in a statically 
+//!
+//! This schema is targeting code generation for API wrappers in a statically
 //! typed language, though you may use it whatever you want.
 //!
 //! This scheme also has some intentional differences from original doc:
@@ -20,26 +20,26 @@
 //!   + `AllowedUpdate` inner type of `allowed_updates` in `getUpdates` and
 //!     `setWebhook` (so type is `ArrayOf(AllowedUpdate)`)
 //!   + `ReplyMarkup` - type of `reply_markup` parameter, in the original
-//!     documentation written as `InlineKeyboardMarkup or ReplyKeyboardMarkup or 
+//!     documentation written as `InlineKeyboardMarkup or ReplyKeyboardMarkup or
 //!     ReplyKeyboardRemove or ForceReply`
 //!   + `ParseMode` type of `parse_mode` params
 //!   + `PollType` type of poll, either “quiz” or “regular”
 //!   + `DiceEmoji` emoji that can be used in `sendDice` one of “🎲”, “🎯”, or “🏀”
 //!   + `TargetMessage` either `inline_message_id: String` or `chat_id: ChatId` and `message_id: i64`
 //! * Integers represented with more strict (when possible) types, e.g.:
-//!   `u8` (unsigned, 8-bit integer), `u32` (unsigned, 32-bit), 
+//!   `u8` (unsigned, 8-bit integer), `u32` (unsigned, 32-bit),
 //!   `i64` (signed, 64-bit), etc
 //! * Instead of optional parameters `Option(Ty)` is used
 //! * Instead of `InputFile or String` just `InputFile` is used (assuming that
 //!   `InputFile` is a sum-type or something and it can contain `String`s)
 //! * `f64` ~= `Float number`
-//! 
+//!
 //! [tbadoc]: https://core.telegram.org/bots/api
 //! [RON]: https://github.com/ron-rs/ron
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "6.9", date: "September 22, 2023"),
+    api_version: ApiVersion(ver: "7.2", date: "March 31, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -49,7 +49,7 @@ Schema(
                 md_links: {
                     "wiki": "https://en.wikipedia.org/wiki/Push_technology#Long_polling",
                     "Update": "https://core.telegram.org/bots/api#update",
-                },    
+                },
             ),
             tg_doc: "https://core.telegram.org/bots/api#getupdates",
             tg_category: "Getting updates",
@@ -155,7 +155,7 @@ Schema(
                     md_links: {"amazing guide to Webhooks": "https://core.telegram.org/bots/webhooks"}
                 )
             ]
-        ),        
+        ),
         Method(
             names: ("deleteWebhook", "DeleteWebhook", "delete_webhook"),
             return_ty: True,
@@ -205,7 +205,7 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#logout",
             tg_category: "Available methods",
             params: [],
-        ),        
+        ),
         Method(
             names: ("close", "Close", "close"),
             return_ty: True,
@@ -224,6 +224,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendmessage",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -253,13 +258,13 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the message text, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
+                    name: "link_preview_options",
+                    ty: Option(RawTy("LinkPreviewOptions")),
+                    descr: Doc(md: "Link preview generation options for the message"),
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -271,20 +276,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -320,7 +320,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -333,8 +333,53 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: RawTy("MessageId"), 
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
+                ),
+            ],
+        ),
+        Method(
+            names: ("forwardMessages", "ForwardMessages", "forward_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped. Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {"MessageId": "https://core.telegram.org/bots/api#messageid"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#forwardmessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(md: "A JSON-serialized list of 1-100 identifiers of messages in the chat _from\\_chat\\_id_ to forward. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
             ],
         ),
@@ -365,7 +410,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: RawTy("MessageId"), 
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
                 ),
                 Param(
@@ -388,7 +433,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -400,26 +445,74 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
                         },
                     ),
                 ),
+            ],
+        ),
+        Method(
+            names: ("copyMessages", "CopyMessages", "copy_messages"),
+            return_ty: ArrayOf(RawTy("MessageId")),
+            doc: Doc(
+                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md_links: {
+                    "forwardMessages": "https://core.telegram.org/bots/api#forwardmessages",
+                    "MessageId": "https://core.telegram.org/bots/api#messageid"
+                },
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#copymessages",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "from_chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(md: "Identifiers of 1-100 messages in the chat _from\\_chat\\_id_ to copy. The identifiers must be specified in a strictly increasing order.")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "remove_caption",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _True_ to copy the messages without their captions")
+                )
             ],
         ),
         Method(
@@ -432,6 +525,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendphoto",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -467,7 +565,7 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
-                ),        
+                ),
                 Param(
                     name: "has_spoiler",
                     ty: Option(bool),
@@ -475,7 +573,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -487,20 +585,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -522,6 +615,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendaudio",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -583,7 +681,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
@@ -595,20 +693,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -627,6 +720,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#senddocument",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -678,7 +776,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
@@ -690,20 +788,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -725,6 +818,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendvideo",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -796,7 +894,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
@@ -808,26 +906,21 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
                         }
                     ),
-                    
+
                 ),
             ],
         ),
@@ -841,6 +934,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendanimation",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -907,7 +1005,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
@@ -919,20 +1017,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -955,6 +1048,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendvoice",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -998,31 +1096,26 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
                     )
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
-                        }  
+                        }
                     ),
                 ),
             ],
@@ -1040,6 +1133,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendvideonote",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1078,7 +1176,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"},
@@ -1090,26 +1188,21 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
-                        }    
+                        }
                     ),
-                    
+
                 ),
             ],
         ),
@@ -1123,6 +1216,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendmediagroup",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1140,7 +1238,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1152,14 +1250,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
             ],
         ),
@@ -1173,6 +1266,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendlocation",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1208,17 +1306,17 @@ Schema(
                 ),
                 Param(
                     name: "heading",
-                    ty: Option(u16), 
+                    ty: Option(u16),
                     descr: Doc(md: "For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.")
                 ),
                 Param(
                     name: "proximity_alert_radius",
-                    ty: Option(u32), 
+                    ty: Option(u32),
                     descr: Doc(md: "For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.")
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1230,20 +1328,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1269,7 +1362,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: RawTy("MessageId"), 
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
@@ -1289,19 +1382,19 @@ Schema(
                 ),
                 Param(
                     name: "heading",
-                    ty: Option(u16), 
+                    ty: Option(u16),
                     descr: Doc(md: "For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.")
                 ),
                 Param(
                     name: "proximity_alert_radius",
-                    ty: Option(u32), 
+                    ty: Option(u32),
                     descr: Doc(md: "For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.")
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1343,19 +1436,19 @@ Schema(
                 ),
                 Param(
                     name: "heading",
-                    ty: Option(u16), 
+                    ty: Option(u16),
                     descr: Doc(md: "For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.")
                 ),
                 Param(
                     name: "proximity_alert_radius",
-                    ty: Option(u32), 
+                    ty: Option(u32),
                     descr: Doc(md: "For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.")
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1385,18 +1478,18 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: RawTy("MessageId"), 
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
-                        }    
+                        }
                     ),
                 ),
             ],
@@ -1421,7 +1514,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1441,6 +1534,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendvenue",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1496,7 +1594,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1508,24 +1606,19 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
-                        }  
+                        }
                     ),
                 ),
             ],
@@ -1540,6 +1633,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#sendcontact",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1575,7 +1673,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1587,20 +1685,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1613,12 +1706,17 @@ Schema(
             names: ("sendPoll", "SendPoll", "send_poll"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send phone contacts. On success, the sent [Message] is returned.",
+                md: "Use this method to send a native poll. On success, the sent [Message] is returned.",
                 md_links: {"Message": "https://core.telegram.org/bots/api#message"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendpoll",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1694,7 +1792,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1706,24 +1804,19 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
-                        }    
+                        }
                     ),
                 ),
             ],
@@ -1738,6 +1831,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#senddice",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -1755,7 +1853,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -1767,20 +1865,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -1800,10 +1893,15 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the action will be sent"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
-                ),   
+                ),
                 Param(
                     name: "action",
                     ty: RawTy("ChatAction"),
@@ -1825,6 +1923,37 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread; supergroups only")
+                ),
+            ],
+        ),
+        Method(
+            names: ("setMessageReaction", "SetMessageReaction", "set_message_reaction"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to change the chosen reactions on a message. Service messages can't be reacted to. Automatically forwarded messages from a channel to its discussion group have the same available reactions as messages in the channel. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setmessagereaction",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format @channelusername)")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of the target message. If the message belongs to a media group, the reaction is set to the first non-deleted message in the group instead.")
+                ),
+                Param(
+                    name: "reaction",
+                    ty: Option(ArrayOf(RawTy("ReactionType"))),
+                    descr: Doc(md: "New list of reaction types to set on the message. Currently, as non-premium users, bots can set up to one reaction per message. A custom emoji reaction can be used if it is either already present on the message or explicitly allowed by chat administrators.")
+                ),
+                Param(
+                    name: "is_big",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True to set the reaction with a big animation")
                 ),
             ],
         ),
@@ -2044,17 +2173,17 @@ Schema(
                 Param(
                     name: "can_post_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can post stories in the channel, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can post stories to the chat")
                 ),
                 Param(
                     name: "can_edit_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can edit stories posted by other users, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can edit stories posted by other users")
                 ),
                 Param(
                     name: "can_delete_stories",
                     ty: Option(bool),
-                    descr: Doc(md: "Pass True, if the administrator can delete stories posted by other users, channels only")
+                    descr: Doc(md: "Pass True, if the administrator can delete stories posted by other users")
                 ),
                 Param(
                     name: "can_manage_video_chats",
@@ -2135,7 +2264,7 @@ Schema(
                     descr: Doc(md: "Unique identifier of the target sender chat")
                 ),
             ],
-        ),        
+        ),
         Method(
             names: ("unbanChatSenderChat", "UnbanChatSenderChat", "unban_chat_sender_chat"),
             return_ty: True,
@@ -2192,7 +2321,7 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
                 ),
             ],
-        ),        
+        ),
         Method(
             names: ("createChatInviteLink", "CreateChatInviteLink", "create_chat_invite_link"),
             return_ty: RawTy("ChatInviteLink"),
@@ -2232,7 +2361,7 @@ Schema(
                     descr: Doc(md: "True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified")
                 ),
             ],
-        ),        
+        ),
         Method(
             names: ("editChatInviteLink", "EditChatInviteLink", "edit_chat_invite_link"),
             return_ty: String,
@@ -2274,7 +2403,7 @@ Schema(
                     descr: Doc(md: "True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified")
                 ),
             ],
-        ),        
+        ),
         Method(
             names: ("revokeChatInviteLink", "RevokeChatInviteLink", "revoke_chat_invite_link"),
             return_ty: String,
@@ -2425,7 +2554,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(md: "Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels.")
                 ),
             ],
@@ -2625,9 +2754,11 @@ Schema(
                 ),
                 Param(
                     name: "icon_color",
-                    // FIXME: use an Rgb or something
-                    ty: u32,
-                    descr: Doc(md: "Color of the topic icon in RGB format. Currently, must be one of 7322096 (0x6FB9F0), 16766590 (0xFFD67E), 13338331 (0xCB86DB), 9367192 (0x8EEE98), 16749490 (0xFF93B2), or 16478047 (0xFB6F5F)")
+                    ty: RawTy("Rgb"),
+                    descr: Doc(
+                        md: "Color of the topic icon in RGB format. Currently, must be one of 7322096 (`0x6FB9F0`), 16766590 (`0xFFD67E`), 13338331 (`0xCB86DB`), 9367192 (`0x8EEE98`), 16749490 (`0xFF93B2`), or 16478047 (`0xFB6F5F`). To construct color from these values use [`Rgb::from_u32`]",
+                        md_links: {"`Rgb::from_u32`": "crate::types::Rgb::from_u32"}
+                    )
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
@@ -2878,6 +3009,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("getUserChatBoosts", "GetUserChatBoosts", "get_user_chat_boosts"),
+            return_ty: RawTy("UserChatBoosts"),
+            doc: Doc(
+                md: "Use this method to get the list of boosts added to a chat by a user. Requires administrator rights in the chat. Returns a [UserChatBoosts] object.",
+                md_links: {"UserChatBoosts": "https://core.telegram.org/bots/api#userchatboosts"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getuserchatboosts",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat or username of the channel (in the format @channelusername)"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ],
+        ),
+        Method(
             names: ("setMyCommands", "SetMyCommands", "set_my_commands"),
             return_ty: True,
             doc: Doc(md: "Use this method to change the list of the bot's commands. Returns _True_ on success."),
@@ -2900,7 +3053,21 @@ Schema(
                     descr: Doc(md: "A two-letter ISO 639-1 language code. If empty, commands will be applied to all users from the given scope, for whose language there are no dedicated commands")
                 ),
             ],
-        ),        
+        ),
+        Method(
+            names: ("getBusinessConnection", "GetBusinessConnection", "get_business_connection"),
+            return_ty: RawTy("BusinessConnection"),
+            doc: Doc(md: "Use this method to get information about the connection of the bot with a business account. Returns a BusinessConnection object on success."),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessconnection",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+            ],
+        ),
         Method(
             names: ("getMyCommands", "GetMyCommands", "get_my_commands"),
             return_ty: ArrayOf(RawTy("BotCommand")),
@@ -3162,7 +3329,7 @@ Schema(
             names: ("answerWebAppQuery", "AnswerWebAppQuery", "answer_web_app_query"),
             return_ty: RawTy("SentWebAppMessage"),
             doc: Doc(
-                md: "Use this method to set the result of an interaction with a [Web App] and send a corresponding message on behalf of the user to the chat from which the query originated.", 
+                md: "Use this method to set the result of an interaction with a [Web App] and send a corresponding message on behalf of the user to the chat from which the query originated.",
                 md_links: {"Web App": "https://core.telegram.org/bots/webapps"}
             ),
             tg_doc: "https://core.telegram.org/bots/api#answerwebappquery",
@@ -3220,16 +3387,16 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in message text, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
-                    name: "disable_web_page_preview",
-                    ty: Option(bool),
-                    descr: Doc(md: "Disables link previews for links in this message")
+                    name: "link_preview_options",
+                    ty: Option(RawTy("LinkPreviewOptions")),
+                    descr: Doc(md: "Link preview generation options for the message"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
                         md: "A JSON-serialized object for an [inline keyboard].",
-                        md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"},  
+                        md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"},
                     ),
                 ),
             ],
@@ -3323,7 +3490,7 @@ Schema(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
-                        md: "A JSON-serialized object for an [inline keyboard].",    
+                        md: "A JSON-serialized object for an [inline keyboard].",
                         md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",}
                     ),
                 ),
@@ -3366,7 +3533,7 @@ Schema(
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
                         md: "A JSON-serialized object for an [inline keyboard].",
-                        md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"}    
+                        md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"}
                     ),
                 ),
             ],
@@ -3526,19 +3693,46 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to delete")
-                ),  
+                ),
+            ],
+        ),
+        Method(
+            names: ("deleteMessages", "DeleteMessages", "delete_messages"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped. Returns _True_ on success."),
+            tg_doc: "https://core.telegram.org/bots/api#delete_messages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).")
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "Identifiers of 1-100 messages to delete. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
+                ),
             ],
         ),
         Method(
             names: ("sendSticker", "SendSticker", "send_sticker"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.", 
+                md: "Use this method to send static .WEBP, .TGS or .WEBM stickers. On success, the sent Message is returned.",
                 md_links: {"animated": "https://telegram.org/blog/animated-stickers"}
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendsticker",
             tg_category: "Stickers",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -3564,7 +3758,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -3576,20 +3770,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.",
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
                         md_links: {
                             "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
@@ -3630,10 +3819,11 @@ Schema(
             names: ("uploadStickerFile", "UploadStickerFile", "upload_sticker_file"),
             return_ty: RawTy("FileMeta"),
             doc: Doc(
-                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet] and [AddStickerToSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
+                md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet], [AddStickerToSet] or [ReplaceStickerInSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
                 md_links: {
                     "CreateNewStickerSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.CreateNewStickerSet.html",
                     "AddStickerToSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html",
+                    "ReplaceStickerInSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.ReplaceStickerInSet.html",
                     "File": "https://core.telegram.org/bots/api#file"
                 }
             ),
@@ -3689,11 +3879,6 @@ Schema(
                     name: "stickers",
                     ty: ArrayOf(RawTy("InputSticker")),
                     descr: Doc(md: "A JSON-serialized list of 1-50 initial stickers to be added to the sticker set")
-                ),
-                Param(
-                    name: "sticker_format",
-                    ty: RawTy("StickerFormat"),
-                    descr: Doc(md: "Format of the sticker, must be one of “static”, “animated”, “video”")
                 ),
                 Param(
                     name: "sticker_type",
@@ -3767,6 +3952,42 @@ Schema(
             ],
         ),
         Method(
+            names: ("replaceStickerInSet", "ReplaceStickerInSet", "replace_sticker_in_set"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to replace an existing sticker in a sticker set with a new one. The method is equivalent to calling [DeleteStickerFromSet], then [AddStickerToSet], then [SetStickerPositionInSet]. Returns _True_ on success.",
+                md_links: {
+                    "DeleteStickerFromSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.DeleteStickerFromSet.html",
+                    "AddStickerToSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.AddStickerToSet.html",
+                    "SetStickerPositionInSet": "https://docs.rs/teloxide/latest/teloxide/payloads/struct.SetStickerPositionInSet.html",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#replacestickerinset",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "User identifier of the sticker set owner"),
+                ),
+                Param(
+                    name: "name",
+                    ty: String,
+                    descr: Doc(md: "Sticker set name"),
+                ),
+                Param(
+                    name: "old_sticker",
+                    ty: String,
+                    descr: Doc(md: "File identifier of the replaced sticker"),
+                ),
+                Param(
+                    name: "sticker",
+                    ty: RawTy("InputSticker"),
+                    descr: Doc(md: "A JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set remains unchanged."),
+                ),
+            ],
+        ),
+        Method(
             names: ("setStickerSetThumbnail", "SetStickerSetThumbnail", "set_sticker_set_thumbnail"),
             return_ty: True,
             doc: Doc(md: "Use this method to set the thumbnail of a regular or mask sticker set. The format of the thumbnail file must match the format of the stickers in the set. Returns True on success."),
@@ -3791,6 +4012,11 @@ Schema(
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
+                Param(
+                    name: "format",
+                    ty: RawTy("StickerFormat"),
+                    descr: Doc(md: "Format of the thumbnail, must be one of \"static\" for a .WEBP or .PNG image, \"animated\" for a .TGS animation, or \"video\" for a WEBM video")
+                )
             ],
         ),
         Method(
@@ -3942,13 +4168,19 @@ Schema(
                     ty: String,
                     descr: Doc(
                         md: "Payments provider token, obtained via [Botfather]",
-                        md_links: {"Botfather":"https://t.me/botfather"}    
+                        md_links: {"Botfather":"https://t.me/botfather"}
                     ),
                 ),
                 Param(
                     name: "currency",
                     ty: String,
-                    descr: Doc(md: "Three-letter ISO 4217 currency code, see more on currencies"),
+                    descr: Doc(
+                        md: "Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].",
+                        md_links: {
+                            "more on currencies":"https://core.telegram.org/bots/payments#supported-currencies",
+                            "Telegram Stars": "https://t.me/BotNews/90"
+                        }
+                    ),
                 ),
                 Param(
                     name: "prices",
@@ -4035,7 +4267,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -4047,14 +4279,9 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4093,13 +4320,19 @@ Schema(
                     ty: String,
                     descr: Doc(
                         md: "Payments provider token, obtained via [Botfather]",
-                        md_links: {"Botfather":"https://t.me/botfather"}    
+                        md_links: {"Botfather":"https://t.me/botfather"}
                     ),
                 ),
                 Param(
                     name: "currency",
                     ty: String,
-                    descr: Doc(md: "Three-letter ISO 4217 currency code, see more on currencies"),
+                    descr: Doc(
+                        md: "Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].",
+                        md_links: {
+                            "more on currencies":"https://core.telegram.org/bots/payments#supported-currencies",
+                            "Telegram Stars": "https://t.me/BotNews/90"
+                        }
+                    ),
                 ),
                 Param(
                     name: "prices",
@@ -4264,11 +4497,16 @@ Schema(
             return_ty: RawTy("Message"),
             doc: Doc(
                 md: "Use this method to send a game. On success, the sent [Message] is returned.",
-                md_links: {"Message": "https://core.telegram.org/bots/api#message"}    
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"}
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendgame",
             tg_category: "Games",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("ChatId"),
@@ -4286,7 +4524,7 @@ Schema(
                 ),
                 Param(
                     name: "disable_notification",
-                    ty: Option(bool), 
+                    ty: Option(bool),
                     descr: Doc(
                         md: "Sends the message [silently]. Users will receive a notification with no sound.",
                         md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
@@ -4298,20 +4536,15 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
-                    name: "reply_to_message_id",
-                    ty: Option(RawTy("MessageId")),
-                    descr: Doc(md: "If the message is a reply, ID of the original message")
-                ),
-                Param(
-                    name: "allow_sending_without_reply",
-                    ty: Option(bool),
-                    descr: Doc(md: "Pass _True_, if the message should be sent even if the specified replied-to message is not found")
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
                 ),
                 Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
-                        md: "A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game.",
+                        md: "A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account.",
                         md_links: {"inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating"},
                     ),
                 ),
@@ -4322,7 +4555,7 @@ Schema(
             return_ty: RawTy("Message"),
             doc: Doc(
                 md: "Use this method to set the score of the specified user in a game. On success, returns the edited [Message]. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.",
-                md_links: {"Message": "https://core.telegram.org/bots/api#message"}         
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"}
             ),
             tg_doc: "https://core.telegram.org/bots/api#setgamescore",
             tg_category: "Games",
@@ -4354,7 +4587,7 @@ Schema(
                 ),
                 Param(
                     name: "message_id",
-                    ty: RawTy("MessageId"), 
+                    ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
             ],
@@ -4425,7 +4658,7 @@ Schema(
         "Updating messages": "https://core.telegram.org/bots/api#updating-messages",
         "Stickers": "https://core.telegram.org/bots/api#stickers",
         "Payments": "https://core.telegram.org/bots/api#payments",
-        "Telegram Passport": "https://core.telegram.org/bots/api#telegram-passport",    
+        "Telegram Passport": "https://core.telegram.org/bots/api#telegram-passport",
         "Games": "https://core.telegram.org/bots/api#games",
     }
 )

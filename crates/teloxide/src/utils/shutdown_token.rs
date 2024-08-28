@@ -122,10 +122,7 @@ impl DispatcherState {
             .map(ShutdownState::from_u8)
             .map_err(ShutdownState::from_u8)
             // FIXME: `Result::inspect` when :(
-            .map(|st| {
-                self.notify.notify_waiters();
-                st
-            })
+            .inspect(|_| self.notify.notify_waiters())
     }
 }
 

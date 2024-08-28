@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{InputMedia, Message, MessageId, Recipient, ThreadId};
+use crate::types::{
+    BusinessConnectionId, InputMedia, Message, Recipient, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send a group of photos, videos, documents or audios as an album. Documents and audio files can be only grouped in an album with messages of the same type. On success, an array of [`Message`]s that were sent is returned.
@@ -26,6 +28,8 @@ impl_payload! {
             pub media: Vec<InputMedia> [collect],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -34,11 +38,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
-            /// If the message is a reply, ID of the original message
-            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
-            pub reply_to_message_id: MessageId,
-            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
-            pub allow_sending_without_reply: bool,
+            /// Description of the message to reply to
+            pub reply_parameters: ReplyParameters,
         }
     }
 }

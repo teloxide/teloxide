@@ -3,7 +3,9 @@
 use serde::Serialize;
 use url::Url;
 
-use crate::types::{InlineKeyboardMarkup, LabeledPrice, Message, MessageId, Recipient, ThreadId};
+use crate::types::{
+    InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send invoices. On success, the sent [`Message`] is returned.
@@ -24,7 +26,10 @@ impl_payload! {
             ///
             /// [Botfather]: https://t.me/botfather
             pub provider_token: String [into],
-            /// Three-letter ISO 4217 currency code, see more on currencies
+            /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].
+            ///
+            /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
+            /// [Telegram Stars]: https://t.me/BotNews/90
             pub currency: String [into],
             /// Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
             pub prices: Vec<LabeledPrice> [collect],
@@ -70,11 +75,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
-            /// If the message is a reply, ID of the original message
-            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
-            pub reply_to_message_id: MessageId,
-            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
-            pub allow_sending_without_reply: bool,
+            /// Description of the message to reply to
+            pub reply_parameters: ReplyParameters,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

@@ -1,6 +1,6 @@
 //! A full-featured framework that empowers you to easily build [Telegram bots]
 //! using [Rust]. It handles all the difficult stuff so you can focus only on
-//! your business logic. Currently, version `6.9` of [Telegram Bot API] is
+//! your business logic. Currently, version `7.2` of [Telegram Bot API] is
 //! supported.
 //!
 //! For a high-level overview, see [our GitHub repository](https://github.com/teloxide/teloxide).
@@ -149,7 +149,7 @@ pub use teloxide_core::*;
 #[cfg(feature = "macros")]
 pub use teloxide_macros as macros;
 
-pub use dispatching::filter_command;
+pub use dispatching::{filter_command, filter_mention_command};
 pub use dptree::{self, case as handler};
 
 #[cfg(all(feature = "nightly", doctest))]

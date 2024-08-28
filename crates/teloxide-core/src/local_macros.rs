@@ -487,6 +487,16 @@ macro_rules! requester_forward {
             $body!(forward_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
         }
     };
+    (@method forward_messages $body:ident $ty:ident) => {
+        type ForwardMessages = $ty![ForwardMessages];
+
+        fn forward_messages<C, F, M>(&self, chat_id: C, from_chat_id: F, message_ids: M) -> Self::ForwardMessages where C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(forward_messages this (chat_id: C, from_chat_id: F, message_ids: M))
+        }
+    };
     (@method copy_message $body:ident $ty:ident) => {
         type CopyMessage = $ty![CopyMessage];
 
@@ -494,6 +504,16 @@ macro_rules! requester_forward {
         F: Into<Recipient> {
             let this = self;
             $body!(copy_message this (chat_id: C, from_chat_id: F, message_id: MessageId))
+        }
+    };
+    (@method copy_messages $body:ident $ty:ident) => {
+        type CopyMessages = $ty![CopyMessages];
+
+        fn copy_messages<C, F, M>(&self, chat_id: C, from_chat_id: F, message_ids: M) -> Self::CopyMessages where C: Into<Recipient>,
+        F: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(copy_messages this (chat_id: C, from_chat_id: F, message_ids: M))
         }
     };
     (@method send_photo $body:ident $ty:ident) => {
@@ -645,6 +665,14 @@ macro_rules! requester_forward {
         fn send_chat_action<C>(&self, chat_id: C, action: ChatAction) -> Self::SendChatAction where C: Into<Recipient> {
             let this = self;
             $body!(send_chat_action this (chat_id: C, action: ChatAction))
+        }
+    };
+    (@method set_message_reaction $body:ident $ty:ident) => {
+        type SetMessageReaction = $ty![SetMessageReaction];
+
+        fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(set_message_reaction this (chat_id: C, message_id: MessageId))
         }
     };
     (@method get_user_profile_photos $body:ident $ty:ident) => {
@@ -921,11 +949,11 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: u32, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
+        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
         N: Into<String>,
         I: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: u32, icon_custom_emoji_id: I))
+            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
@@ -1025,12 +1053,28 @@ macro_rules! requester_forward {
             $body!(answer_callback_query this (callback_query_id: C))
         }
     };
+    (@method get_user_chat_boosts $body:ident $ty:ident) => {
+        type GetUserChatBoosts = $ty![GetUserChatBoosts];
+
+        fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts where C: Into<Recipient> {
+            let this = self;
+            $body!(get_user_chat_boosts this (chat_id: C, user_id: UserId))
+        }
+    };
     (@method set_my_commands $body:ident $ty:ident) => {
         type SetMyCommands = $ty![SetMyCommands];
 
         fn set_my_commands<C>(&self, commands: C) -> Self::SetMyCommands where C: IntoIterator<Item = BotCommand> {
             let this = self;
             $body!(set_my_commands this (commands: C))
+        }
+    };
+    (@method get_business_connection $body:ident $ty:ident) => {
+        type GetBusinessConnection = $ty![GetBusinessConnection];
+
+        fn get_business_connection(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessConnection {
+            let this = self;
+            $body!(get_business_connection this (business_connection_id: BusinessConnectionId))
         }
     };
     (@method get_my_commands $body:ident $ty:ident) => {
@@ -1228,6 +1272,15 @@ macro_rules! requester_forward {
             $body!(delete_message this (chat_id: C, message_id: MessageId))
         }
     };
+    (@method delete_messages $body:ident $ty:ident) => {
+        type DeleteMessages = $ty![DeleteMessages];
+
+        fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages where C: Into<Recipient>,
+        M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(delete_messages this (chat_id: C, message_ids: M))
+        }
+    };
     (@method send_sticker $body:ident $ty:ident) => {
         type SendSticker = $ty![SendSticker];
 
@@ -1263,11 +1316,11 @@ macro_rules! requester_forward {
     (@method create_new_sticker_set $body:ident $ty:ident) => {
         type CreateNewStickerSet = $ty![CreateNewStickerSet];
 
-        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat) -> Self::CreateNewStickerSet where N: Into<String>,
+        fn create_new_sticker_set<N, T, S>(&self, user_id: UserId, name: N, title: T, stickers: S) -> Self::CreateNewStickerSet where N: Into<String>,
         T: Into<String>,
         S: IntoIterator<Item = InputSticker> {
             let this = self;
-            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S, sticker_format: StickerFormat))
+            $body!(create_new_sticker_set this (user_id: UserId, name: N, title: T, stickers: S))
         }
     };
     (@method add_sticker_to_set $body:ident $ty:ident) => {
@@ -1294,12 +1347,21 @@ macro_rules! requester_forward {
             $body!(delete_sticker_from_set this (sticker: S))
         }
     };
+    (@method replace_sticker_in_set $body:ident $ty:ident) => {
+        type ReplaceStickerInSet = $ty![ReplaceStickerInSet];
+
+        fn replace_sticker_in_set<N, O>(&self, user_id: UserId, name: N, old_sticker: O, sticker: InputSticker) -> Self::ReplaceStickerInSet where N: Into<String>,
+        O: Into<String> {
+            let this = self;
+            $body!(replace_sticker_in_set this (user_id: UserId, name: N, old_sticker: O, sticker: InputSticker))
+        }
+    };
     (@method set_sticker_set_thumbnail $body:ident $ty:ident) => {
         type SetStickerSetThumbnail = $ty![SetStickerSetThumbnail];
 
-        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId) -> Self::SetStickerSetThumbnail where N: Into<String> {
+        fn set_sticker_set_thumbnail<N>(&self, name: N, user_id: UserId, format: StickerFormat) -> Self::SetStickerSetThumbnail where N: Into<String> {
             let this = self;
-            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId))
+            $body!(set_sticker_set_thumbnail this (name: N, user_id: UserId, format: StickerFormat))
         }
     };
     (@method set_custom_emoji_sticker_set_thumbnail $body:ident $ty:ident) => {
@@ -1470,7 +1532,7 @@ fn codegen_requester_forward() {
 
             convert_params.sort_unstable();
 
-            let prefixes: IndexMap<_, _> = convert_params
+            let mut prefixes: IndexMap<_, _> = convert_params
                 .iter()
                 .copied()
                 // Workaround to output the last type as the first letter
@@ -1478,6 +1540,18 @@ fn codegen_requester_forward() {
                 .tuple_windows()
                 .map(|(l, r)| (l, min_prefix(l, r)))
                 .collect();
+
+            // FIXME: This hard-coded value has been set to avoid conflicting generic
+            // parameter 'B' with impl<B> Requester... in all the adaptors and other places
+            //
+            // One fix could be to take full abbrevation for all the parameters instead of
+            // just the first character. Other fix is to change the generic parameter name
+            // in all the impl blocks to something like 'Z' because that is very less likely
+            // to conflict in future.
+            if prefixes.contains_key("business_connection_id") {
+                prefixes["business_connection_id"] = "BCI";
+            }
+            let prefixes = prefixes;
 
             let args = m
                 .params

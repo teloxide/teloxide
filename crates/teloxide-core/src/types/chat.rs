@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    ChatFullInfo, ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, Seconds, True, User,
+    Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, ChatFullInfo, ChatId,
+    ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, True, User,
 };
 
 /// This object represents a chat.
@@ -20,6 +21,12 @@ pub struct Chat {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub photo: Option<ChatPhoto>,
+
+    /// List of available reactions allowed in the chat. If omitted, then all
+    /// emoji reactions are allowed. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub available_reactions: Option<Vec<ReactionType>>,
 
     /// The most recent pinned message (by sending date). Returned only in
     /// [`GetChat`].
@@ -56,7 +63,7 @@ pub struct Chat {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChatKind {
-    Public(ChatPublic),
+    Public(Box<ChatPublic>),
     Private(ChatPrivate),
 }
 
@@ -108,13 +115,6 @@ pub struct ChatPrivate {
     /// A last name of the other party in a private chat.
     pub last_name: Option<String>,
 
-    /// Custom emoji identifier of emoji status of the other party in a private
-    /// chat. Returned only in [`GetChat`].
-    ///
-    /// [`GetChat`]: crate::payloads::GetChat
-    // FIXME: CustomEmojiId
-    pub emoji_status_custom_emoji_id: Option<String>,
-
     /// Bio of the other party in a private chat. Returned only in [`GetChat`].
     ///
     /// [`GetChat`]: crate::payloads::GetChat
@@ -133,6 +133,36 @@ pub struct ChatPrivate {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub has_restricted_voice_and_video_messages: Option<True>,
+
+    /// For private chats, the personal channel of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub personal_chat: Option<Box<Chat>>,
+
+    /// For private chats, the date of birth of the user. Returned only in
+    /// [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub birthdate: Option<Birthdate>,
+
+    /// For private chats with business accounts, the intro of the business.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_intro: Option<BusinessIntro>,
+
+    /// For private chats with business accounts, the location of the business.
+    /// Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_location: Option<BusinessLocation>,
+
+    /// For private chats with business accounts, the opening hours of the
+    /// business. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub business_opening_hours: Option<BusinessOpeningHours>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -197,6 +227,13 @@ pub struct PublicChatSupergroup {
     /// [`GetChat`]: crate::payloads::GetChat
     pub can_set_sticker_set: Option<bool>,
 
+    /// For supergroups, the name of the group's custom emoji sticker set.
+    /// Custom emoji from this set can be used by all users and bots in the
+    /// group. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub custom_emoji_sticker_set_name: Option<String>,
+
     /// A default chat member permissions, for groups and supergroups.
     /// Returned only from [`GetChat`].
     ///
@@ -208,6 +245,13 @@ pub struct PublicChatSupergroup {
     ///
     /// [`GetChat`]: crate::payloads::GetChat
     pub slow_mode_delay: Option<Seconds>,
+
+    /// For supergroups, the minimum number of boosts that a non-administrator
+    /// user needs to add in order to ignore slow mode and chat permissions.
+    /// Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    pub unrestrict_boost_count: Option<u16>,
 
     /// Unique identifier for the linked chat, i.e. the discussion group
     /// identifier for a channel and vice versa. Returned only in [`GetChat`].
@@ -242,20 +286,29 @@ impl Chat {
 
     #[must_use]
     pub fn is_group(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Group(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Group(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
-        matches!(
-            self.kind,
-            ChatKind::Public(ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
-        )
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Supergroup(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
     pub fn is_channel(&self) -> bool {
-        matches!(self.kind, ChatKind::Public(ChatPublic { kind: PublicChatKind::Channel(_), .. }))
+        if let ChatKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatPublic { kind: PublicChatKind::Channel(_), .. })
+        } else {
+            false
+        }
     }
 
     #[must_use]
@@ -355,6 +408,22 @@ impl Chat {
         None
     }
 
+    /// For supergroups, the name of the group's custom emoji sticker set.
+    /// Custom emoji from this set can be used by all users and bots in the
+    /// group. Returned only from [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
+    pub fn custom_emoji_sticker_set_name(&self) -> Option<&str> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.custom_emoji_sticker_set_name.as_deref();
+            }
+        }
+
+        None
+    }
+
     /// The minimum allowed delay between consecutive messages sent by each
     /// unpriviledged user. Returned only from [`GetChat`].
     ///
@@ -364,6 +433,21 @@ impl Chat {
         if let ChatKind::Public(this) = &self.kind {
             if let PublicChatKind::Supergroup(this) = &this.kind {
                 return this.slow_mode_delay;
+            }
+        }
+
+        None
+    }
+
+    /// Unique identifier for the linked chat, i.e. the discussion group
+    /// identifier for a channel and vice versa. Returned only in [`GetChat`].
+    ///
+    /// [`GetChat`]: crate::payloads::GetChat
+    #[must_use]
+    pub fn unrestrict_boost_count(&self) -> Option<u16> {
+        if let ChatKind::Public(this) = &self.kind {
+            if let PublicChatKind::Supergroup(this) = &this.kind {
+                return this.unrestrict_boost_count;
             }
         }
 
@@ -518,7 +602,7 @@ impl Chat {
 }
 
 mod serde_helper {
-    use crate::types::True;
+    use crate::types::{Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, True};
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -539,7 +623,11 @@ mod serde_helper {
         bio: Option<String>,
         has_private_forwards: Option<True>,
         has_restricted_voice_and_video_messages: Option<True>,
-        emoji_status_custom_emoji_id: Option<String>,
+        personal_chat: Option<Box<super::Chat>>,
+        birthdate: Option<Birthdate>,
+        business_intro: Option<BusinessIntro>,
+        business_location: Option<BusinessLocation>,
+        business_opening_hours: Option<BusinessOpeningHours>,
     }
 
     impl From<ChatPrivate> for super::ChatPrivate {
@@ -552,7 +640,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }: ChatPrivate,
         ) -> Self {
             Self {
@@ -562,7 +654,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }
         }
     }
@@ -576,7 +672,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }: super::ChatPrivate,
         ) -> Self {
             Self {
@@ -587,7 +687,11 @@ mod serde_helper {
                 bio,
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
-                emoji_status_custom_emoji_id,
+                personal_chat,
+                birthdate,
+                business_intro,
+                business_location,
+                business_opening_hours,
             }
         }
     }
@@ -603,7 +707,7 @@ mod tests {
     fn channel_de() {
         let expected = Chat {
             id: ChatId(-1),
-            kind: ChatKind::Public(ChatPublic {
+            kind: ChatKind::Public(Box::new(ChatPublic {
                 title: None,
                 kind: PublicChatKind::Channel(PublicChatChannel {
                     username: Some("channel_name".into()),
@@ -612,15 +716,29 @@ mod tests {
                 description: None,
                 invite_link: None,
                 has_protected_content: None,
-            }),
+            })),
             photo: None,
+            available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
             pinned_message: None,
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
-        let actual = from_str(r#"{"id":-1,"type":"channel","username":"channel_name"}"#).unwrap();
+        let actual = from_str(
+            r#"{
+                "id": -1,
+                "type": "channel",
+                "username": "channel_name",
+                "available_reactions": [
+                    {
+                        "type": "emoji",
+                        "emoji": "🌭"
+                    }
+                ]
+            }"#,
+        )
+        .unwrap();
         assert_eq!(expected, actual);
     }
 
@@ -636,17 +754,35 @@ mod tests {
                     bio: None,
                     has_private_forwards: None,
                     has_restricted_voice_and_video_messages: None,
-                    emoji_status_custom_emoji_id: None
+                    personal_chat: None,
+                    birthdate: None,
+                    business_intro: None,
+                    business_location: None,
+                    business_opening_hours: None,
                 }),
                 photo: None,
+                available_reactions: Some(vec![ReactionType::Emoji { emoji: "🌭".to_owned() }]),
                 pinned_message: None,
                 message_auto_delete_time: None,
                 has_hidden_members: false,
                 has_aggressive_anti_spam_enabled: false,
-                chat_full_info: ChatFullInfo { emoji_status_expiration_date: None }
+                chat_full_info: ChatFullInfo::default()
             },
-            from_str(r#"{"id":0,"type":"private","username":"username","first_name":"Anon"}"#)
-                .unwrap()
+            from_str(
+                r#"{
+                    "id": 0,
+                    "type": "private",
+                    "username": "username",
+                    "first_name": "Anon",
+                    "available_reactions": [
+                        {
+                            "type": "emoji",
+                            "emoji": "🌭"
+                        }
+                    ]
+                }"#
+            )
+            .unwrap()
         );
     }
 
@@ -661,14 +797,19 @@ mod tests {
                 bio: None,
                 has_private_forwards: None,
                 has_restricted_voice_and_video_messages: None,
-                emoji_status_custom_emoji_id: None,
+                personal_chat: None,
+                birthdate: None,
+                business_intro: None,
+                business_location: None,
+                business_opening_hours: None,
             }),
             photo: None,
+            available_reactions: None,
             pinned_message: None,
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo { emoji_status_expiration_date: None },
+            chat_full_info: ChatFullInfo::default(),
         };
 
         let json = to_string(&chat).unwrap();

@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- Environment bumps: ([#1147][pr1147])
+  - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
+  - Dependency `heck` was bumped to `0.5.0`
+
+[pr1147]: https://github.com/teloxide/teloxide/pull/1147
+
+## 0.8.0 - 2024-08-16
+
 ### Added
 
 - Now you can use `#[command(command_separator="sep")]` (default is a whitespace character) to set the separator between command and its arguments ([issue #897](https://github.com/teloxide/teloxide/issues/897))

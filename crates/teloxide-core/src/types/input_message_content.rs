@@ -1,7 +1,7 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Currency, LabeledPrice, MessageEntity, ParseMode};
+use crate::types::{LabeledPrice, LinkPreviewOptions, MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -36,8 +36,8 @@ pub struct InputMessageContentText {
     /// specified instead of `parse_mode`.
     pub entities: Option<Vec<MessageEntity>>,
 
-    /// Disables link previews for links in the sent message.
-    pub disable_web_page_preview: Option<bool>,
+    /// Link preview generation options for the message
+    pub link_preview_options: Option<LinkPreviewOptions>,
 }
 
 impl InputMessageContentText {
@@ -48,8 +48,8 @@ impl InputMessageContentText {
         Self {
             message_text: message_text.into(),
             parse_mode: None,
-            disable_web_page_preview: None,
             entities: None,
+            link_preview_options: None,
         }
     }
 
@@ -76,8 +76,8 @@ impl InputMessageContentText {
     }
 
     #[must_use]
-    pub fn disable_web_page_preview(mut self, val: bool) -> Self {
-        self.disable_web_page_preview = Some(val);
+    pub fn link_preview_options(mut self, val: LinkPreviewOptions) -> Self {
+        self.link_preview_options = Some(val);
         self
     }
 }
@@ -329,10 +329,12 @@ pub struct InputMessageContentInvoice {
     /// [@Botfather]: https://t.me/Botfather
     pub provider_token: String,
 
-    /// Three-letter ISO 4217 currency code, see [more on currencies]
+    /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
+    /// `XTR` for payments in [Telegram Stars].
     ///
     /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
-    pub currency: Currency,
+    /// [Telegram Stars]: https://t.me/BotNews/90
+    pub currency: String,
 
     /// Price breakdown, list of components (e.g. product price, tax, discount,
     /// delivery cost, delivery tax, bonus, etc.)
@@ -396,12 +398,12 @@ pub struct InputMessageContentInvoice {
 }
 
 impl InputMessageContentInvoice {
-    pub fn new<T, D, PA, PT, PR>(
+    pub fn new<T, D, PA, PT, C, PR>(
         title: T,
         description: D,
         payload: PA,
         provider_token: PT,
-        currency: Currency,
+        currency: C,
         prices: PR,
     ) -> Self
     where
@@ -409,12 +411,14 @@ impl InputMessageContentInvoice {
         D: Into<String>,
         PA: Into<String>,
         PT: Into<String>,
+        C: Into<String>,
         PR: IntoIterator<Item = LabeledPrice>,
     {
         let title = title.into();
         let description = description.into();
         let payload = payload.into();
         let provider_token = provider_token.into();
+        let currency = currency.into();
         let prices = prices.into_iter().collect();
 
         Self {
@@ -474,8 +478,11 @@ impl InputMessageContentInvoice {
     }
 
     #[must_use]
-    pub fn currency(mut self, val: Currency) -> Self {
-        self.currency = val;
+    pub fn currency<T>(mut self, val: T) -> Self
+    where
+        T: Into<String>,
+    {
+        self.currency = val.into();
         self
     }
 
@@ -583,12 +590,19 @@ mod tests {
 
     #[test]
     fn text_serialize() {
-        let expected_json = r#"{"message_text":"text"}"#;
+        let expected_json =
+            r#"{"message_text":"text","link_preview_options":{"is_disabled":true}}"#;
         let text_content = InputMessageContent::Text(InputMessageContentText {
             message_text: String::from("text"),
             parse_mode: None,
-            disable_web_page_preview: None,
             entities: None,
+            link_preview_options: Some(LinkPreviewOptions {
+                is_disabled: true,
+                url: None,
+                prefer_small_media: false,
+                prefer_large_media: false,
+                show_above_text: false,
+            }),
         });
 
         let actual_json = serde_json::to_string(&text_content).unwrap();

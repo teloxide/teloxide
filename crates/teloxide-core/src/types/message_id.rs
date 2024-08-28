@@ -1,7 +1,18 @@
 use serde::{Deserialize, Serialize};
 
 /// A unique message identifier.
-#[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Copy,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize
+)]
 #[serde(from = "MessageIdRaw", into = "MessageIdRaw")]
 pub struct MessageId(pub i32);
 
@@ -11,6 +22,9 @@ pub struct MessageId(pub i32);
 //
 //      (we can't change the default format of `MessageId` because it's returned
 //      by some methods and we can't change serialization there)
+// If you flatten `MessageId` within serde-multipart request, it will fail, see https://github.com/teloxide/teloxide/issues/1135
+// Try to use `serde(with = "crate::types::msg_id_as_int")]` instead of
+// `#[serde(flatten)]`
 
 #[derive(Serialize, Deserialize)]
 struct MessageIdRaw {

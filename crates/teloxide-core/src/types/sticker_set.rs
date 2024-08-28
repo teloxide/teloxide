@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PhotoSize, Sticker, StickerFormat, StickerFormatFlags, StickerType};
+use crate::types::{PhotoSize, Sticker, StickerType};
 
 /// This object represents a sticker set.
 ///
@@ -19,11 +19,6 @@ pub struct StickerSet {
     /// Sticker type shared by all stickers in this set.
     #[serde(flatten)]
     pub kind: StickerType,
-
-    // FIXME: remove it in 7.2 https://core.telegram.org/bots/api#march-31-2024
-    /// Sticker format flags shared by all stickers in this set.
-    #[serde(flatten)]
-    pub flags: StickerFormatFlags,
 
     /// List of all set stickers.
     pub stickers: Vec<Sticker>,
@@ -47,66 +42,6 @@ impl Deref for StickerSet {
 
     fn deref(&self) -> &Self::Target {
         &self.kind
-    }
-}
-
-impl StickerSet {
-    // FIXME: remove deprecation, when it will be a way to determine the format of
-    // the sticker set
-    /// Returns the format of the stickers in this set
-    ///
-    /// Note: this method currently is useless, so the format is always
-    /// StickerFormat::Static
-    #[must_use]
-    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
-                         were removed, so currently there is no way to determine the format of \
-                         the sticker set in the currently supported version (TBA6.6)")]
-    pub fn format(&self) -> StickerFormat {
-        self.flags.format()
-    }
-
-    /// Returns `true` is this is a "normal" raster sticker.
-    ///
-    /// Alias to [`self.format().is_static()`].
-    ///
-    /// [`self.format().is_static()`]: StickerFormat::is_static
-    #[must_use]
-    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
-                         were removed, so currently there is no way to determine the format of \
-                         the sticker set in the currently supported version (TBA6.6)")]
-    pub fn is_static(&self) -> bool {
-        #[allow(deprecated)]
-        self.format().is_static()
-    }
-
-    /// Returns `true` is this is an [animated] sticker.
-    ///
-    /// Alias to [`self.format().is_animated()`].
-    ///
-    /// [`self.format().is_animated()`]: StickerFormat::is_animated
-    /// [animated]: https://telegram.org/blog/animated-stickers
-    #[must_use]
-    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
-                         were removed, so currently there is no way to determine the format of \
-                         the sticker set in the currently supported version (TBA6.6)")]
-    pub fn is_animated(&self) -> bool {
-        #[allow(deprecated)]
-        self.format().is_animated()
-    }
-
-    /// Returns `true` is this is a [video] sticker.
-    ///
-    /// Alias to [`self.format().is_video()`].
-    ///
-    /// [`self.format().is_video()`]: StickerFormat::is_video
-    /// [video]: https://telegram.org/blog/video-stickers-better-reactions
-    #[must_use]
-    #[deprecated(note = "TBA7.2 brought the breaking change: flags 'is_video' and 'is_animated' \
-                         were removed, so currently there is no way to determine the format of \
-                         the sticker set in the currently supported version (TBA6.6)")]
-    pub fn is_video(&self) -> bool {
-        #[allow(deprecated)]
-        self.format().is_video()
     }
 }
 

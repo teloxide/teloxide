@@ -8,10 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add `filter_boost_added` and `filter_reply_to_story` filters to `MessageFilterExt` trait
+- Add `filter_mention_command` filter to `HandlerExt` trait ([issue #494](https://github.com/teloxide/teloxide/issues/494))
+- Add `filter_business_connection`, `filter_business_message`, `filter_edited_business_message`, and `filter_deleted_business_messages` filters to update filters ([PR 1146](https://github.com/teloxide/teloxide/pull/1146))
+
+### Changed
+
+- Environment bumps: ([#1147][pr1147])
+  - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
+  - Some dependencies was bumped: `sqlx` to `0.8.1`, `tower` to `0.5.0`, `reqwest` to `0.12.7`
+  - `tokio` version was explicitly specified as `1.39`
+
+[pr1147]: https://github.com/teloxide/teloxide/pull/1147
+
+## 0.13.0 - 2024-08-16
+
+### Added
+
 - Documentation regarding the way captions work for the official clients on `SendMediaGroup` ([PR 992](https://github.com/teloxide/teloxide/pull/992))
-- Add `MessageToCopyNotFound` error to `teloxide::errors::ApiError` ([PR 917](https://github.com/teloxide/teloxide/pull/917)) 
+- Add `MessageToCopyNotFound` error to `teloxide::errors::ApiError` ([PR 917](https://github.com/teloxide/teloxide/pull/917))
 - `Dispatcher::try_dispatch_with_listener` ([PR 913](https://github.com/teloxide/teloxide/pull/913))
-- Missing Message::filter_* functions ([PR 982](https://github.com/teloxide/teloxide/pull/982)): 
+- Missing Message::filter_* functions ([PR 982](https://github.com/teloxide/teloxide/pull/982)):
   - `filter_game`
   - `filter_venue`
   - `filter_video`
@@ -43,12 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `filter_video_chat_started`
   - `filter_video_chat_ended`
   - `filter_video_chat_participants_invited`
-  - `filter_web_app_data` 
+  - `filter_web_app_data`
 - Implement `PostgresStorage`, a persistent dialogue storage based on [PostgreSQL](https://www.postgresql.org/)([PR 996](https://github.com/teloxide/teloxide/pull/996)).
 - Implement `GetChatId` for `teloxide_core::types::{Chat, ChatJoinRequest, ChatMemberUpdated}`.
 - Use [deadpool-redis](https://crates.io/crates/deadpool-redis) for Redis connection pooling ([PR 1081](https://github.com/teloxide/teloxide/pull/1081)).
 - Add `MessageExt::filter_story` method for the corresponding `MediaKind::Story` variant ([PR 1087](https://github.com/teloxide/teloxide/pull/1087)).
 - Add `update_listeners::webhooks::Options::path`, an option to make the webhook server listen on a different path, which can be useful behind a reverse proxy.
+- Add `filter_giveaway`, `filter_giveaway_completed`, `filter_giveaway_created` and `filter_giveaway_winners` filters to `MessageFilterExt` trait ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
 - Add `teloxide::utils::command::BotCommands` to the `prelude` ([PR 1123](https://github.com/teloxide/teloxide/pull/1123))
 
 ### Fixed
@@ -70,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([PR 996][https://github.com/teloxide/teloxide/pull/996])
 - `axum` was bumped to `0.7`, along with related libraries used for webhooks ([PR 1093][https://github.com/teloxide/teloxide/pull/1093])
 - `Polling`'s exponential backoff now results in 64 seconds maximum delay instead of 17 minutes ([PR 1113][https://github.com/teloxide/teloxide/pull/1113])
+- `filter_forward_from` was renamed to `filter_forward_origin` and now returns `MessageOrigin` instead of `ForwardFrom` ([PR 1101](https://github.com/teloxide/teloxide/pull/1101))
 
 ### Removed
 

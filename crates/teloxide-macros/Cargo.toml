@@ -1,6 +1,6 @@
 [package]
 name = "teloxide-macros"
-version = "0.7.1"
+version = "0.8.0"
 description = "The teloxide's procedural macros"
 
 rust-version.workspace = true
@@ -19,8 +19,8 @@ proc-macro = true
 [dependencies]
 quote = "1.0.7"
 proc-macro2 = "1.0.67"
-syn = { version = "1.0.13", features = ["full"] }
-heck = "0.4.0"
+syn = { version = "1.0.13", features = ["full", "extra-traits"] }
+heck = "0.5.0"
 
 [package.metadata.release]
 tag-prefix = "macros-"

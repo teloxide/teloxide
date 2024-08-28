@@ -2,11 +2,13 @@
 
 use serde::Serialize;
 
-use crate::types::{InputFile, Message, MessageId, Recipient, ReplyMarkup, ThreadId};
+use crate::types::{
+    BusinessConnectionId, InputFile, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     @[multipart = sticker]
-    /// Use this method to send static .WEBP or [animated] .TGS stickers. On success, the sent Message is returned.
+    /// Use this method to send static .WEBP, .TGS or .WEBM stickers. On success, the sent Message is returned.
     ///
     /// [animated]: https://telegram.org/blog/animated-stickers
     #[derive(Debug, Clone, Serialize)]
@@ -20,6 +22,8 @@ impl_payload! {
             pub sticker: InputFile,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
             /// Emoji associated with the sticker; only for just uploaded stickers
@@ -30,12 +34,9 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
-            /// If the message is a reply, ID of the original message
-            #[serde(serialize_with = "crate::types::serialize_reply_to_message_id")]
-            pub reply_to_message_id: MessageId,
-            /// Pass _True_, if the message should be sent even if the specified replied-to message is not found
-            pub allow_sending_without_reply: bool,
-            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove reply keyboard or to force a reply from the user.
+            /// Description of the message to reply to
+            pub reply_parameters: ReplyParameters,
+            /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             /// [custom reply keyboard]: https://core.telegram.org/bots#keyboards

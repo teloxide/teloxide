@@ -65,6 +65,12 @@ impl EventKind for Kind {
             EditedMessage,
             ChannelPost,
             EditedChannelPost,
+            BusinessConnection,
+            BusinessMessage,
+            EditedBusinessMessage,
+            DeletedBusinessMessages,
+            MessageReaction,
+            MessageReactionCount,
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
@@ -75,6 +81,8 @@ impl EventKind for Kind {
             MyChatMember,
             ChatMember,
             ChatJoinRequest,
+            ChatBoost,
+            RemovedChatBoost,
         ]
         .into_iter()
         .map(Kind)
@@ -91,10 +99,12 @@ mod tests {
     #[cfg(feature = "macros")]
     use crate::{
         self as teloxide, // fixup for the `BotCommands` macro
-        dispatching::{HandlerExt, UpdateFilterExt},
+        dispatching::{handler_description::Kind, HandlerExt, UpdateFilterExt},
         types::{AllowedUpdate::*, Update},
         utils::command::BotCommands,
     };
+    #[cfg(feature = "macros")]
+    use dptree::description::EventKind;
 
     #[cfg(feature = "macros")]
     #[derive(BotCommands, Clone)]
@@ -127,5 +137,62 @@ mod tests {
     #[cfg(not(feature = "macros"))]
     fn discussion_648() {
         panic!("this test requires `macros` feature")
+    }
+
+    // Test that all possible updates are specified in `Kind::full_set()`
+    #[test]
+    #[cfg(feature = "macros")]
+    fn allowed_updates_full_set() {
+        let full_set = Kind::full_set();
+        let allowed_updates_reference = vec![
+            Message,
+            EditedMessage,
+            ChannelPost,
+            EditedChannelPost,
+            MessageReaction,
+            MessageReactionCount,
+            InlineQuery,
+            ChosenInlineResult,
+            CallbackQuery,
+            ShippingQuery,
+            PreCheckoutQuery,
+            Poll,
+            PollAnswer,
+            MyChatMember,
+            ChatMember,
+            ChatJoinRequest,
+            ChatBoost,
+            RemovedChatBoost,
+        ];
+
+        for update in allowed_updates_reference {
+            match update {
+                // CAUTION: Don't forget to add new `UpdateKind` to `allowed_updates_reference`!
+                Message
+                | EditedMessage
+                | ChannelPost
+                | EditedChannelPost
+                | MessageReaction
+                | MessageReactionCount
+                | InlineQuery
+                | ChosenInlineResult
+                | CallbackQuery
+                | ShippingQuery
+                | PreCheckoutQuery
+                | Poll
+                | PollAnswer
+                | MyChatMember
+                | ChatMember
+                | ChatJoinRequest
+                | ChatBoost
+                | RemovedChatBoost
+                | BusinessMessage
+                | BusinessConnection
+                | EditedBusinessMessage
+                | DeletedBusinessMessages => {
+                    assert!(full_set.contains(&Kind(update)))
+                }
+            }
+        }
     }
 }

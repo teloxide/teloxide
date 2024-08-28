@@ -9,6 +9,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for TBA 7.1 ([#1131](pr1131))
+  - Updated docs for `can_post_stories`, `can_edit_stories` and `can_delete_stories` admin privileges
+  - Add `ChatBoostAdded` and `StoryId` structs
+  - Add `ChatBoostAdded` variant to `MessageKind` enum
+  - Add `sender_boost_count` and `reply_to_story` fields to `MessageCommon` struct
+  - Add `chat` and `id` fields to `Story` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` fields to `PublicChatSupergroup` struct
+  - Add `boost_added` and `reply_to_story` getters to `Message` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` getters to `Chat` struct
+
+- Support for TBA 7.2 ([#1146](pr1146))
+  - Update documentation of `SendSticker` method
+  - Add `is_from_offline` field to `MessageCommon` struct
+  - Add `can_connect_to_business` field to `Me` struct
+  - Add `personal_chat` field to `ChatPrivate` struct
+  - Add `ReplaceStickerInSet` and `GetBusinessConnection` methods
+  - Add `Birthdate` struct and corresponding field `birthdate` in `ChatPrivate`
+  - Add `request_name`, `request_username` and `request_photo` fields to `KeyboardButtonRequestUsers` struct
+  - Add `request_title`, `request_username` and `request_photo` fields to `KeyboardButtonRequestChat` struct
+  - Add `SharedUser` struct
+  - Add `title`, `username` and `photo` fields to `ChatShared` struct
+  - Add `format` field to `InputSticker` struct
+  - Add `format` parameter to `SetStickerSetThumbnail` method
+  - Add `BusinessConnectionId` struct
+  - Add `business_connection_id` parameter to `SendMessage`, `SendPhoto`, `SendVideo`, `SendAnimation`, `SendAudio`, `SendDocument`, `SendSticker`, `SendVideoNote`, `SendVoice`, `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`, `SendGame`, and `SendMediaGroup` methods
+  - Add `sender_business_bot` and `business_connection_id` fields to `Message` struct
+  - Add `BusinessIntro` struct and corresponding field `business_intro` to `ChatPrivate` struct
+  - Add `BusinessLocation` struct and corresponding field `business_location` to `ChatPrivate` struct
+  - Add `BusinessOpeningHoursInterval` and `BusinessOpeningHours` structs and corresponding field `business_opening_hours` to `ChatPrivate` struct
+  - Add `BusinessConnection` struct
+  - Add `BusinessMessagesDeleted` struct
+  - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
+
+### Changed
+
+- `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
+- Environment bumps: ([#1147][pr1147])
+  - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
+  - Some dependencies was bumped: `reqwest` to `0.12.7` and `ron` to `0.8.1`
+  - `tokio` version was explicitly specified as `1.39` and feature `io-util` was enabled for it
+- `[u8; 3]` sometimes used for RGB values was replaced with dedicated `Rgb` struct: ([#1151][pr1151])
+  - `serde_rgb` module from `types.rs` file was removed
+  - `CreateForumTopic`, `ForumTopicCreated` and `ForumTopic` structs now use `Rgb` instead of `[u8; 3]` for `icon_color` field
+  - Added `rgb` crate dependency to Cargo.toml
+  - Added `Rgb` struct with `From` implementation for `RGB8` type from popular `rgb` crate
+
+- Support for TBA 7.2 ([#1146](pr1146))
+  - Remove `flags` field from `StickerSet` struct
+  - Remove `sticker_format` parameter from `CreateNewStickerSet` method
+  - Wrap `Public` variant of `ChatKind` in `Box`
+  - Replaced `user_ids` with `users` in `UsersShared` struct
+
+[pr1131]: https://github.com/teloxide/teloxide/pull/1131
+[pr1134]: https://github.com/teloxide/teloxide/pull/1134
+[pr1146]: https://github.com/teloxide/teloxide/pull/1146
+[pr1147]: https://github.com/teloxide/teloxide/pull/1147
+[pr1151]: https://github.com/teloxide/teloxide/pull/1151
+
+### Removed
+
+- `Currency` enum removed, its usages replaced with `String`.
+
+## 0.10.1 - 2024-08-17
+
+### Fixed
+- Issue, when using `ReplyParameters` and multipart-requests involving file-sending it failed with `unimplemented error` ([#1136][pr1136], issue [#1135][issue1135])
+
+[pr1136]: https://github.com/teloxide/teloxide/pull/1136
+[issue1135]: https://github.com/teloxide/teloxide/issues/1135
+
+## 0.10.0 - 2024-08-16
+
+### Added
+
 - `ChatPermission::can_*` helper functions ([#851][pr851])
 - `mentioned_users` functions for `CallbackQuery`, `Chat`, `ChatJoinRequest`, `ChatMemberUpdated`, `Game`, `Message`, `Poll`, `Update` which return all contained `User` instances ([#850][pr850])
 - `Message::video_chat_participants_invited` ([#850][pr850])
@@ -19,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ChatId::as_user` ([#905][pr905])
 - Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
 - `ChatId::{MIN, MAX}` ([#905][pr905])
-- Missing `Message` getters ([#982][pr982]): 
+- Missing `Message` getters ([#982][pr982]):
   - `message_auto_delete_timer_changed`
   - `write_access_allowed`
   - `forum_topic_created`
@@ -31,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `video_chat_scheduled`
   - `video_chat_started`
   - `video_chat_ended`
-  - `web_app_data` 
+  - `web_app_data`
 - `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
 - Support for TBA 6.5  ([#954][pr954])
   - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
@@ -43,7 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `shared_chat` method to `Message`
   - Add `KeyboardButtonRequestUser` and `UserShared` types
   - Add `RequestUser` variant to `ButtonRequest`
-  - Add  `UserShared` variant to `MessageKind`
+  - Add `UserShared` variant to `MessageKind`
   - Add `shared_user` method to `Message`
 - Support for TBA 6.6 ([#1040](pr1040))
   - Add methods for working with bot's description:
@@ -61,7 +135,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add parameter `emoji` to the `send_sticker` method to specify an emoji for just uploaded stickers
   - Add support for the creation of custom emoji sticker sets in `create_new_sticker_set`
   - Add parameter `needs_repainting` to the `create_new_sticker_set` methodto automatically change the color of emoji based on context (e.g., use text color in messages, accent color in statuses, etc.)
-  - Add field `needs_repainting` to the `Sticker` struct 
+  - Add field `needs_repainting` to the `Sticker` struct
   - Add support for the creation of sticker sets with multiple initial stickers in `create_new_sticker_set` by replacing the parameters `sticker`, `emojis` and `mask_position` with the parameters `stickers` and `sticker_format`.
   - Add support for .WEBP files in `create_new_sticker_set` and `add_sticker_to_set`
   - Add support for .WEBP, .TGS, and .WEBM files in `upload_sticker_file` by replacing the parameter `png_sticker` with the parameters `sticker` and `sticker_format`
@@ -88,6 +162,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 6.9 ([#1095](pr1095))
   - Add `can_post_stories`, `can_edit_stories` and `can_delete_stories` fields to `ChatMemberKind::Administrator`, `ChatAdministratorRights` and `PromoteChatMember`
   - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
+- Support for TBA 7.0 ([#1101](pr1101))
+  - Reactions:
+    - Add `ReactionType` enum
+    - Add `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
+    - Add `MessageReaction` and `MessageReactionCount` variants to `UpdateKind` enum
+    - Add `filter_message_reaction_updated` and `filter_message_reaction_count_updated` filters to `UpdateFilterExt` trait
+    - Add `set_message_reaction` TBA method to `Requester` trait
+    - Add `available_reactions` field to `Chat` struct
+  - Replies 2.0
+    - Add the fields `MessageCommon::{external_reply, quote}` of types `ExternalReplyInfo` and `TextQuote` respectively
+  - Link Preview Customization
+    - `disable_web_page_preview` replaced with `link_preview_options`:
+      - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
+      - Add `LinkPreviewOptions` struct
+      - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
+      - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
+  - Multiple Message Actions
+    - Add TBA methods `delete_messages`, `forward_messages` and `copy_messages` to `Requester` trait
+  - Chat Boost
+    - Add `ChatBoostSource` enum
+    - Add `ChatBoost`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
+    - Add `ChatBoost` and `RemovedChatBoost` variants to `UpdateKind` enum
+    - Add `filter_chat_boost` and `filter_removed_chat_boost` filters to `UpdateFilterExt` trait
+    - Add `get_user_chat_boosts` TBA method to `Requester` trait
+  - Giveaway:
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` structs
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` variants to `MessageKind` enum
+    - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message`
+  - Other Changes
+    - Add fields `ChafFullInfo::{has_visible_history, accent_color_id, background_custom_emoji_id, profile_accent_color_id, profile_background_custom_emoji_id}`
+  - Add `RequestId` type
+  - Add `CallbackQuery::regular_message` getter
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -97,6 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1086]: https://github.com/teloxide/teloxide/pull/1086
 [pr1087]: https://github.com/teloxide/teloxide/pull/1087
 [pr1095]: https://github.com/teloxide/teloxide/pull/1095
+[pr1101]: https://github.com/teloxide/teloxide/pull/1101
 
 ### Fixed
 
@@ -108,6 +215,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Deserialization of empty (content-less) messages that can sometimes appear as a part of callback query ([#850][pr850], issue [#873][issue873])
 - Type of `chat_id` in `send_game`: `u32` => `ChatId` ([#1066][pr1066])
 - `Requester::Err` was bounded to the `AsResponseParameters`. In case of `RetryAfter(..)` errors the polling is paused for the specified delay instead of falling into the backoff strategy ([#1113][pr1113])
+- `SendPoll` documentation ([#1101][pr1101], issue [#1058][issue1058])
+- `from`, `sender_chat` and `is_topic_message` are moved into the `Message` from the `MessageCommon` ([#1101][pr1101], issue [#945][issue945]). Initially [#946][pr946]
+- Add support for `blockquote` entity in received messages + in `MarkdownV2` and `HTML` ([#1101][pr1101], issue [#1062][issue1062])
 
 [pr839]: https://github.com/teloxide/teloxide/pull/839
 [pr879]: https://github.com/teloxide/teloxide/pull/879
@@ -131,7 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `InlineQueryResultLocation::live_period`
   - `Location::live_period`
   - `MessageAutoDeleteTimerChanged::message_auto_delete_time`
-  - `Poll::open_period` 
+  - `Poll::open_period`
   - `Video::duration`
   - `VideoNote::duration`
   - `Voice::duration`
@@ -169,6 +279,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Method `set_sticker_set_thumb` and it's parameter `thumb` have been renamed to `set_sticker_set_thumbnail` and `thumbnail` respectively
   - Fields `{InlineQueryResultArticle, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultLocation, InlineQueryResultVenue}::{thumb_url, thumb_width, thumb_height}` have been renamed to `{thumbnail_url, thumbnail_width, thumbnail_height}` respectively
   - Field `{InlineQueryResultPhoto, InlineQueryResultVideo, InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumb_url` has been renamed to `thumbnail_url`
+- Support for TBA 7.0 ([#1101](pr1101))
+  - Replies 2.0
+    - Parameter `reply_parameters` of type `ReplyParameters` replaces parameters `reply_to_message_id` and `allow_sending_without_reply` in the methods:
+      - `copy_message`
+      - `send_message`
+      - `send_photo`
+      - `send_video`
+      - `send_animation`
+      - `send_audio`
+      - `send_document`
+      - `send_sticker`
+      - `send_video_note`
+      - `send_voice`
+      - `send_location`
+      - `send_venue`
+      - `send_contact`
+      - `send_poll`
+      - `send_dice`
+      - `send_invoice`
+      - `send_game`
+      - `send_media_group`
+  - Request for multiple users
+    - Struct `KeyboardButtonRequestUser` was renamed to `KeyboardButtonRequestUsers` + added field `max_quantity` to it
+    - Field `KeyboardButton::request_user` was renamed to `request_users`
+    - `MessageUserShared` was renamed to `MessageUsersShared`
+  - Other Changes
+    - `Message::pinned_message` and `CallbackQuery::message` now have `MaybeInaccessibleMessage` type
+    - Field `emoji_status_custom_emoji_id` is allowed in non-private chats (moved to the `ChatFullInfo`)
+    - Struct `Forward` was replaced by `MessageOrigin` in `MessageCommon`
+  - `RequestId` replaces `i32` in `ChatShared` and `KeyboardButtonRequestChat` structs
+
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
@@ -182,8 +323,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - `Update::user`, use `Update::from` instead ([#850][pr850])
+- `Message::from()` and `Message::sender_chat()` in favour of fields with the same name([initially #946][pr946][#1101][pr1101])
 
 [pr850]: https://github.com/teloxide/teloxide/pull/850
+[pr946]: https://github.com/teloxide/teloxide/pull/946
 
 ### Removed
 
@@ -209,7 +352,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.9.1 - 2023-02-15
 
-### Fixed 
+### Fixed
 
 - `Update::user` now handles channel posts, chat member changes and chat join request updates correctly ([#835][pr835])
 - In cases when `teloxide` can't deserialize an update, error now includes the full json value ([#826][pr826])
