@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::Rgb;
+
 /// This object represents a service message about a new forum topic created in
 /// the chat.
 ///
@@ -11,9 +13,7 @@ pub struct ForumTopicCreated {
     pub name: String,
 
     /// Color of the topic icon in RGB format.
-    // FIXME: use/add a specialized rgb color type?
-    #[serde(with = "crate::types::serde_rgb")]
-    pub icon_color: [u8; 3],
+    pub icon_color: Rgb,
 
     /// Unique identifier of the custom emoji shown as the topic icon.
     // FIXME: CustomEmojiId
@@ -22,7 +22,7 @@ pub struct ForumTopicCreated {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::ForumTopicCreated;
+    use super::*;
 
     #[test]
     fn deserialization() {
@@ -32,7 +32,7 @@ mod tests {
         let event = serde_json::from_str::<ForumTopicCreated>(json).unwrap();
 
         assert_eq!(event.name, "???");
-        assert_eq!(event.icon_color, [0x8E, 0xEE, 0x98]);
+        assert_eq!(event.icon_color, Rgb { r: 0x8E, g: 0xEE, b: 0x98 });
         assert_eq!(event.icon_custom_emoji_id.as_deref(), Some("5312536423851630001"));
     }
 }

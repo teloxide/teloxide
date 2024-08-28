@@ -49,6 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
   - Some dependencies was bumped: `reqwest` to `0.12.7` and `ron` to `0.8.1`
   - `tokio` version was explicitly specified as `1.39` and feature `io-util` was enabled for it
+- `[u8; 3]` sometimes used for RGB values was replaced with dedicated `Rgb` struct: ([#1151][pr1151])
+  - `serde_rgb` module from `types.rs` file was removed
+  - `CreateForumTopic`, `ForumTopicCreated` and `ForumTopic` structs now use `Rgb` instead of `[u8; 3]` for `icon_color` field
+  - Added `rgb` crate dependency to Cargo.toml
+  - Added `Rgb` struct with `From` implementation for `RGB8` type from popular `rgb` crate
 
 - Support for TBA 7.2 ([#1146](pr1146))
   - Remove `flags` field from `StickerSet` struct
@@ -60,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
+[pr1151]: https://github.com/teloxide/teloxide/pull/1151
 
 ### Removed
 

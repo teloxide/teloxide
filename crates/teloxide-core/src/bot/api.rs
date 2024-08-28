@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, InputSticker, LabeledPrice, MessageId, Recipient, StickerFormat, ThreadId,
+        InputMedia, InputSticker, LabeledPrice, MessageId, Recipient, Rgb, StickerFormat, ThreadId,
         UserId,
     },
     Bot,
@@ -686,7 +686,7 @@ impl Requester for Bot {
         &self,
         chat_id: C,
         name: N,
-        icon_color: u32,
+        icon_color: Rgb,
         icon_custom_emoji_id: I,
     ) -> Self::CreateForumTopic
     where
