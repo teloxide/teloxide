@@ -644,6 +644,15 @@ impl_api_error! {
         /// [`SendMessage`]: crate::payloads::SendMessage
         BotKickedFromSupergroup = "Forbidden: bot was kicked from the supergroup chat",
 
+        /// Occurs when bot tries to do something in a channel the bot was
+        /// kicked from.
+        ///
+        /// May happen in methods:
+        /// 1. [`SendMessage`]
+        ///
+        /// [`SendMessage`]: crate::payloads::SendMessage
+        BotKickedFromChannel = "Forbidden: bot was kicked from the channel chat",
+
         /// Occurs when bot tries to send a message to a deactivated user (i.e. a
         /// user that was banned by telegram).
         ///
