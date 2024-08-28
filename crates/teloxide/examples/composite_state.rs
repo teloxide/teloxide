@@ -1,39 +1,41 @@
-/*
-    This example demonstrates how to split the dialogue state into substates represented by separated enums.
-
-    Imagine that your dialogue state is really complex and logically it can be represented as
-    separate stages, say `user setup` and `do stuff`.
-
-    Instead of inflate the single state enum:
-    ```
-    #[derive(Clone, Default)]
-    pub enum State {
-        #[default]
-        Unconfigured,
-        ReceiveFullName,
-        ReceiveAge { full_name: String },
-        ...many more state variants...
-        Idle
-    }
-    ```
-    You rather should do the following:
-    ```
-    #[derive(Clone, Default)]
-    pub enum GlobalState {
-        #[default]
-        Unconfigured,
-        UserSetup(UserSetup),
-        ...many more stages, each of which is represented by a separate enum...
-        Idle
-    }
-
-    #[derive(Clone)]
-    enum UserSetup {
-        ReceiveFullName,
-        ReceiveAge { full_name: String },
-    }
-    ```
-*/
+//! Imagine that your dialogue state is logically represented by separate
+//! stages, say "setup stage", "perform action stage", etc. Instead of inflating
+//! a single-state enumeration like this:
+//! ```
+//! #[derive(Clone, Default)]
+//! pub enum State {
+//!     #[default]
+//!     Unconfigured,
+//!     ReceiveFullName,
+//!     ReceiveAge {
+//!         full_name: String,
+//!     },
+//!     // Many more variants...
+//!     Idle,
+//! }
+//! ```
+//!
+//! The more appropriate way is to nest enumerations like this:
+//! ```
+//! #[derive(Clone, Default)]
+//! pub enum GlobalState {
+//!     #[default]
+//!     Unconfigured,
+//!     UserSetup(UserSetup),
+//!     // Many more complex stages...
+//!     Idle,
+//! }
+//!
+//! #[derive(Clone)]
+//! enum UserSetup {
+//!     ReceiveFullName,
+//!     ReceiveAge { full_name: String },
+//! }
+//!
+//! // More enumeration definitions...
+//! ```
+//!
+//! This example demonstrates how to achieve this `teloxide` design pattern.
 
 use teloxide::{
     dispatching::{dialogue::InMemStorage, MessageFilterExt},
