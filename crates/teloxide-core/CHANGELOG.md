@@ -42,7 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BusinessMessagesDeleted` struct
   - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
 
-- `ApiError::BotKickedFromChannel`
+- `ApiError::BotKickedFromChannel` ([#1157][pr1157])
+
+[pr1157]: https://github.com/teloxide/teloxide/pull/1157
 
 ### Changed
 
