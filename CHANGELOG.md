@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `filter_mention_command` filter to `HandlerExt` trait ([issue #494](https://github.com/teloxide/teloxide/issues/494))
 - Add `filter_business_connection`, `filter_business_message`, `filter_edited_business_message`, and `filter_deleted_business_messages` filters to update filters ([PR 1146](https://github.com/teloxide/teloxide/pull/1146))
 
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Add `filter_chat_background_set` to `MessageFilterExt` trait
+
+[pr1159]: https://github.com/teloxide/teloxide/pull/1159
+
 ### Changed
 
 - Environment bumps: ([#1147][pr1147])
