@@ -40,7 +40,7 @@
 use teloxide::{
     dispatching::{dialogue::InMemStorage, MessageFilterExt},
     prelude::*,
-    types::{ChatId, Message},
+    types::Message,
 };
 
 type Bot = teloxide::Bot;
@@ -68,17 +68,11 @@ enum GlobalState {
 #[derive(Clone)]
 enum UserSetup {
     ReceiveFullName,
-    ReceiveAge { full_name: String },
+    ReceiveAge { full_name: FullName },
 }
 
-/// Helper struct to store only required information to answer messages and
-/// reduce the size of the stack frames for handler functions
-#[derive(Clone)]
-struct IdsBundle {
-    chat_id: ChatId,
-    // Can be used to reply to messages or edit messages
-    // message_id: MessageId,
-}
+#[derive(Clone, derive_more::Display)]
+struct FullName(pub String);
 
 #[tokio::main]
 async fn main() {
@@ -95,50 +89,38 @@ async fn main() {
 }
 
 fn schema() -> UpdateHandler {
-    Update::filter_message()
-        /*
-           Currently the size of the `Message` struct (for TBA 6.9) is 1936 bytes, it's insane to copy it entirely in every handler's stack.
-           So, here I introduce the `IdsBundle` which is 8 bytes in size, because all we need is a `chat_id`.
-           The similar thing can be applied to the `CallbackQuery` struct which is
-           even bigger..
-           Take a look at this issue: https://github.com/teloxide/teloxide/issues/1118, maybe there will be
-           more appropriate approach: `Arc<Message>` or similar.
-        */
-        .map(|msg: Message| IdsBundle { chat_id: msg.chat.id })
-        .branch(
-            Message::filter_text()
-                .enter_dialogue::<Message, Storage, GlobalState>()
-                .branch(
-                    teloxide::filter_command::<Command, _>()
-                        .branch(dptree::case![Command::Start].endpoint(ask_full_name)),
-                )
-                .branch(dptree::case![GlobalState::Idle].endpoint(handle_configured_user_message))
-                .branch(
-                    /*
-                       Its essential not to use `dptree::case![GlobalState::UserSetup(UserSetup::ReceiveFullName)]` directly, this won't work.
-
-                       Each nested enum requires it's own `branch` scope.
-                       Actually, each `dptree::case![..]` introduces the inner enum value to the `DependencyMap`, so there is an option
-                       to branch on the inner values freely.
-                    */
-                    dptree::case![GlobalState::UserSetup(_state)]
-                        .branch(dptree::case![UserSetup::ReceiveFullName].endpoint(ask_age))
-                        .branch(
-                            dptree::case![UserSetup::ReceiveAge { full_name }]
-                                .endpoint(finish_user_setup),
-                        ),
-                )
-                .branch(dptree::endpoint(handle_unconfigured_user_message)),
-        )
+    Update::filter_message().branch(
+        Message::filter_text()
+            .enter_dialogue::<Message, Storage, GlobalState>()
+            .branch(
+                teloxide::filter_command::<Command, _>()
+                    .branch(dptree::case![Command::Start].endpoint(ask_full_name)),
+            )
+            .branch(dptree::case![GlobalState::Idle].endpoint(handle_configured_user_message))
+            .branch(
+                // Its essential not to use
+                // `dptree::case![GlobalState::UserSetup(UserSetup::ReceiveFullName)]` directly,
+                // this won't work. Each nested enum requires it's own `branch`
+                // scope. Actually, each `dptree::case![..]` introduces the inner
+                // enum value to the `DependencyMap`, so there is an option
+                // to branch on the inner values freely.
+                dptree::case![GlobalState::UserSetup(_state)]
+                    .branch(
+                        dptree::case![UserSetup::ReceiveFullName]
+                            .map(|text: String| FullName(text))
+                            .endpoint(ask_age),
+                    )
+                    .branch(
+                        dptree::case![UserSetup::ReceiveAge { full_name }]
+                            .endpoint(finish_user_setup),
+                    ),
+            )
+            .branch(dptree::endpoint(handle_unconfigured_user_message)),
+    )
 }
 
-async fn ask_full_name(
-    bot: Bot,
-    dialogue: Dialogue,
-    // For the sake of interest, take a look at the size of the `Message` struct
-    IdsBundle { chat_id }: IdsBundle,
-) -> HandlerResult {
-    bot.send_message(chat_id, "Let's start! What's your full name?").await?;
+async fn ask_full_name(bot: Bot, dialogue: Dialogue, message: Message) -> HandlerResult {
+    bot.send_message(message.chat.id, "Let's start! What's your full name?").await?;
     dialogue.update(GlobalState::UserSetup(UserSetup::ReceiveFullName)).await?;
     Ok(())
 }
@@ -146,21 +128,21 @@ async fn ask_full_name(
 async fn ask_age(
     bot: Bot,
     dialogue: Dialogue,
-    IdsBundle { chat_id }: IdsBundle,
-    full_name: String,
+    message: Message,
+    full_name: FullName,
 ) -> HandlerResult {
-    bot.send_message(chat_id, format!("Hi, {full_name}! How old are you?")).await?;
+    bot.send_message(message.chat.id, format!("Hi, {full_name}! How old are you?")).await?;
     dialogue.update(GlobalState::UserSetup(UserSetup::ReceiveAge { full_name })).await?;
     Ok(())
 }
 
-async fn finish_user_setup(bot: Bot, dialogue: Dialogue, message: Message) -> HandlerResult {
-    /*
-       We did `Message::filter_text`, so it's safe to assume that this message contains text.
-       Unfortunately, we can't get incoming text as the handler parameter, because it's
-       shadowed by the `full_name` value from the `UserSetup::ReceiveAge {full_name}` state
-    */
-    let _age = match message.text().unwrap().parse::<u8>() {
+async fn finish_user_setup(
+    bot: Bot,
+    dialogue: Dialogue,
+    message: Message,
+    age: String,
+) -> HandlerResult {
+    let _age = match age.parse::<u8>() {
         Ok(age) => age,
         Err(_err) => {
             bot.send_message(message.chat.id, "Please, enter your age").await?;
@@ -173,18 +155,12 @@ async fn finish_user_setup(bot: Bot, dialogue: Dialogue, message: Message) -> Ha
     Ok(())
 }
 
-async fn handle_configured_user_message(
-    bot: Bot,
-    IdsBundle { chat_id }: IdsBundle,
-) -> HandlerResult {
-    bot.send_message(chat_id, "Hi, configured user!").await?;
+async fn handle_configured_user_message(bot: Bot, message: Message) -> HandlerResult {
+    bot.send_message(message.chat.id, "Hi, configured user!").await?;
     Ok(())
 }
 
-async fn handle_unconfigured_user_message(
-    bot: Bot,
-    IdsBundle { chat_id }: IdsBundle,
-) -> HandlerResult {
-    bot.send_message(chat_id, "Use /start to setup your account").await?;
+async fn handle_unconfigured_user_message(bot: Bot, message: Message) -> HandlerResult {
+    bot.send_message(message.chat.id, "Use /start to setup your account").await?;
     Ok(())
 }
