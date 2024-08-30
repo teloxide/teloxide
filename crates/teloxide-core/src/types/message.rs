@@ -1816,6 +1816,16 @@ impl Message {
     }
 }
 
+/// Implemented for syntax sugar, see issue <https://github.com/teloxide/teloxide/issues/1143>
+impl IntoIterator for Message {
+    type Item = Message;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        vec![self].into_iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use chrono::DateTime;
