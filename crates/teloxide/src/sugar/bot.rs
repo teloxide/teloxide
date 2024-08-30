@@ -2,15 +2,19 @@
 //!
 //! [`Bot`]: crate::Bot
 use crate::{prelude::*, types::*};
+use teloxide_core::{payloads::*, requests::JsonRequest};
 use std::collections::HashSet;
 
+/// Adds useful manipulations with [`Message`] structs
+///
+/// [`Message`]: crate::types::Message
 pub trait BotMessagesExt {
     /// This function is the same as [`Bot::forward_messages`],
     /// but can take in [`Message`], including just one.
     ///
     /// [`Bot::forward_messages`]: crate::Bot::forward_messages
     /// [`Message`]: crate::types::Message
-    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> <Bot as Requester>::ForwardMessages
+    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<ForwardMessages>
     where
         C: Into<Recipient>,
         M: IntoIterator<Item = Message>;
@@ -20,7 +24,7 @@ pub trait BotMessagesExt {
     ///
     /// [`Bot::copy_messages`]: crate::Bot::copy_messages
     /// [`Message`]: crate::types::Message
-    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> <Bot as Requester>::CopyMessages
+    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<CopyMessages>
     where
         C: Into<Recipient>,
         M: IntoIterator<Item = Message>;
@@ -30,7 +34,7 @@ pub trait BotMessagesExt {
     ///
     /// [`Bot::delete_messages`]: crate::Bot::delete_messages
     /// [`Message`]: crate::types::Message
-    fn delete<M>(&self, messages: M) -> <Bot as Requester>::DeleteMessages
+    fn delete<M>(&self, messages: M) -> JsonRequest<DeleteMessages>
     where
         M: IntoIterator<Item = Message>;
 }
@@ -58,7 +62,7 @@ where
 }
 
 impl BotMessagesExt for Bot {
-    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> <Bot as Requester>::ForwardMessages
+    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<ForwardMessages>
     where
         C: Into<Recipient>,
         M: IntoIterator<Item = Message>,
@@ -67,7 +71,7 @@ impl BotMessagesExt for Bot {
         self.forward_messages(to_chat_id, from_chat_id, message_ids)
     }
 
-    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> <Bot as Requester>::CopyMessages
+    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<CopyMessages>
     where
         C: Into<Recipient>,
         M: IntoIterator<Item = Message>,
@@ -76,7 +80,7 @@ impl BotMessagesExt for Bot {
         self.copy_messages(to_chat_id, from_chat_id, message_ids)
     }
 
-    fn delete<M>(&self, messages: M) -> <Bot as Requester>::DeleteMessages
+    fn delete<M>(&self, messages: M) -> JsonRequest<DeleteMessages>
     where
         M: IntoIterator<Item = Message>,
     {
@@ -86,14 +90,14 @@ impl BotMessagesExt for Bot {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use std::ops::Deref;
 
     use chrono::DateTime;
 
     use super::*;
 
-    fn make_message(chat_id: ChatId, message_id: MessageId) -> Message {
+    pub(crate) fn make_message(chat_id: ChatId, message_id: MessageId) -> Message {
         let timestamp = 1_569_518_829;
         let date = DateTime::from_timestamp(timestamp, 0).unwrap();
         Message {
@@ -240,5 +244,13 @@ mod tests {
         // Just to make sure one message still can be passed in
         let message = make_message(ChatId(1), MessageId(1));
         assert_eq!(message.clone().into_iter().next(), Some(message));
+    }
+
+    #[test]
+    fn message_to_message_id() {
+        // Just to make sure message still can be in Into<MessageId>
+        let message = make_message(ChatId(1), MessageId(1));
+        let message_id: MessageId = message.into();
+        assert_eq!(message_id, MessageId(1));
     }
 }

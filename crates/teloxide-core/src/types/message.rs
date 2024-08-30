@@ -1826,6 +1826,14 @@ impl IntoIterator for Message {
     }
 }
 
+/// Implemented for syntax sugar, see issue <https://github.com/teloxide/teloxide/issues/1143>
+#[allow(clippy::from_over_into)]
+impl Into<MessageId> for Message {
+    fn into(self) -> MessageId {
+        self.id
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use chrono::DateTime;
