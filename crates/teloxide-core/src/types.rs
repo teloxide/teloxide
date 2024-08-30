@@ -546,3 +546,35 @@ pub(crate) mod option_msg_id_as_int {
         }
     }
 }
+
+pub(crate) mod vec_msg_id_as_vec_int {
+    use crate::types::MessageId;
+
+    use serde::{ser::SerializeSeq, Serializer};
+
+    pub(crate) fn serialize<S>(msg_ids: &Vec<MessageId>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(msg_ids.len()))?;
+        for e in msg_ids {
+            seq.serialize_element(&e.0)?;
+        }
+        seq.end()
+    }
+
+    #[test]
+    fn test() {
+        #[derive(serde::Serialize)]
+        struct Struct {
+            #[serde(with = "crate::types::vec_msg_id_as_vec_int")]
+            msg_ids: Vec<MessageId>,
+        }
+
+        {
+            let s = Struct {msg_ids: vec![MessageId(1), MessageId(2)]};
+            let json = serde_json::to_string(&s).unwrap();
+            assert_eq!(json, "{\"msg_ids\":[1,2]}");
+        }
+    }
+}

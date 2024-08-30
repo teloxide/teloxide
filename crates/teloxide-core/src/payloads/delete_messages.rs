@@ -14,6 +14,7 @@ impl_payload! {
             /// Identifiers of 1-100 messages to delete. See [`DeleteMessage`] for limitations on which messages can be deleted
             ///
             /// [`DeleteMessage`]: crate::payloads::DeleteMessage
+            #[serde(with = "crate::types::vec_msg_id_as_vec_int")]
             pub message_ids: Vec<MessageId> [collect],
         }
     }

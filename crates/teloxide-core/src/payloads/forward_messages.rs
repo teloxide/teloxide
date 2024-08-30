@@ -16,6 +16,7 @@ impl_payload! {
             /// Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)
             pub from_chat_id: Recipient [into],
             /// A JSON-serialized list of 1-100 identifiers of messages in the chat _from\_chat\_id_ to forward. The identifiers must be specified in a strictly increasing order.
+            #[serde(with = "crate::types::vec_msg_id_as_vec_int")]
             pub message_ids: Vec<MessageId> [collect],
         }
         optional {
