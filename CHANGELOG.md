@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `filter_boost_added` and `filter_reply_to_story` filters to `MessageFilterExt` trait
 - Add `filter_mention_command` filter to `HandlerExt` trait ([issue #494](https://github.com/teloxide/teloxide/issues/494))
 - Add `filter_business_connection`, `filter_business_message`, `filter_edited_business_message`, and `filter_deleted_business_messages` filters to update filters ([PR 1146](https://github.com/teloxide/teloxide/pull/1146))
+- Add `bot.forward`, `bot.copy` and `bot.delete` to new `crate::sugar::BotMessagesExt` trait ([issue #1143](https://github.com/teloxide/teloxide/issues/1143))
 
 ### Changed
 
