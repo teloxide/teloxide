@@ -572,7 +572,7 @@ pub(crate) mod vec_msg_id_as_vec_int {
         }
 
         {
-            let s = Struct {msg_ids: vec![MessageId(1), MessageId(2)]};
+            let s = Struct { msg_ids: vec![MessageId(1), MessageId(2)] };
             let json = serde_json::to_string(&s).unwrap();
             assert_eq!(json, "{\"msg_ids\":[1,2]}");
         }
