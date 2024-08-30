@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Some dependencies was bumped: `sqlx` to `0.8.1`, `tower` to `0.5.0`, `reqwest` to `0.12.7`
   - `tokio` version was explicitly specified as `1.39`
 
+### Fixed
+
+- Now Vec<MessageId> in requests serializes into [number] instead of [ {message_id: number} ], `forward_messages`, `copy_messages` and `delete_messages` now work properly
+
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
 
 ## 0.13.0 - 2024-08-16
