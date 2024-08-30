@@ -223,6 +223,9 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
                 {
                     "\n            #[serde(flatten)]"
                 }
+                Type::ArrayOf(b) if **b == Type::RawTy("MessageId".to_string()) => {
+                    "\n            #[serde(with = \"crate::types::vec_msg_id_as_vec_int\")]"
+                }
                 _ => "",
             };
             let with = match ty {
