@@ -2,8 +2,8 @@
 //!
 //! [`Bot`]: crate::Bot
 use crate::{prelude::*, types::*};
-use teloxide_core::{payloads::*, requests::JsonRequest};
 use std::collections::HashSet;
+use teloxide_core::{payloads::*, requests::JsonRequest};
 
 /// Adds useful manipulations with [`Message`] structs
 ///
