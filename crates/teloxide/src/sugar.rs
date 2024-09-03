@@ -1,4 +1,4 @@
-//! Some non-detrimental, but nice additions
+//! Some syntax sugar support for TBA functionality
 
 pub mod bot;
 pub mod request;

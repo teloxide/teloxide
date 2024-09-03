@@ -2,90 +2,55 @@
 //!
 //! [`Bot`]: crate::Bot
 use crate::{prelude::*, types::*};
-use std::collections::HashSet;
 use teloxide_core::{payloads::*, requests::JsonRequest};
 
 /// Adds useful manipulations with [`Message`] structs
 ///
 /// [`Message`]: crate::types::Message
 pub trait BotMessagesExt {
-    /// This function is the same as [`Bot::forward_messages`],
-    /// but can take in [`Message`], including just one.
+    /// This function is the same as [`Bot::forward_message`],
+    /// but can take in [`Message`] to forward it.
     ///
-    /// [`Bot::forward_messages`]: crate::Bot::forward_messages
+    /// [`Bot::forward_message`]: crate::Bot::forward_message
     /// [`Message`]: crate::types::Message
-    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<ForwardMessages>
+    fn forward<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<ForwardMessage>
     where
-        C: Into<Recipient>,
-        M: IntoIterator<Item = Message>;
+        C: Into<Recipient>;
 
-    /// This function is the same as [`Bot::copy_messages`],
-    /// but can take in [`Message`], including just one.
+    /// This function is the same as [`Bot::copy_message`],
+    /// but can take in [`Message`] to copy it.
     ///
-    /// [`Bot::copy_messages`]: crate::Bot::copy_messages
+    /// [`Bot::copy_messages`]: crate::Bot::copy_message
     /// [`Message`]: crate::types::Message
-    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<CopyMessages>
+    fn copy<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<CopyMessage>
     where
-        C: Into<Recipient>,
-        M: IntoIterator<Item = Message>;
+        C: Into<Recipient>;
 
-    /// This function is the same as [`Bot::delete_messages`],
-    /// but can take in [`Message`], including just one.
+    /// This function is the same as [`Bot::delete_message`],
+    /// but can take in [`Message`] to delete it.
     ///
-    /// [`Bot::delete_messages`]: crate::Bot::delete_messages
+    /// [`Bot::delete_message`]: crate::Bot::delete_message
     /// [`Message`]: crate::types::Message
-    fn delete<M>(&self, messages: M) -> JsonRequest<DeleteMessages>
-    where
-        M: IntoIterator<Item = Message>;
-}
-
-fn compress_chat_messages<M>(messages: M) -> (ChatId, Vec<MessageId>)
-where
-    M: IntoIterator<Item = Message>,
-{
-    let (message_ids, unique_chat_ids): (Vec<MessageId>, HashSet<ChatId>) =
-        messages.into_iter().map(|m| (m.id, m.chat.id)).unzip();
-
-    if unique_chat_ids.is_empty() {
-        panic!("There needs to be at least one message!");
-    } else if unique_chat_ids.len() > 1 {
-        panic!(
-            "Messages shouldn't come from different chats! Current chat ids: {:?}",
-            unique_chat_ids.into_iter().map(|c| c.0).collect::<Vec<i64>>()
-        );
-    }
-
-    // Unwrap: length is checked to be non-zero before
-    let chat_id = unique_chat_ids.into_iter().next().unwrap();
-
-    (chat_id, message_ids)
+    fn delete(&self, message: Message) -> JsonRequest<DeleteMessage>;
 }
 
 impl BotMessagesExt for Bot {
-    fn forward<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<ForwardMessages>
+    fn forward<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<ForwardMessage>
     where
         C: Into<Recipient>,
-        M: IntoIterator<Item = Message>,
     {
-        let (from_chat_id, message_ids) = compress_chat_messages(messages);
-        self.forward_messages(to_chat_id, from_chat_id, message_ids)
+        self.forward_message(to_chat_id, message.chat.id, message.id)
     }
 
-    fn copy<C, M>(&self, to_chat_id: C, messages: M) -> JsonRequest<CopyMessages>
+    fn copy<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<CopyMessage>
     where
         C: Into<Recipient>,
-        M: IntoIterator<Item = Message>,
     {
-        let (from_chat_id, message_ids) = compress_chat_messages(messages);
-        self.copy_messages(to_chat_id, from_chat_id, message_ids)
+        self.copy_message(to_chat_id, message.chat.id, message.id)
     }
 
-    fn delete<M>(&self, messages: M) -> JsonRequest<DeleteMessages>
-    where
-        M: IntoIterator<Item = Message>,
-    {
-        let (chat_id, message_ids) = compress_chat_messages(messages);
-        self.delete_messages(chat_id, message_ids)
+    fn delete(&self, message: Message) -> JsonRequest<DeleteMessage> {
+        self.delete_message(message.chat.id, message.id)
     }
 }
 
@@ -170,17 +135,10 @@ pub(crate) mod tests {
 
         let to_chat_id = ChatId(12345);
         let from_chat_id = ChatId(6789);
-        let message_ids = vec![MessageId(100), MessageId(101), MessageId(102)];
+        let message_id = MessageId(100);
 
-        let sugar_forward_req = bot.forward(
-            to_chat_id,
-            vec![
-                make_message(from_chat_id, message_ids[0]),
-                make_message(from_chat_id, message_ids[1]),
-                make_message(from_chat_id, message_ids[2]),
-            ],
-        );
-        let real_forward_req = bot.forward_messages(to_chat_id, from_chat_id, message_ids);
+        let sugar_forward_req = bot.forward(to_chat_id, make_message(from_chat_id, message_id));
+        let real_forward_req = bot.forward_message(to_chat_id, from_chat_id, message_id);
 
         assert_eq!(sugar_forward_req.deref(), real_forward_req.deref())
     }
@@ -191,17 +149,10 @@ pub(crate) mod tests {
 
         let to_chat_id = ChatId(12345);
         let from_chat_id = ChatId(6789);
-        let message_ids = vec![MessageId(100), MessageId(101), MessageId(102)];
+        let message_id = MessageId(100);
 
-        let sugar_copy_req = bot.copy(
-            to_chat_id,
-            vec![
-                make_message(from_chat_id, message_ids[0]),
-                make_message(from_chat_id, message_ids[1]),
-                make_message(from_chat_id, message_ids[2]),
-            ],
-        );
-        let real_copy_req = bot.copy_messages(to_chat_id, from_chat_id, message_ids);
+        let sugar_copy_req = bot.copy(to_chat_id, make_message(from_chat_id, message_id));
+        let real_copy_req = bot.copy_message(to_chat_id, from_chat_id, message_id);
 
         assert_eq!(sugar_copy_req.deref(), real_copy_req.deref())
     }
@@ -211,39 +162,12 @@ pub(crate) mod tests {
         let bot = Bot::new("TOKEN");
 
         let chat_id = ChatId(6789);
-        let message_ids = vec![MessageId(100), MessageId(101), MessageId(102)];
+        let message_id = MessageId(100);
 
-        let sugar_delete_req = bot.delete(vec![
-            make_message(chat_id, message_ids[0]),
-            make_message(chat_id, message_ids[1]),
-            make_message(chat_id, message_ids[2]),
-        ]);
-        let real_delete_req = bot.delete_messages(chat_id, message_ids);
+        let sugar_delete_req = bot.delete(make_message(chat_id, message_id));
+        let real_delete_req = bot.delete_message(chat_id, message_id);
 
         assert_eq!(sugar_delete_req.deref(), real_delete_req.deref())
-    }
-
-    #[test]
-    #[should_panic]
-    fn test_forward_many_chats() {
-        // They all use the same validation, only one check is enough
-        let bot = Bot::new("TOKEN");
-
-        let _ = bot.forward(
-            ChatId(12345),
-            vec![
-                make_message(ChatId(6789), MessageId(100)),
-                make_message(ChatId(6789), MessageId(101)),
-                make_message(ChatId(9012), MessageId(102)),
-            ],
-        );
-    }
-
-    #[test]
-    fn message_to_iterator() {
-        // Just to make sure one message still can be passed in
-        let message = make_message(ChatId(1), MessageId(1));
-        assert_eq!(message.clone().into_iter().next(), Some(message));
     }
 
     #[test]
