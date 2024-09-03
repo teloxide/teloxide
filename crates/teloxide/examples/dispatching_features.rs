@@ -4,11 +4,8 @@
 use rand::Rng;
 
 use teloxide::{
-    dispatching::HandlerExt,
-    prelude::*,
-    types::Dice,
+    dispatching::HandlerExt, prelude::*, sugar::request::RequestReplyExt, types::Dice,
     utils::command::BotCommands,
-    sugar::request::RequestReplyExt,
 };
 
 #[tokio::main]
