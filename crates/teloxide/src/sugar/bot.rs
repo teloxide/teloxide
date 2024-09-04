@@ -13,7 +13,7 @@ pub trait BotMessagesExt {
     ///
     /// [`Bot::forward_message`]: crate::Bot::forward_message
     /// [`Message`]: crate::types::Message
-    fn forward<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<ForwardMessage>
+    fn forward<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<ForwardMessage>
     where
         C: Into<Recipient>;
 
@@ -22,7 +22,7 @@ pub trait BotMessagesExt {
     ///
     /// [`Bot::copy_messages`]: crate::Bot::copy_message
     /// [`Message`]: crate::types::Message
-    fn copy<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<CopyMessage>
+    fn copy<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<CopyMessage>
     where
         C: Into<Recipient>;
 
@@ -31,25 +31,25 @@ pub trait BotMessagesExt {
     ///
     /// [`Bot::delete_message`]: crate::Bot::delete_message
     /// [`Message`]: crate::types::Message
-    fn delete(&self, message: Message) -> JsonRequest<DeleteMessage>;
+    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage>;
 }
 
 impl BotMessagesExt for Bot {
-    fn forward<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<ForwardMessage>
+    fn forward<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<ForwardMessage>
     where
         C: Into<Recipient>,
     {
         self.forward_message(to_chat_id, message.chat.id, message.id)
     }
 
-    fn copy<C>(&self, to_chat_id: C, message: Message) -> JsonRequest<CopyMessage>
+    fn copy<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<CopyMessage>
     where
         C: Into<Recipient>,
     {
         self.copy_message(to_chat_id, message.chat.id, message.id)
     }
 
-    fn delete(&self, message: Message) -> JsonRequest<DeleteMessage> {
+    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage> {
         self.delete_message(message.chat.id, message.id)
     }
 }
@@ -137,7 +137,7 @@ pub(crate) mod tests {
         let from_chat_id = ChatId(6789);
         let message_id = MessageId(100);
 
-        let sugar_forward_req = bot.forward(to_chat_id, make_message(from_chat_id, message_id));
+        let sugar_forward_req = bot.forward(to_chat_id, &make_message(from_chat_id, message_id));
         let real_forward_req = bot.forward_message(to_chat_id, from_chat_id, message_id);
 
         assert_eq!(sugar_forward_req.deref(), real_forward_req.deref())
@@ -151,7 +151,7 @@ pub(crate) mod tests {
         let from_chat_id = ChatId(6789);
         let message_id = MessageId(100);
 
-        let sugar_copy_req = bot.copy(to_chat_id, make_message(from_chat_id, message_id));
+        let sugar_copy_req = bot.copy(to_chat_id, &make_message(from_chat_id, message_id));
         let real_copy_req = bot.copy_message(to_chat_id, from_chat_id, message_id);
 
         assert_eq!(sugar_copy_req.deref(), real_copy_req.deref())
@@ -164,7 +164,7 @@ pub(crate) mod tests {
         let chat_id = ChatId(6789);
         let message_id = MessageId(100);
 
-        let sugar_delete_req = bot.delete(make_message(chat_id, message_id));
+        let sugar_delete_req = bot.delete(&make_message(chat_id, message_id));
         let real_delete_req = bot.delete_message(chat_id, message_id);
 
         assert_eq!(sugar_delete_req.deref(), real_delete_req.deref())
