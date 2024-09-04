@@ -4,8 +4,9 @@
 
 use teloxide_core::types::{User, UserId};
 
-pub(super) const ESCAPE_CHARS: [char; 19] =
-    ['\\', '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+pub(super) const ESCAPE_CHARS: [char; 19] = [
+    '\\', '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!',
+];
 
 /// Applies the bold font style to the string.
 ///
@@ -247,10 +248,11 @@ mod tests {
 
     #[test]
     fn test_escape() {
+        assert_eq!(escape("\\!"), r"\\\!");
         assert_eq!(escape("* foobar *"), r"\* foobar \*");
         assert_eq!(
             escape(r"_ * [ ] ( ) ~ \ ` > # + - = | { } . !"),
-            r"\_ \* \[ \] \( \) \~ \ \` \> \# \+ \- \= \| \{ \} \. \!",
+            r"\_ \* \[ \] \( \) \~ \\ \` \> \# \+ \- \= \| \{ \} \. \!",
         );
     }
 
