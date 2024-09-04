@@ -4,8 +4,8 @@
 
 use teloxide_core::types::{User, UserId};
 
-pub(super) const ESCAPE_CHARS: [char; 18] =
-    ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
+pub(super) const ESCAPE_CHARS: [char; 19] =
+    ['\\', '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
 
 /// Applies the bold font style to the string.
 ///
