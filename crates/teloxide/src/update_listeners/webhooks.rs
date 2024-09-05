@@ -63,7 +63,7 @@ pub struct Options {
     pub secret_token: Option<String>,
 
     /// A list of the update types you want your bot to receive. See
-    /// [`teloxide::types::AllowedUpdate`].
+    /// [`AllowedUpdate`].
     pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
@@ -112,8 +112,7 @@ impl Options {
         Self { drop_pending_updates: true, ..self }
     }
 
-    /// Set the update types you want your bot to receive. See
-    /// [`teloxide::types::AllowedUpdate`].
+    /// Set the update types you want your bot to receive. See [`AllowedUpdate`].
     pub fn allowed_updates(self, v: Vec<AllowedUpdate>) -> Self {
         Self { allowed_updates: Some(v), ..self }
     }
