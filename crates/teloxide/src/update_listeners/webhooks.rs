@@ -1,7 +1,10 @@
 //!
 use std::net::SocketAddr;
 
-use crate::{requests::Requester, types::InputFile};
+use crate::{
+    requests::Requester,
+    types::{AllowedUpdate, InputFile},
+};
 
 /// Options related to setting up webhooks.
 #[must_use]
@@ -58,6 +61,10 @@ pub struct Options {
     ///
     /// Default - `teloxide` will generate a random token.
     pub secret_token: Option<String>,
+
+    /// A list of the update types you want your bot to receive. See
+    /// [`teloxide::types::AllowedUpdate`].
+    pub allowed_updates: Option<Vec<AllowedUpdate>>,
 }
 
 impl Options {
@@ -73,6 +80,7 @@ impl Options {
             max_connections: None,
             drop_pending_updates: false,
             secret_token: None,
+            allowed_updates: None,
         }
     }
 
@@ -102,6 +110,12 @@ impl Options {
     /// Drop all pending updates before setting up webhook.
     pub fn drop_pending_updates(self) -> Self {
         Self { drop_pending_updates: true, ..self }
+    }
+
+    /// Set the update types you want your bot to receive. See
+    /// [`teloxide::types::AllowedUpdate`].
+    pub fn allowed_updates(self, v: Vec<AllowedUpdate>) -> Self {
+        Self { allowed_updates: Some(v), ..self }
     }
 
     /// A secret token to be sent in a header “X-Telegram-Bot-Api-Secret-Token”
@@ -159,6 +173,7 @@ where
     req.payload_mut().max_connections = max_connections;
     req.payload_mut().drop_pending_updates = Some(drop_pending_updates);
     req.payload_mut().secret_token = Some(secret);
+    req.payload_mut().allowed_updates = options.allowed_updates.take();
 
     req.send().await?;
 
