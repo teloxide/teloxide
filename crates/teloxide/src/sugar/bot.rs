@@ -2,7 +2,10 @@
 //!
 //! [`Bot`]: crate::Bot
 use crate::{prelude::*, types::*};
-use teloxide_core::{payloads::*, requests::JsonRequest};
+use teloxide_core::{
+    payloads::*,
+    requests::{JsonRequest, MultipartRequest},
+};
 
 /// Syntax sugar for [`Message`] manipulations.
 ///
@@ -17,6 +20,94 @@ pub trait BotMessagesExt {
     where
         C: Into<Recipient>;
 
+    /// This function is the same as [`Bot::edit_message_live_location`],
+    /// but can take in [`Message`] to edit it.
+    ///
+    /// [`Bot::edit_message_live_location`]: crate::Bot::edit_message_live_location
+    /// [`Message`]: crate::types::Message
+    fn edit_live_location(
+        &self,
+        message: &Message,
+        latitude: f64,
+        longitude: f64,
+    ) -> JsonRequest<EditMessageLiveLocation>;
+
+    /// This function is the same as [`Bot::stop_message_live_location`],
+    /// but can take in [`Message`] to stop the live location in it.
+    ///
+    /// [`Bot::stop_message_live_location`]: crate::Bot::stop_message_live_location
+    /// [`Message`]: crate::types::Message
+    fn stop_live_location(&self, message: &Message) -> JsonRequest<StopMessageLiveLocation>;
+
+    /// This function is the same as [`Bot::set_message_reaction`],
+    /// but can take in [`Message`] to set a reaction on it.
+    ///
+    /// [`Bot::set_message_reaction`]: crate::Bot::set_message_reaction
+    /// [`Message`]: crate::types::Message
+    fn set_reaction(&self, message: &Message) -> JsonRequest<SetMessageReaction>;
+
+    /// This function is the same as [`Bot::pin_chat_message`],
+    /// but can take in [`Message`] to pin it.
+    ///
+    /// [`Bot::pin_chat_message`]: crate::Bot::pin_chat_message
+    /// [`Message`]: crate::types::Message
+    fn pin(&self, message: &Message) -> JsonRequest<PinChatMessage>;
+
+    /// This function is the same as [`Bot::unpin_chat_message`],
+    /// but can take in [`Message`] to unpin it.
+    ///
+    /// [`Bot::unpin_chat_message`]: crate::Bot::unpin_chat_message
+    /// [`Message`]: crate::types::Message
+    fn unpin(&self, message: &Message) -> JsonRequest<UnpinChatMessage>;
+
+    /// This function is the same as [`Bot::edit_message_text`],
+    /// but can take in [`Message`] to edit it.
+    ///
+    /// [`Bot::edit_message_text`]: crate::Bot::edit_message_text
+    /// [`Message`]: crate::types::Message
+    fn edit_text<T>(&self, message: &Message, text: T) -> JsonRequest<EditMessageText>
+    where
+        T: Into<String>;
+
+    /// This function is the same as [`Bot::edit_message_caption`],
+    /// but can take in [`Message`] to edit it.
+    ///
+    /// [`Bot::edit_message_caption`]: crate::Bot::edit_message_caption
+    /// [`Message`]: crate::types::Message
+    fn edit_caption(&self, message: &Message) -> JsonRequest<EditMessageCaption>;
+
+    /// This function is the same as [`Bot::edit_message_media`],
+    /// but can take in [`Message`] to edit it.
+    ///
+    /// [`Bot::edit_message_media`]: crate::Bot::edit_message_media
+    /// [`Message`]: crate::types::Message
+    fn edit_media(
+        &self,
+        message: &Message,
+        media: InputMedia,
+    ) -> MultipartRequest<EditMessageMedia>;
+
+    /// This function is the same as [`Bot::edit_message_reply_markup`],
+    /// but can take in [`Message`] to edit it.
+    ///
+    /// [`Bot::edit_message_reply_markup`]: crate::Bot::edit_message_reply_markup
+    /// [`Message`]: crate::types::Message
+    fn edit_reply_markup(&self, message: &Message) -> JsonRequest<EditMessageReplyMarkup>;
+
+    /// This function is the same as [`Bot::stop_poll`],
+    /// but can take in [`Message`] to stop the poll in it.
+    ///
+    /// [`Bot::stop_poll`]: crate::Bot::stop_poll
+    /// [`Message`]: crate::types::Message
+    fn stop_poll_message(&self, message: &Message) -> JsonRequest<StopPoll>;
+
+    /// This function is the same as [`Bot::delete_message`],
+    /// but can take in [`Message`] to delete it.
+    ///
+    /// [`Bot::delete_message`]: crate::Bot::delete_message
+    /// [`Message`]: crate::types::Message
+    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage>;
+
     /// This function is the same as [`Bot::copy_message`],
     /// but can take in [`Message`] to copy it.
     ///
@@ -25,13 +116,6 @@ pub trait BotMessagesExt {
     fn copy<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<CopyMessage>
     where
         C: Into<Recipient>;
-
-    /// This function is the same as [`Bot::delete_message`],
-    /// but can take in [`Message`] to delete it.
-    ///
-    /// [`Bot::delete_message`]: crate::Bot::delete_message
-    /// [`Message`]: crate::types::Message
-    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage>;
 }
 
 impl BotMessagesExt for Bot {
@@ -41,16 +125,67 @@ impl BotMessagesExt for Bot {
     {
         self.forward_message(to_chat_id, message.chat.id, message.id)
     }
+    fn edit_live_location(
+        &self,
+        message: &Message,
+        latitude: f64,
+        longitude: f64,
+    ) -> JsonRequest<EditMessageLiveLocation> {
+        self.edit_message_live_location(message.chat.id, message.id, latitude, longitude)
+    }
+
+    fn stop_live_location(&self, message: &Message) -> JsonRequest<StopMessageLiveLocation> {
+        self.stop_message_live_location(message.chat.id, message.id)
+    }
+
+    fn set_reaction(&self, message: &Message) -> JsonRequest<SetMessageReaction> {
+        self.set_message_reaction(message.chat.id, message.id)
+    }
+
+    fn pin(&self, message: &Message) -> JsonRequest<PinChatMessage> {
+        self.pin_chat_message(message.chat.id, message.id)
+    }
+
+    fn unpin(&self, message: &Message) -> JsonRequest<UnpinChatMessage> {
+        self.unpin_chat_message(message.chat.id).message_id(message.id)
+    }
+
+    fn edit_text<T>(&self, message: &Message, text: T) -> JsonRequest<EditMessageText>
+    where
+        T: Into<String>,
+    {
+        self.edit_message_text(message.chat.id, message.id, text)
+    }
+
+    fn edit_caption(&self, message: &Message) -> JsonRequest<EditMessageCaption> {
+        self.edit_message_caption(message.chat.id, message.id)
+    }
+
+    fn edit_media(
+        &self,
+        message: &Message,
+        media: InputMedia,
+    ) -> MultipartRequest<EditMessageMedia> {
+        self.edit_message_media(message.chat.id, message.id, media)
+    }
+
+    fn edit_reply_markup(&self, message: &Message) -> JsonRequest<EditMessageReplyMarkup> {
+        self.edit_message_reply_markup(message.chat.id, message.id)
+    }
+
+    fn stop_poll_message(&self, message: &Message) -> JsonRequest<StopPoll> {
+        self.stop_poll(message.chat.id, message.id)
+    }
+
+    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage> {
+        self.delete_message(message.chat.id, message.id)
+    }
 
     fn copy<C>(&self, to_chat_id: C, message: &Message) -> JsonRequest<CopyMessage>
     where
         C: Into<Recipient>,
     {
         self.copy_message(to_chat_id, message.chat.id, message.id)
-    }
-
-    fn delete(&self, message: &Message) -> JsonRequest<DeleteMessage> {
-        self.delete_message(message.chat.id, message.id)
     }
 }
 
@@ -129,45 +264,139 @@ pub(crate) mod tests {
         }
     }
 
+    const TO_CHAT_ID: ChatId = ChatId(12345);
+    const FROM_CHAT_ID: ChatId = ChatId(6789);
+    const CHAT_ID: ChatId = ChatId(12345);
+    const MESSAGE_ID: MessageId = MessageId(100);
+
     #[test]
     fn test_forward() {
         let bot = Bot::new("TOKEN");
 
-        let to_chat_id = ChatId(12345);
-        let from_chat_id = ChatId(6789);
-        let message_id = MessageId(100);
+        let sugar_req = bot.forward(TO_CHAT_ID, &make_message(FROM_CHAT_ID, MESSAGE_ID));
+        let real_req = bot.forward_message(TO_CHAT_ID, FROM_CHAT_ID, MESSAGE_ID);
 
-        let sugar_forward_req = bot.forward(to_chat_id, &make_message(from_chat_id, message_id));
-        let real_forward_req = bot.forward_message(to_chat_id, from_chat_id, message_id);
-
-        assert_eq!(sugar_forward_req.deref(), real_forward_req.deref())
+        assert_eq!(sugar_req.deref(), real_req.deref())
     }
 
     #[test]
-    fn test_copy() {
+    fn test_edit_live_location() {
         let bot = Bot::new("TOKEN");
 
-        let to_chat_id = ChatId(12345);
-        let from_chat_id = ChatId(6789);
-        let message_id = MessageId(100);
+        let longitude = 1.0;
+        let latitude = 1.0;
 
-        let sugar_copy_req = bot.copy(to_chat_id, &make_message(from_chat_id, message_id));
-        let real_copy_req = bot.copy_message(to_chat_id, from_chat_id, message_id);
+        let sugar_req =
+            bot.edit_live_location(&make_message(CHAT_ID, MESSAGE_ID), latitude, longitude);
+        let real_req = bot.edit_message_live_location(CHAT_ID, MESSAGE_ID, latitude, longitude);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
 
-        assert_eq!(sugar_copy_req.deref(), real_copy_req.deref())
+    #[test]
+    fn test_stop_live_location() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.stop_live_location(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.stop_message_live_location(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_set_reaction() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.set_reaction(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.set_message_reaction(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_pin() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.pin(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.pin_chat_message(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_unpin() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.unpin(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.unpin_chat_message(CHAT_ID).message_id(MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_edit_text() {
+        let bot = Bot::new("TOKEN");
+
+        let text = "text";
+
+        let sugar_req = bot.edit_text(&make_message(CHAT_ID, MESSAGE_ID), text);
+        let real_req = bot.edit_message_text(CHAT_ID, MESSAGE_ID, text);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_edit_caption() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.edit_caption(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.edit_message_caption(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_edit_media() {
+        let bot = Bot::new("TOKEN");
+
+        let media =
+            InputMedia::Document(InputMediaDocument::new(InputFile::memory("Hello World!")));
+
+        let sugar_req = bot.edit_media(&make_message(CHAT_ID, MESSAGE_ID), media.clone());
+        let real_req = bot.edit_message_media(CHAT_ID, MESSAGE_ID, media);
+        assert_eq!(sugar_req.deref().chat_id, real_req.deref().chat_id);
+        assert_eq!(sugar_req.deref().message_id, real_req.deref().message_id);
+    }
+
+    #[test]
+    fn test_edit_reply_markup() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.edit_reply_markup(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.edit_message_reply_markup(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
+
+    #[test]
+    fn test_stop_poll_message() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.stop_poll_message(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.stop_poll(CHAT_ID, MESSAGE_ID);
+        assert_eq!(sugar_req.deref(), real_req.deref())
     }
 
     #[test]
     fn test_delete() {
         let bot = Bot::new("TOKEN");
 
-        let chat_id = ChatId(6789);
-        let message_id = MessageId(100);
+        let sugar_req = bot.delete(&make_message(CHAT_ID, MESSAGE_ID));
+        let real_req = bot.delete_message(CHAT_ID, MESSAGE_ID);
 
-        let sugar_delete_req = bot.delete(&make_message(chat_id, message_id));
-        let real_delete_req = bot.delete_message(chat_id, message_id);
+        assert_eq!(sugar_req.deref(), real_req.deref())
+    }
 
-        assert_eq!(sugar_delete_req.deref(), real_delete_req.deref())
+    #[test]
+    fn test_copy() {
+        let bot = Bot::new("TOKEN");
+
+        let sugar_req = bot.copy(TO_CHAT_ID, &make_message(FROM_CHAT_ID, MESSAGE_ID));
+        let real_req = bot.copy_message(TO_CHAT_ID, FROM_CHAT_ID, MESSAGE_ID);
+
+        assert_eq!(sugar_req.deref(), real_req.deref())
     }
 
     #[test]
