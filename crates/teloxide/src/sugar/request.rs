@@ -47,7 +47,7 @@ macro_rules! impl_request_link_preview_ext {
     };
 }
 
-/// Adds `.reply_to(message_id)` to requests
+/// `.reply_to(msg)` syntax sugar for requests.
 pub trait RequestReplyExt {
     /// Replaces `.reply_parameters(ReplyParameters::new(msg.id))`
     /// with `.reply_to(msg.id)` or `.reply_to(msg)`
@@ -57,7 +57,7 @@ pub trait RequestReplyExt {
         Self: Sized;
 }
 
-/// Adds `.disable_link_preview(is_disabled)` to requests
+/// `.disable_link_preview(is_disabled)` syntax sugar for requests.
 pub trait RequestLinkPreviewExt {
     /// Replaces
     /// `.link_preview_options(LinkPreviewOptions {
@@ -68,7 +68,7 @@ pub trait RequestLinkPreviewExt {
     ///     show_above_text: false
     /// };)`
     ///
-    /// With `.disable_link_preview(true)`
+    /// with `.disable_link_preview(true)`.
     fn disable_link_preview(self, is_disabled: bool) -> Self
     where
         Self: Sized;

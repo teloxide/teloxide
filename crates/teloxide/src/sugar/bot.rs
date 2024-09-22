@@ -4,7 +4,7 @@
 use crate::{prelude::*, types::*};
 use teloxide_core::{payloads::*, requests::JsonRequest};
 
-/// Adds useful manipulations with [`Message`] structs
+/// Syntax sugar for [`Message`] manipulations.
 ///
 /// [`Message`]: crate::types::Message
 pub trait BotMessagesExt {
