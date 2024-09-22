@@ -380,7 +380,7 @@ macro_rules! download_forward {
 
             fn download_file<'dst>(
                 &self,
-                path: &str,
+                path: &'dst str,
                 destination: &'dst mut (dyn tokio::io::AsyncWrite
                                + core::marker::Unpin
                                + core::marker::Send),
