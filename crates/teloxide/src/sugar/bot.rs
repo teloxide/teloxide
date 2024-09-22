@@ -125,6 +125,7 @@ impl BotMessagesExt for Bot {
     {
         self.forward_message(to_chat_id, message.chat.id, message.id)
     }
+
     fn edit_live_location(
         &self,
         message: &Message,
