@@ -28,6 +28,9 @@ pub trait Download {
     ///
     /// `path` can be obtained from [`GetFile`].
     ///
+    /// If the bot uses a [local bot api](https://github.com/tdlib/telegram-bot-api), this function
+    /// just copies the file into `destination`.
+    ///
     /// To download as a stream of chunks, see [`download_file_stream`].
     ///
     /// ## Examples
@@ -54,7 +57,7 @@ pub trait Download {
     /// [`download_file_stream`]: Self::download_file_stream
     fn download_file<'dst>(
         &self,
-        path: &str,
+        path: &'dst str,
         destination: &'dst mut (dyn AsyncWrite + Unpin + Send),
     ) -> Self::Fut<'dst>;
 
