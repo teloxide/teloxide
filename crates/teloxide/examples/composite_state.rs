@@ -96,26 +96,20 @@ fn schema() -> UpdateHandler {
                 teloxide::filter_command::<Command, _>()
                     .branch(dptree::case![Command::Start].endpoint(ask_full_name)),
             )
-            .branch(dptree::case![GlobalState::Idle].endpoint(handle_configured_user_message))
+            .branch(dptree::case![GlobalState::Idle].endpoint(on_idle))
             .branch(
-                // Its essential not to use
-                // `dptree::case![GlobalState::UserSetup(UserSetup::ReceiveFullName)]` directly,
-                // this won't work. Each nested enum requires it's own `branch`
-                // scope. Actually, each `dptree::case![..]` introduces the inner
-                // enum value to the `DependencyMap`, so there is an option
-                // to branch on the inner values freely.
-                dptree::case![GlobalState::UserSetup(_state)]
+                // This macro passes the `state` variable further. In order to pattern-match on it,
+                // we need to use `dptree::case!` two times again.
+                dptree::case![GlobalState::UserSetup(state)]
                     .branch(
-                        dptree::case![UserSetup::ReceiveFullName]
-                            .map(|text: String| FullName(text))
-                            .endpoint(ask_age),
+                        dptree::case![UserSetup::ReceiveFullName].map(FullName).endpoint(ask_age),
                     )
                     .branch(
                         dptree::case![UserSetup::ReceiveAge { full_name }]
                             .endpoint(finish_user_setup),
                     ),
             )
-            .branch(dptree::endpoint(handle_unconfigured_user_message)),
+            .branch(dptree::endpoint(fallback)),
     )
 }
 
@@ -145,22 +139,22 @@ async fn finish_user_setup(
     let _age = match age.parse::<u8>() {
         Ok(age) => age,
         Err(_err) => {
-            bot.send_message(message.chat.id, "Please, enter your age").await?;
+            bot.send_message(message.chat.id, "Please, enter your real age.").await?;
             return Ok(());
         }
     };
 
-    bot.send_message(message.chat.id, "You've successfully passed setup").await?;
+    bot.send_message(message.chat.id, "Your accout is set up!").await?;
     dialogue.update(GlobalState::Idle).await?;
     Ok(())
 }
 
-async fn handle_configured_user_message(bot: Bot, message: Message) -> HandlerResult {
-    bot.send_message(message.chat.id, "Hi, configured user!").await?;
+async fn on_idle(bot: Bot, message: Message) -> HandlerResult {
+    bot.send_message(message.chat.id, "You are all set.").await?;
     Ok(())
 }
 
-async fn handle_unconfigured_user_message(bot: Bot, message: Message) -> HandlerResult {
-    bot.send_message(message.chat.id, "Use /start to setup your account").await?;
+async fn fallback(bot: Bot, message: Message) -> HandlerResult {
+    bot.send_message(message.chat.id, "Use /start to setup your account.").await?;
     Ok(())
 }
