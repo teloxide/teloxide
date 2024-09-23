@@ -8,15 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `filter_boost_added` and `filter_reply_to_story` filters to `MessageFilterExt` trait
-- Add `filter_mention_command` filter to `HandlerExt` trait ([issue #494](https://github.com/teloxide/teloxide/issues/494))
-- Add `filter_business_connection`, `filter_business_message`, `filter_edited_business_message`, and `filter_deleted_business_messages` filters to update filters ([PR 1146](https://github.com/teloxide/teloxide/pull/1146))
-- Add `bot.forward`, `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_text`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message`, `bot.delete` and `bot.copy` to new `crate::sugar::bot::BotMessagesExt` trait ([issue #1143](https://github.com/teloxide/teloxide/issues/1143))
-- Add `.reply_to(message_id)` to new `crate::sugar::request::RequestReplyExt` trait, and `.disable_link_preview(is_disabled)` to new `crate::sugar::request::RequestLinkPreviewExt` trait ([issue #1143](https://github.com/teloxide/teloxide/issues/1143))
+- `filter_boost_added` and `filter_reply_to_story` filters to the `MessageFilterExt` trait ([PR 1131](https://github.com/teloxide/teloxide/pull/1131))
+- `filter_mention_command` filter to the `HandlerExt` trait ([issue 494](https://github.com/teloxide/teloxide/issues/494))
+- `filter_business_connection`, `filter_business_message`, `filter_edited_business_message`, and `filter_deleted_business_messages` filters to the `UpdateFilterExt` trait ([PR 1146](https://github.com/teloxide/teloxide/pull/1146))
+- Syntax sugar for making requests ([issue 1143](https://github.com/teloxide/teloxide/issues/1143)):
+  - `bot.forward`, `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_text`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message`, `bot.delete` and `bot.copy` methods to the new `crate::sugar::bot::BotMessagesExt` trait
+  - `req.reply_to` method to the new `crate::sugar::request::RequestReplyExt` trait
+  - `req.disable_link_preview` method to the new `crate::sugar::request::RequestLinkPreviewExt` trait
 
 ### Changed
 
-- Environment bumps: ([#1147][pr1147])
+- Environment bumps: ([PR 1147](https://github.com/teloxide/teloxide/pull/1147))
   - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
   - Some dependencies was bumped: `sqlx` to `0.8.1`, `tower` to `0.5.0`, `reqwest` to `0.12.7`
   - `tokio` version was explicitly specified as `1.39`
@@ -24,8 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Now Vec<MessageId> in requests serializes into [number] instead of [ {message_id: number} ], `forward_messages`, `copy_messages` and `delete_messages` now work properly
-
-[pr1147]: https://github.com/teloxide/teloxide/pull/1147
 
 ## 0.13.0 - 2024-08-16
 
