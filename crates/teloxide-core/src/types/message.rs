@@ -1816,6 +1816,13 @@ impl Message {
     }
 }
 
+/// Implemented for syntax sugar, see issue <https://github.com/teloxide/teloxide/issues/1143>
+impl From<Message> for MessageId {
+    fn from(message: Message) -> MessageId {
+        message.id
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use chrono::DateTime;

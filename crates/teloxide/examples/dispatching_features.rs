@@ -4,9 +4,7 @@
 use rand::Rng;
 
 use teloxide::{
-    dispatching::HandlerExt,
-    prelude::*,
-    types::{Dice, ReplyParameters},
+    dispatching::HandlerExt, prelude::*, sugar::request::RequestReplyExt, types::Dice,
     utils::command::BotCommands,
 };
 
@@ -84,7 +82,7 @@ async fn main() {
             // filter only messages with dices.
             Message::filter_dice().endpoint(|bot: Bot, msg: Message, dice: Dice| async move {
                 bot.send_message(msg.chat.id, format!("Dice value: {}", dice.value))
-                    .reply_parameters(ReplyParameters::new(msg.id))
+                    .reply_to(msg)
                     .await?;
                 Ok(())
             }),
