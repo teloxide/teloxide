@@ -4,6 +4,10 @@
 
 use teloxide_core::types::{User, UserId};
 
+pub(super) const ESCAPE_CHARS: [char; 19] = [
+    '\\', '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!',
+];
+
 /// Applies the bold font style to the string.
 ///
 /// Passed string will not be automatically escaped because it can contain
@@ -119,11 +123,8 @@ pub fn code_inline(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape(s: &str) -> String {
-    const CHARS: [char; 18] =
-        ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-
     s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
-        if CHARS.contains(&c) {
+        if ESCAPE_CHARS.contains(&c) {
             s.push('\\');
         }
         s.push(c);
@@ -247,10 +248,11 @@ mod tests {
 
     #[test]
     fn test_escape() {
+        assert_eq!(escape("\\!"), r"\\\!");
         assert_eq!(escape("* foobar *"), r"\* foobar \*");
         assert_eq!(
             escape(r"_ * [ ] ( ) ~ \ ` > # + - = | { } . !"),
-            r"\_ \* \[ \] \( \) \~ \ \` \> \# \+ \- \= \| \{ \} \. \!",
+            r"\_ \* \[ \] \( \) \~ \\ \` \> \# \+ \- \= \| \{ \} \. \!",
         );
     }
 
