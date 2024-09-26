@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `req.reply_to` method to the new `crate::sugar::request::RequestReplyExt` trait
   - `req.disable_link_preview` method to the new `crate::sugar::request::RequestLinkPreviewExt` trait
 
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Add `filter_chat_background_set` to `MessageFilterExt` trait
+
+[pr1159]: https://github.com/teloxide/teloxide/pull/1159
+
 ### Changed
 
 - Environment bumps: ([PR 1147](https://github.com/teloxide/teloxide/pull/1147))
