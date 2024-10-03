@@ -150,14 +150,12 @@ mod tests {
     }
     #[test]
     fn serialize() {
-        let keyboard = vec![
-            vec![
-                KeyboardButton::new("a"),
-                KeyboardButton::new("b"),
-                KeyboardButton::new("c"),
-                KeyboardButton::new("d"),
-            ]
-        ];
+        let keyboard = vec![vec![
+            KeyboardButton::new("a"),
+            KeyboardButton::new("b"),
+            KeyboardButton::new("c"),
+            KeyboardButton::new("d"),
+        ]];
         let keyboard_markup = KeyboardMarkup::new(keyboard)
             .persistent()
             .resize_keyboard()
@@ -165,7 +163,6 @@ mod tests {
             .one_time_keyboard();
         let expected = r#"{"keyboard":[[{"text":"a"},{"text":"b"},{"text":"c"},{"text":"d"}]],"is_persistent":true,"resize_keyboard":true,"one_time_keyboard":true,"selective":true}"#;
 
-        assert!(serde_json::ser::to_string(&keyboard_markup).is_ok_and(|s|s.eq(expected)));
-
+        assert!(serde_json::ser::to_string(&keyboard_markup).is_ok_and(|s| s.eq(expected)));
     }
 }
