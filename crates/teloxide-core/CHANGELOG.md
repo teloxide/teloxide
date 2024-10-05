@@ -65,11 +65,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Wrap `Public` variant of `ChatKind` in `Box`
   - Replaced `user_ids` with `users` in `UsersShared` struct
 
+- Remove a useless generic type in the `KeyboardMarkup::selective` function ([#1176][pr1176])
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
+[pr1176]: https://github.com/teloxide/teloxide/pull/1176
 
 ### Removed
 
