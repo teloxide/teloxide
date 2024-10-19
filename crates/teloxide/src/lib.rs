@@ -140,6 +140,7 @@ pub mod prelude;
 #[cfg(feature = "ctrlc_handler")]
 pub mod repls;
 pub mod stop;
+pub mod sugar;
 pub mod update_listeners;
 pub mod utils;
 

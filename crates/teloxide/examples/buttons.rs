@@ -2,6 +2,7 @@ use std::error::Error;
 use teloxide::{
     payloads::SendMessageSetters,
     prelude::*,
+    sugar::bot::BotMessagesExt,
     types::{
         InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputMessageContent,
         InputMessageContentText, Me,
@@ -107,17 +108,17 @@ async fn inline_query_handler(
 /// **IMPORTANT**: do not send privacy-sensitive data this way!!!
 /// Anyone can read data stored in the callback button.
 async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Error + Send + Sync>> {
-    if let Some(version) = q.data {
+    if let Some(ref version) = q.data {
         let text = format!("You chose: {version}");
 
         // Tell telegram that we've seen this query, to remove 🕑 icons from the
         // clients. You could also use `answer_callback_query`'s optional
         // parameters to tweak what happens on the client side.
-        bot.answer_callback_query(q.id).await?;
+        bot.answer_callback_query(&q.id).await?;
 
         // Edit text of the message to which the buttons were attached
-        if let Some(message) = q.message {
-            bot.edit_message_text(message.chat().id, message.id(), text).await?;
+        if let Some(message) = q.regular_message() {
+            bot.edit_text(message, text).await?;
         } else if let Some(id) = q.inline_message_id {
             bot.edit_message_text_inline(id, text).await?;
         }

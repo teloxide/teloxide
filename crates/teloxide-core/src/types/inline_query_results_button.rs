@@ -17,6 +17,7 @@ pub struct InlineQueryResultsButton {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum InlineQueryResultsButtonKind {
     /// Description of the [Web App] that will be launched when the user presses
     /// the button. The Web App will be able to switch back to the inline mode
@@ -43,4 +44,20 @@ pub enum InlineQueryResultsButtonKind {
     /// [Deep-linking]: https://core.telegram.org/bots/features#deep-linking
     /// [switch_inline]: https://core.telegram.org/bots/api#inlinekeyboardmarkup
     StartParameter(String),
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::types::{InlineQueryResultsButton, InlineQueryResultsButtonKind};
+
+    #[test]
+    fn inline_query_results_button() {
+        let button = InlineQueryResultsButton {
+            text: "test".into(),
+            kind: InlineQueryResultsButtonKind::StartParameter("bot".into()),
+        };
+        let expected = r#"{"text":"test","start_parameter":"bot"}"#;
+        let actual = serde_json::to_string(&button).unwrap();
+        assert_eq!(expected, actual);
+    }
 }

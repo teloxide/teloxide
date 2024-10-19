@@ -374,6 +374,17 @@ impl Serializer for PartSerializer {
         Ok(JsonPartSerializer { buf: String::new(), state: PartSerializerStructState::Empty })
     }
 
+    fn serialize_newtype_struct<T: ?Sized>(
+        self,
+        _: &'static str,
+        value: &T,
+    ) -> Result<Self::Ok, Self::Error>
+    where
+        T: Serialize,
+    {
+        value.serialize(self)
+    }
+
     // Unimplemented
 
     fn serialize_none(self) -> Result<Self::Ok, Self::Error> {
@@ -388,17 +399,6 @@ impl Serializer for PartSerializer {
     }
 
     fn serialize_unit_struct(self, _: &'static str) -> Result<Self::Ok, Self::Error> {
-        unimplemented!()
-    }
-
-    fn serialize_newtype_struct<T: ?Sized>(
-        self,
-        _: &'static str,
-        _: &T,
-    ) -> Result<Self::Ok, Self::Error>
-    where
-        T: Serialize,
-    {
         unimplemented!()
     }
 
