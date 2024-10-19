@@ -1,4 +1,4 @@
-//! Util for rendering texts and message entities to html and markdown string
+//! Utilities for rendering texts and message entities to HTML and Markdown.
 
 use teloxide_core::types::{MessageEntity, MessageEntityKind as MEK};
 
@@ -31,10 +31,6 @@ impl<'a> Render<'a> {
     /// - `text`: The input text to be parsed.
     /// - `entities`: The message entities (formatting, links, etc.) to be
     ///   applied to the text.
-    ///
-    /// # Returns
-    ///
-    /// A new [`Render`] instance.
     #[must_use]
     pub fn new(text: &'a str, entities: &'a [MessageEntity]) -> Self {
         // get the needed size for the new tags that we want to parse from entities
@@ -57,7 +53,7 @@ impl<'a> Render<'a> {
                 )
             })
             .count()
-            * 2; // 2 because we inseret two tag for each entity
+            * 2; // 2 because we insert two tags for each entity
 
         let mut tags = Vec::with_capacity(needed_size);
 
@@ -101,7 +97,8 @@ impl<'a> Render<'a> {
             return self.text.to_owned();
         }
 
-        let mut buffer = String::with_capacity(self.text.len() + writer.get_tags_sizes(&self.tags));
+        let mut buffer =
+            String::with_capacity(self.text.len() + writer.get_extra_size_for_tags(&self.tags));
         let mut tags = self.tags.iter();
         let mut current_tag = tags.next();
 
@@ -140,14 +137,14 @@ impl<'a> Render<'a> {
         buffer
     }
 
-    /// Render and return the text as **Html-formatted** string.
+    /// Render and return the text as an **HTML-formatted** string.
     #[must_use]
     #[inline]
     pub fn as_html(&self) -> String {
         self.format(&html::HTML)
     }
 
-    /// Render and return the text as **Markdown-formatted** string.
+    /// Render and return the text as a **Markdown-formatted** string.
     #[must_use]
     #[inline]
     pub fn as_markdown(&self) -> String {

@@ -15,7 +15,6 @@ pub static HTML: TagWriter = TagWriter {
     text_link: ComplexTag::new("<a href=\"", "\">", "</a>"),
     text_mention: ComplexTag::new("<a href=\"tg://user?id=", "\">", "</a>"),
     custom_emoji: ComplexTag::new("<tg-emoji emoji-id=\"", "\">", "</tg-emoji>"),
-
     write_tag_fn: write_tag,
     write_char_fn: write_char,
 };

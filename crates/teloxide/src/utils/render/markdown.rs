@@ -17,7 +17,6 @@ pub static MARKDOWN: TagWriter = TagWriter {
     text_link: ComplexTag::new("[", "](", ")"),
     text_mention: ComplexTag::new("[", "](tg://user?id=", ")"),
     custom_emoji: ComplexTag::new("[", "](tg://emoji?id=", ")"),
-
     write_tag_fn: write_tag,
     write_char_fn: write_char,
 };

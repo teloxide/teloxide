@@ -81,7 +81,6 @@ impl SimpleTag {
         Self { start, end }
     }
 
-    /// Get tag size based on place
     pub const fn get_tag(&self, place: Place) -> &'static str {
         match place {
             Place::Start => self.start,
@@ -116,16 +115,12 @@ pub struct TagWriter {
     pub text_link: ComplexTag,
     pub text_mention: ComplexTag,
     pub custom_emoji: ComplexTag,
-
-    /// Write the tag to buffer
     pub write_tag_fn: fn(&Tag, buf: &mut String),
-    /// Write the char to buffer and escape characters if needed
     pub write_char_fn: fn(char, buf: &mut String),
 }
 
 impl TagWriter {
-    /// Get the extra size needed for tags
-    pub fn get_tags_sizes(&self, tags: &[Tag]) -> usize {
+    pub fn get_extra_size_for_tags(&self, tags: &[Tag]) -> usize {
         tags.iter()
             .map(|tag| match tag.kind {
                 Kind::Bold => self.bold.get_tag(tag.place).len(),
