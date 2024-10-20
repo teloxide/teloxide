@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `bot.forward`, `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_text`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message`, `bot.delete` and `bot.copy` methods to the new `crate::sugar::bot::BotMessagesExt` trait
   - `req.reply_to` method to the new `crate::sugar::request::RequestReplyExt` trait
   - `req.disable_link_preview` method to the new `crate::sugar::request::RequestLinkPreviewExt` trait
-- `stack_size` setter to `DispatcherBuilder`
+- `stack_size` setter to `DispatcherBuilder` ([PR 1185](https://github.com/teloxide/teloxide/pull/1185))
 
 ### Changed
 
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
   - Some dependencies was bumped: `sqlx` to `0.8.1`, `tower` to `0.5.0`, `reqwest` to `0.12.7`
   - `tokio` version was explicitly specified as `1.39`
+- Added new `Send` and `Sync` trait bounds to `try_dispatch_with_listener` and `dispatch_with_listener` generic parameters ([PR 1185](https://github.com/teloxide/teloxide/pull/1185)) [**BC**]
 
 ### Fixed
 

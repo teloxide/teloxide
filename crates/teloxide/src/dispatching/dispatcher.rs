@@ -17,7 +17,6 @@ use futures::{
     stream::FuturesUnordered,
     FutureExt as _, StreamExt as _,
 };
-use tokio::runtime::Builder;
 use tokio_stream::wrappers::ReceiverStream;
 
 use std::{
@@ -31,7 +30,6 @@ use std::{
         atomic::{AtomicBool, AtomicU32, Ordering},
         Arc,
     },
-    thread,
 };
 
 /// The builder for [`Dispatcher`].
@@ -412,9 +410,9 @@ where
 
         let stop_token = Some(update_listener.stop_token());
 
-        thread::scope(|scope| {
+        std::thread::scope(|scope| {
             scope.spawn(move || {
-                let runtime = Builder::new_multi_thread()
+                let runtime = tokio::runtime::Builder::new_multi_thread()
                     .thread_stack_size(self.stack_size)
                     .enable_all()
                     .build()
