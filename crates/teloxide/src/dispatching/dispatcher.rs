@@ -436,8 +436,8 @@ where
         update_listener_error_handler: Arc<Eh>,
         mut stop_token: Option<StopToken>,
     ) where
-        UListener: UpdateListener + Send + 'a,
-        Eh: ErrorHandler<UListener::Err> + Send + Sync + 'a,
+        UListener: UpdateListener + 'a,
+        Eh: ErrorHandler<UListener::Err> + 'a,
         UListener::Err: Debug,
     {
         self.state.start_dispatching();
