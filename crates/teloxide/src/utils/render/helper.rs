@@ -3,7 +3,7 @@
 
 use teloxide_core::types::Message;
 
-use super::Render;
+use super::Renderer;
 
 /// Generates HTML and Markdown representations of text and captions in a
 /// Telegram message.
@@ -41,24 +41,24 @@ impl RenderMessageTextHelper for Message {
     fn html_text(&self) -> Option<String> {
         self.text()
             .zip(self.entities())
-            .map(|(text, entities)| Render::new(text, entities).as_html())
+            .map(|(text, entities)| Renderer::new(text, entities).as_html())
     }
 
     fn markdown_text(&self) -> Option<String> {
         self.text()
             .zip(self.entities())
-            .map(|(text, entities)| Render::new(text, entities).as_markdown())
+            .map(|(text, entities)| Renderer::new(text, entities).as_markdown())
     }
 
     fn html_caption(&self) -> Option<String> {
         self.caption()
             .zip(self.caption_entities())
-            .map(|(text, entities)| Render::new(text, entities).as_html())
+            .map(|(text, entities)| Renderer::new(text, entities).as_html())
     }
 
     fn markdown_caption(&self) -> Option<String> {
         self.caption()
             .zip(self.caption_entities())
-            .map(|(text, entities)| Render::new(text, entities).as_markdown())
+            .map(|(text, entities)| Renderer::new(text, entities).as_markdown())
     }
 }

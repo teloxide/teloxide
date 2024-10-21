@@ -13,13 +13,14 @@ mod tag;
 
 /// Parses text and message entities to produce the final formatted output.
 #[derive(Clone, Eq, PartialEq)]
-pub struct Render<'a> {
+pub struct Renderer<'a> {
     text: &'a str,
     tags: Vec<Tag<'a>>,
 }
 
-impl<'a> Render<'a> {
-    /// Creates a new [`Render`] instance with given text and message entities.
+impl<'a> Renderer<'a> {
+    /// Creates a new [`Renderer`] instance with given text and message
+    /// entities.
     ///
     /// # Arguments
     ///
@@ -160,7 +161,7 @@ mod test {
             MessageEntity { kind: MEK::Underline, offset: 12, length: 10 },
         ];
 
-        let render = Render::new(text, &entities);
+        let render = Renderer::new(text, &entities);
 
         assert_eq!(render.as_html(), "<b>Bold</b> <i>italic</i> <u>&lt;underline</u>_");
         assert_eq!(render.as_markdown(), "**Bold** _\ritalic_\r __\r<underline__\r\\_");
@@ -179,7 +180,7 @@ mod test {
             },
         ];
 
-        let render = Render::new(text, &entities);
+        let render = Renderer::new(text, &entities);
 
         assert_eq!(
             render.as_html(),
@@ -200,7 +201,7 @@ mod test {
             MessageEntity { kind: MEK::Italic, offset: 10, length: 12 },
         ];
 
-        let render = Render::new(text, &entities);
+        let render = Renderer::new(text, &entities);
 
         assert_eq!(render.as_html(), "Some <b>bold <i>both</b> italics</i>");
         assert_eq!(render.as_markdown(), "Some **bold _\rboth** italics_\r");
@@ -232,7 +233,7 @@ mod test {
             MessageEntity { kind: MEK::Blockquote, offset: 41, length: 19 },
         ];
 
-        let render = Render::new(text, &entities);
+        let render = Renderer::new(text, &entities);
 
         assert_eq!(
             render.as_html(),
