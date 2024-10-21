@@ -1,4 +1,4 @@
-//! Utilities for rendering texts and message entities to HTML and Markdown.
+//! Utils for rendering HTML and Markdown output.
 
 use teloxide_core::types::{MessageEntity, MessageEntityKind as MEK};
 
@@ -11,8 +11,7 @@ mod html;
 mod markdown;
 mod tag;
 
-/// The [`Render`] struct is responsible for parsing the text and entities to
-/// produce the final formatted output.
+/// Parses text and message entities to produce the final formatted output.
 #[derive(Clone, Eq, PartialEq)]
 pub struct Render<'a> {
     text: &'a str,
@@ -20,11 +19,7 @@ pub struct Render<'a> {
 }
 
 impl<'a> Render<'a> {
-    /// Creates a new `Render` instance with the given text and entities.
-    ///
-    /// The `Render` is responsible for parsing the text and entities to
-    /// produce the final formatted output. This constructor sets up the
-    /// initial state needed for the parsing process.
+    /// Creates a new [`Render`] instance with given text and message entities.
     ///
     /// # Arguments
     ///
@@ -84,11 +79,11 @@ impl<'a> Render<'a> {
         Self { text, tags }
     }
 
-    /// Renders the text with the given [`TagWriter`].
+    /// Renders text with a given [`TagWriter`].
     ///
-    /// This method iterates through the text and the associated position tags,
-    /// and writes the text with the appropriate tags to a buffer. The
-    /// resulting buffer is then returned as a `String`.
+    /// This method iterates through the text and the associated position tags
+    /// and writes the text with the appropriate tags to a buffer, which is then
+    /// returned as a `String`.
     ///
     /// If input have no tags we just return the original text as-is.
     #[must_use]
@@ -137,14 +132,14 @@ impl<'a> Render<'a> {
         buffer
     }
 
-    /// Render and return the text as an **HTML-formatted** string.
+    /// Renders and returns the text as an **HTML-formatted** string.
     #[must_use]
     #[inline]
     pub fn as_html(&self) -> String {
         self.format(&html::HTML)
     }
 
-    /// Render and return the text as a **Markdown-formatted** string.
+    /// Renders and returns the text as a **Markdown-formatted** string.
     #[must_use]
     #[inline]
     pub fn as_markdown(&self) -> String {

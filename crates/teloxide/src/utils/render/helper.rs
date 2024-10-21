@@ -5,8 +5,8 @@ use teloxide_core::types::Message;
 
 use super::Render;
 
-/// The [`RenderMessageTextHelper`] trait provides methods to generate HTML and
-/// Markdown representations of the text and captions in a Telegram message.
+/// Generates HTML and Markdown representations of text and captions in a
+/// Telegram message.
 pub trait RenderMessageTextHelper {
     /// Returns the HTML representation of the message text, if the message
     /// contains text. This method will parse the text and any entities
