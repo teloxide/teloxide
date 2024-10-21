@@ -410,7 +410,12 @@ where
 
         let stop_token = Some(update_listener.stop_token());
 
-        std::thread::scope(|scope| {
+        // We create a new Tokio runtime in order to set the correct stack size. We do
+        // it a scoped thread because Tokio runtimes cannot be nested. We need a scoped
+        // thread because of the lifetime `'a` in `&'a mut self` and because scoped
+        // threads are automatically joined. See this issue:
+        // <https://github.com/teloxide/teloxide/issues/1154>.
+        std::thread::scope(|scope: &std::thread::Scope<'_, '_>| {
             scope.spawn(move || {
                 let runtime = tokio::runtime::Builder::new_multi_thread()
                     .thread_stack_size(self.stack_size)
