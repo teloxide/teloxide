@@ -106,9 +106,9 @@ where
         Self { worker_queue_size: size, ..self }
     }
 
-    /// Specifies the stack size of the dispatcher.
+    /// Specifies the stack size available to the dispatcher.
     ///
-    /// By default it's 8 * 1024 * 1024 bytes (8 MiB).
+    /// By default, it's 8 * 1024 * 1024 bytes (8 MiB).
     #[must_use]
     pub fn stack_size(self, size: usize) -> Self {
         Self { stack_size: size, ..self }
