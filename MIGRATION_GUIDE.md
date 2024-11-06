@@ -1,6 +1,54 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## unreleased
+
+### teloxide
+
+We have finally introduced three different categories for syntactic sugar:
+
+1. A new trait `RequestReplyExt` that adds `.reply_to(msg)`, equivalent to `.reply_parameters(ReplyParameters::new(msg.id))`
+
+```diff
+- bot.send_dice(msg.chat.id).reply_parameters(ReplyParameters::new(msg.id)).await?;
++ bot.send_dice(msg.chat.id).reply_to(msg).await?;
+// or
++ bot.send_dice(msg.chat.id).reply_to(msg.id).await?;
+```
+
+2. A new trait `RequestLinkPreviewExt` that adds `.disable_link_preview(true)`, equivalent to `.link_preview_options(options)`
+
+```diff
+- let options = LinkPreviewOptions {
+-     is_disabled: true,
+-     url: None,
+-     prefer_small_media: false,
+-     prefer_large_media: false,
+-     show_above_text: false,
+- };
+- bot.send_message(msg.chat.id, "https://github.com/teloxide/teloxide").link_preview_options(options).await?;
++ bot.send_message(msg.chat.id, "https://github.com/teloxide/teloxide").disable_link_preview(true).await?;
+```
+
+3. A new trait `BotMessagesExt` that adds a shorter method for anything that requires both `msg.id` and `msg.chat.id`:
+
+```diff
+- bot.edit_message_text(msg.chat.id, msg.id, text).await?;
++ bot.edit_text(msg, text).await?;
+```
+
+```diff
+- bot.forward_message(to_chat_id, msg.chat.id, msg.id).await?;
++ bot.forward(to_chat_id, msg).await?;
+```
+
+```diff
+- bot.delete_message(msg.chat.id, msg.id).await?;
++ bot.delete(msg).await?;
+```
+
+And others like `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message` and `bot.copy` methods
+
 ## 0.11 -> 0.12
 
 ### teloxide
