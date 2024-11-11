@@ -13,6 +13,7 @@ mod api;
 mod download;
 
 const TELOXIDE_TOKEN: &str = "TELOXIDE_TOKEN";
+const TELOXIDE_API_URL: &str = "TELOXIDE_API_URL";
 
 /// A requests sender.
 ///
@@ -99,9 +100,12 @@ impl Bot {
         Self { token, api_url, client }
     }
 
-    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_PROXY`
-    /// environmental variables (a bot's token & a proxy) and the default
-    /// [`reqwest::Client`].
+    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_API_URL` &
+    /// `TELOXIDE_PROXY` environmental variables (a bot's token & a bot's
+    /// API url & a proxy) and the default [`reqwest::Client`].
+    ///
+    /// If `TELOXIDE_API_URL` doesn't exist, returns to default Telegram bot API
+    /// url.
     ///
     /// This function passes the value of `TELOXIDE_PROXY` into
     /// [`reqwest::Proxy::all`], if it exists, otherwise returns the default
@@ -109,6 +113,7 @@ impl Bot {
     ///
     /// # Panics
     ///  - If cannot get the `TELOXIDE_TOKEN`  environmental variable.
+    ///  - If `TELOXIDE_API_URL` exists, but isn't correct url.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
@@ -118,10 +123,15 @@ impl Bot {
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
-    /// bot's token) and your [`reqwest::Client`].
+    /// bot's token), `TELOXIDE_API_URL` environmental variable (a bot's API
+    /// url) and your [`reqwest::Client`].
+    ///
+    /// If `TELOXIDE_API_URL` doesn't exist, returns to default Telegram bot API
+    /// url.
     ///
     /// # Panics
-    /// If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
+    ///  - If `TELOXIDE_API_URL` exists, but isn't correct url.
     ///
     /// # Caution
     /// Your custom client might not be configured correctly to be able to work
@@ -130,7 +140,16 @@ impl Bot {
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
     /// [issue 223]: https://github.com/teloxide/teloxide/issues/223
     pub fn from_env_with_client(client: Client) -> Self {
-        Self::with_client(get_env(TELOXIDE_TOKEN), client)
+        let bot = Self::with_client(get_env(TELOXIDE_TOKEN), client);
+
+        match std::env::var(TELOXIDE_API_URL) {
+            Ok(env_api_url) => {
+                let api_url = reqwest::Url::parse(&env_api_url)
+                    .expect("Failed to parse TELOXIDE_API_URL env variable url");
+                bot.set_api_url(api_url)
+            }
+            Err(_) => bot,
+        }
     }
 
     /// Sets a custom API URL.
