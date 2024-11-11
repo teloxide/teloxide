@@ -94,18 +94,17 @@ impl Bot {
         let token = Into::<String>::into(token).into();
         let api_url = Arc::new(
             reqwest::Url::parse(net::TELEGRAM_API_URL)
-                .expect("Failed to parse default Telegram bot API url"),
+                .expect("Failed to parse the default TBA URL"),
         );
 
         Self { token, api_url, client }
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_API_URL` &
-    /// `TELOXIDE_PROXY` environmental variables (a bot's token & a bot's
-    /// API url & a proxy) and the default [`reqwest::Client`].
+    /// `TELOXIDE_PROXY` environmental variables (the bot's token & the bot's
+    /// API URL & the proxy) and the default [`reqwest::Client`].
     ///
-    /// If `TELOXIDE_API_URL` doesn't exist, returns to default Telegram bot API
-    /// url.
+    /// If `TELOXIDE_API_URL` doesn't exist, returns to the default TBA URL.
     ///
     /// This function passes the value of `TELOXIDE_PROXY` into
     /// [`reqwest::Proxy::all`], if it exists, otherwise returns the default
@@ -113,7 +112,7 @@ impl Bot {
     ///
     /// # Panics
     ///  - If cannot get the `TELOXIDE_TOKEN`  environmental variable.
-    ///  - If `TELOXIDE_API_URL` exists, but isn't correct url.
+    ///  - If `TELOXIDE_API_URL` exists, but isn't a correct URL.
     ///  - If it cannot create [`reqwest::Client`].
     ///
     /// [`reqwest::Client`]: https://docs.rs/reqwest/0.10.1/reqwest/struct.Client.html
@@ -122,16 +121,15 @@ impl Bot {
         Self::from_env_with_client(crate::net::client_from_env())
     }
 
-    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable (a
-    /// bot's token), `TELOXIDE_API_URL` environmental variable (a bot's API
-    /// url) and your [`reqwest::Client`].
+    /// Creates a new `Bot` with the `TELOXIDE_TOKEN` environmental variable
+    /// (the bot's token), `TELOXIDE_API_URL` environmental variable (the bot's
+    /// API URL) and your [`reqwest::Client`].
     ///
-    /// If `TELOXIDE_API_URL` doesn't exist, returns to default Telegram bot API
-    /// url.
+    /// If `TELOXIDE_API_URL` doesn't exist, returns to the default TBA URL.
     ///
     /// # Panics
     ///  - If cannot get the `TELOXIDE_TOKEN` environmental variable.
-    ///  - If `TELOXIDE_API_URL` exists, but isn't correct url.
+    ///  - If `TELOXIDE_API_URL` exists, but isn't a correct URL.
     ///
     /// # Caution
     /// Your custom client might not be configured correctly to be able to work
@@ -145,7 +143,7 @@ impl Bot {
         match std::env::var(TELOXIDE_API_URL) {
             Ok(env_api_url) => {
                 let api_url = reqwest::Url::parse(&env_api_url)
-                    .expect("Failed to parse TELOXIDE_API_URL env variable url");
+                    .expect("Failed to parse the `TELOXIDE_API_URL` env variable");
                 bot.set_api_url(api_url)
             }
             Err(_) => bot,
@@ -154,8 +152,8 @@ impl Bot {
 
     /// Sets a custom API URL.
     ///
-    /// For example, you can run your own [Telegram bot API server][tbas] and
-    /// set its URL using this method.
+    /// For example, you can run your own [TBA server][tbas] and set its URL
+    /// using this method.
     ///
     /// [tbas]: https://github.com/tdlib/telegram-bot-api
     ///
@@ -177,7 +175,7 @@ impl Bot {
     ///
     /// ## Multi-instance behaviour
     ///
-    /// This method only sets the url for one bot instace, older clones are
+    /// This method only sets the URL for one bot instace, older clones are
     /// unaffected.
     ///
     /// ```
@@ -211,7 +209,7 @@ impl Bot {
         &self.client
     }
 
-    /// Returns currently used token API url.
+    /// Returns currently used token API URL.
     #[must_use]
     pub fn api_url(&self) -> reqwest::Url {
         reqwest::Url::clone(&*self.api_url)
