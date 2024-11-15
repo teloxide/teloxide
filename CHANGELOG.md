@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `bot.forward`, `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_text`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message`, `bot.delete` and `bot.copy` methods to the new `crate::sugar::bot::BotMessagesExt` trait
   - `req.reply_to` method to the new `crate::sugar::request::RequestReplyExt` trait
   - `req.disable_link_preview` method to the new `crate::sugar::request::RequestLinkPreviewExt` trait
+- If `TELOXIDE_DIALOGUE_BEHAVIOUR` env variable is set to "default", `.enter_dialogue` will never error, instead setting the dialogue to default ([PR 1187](https://github.com/teloxide/teloxide/pull/1187))
 
 ### Changed
 
@@ -28,7 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now Vec<MessageId> in requests serializes into [number] instead of [ {message_id: number} ], `forward_messages`, `copy_messages` and `delete_messages` now work properly
 - Now `InlineQueryResultsButton` serializes properly ([issue 1181](https://github.com/teloxide/teloxide/issues/1181))
 - Now `ThreadId` is able to serialize in multipart requests ([PR 1179](https://github.com/teloxide/teloxide/pull/1179))
-- Now persistent state storage won't break if the data is outdated ([issue 1156](https://github.com/teloxide/teloxide/issues/1156))
 
 ## 0.13.0 - 2024-08-16
 
