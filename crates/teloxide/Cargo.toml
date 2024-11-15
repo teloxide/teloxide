@@ -86,6 +86,7 @@ full = [
 [dependencies]
 # replace me by the actual version when release, and return path when it's time to make 0-day fixes
 teloxide-core = { path = "../teloxide-core", default-features = false }
+# me too
 teloxide-macros = { path = "../teloxide-macros", optional = true }
 
 serde_json = "1.0"
