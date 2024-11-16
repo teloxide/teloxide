@@ -2,7 +2,7 @@
 use teloxide::utils::button::InlineButtons;
 
 // We put tests here because macro expand in unit tests in module
-// teloxide::utils::command was a failure
+// teloxide::utils::button was a failure
 
 #[test]
 #[cfg(feature = "macros")]
@@ -49,10 +49,18 @@ fn stringify_button_error() {
     }
 
     let button = DefaultData::Fruit("test;test2".to_string());
+
     match button.stringify() {
-        Err(StringifyError::SeparatorInUnnamedArgument { enum_variant, field }) => {
+        Err(StringifyError::SeparatorInUnnamedArgument {
+            enum_variant,
+            stringified_data,
+            separator,
+            field,
+        }) => {
             assert_eq!(field, 0);
-            assert_eq!(enum_variant, "DefaultData::Fruit")
+            assert_eq!(enum_variant, "DefaultData::Fruit");
+            assert_eq!(stringified_data, "test;test2");
+            assert_eq!(separator, ";");
         }
         _ => panic!("Expected an error!"),
     }
@@ -121,9 +129,16 @@ fn stringify_button_named_fields_error() {
 
     let button = DefaultData::Fruit { num: 9, data: "test;test2".to_owned() };
     match button.stringify() {
-        Err(StringifyError::SeparatorInNamedArgument { enum_variant, argument }) => {
+        Err(StringifyError::SeparatorInNamedArgument {
+            enum_variant,
+            stringified_data,
+            separator,
+            argument,
+        }) => {
             assert_eq!(argument, "data".to_owned());
-            assert_eq!(enum_variant, "DefaultData::Fruit")
+            assert_eq!(enum_variant, "DefaultData::Fruit");
+            assert_eq!(stringified_data, "test;test2");
+            assert_eq!(separator, ";");
         }
         _ => panic!("Expected an error!"),
     }

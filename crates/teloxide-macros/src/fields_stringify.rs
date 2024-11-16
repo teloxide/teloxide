@@ -27,7 +27,7 @@ pub(crate) fn impl_stringify_args_unnamed(
     string_variant: String,
 ) -> proc_macro2::TokenStream {
     let names =
-        (0..data.unnamed.len()).map(|i| syn::Ident::new(&format!("field_{}", i), variant.span()));
+        (0..data.unnamed.len()).map(|i| syn::Ident::new(&format!("field_{i}"), variant.span()));
     let types = data.unnamed.iter().map(|f| &f.ty);
     let mut all_fields = quote! {};
     for ((name, ty), i) in names.clone().zip(types).zip(0..data.unnamed.len()) {
@@ -36,7 +36,9 @@ pub(crate) fn impl_stringify_args_unnamed(
             if stringified.contains(fields_separator) {
                 return ::std::result::Result::Err(StringifyError::SeparatorInUnnamedArgument {
                     enum_variant: std::concat!(#self_string_name, "::", #string_variant).to_owned(),
-                    field: #i
+                    stringified_data: stringified,
+                    separator: fields_separator.to_owned(),
+                    field: #i,
                 });
             }
             stringified
@@ -66,7 +68,9 @@ pub(crate) fn impl_stringify_args_named(
             if stringified.contains(fields_separator) {
                 return ::std::result::Result::Err(StringifyError::SeparatorInNamedArgument {
                     enum_variant: ::std::concat!(#self_string_name, "::", #string_variant).to_owned(),
-                    argument: ::std::stringify!(#name).to_string()
+                    stringified_data: stringified,
+                    separator: fields_separator.to_owned(),
+                    argument: ::std::stringify!(#name).to_string(),
                 });
             }
             stringified
