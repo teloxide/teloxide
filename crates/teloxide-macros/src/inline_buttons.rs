@@ -84,7 +84,7 @@ fn impl_parse(
                    #(
                         #matching_values => Ok(#variants_initialization),
                    )*
-                   _ => ::std::result::Result::Err(ParseError::UnknownCommand(enum_variant.to_owned())),
+                   _ => ::std::result::Result::Err(ParseError::UnknownCallbackDataVariant(enum_variant.to_owned())),
               }
          }
     }

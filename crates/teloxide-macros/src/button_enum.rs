@@ -17,9 +17,15 @@ impl ButtonEnum {
 
         variants_only_attr![rename];
 
-        let separator = fields_separator
-            .map(|(s, _)| s)
-            .unwrap_or_else(|| String::from(DEFAULT_CALLBACK_DATA_SEPARATOR));
+        let separator = match fields_separator {
+            Some((separator, sp)) => {
+                if separator.is_empty() {
+                    compile_error_at("Separator can't be empty!", sp);
+                }
+                separator
+            }
+            None => String::from(DEFAULT_CALLBACK_DATA_SEPARATOR),
+        };
 
         // We can just always use a separator parser, since the user won't ever interact
         // with that

@@ -109,5 +109,5 @@ impl ButtonAttr {
 }
 
 fn is_button_attribute(a: &Attribute) -> bool {
-    matches!(a.path.get_ident(), Some(ident) if ident == "button")
+    matches!(a.path().get_ident(), Some(ident) if ident == "button")
 }
