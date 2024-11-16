@@ -228,6 +228,10 @@ name = "inline"
 required-features = ["macros", "ctrlc_handler"]
 
 [[example]]
+name = "inline_buttons_enum"
+required-features = ["macros", "ctrlc_handler"]
+
+[[example]]
 name = "ngrok_ping_pong"
 required-features = ["webhooks-axum", "ctrlc_handler"]
 
