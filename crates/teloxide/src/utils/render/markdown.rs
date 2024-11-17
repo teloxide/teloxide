@@ -5,7 +5,7 @@ use crate::utils::markdown::ESCAPE_CHARS;
 use super::{ComplexTag, Kind, Place, SimpleTag, Tag, TagWriter};
 
 pub static MARKDOWN: TagWriter = TagWriter {
-    bold: SimpleTag::new("**", "**"),
+    bold: SimpleTag::new("*", "*"),
     blockquote: SimpleTag::new(">", ""),
     italic: SimpleTag::new("_\r", "_\r"),
     underline: SimpleTag::new("__\r", "__\r"),

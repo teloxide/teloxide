@@ -140,7 +140,7 @@ impl<'a> Renderer<'a> {
         self.format(&html::HTML)
     }
 
-    /// Renders and returns the text as a **Markdown-formatted** string.
+    /// Renders and returns the text as a **MarkdownV2-formatted** string.
     #[must_use]
     #[inline]
     pub fn as_markdown(&self) -> String {
@@ -164,7 +164,7 @@ mod test {
         let render = Renderer::new(text, &entities);
 
         assert_eq!(render.as_html(), "<b>Bold</b> <i>italic</i> <u>&lt;underline</u>_");
-        assert_eq!(render.as_markdown(), "**Bold** _\ritalic_\r __\r<underline__\r\\_");
+        assert_eq!(render.as_markdown(), "*Bold* _\ritalic_\r __\r<underline__\r\\_");
     }
 
     #[test]
@@ -204,7 +204,7 @@ mod test {
         let render = Renderer::new(text, &entities);
 
         assert_eq!(render.as_html(), "Some <b>bold <i>both</b> italics</i>");
-        assert_eq!(render.as_markdown(), "Some **bold _\rboth** italics_\r");
+        assert_eq!(render.as_markdown(), "Some *bold _\rboth* italics_\r");
     }
 
     #[test]
@@ -243,8 +243,8 @@ mod test {
         );
         assert_eq!(
             render.as_markdown(),
-            "**Hi** _\rhow_\r __\rare__\r ~you~?\n**n****__\r~este~__\rd** [entities](https://t.me/) \
-            [are](tg://user?id=1234567) `cool`\n>Im in a Blockquote\\!"
+            "*Hi* _\rhow_\r __\rare__\r ~you~?\n*n**__\r~este~__\rd* [entities](https://t.me/) \
+             [are](tg://user?id=1234567) `cool`\n>Im in a Blockquote\\!"
         );
     }
 }
