@@ -47,8 +47,8 @@ pub struct Limits {
     /// Allowed messages in one chat per minute.
     pub messages_per_min_chat: u32,
 
-    /// Allowed messages in one channel per minute.
-    pub messages_per_min_channel: u32,
+    /// Allowed messages in one channel or supergroup per minute.
+    pub messages_per_min_channel_or_supergroup: u32,
 
     /// Allowed messages per second.
     pub messages_per_sec_overall: u32,
@@ -104,7 +104,7 @@ impl Default for Limits {
             messages_per_sec_chat: 1,
             messages_per_sec_overall: 30,
             messages_per_min_chat: 20,
-            messages_per_min_channel: 10,
+            messages_per_min_channel_or_supergroup: 10,
         }
     }
 }

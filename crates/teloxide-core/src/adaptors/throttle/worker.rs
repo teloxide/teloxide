@@ -242,8 +242,8 @@ pub(super) async fn worker<B>(
             let requests_sent_per_sec_count = requests_sent.per_sec.get(chat).copied().unwrap_or(0);
             let requests_sent_per_min_count = requests_sent.per_min.get(chat).copied().unwrap_or(0);
 
-            let messages_per_min_limit = if chat.is_channel() {
-                limits.messages_per_min_channel
+            let messages_per_min_limit = if chat.is_channel_or_supergroup() {
+                limits.messages_per_min_channel_or_supergroup
             } else {
                 limits.messages_per_min_chat
             };
