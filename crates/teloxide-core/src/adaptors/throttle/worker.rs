@@ -213,7 +213,7 @@ pub(super) async fn worker<B>(
 
         // as truncates which is ok since in case of truncation it would always be >=
         // limits.overall_s
-        let used = history.iter().take_while(|(_, time)| time > &sec_back).count() as u32;
+        let used = history.iter().rev().take_while(|(_, time)| time > &sec_back).count() as u32;
         let mut allowed = limits.messages_per_sec_overall.saturating_sub(used);
 
         if allowed == 0 {
@@ -222,7 +222,7 @@ pub(super) async fn worker<B>(
             continue;
         }
 
-        for (chat, _) in history.iter().take_while(|(_, time)| time > &sec_back) {
+        for (chat, _) in history.iter().rev().take_while(|(_, time)| time > &sec_back) {
             *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
         }
 

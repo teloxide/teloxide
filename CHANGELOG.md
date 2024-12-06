@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now `InlineQueryResultsButton` serializes properly ([issue 1181](https://github.com/teloxide/teloxide/issues/1181))
 - Now `ThreadId` is able to serialize in multipart requests ([PR 1179](https://github.com/teloxide/teloxide/pull/1179))
 - Now stack does not overflow on dispatch ([issue 1154](https://github.com/teloxide/teloxide/issues/1154))
+- Fixed calculation of per-second limits in the `Throttle` adaptor ([PR 1212](https://github.com/teloxide/teloxide/pull/1212))
 
 ## 0.13.0 - 2024-08-16
 
