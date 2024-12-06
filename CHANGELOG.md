@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Some dependencies was bumped: `axum` to `0.8.0`, `sqlx` to `0.8.1`, `tower` to `0.5.0`, `reqwest` to `0.12.7`
   - `tokio` version was explicitly specified as `1.39`
 - Added new `Send` and `Sync` trait bounds to the `UListener` and `Eh` generic parameters of `try_dispatch_with_listener` and `dispatch_with_listener` ([PR 1185](https://github.com/teloxide/teloxide/pull/1185)) [**BC**]
+- Renamed `Limits::messages_per_min_channel` to `messages_per_min_channel_or_supergroup` to reflect its actual behavior ([PR 1214](https://github.com/teloxide/teloxide/pull/1214))
 
 ### Fixed
 
