@@ -419,6 +419,7 @@ where
             scope.spawn(move || {
                 let runtime = tokio::runtime::Builder::new_multi_thread()
                     .thread_stack_size(self.stack_size)
+                    .thread_name("teloxide-dispatcher-worker")
                     .enable_all()
                     .build()
                     .unwrap();
