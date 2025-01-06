@@ -91,7 +91,7 @@ tokio = { version = "1.8.0", features = [
 ] }
 cool_asserts = "2.0.3"
 
-xshell = "0.2"
+xshell = "0.2.7"
 ron = "0.8.1"
 indexmap = { version = "1.9", features = ["serde-1"] }
 aho-corasick = "0.7"
