@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tokio` version was explicitly specified as `1.39`
 - Added new `Send` and `Sync` trait bounds to the `UListener` and `Eh` generic parameters of `try_dispatch_with_listener` and `dispatch_with_listener` ([PR 1185](https://github.com/teloxide/teloxide/pull/1185)) [**BC**]
 - Renamed `Limits::messages_per_min_channel` to `messages_per_min_channel_or_supergroup` to reflect its actual behavior ([PR 1214](https://github.com/teloxide/teloxide/pull/1214))
+- The `Throttle` adaptor now also throttles `forward_messages` and `copy_messages` like their non-batch counterparts, as well as `send_game` ([PR 1229](https://github.com/teloxide/teloxide/pull/1229))
 
 ### Fixed
 
