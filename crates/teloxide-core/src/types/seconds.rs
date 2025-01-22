@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Copy)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Debug, derive_more::Display)]
-#[display(fmt = "{_0}s")]
+#[display("{_0}s")]
 #[derive(Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct Seconds(u32);
