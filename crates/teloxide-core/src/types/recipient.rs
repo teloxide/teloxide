@@ -11,11 +11,11 @@ use crate::types::{ChatId, UserId};
 #[serde(untagged)]
 pub enum Recipient {
     /// A chat identifier.
-    #[display(fmt = "{_0}")]
+    #[display("{_0}")]
     Id(ChatId),
 
     /// A channel username (in the format @channelusername).
-    #[display(fmt = "{_0}")]
+    #[display("{_0}")]
     ChannelUsername(String),
 }
 
