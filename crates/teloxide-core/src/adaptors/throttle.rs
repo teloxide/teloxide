@@ -193,6 +193,12 @@ impl ChatIdHash {
     }
 }
 
+impl From<&ChatId> for ChatIdHash {
+    fn from(value: &ChatId) -> Self {
+        ChatIdHash::Id(*value)
+    }
+}
+
 impl From<&Recipient> for ChatIdHash {
     fn from(value: &Recipient) -> Self {
         match value {
