@@ -371,7 +371,7 @@ impl Chat {
             if let PublicChatKind::Group(PublicChatGroup { permissions })
             | PublicChatKind::Supergroup(PublicChatSupergroup { permissions, .. }) = &this.kind
             {
-                return *permissions;
+                return permissions.clone();
             }
         }
 
