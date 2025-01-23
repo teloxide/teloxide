@@ -99,7 +99,7 @@ bytes = "1.0"
 mime = "0.3"
 
 derive_more = { version = "1.0.0", features = ["display", "from", "deref"] }
-thiserror = "1.0"
+thiserror = "2.0.11"
 futures = "0.3.15"
 pin-project = "1.0"
 aquamarine = "0.6.0"
