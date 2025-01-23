@@ -38,33 +38,18 @@ impl PassportElementError {
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 #[serde(tag = "source")]
 pub enum PassportElementErrorKind {
     #[serde(rename = "data")]
     DataField(PassportElementErrorDataField),
-
-    #[serde(rename = "snake_case")]
     FrontSide(PassportElementErrorFrontSide),
-
-    #[serde(rename = "snake_case")]
     ReverseSide(PassportElementErrorReverseSide),
-
-    #[serde(rename = "snake_case")]
     Selfie(PassportElementErrorSelfie),
-
-    #[serde(rename = "snake_case")]
     File(PassportElementErrorFile),
-
-    #[serde(rename = "snake_case")]
     Files(PassportElementErrorFiles),
-
-    #[serde(rename = "snake_case")]
     TranslationFile(PassportElementErrorTranslationFile),
-
-    #[serde(rename = "snake_case")]
     TranslationFiles(PassportElementErrorTranslationFiles),
-
-    #[serde(rename = "snake_case")]
     Unspecified(PassportElementErrorUnspecified),
 }
 
