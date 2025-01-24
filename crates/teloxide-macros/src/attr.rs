@@ -24,15 +24,19 @@ pub(crate) fn fold_attrs<A, R>(
             };
 
             let args = match attribute.parse_args() {
-                Ok(v) => v,
-                Err(err) => return vec![Err(err.into())],
+                Ok(v) => Group::new(Delimiter::Parenthesis, v).to_token_stream(),
+                // TODO: rewrite Attrs parser to syn 2 fully
+                Err(_) => {
+                    let value = match attribute.meta.require_name_value() {
+                        Ok(v) => v.value.to_token_stream(),
+                        Err(err) => return vec![Err(err.into())],
+                    };
+
+                    quote::quote! { = #value }
+                }
             };
 
-            let args_with_parents = Group::new(Delimiter::Parenthesis, args).to_token_stream();
-
-            match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key))
-                .parse2(args_with_parents)
-            {
+            match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key)).parse2(args) {
                 Ok(ok) => ok.0.into_iter().map(&parse).collect(),
                 Err(err) => vec![Err(err.into())],
             }

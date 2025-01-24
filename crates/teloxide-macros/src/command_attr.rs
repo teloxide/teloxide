@@ -6,12 +6,8 @@ use crate::{
     Result,
 };
 
-use proc_macro2::{Span, TokenStream};
-use quote::ToTokens;
-use syn::{
-    parse::{ParseStream, Peek},
-    Attribute, Token,
-};
+use proc_macro2::Span;
+use syn::Attribute;
 
 /// All attributes that can be used for `derive(BotCommands)`
 pub(crate) struct CommandAttrs {
@@ -216,18 +212,6 @@ fn is_command_attribute(a: &Attribute) -> bool {
 fn is_doc_comment(a: &Attribute) -> bool {
     matches!(
         a.path().get_ident(),
-        Some(ident) if ident == "doc" && peek_at_token_stream(a.to_token_stream(), Token![=])
+        Some(ident) if ident == "doc" && a.meta.require_name_value().is_ok()
     )
-}
-
-fn peek_at_token_stream(s: TokenStream, p: impl Peek) -> bool {
-    // syn be fr challenge 2023 (impossible)
-    use syn::parse::Parser;
-    (|input: ParseStream<'_>| {
-        let r = input.peek(p);
-        _ = input.step(|_| Ok(((), syn::buffer::Cursor::empty())));
-        Ok(r)
-    })
-    .parse2(s)
-    .unwrap()
 }
