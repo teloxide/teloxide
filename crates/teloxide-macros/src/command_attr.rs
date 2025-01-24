@@ -6,8 +6,8 @@ use crate::{
     Result,
 };
 
-use proc_macro::TokenStream;
-use proc_macro2::Span;
+use proc_macro2::{Span, TokenStream};
+use quote::ToTokens;
 use syn::{
     parse::{ParseStream, Peek},
     Attribute, Token,
@@ -210,11 +210,14 @@ impl CommandAttr {
 }
 
 fn is_command_attribute(a: &Attribute) -> bool {
-    matches!(a.path.get_ident(), Some(ident) if ident == "command")
+    matches!(a.path().get_ident(), Some(ident) if ident == "command")
 }
 
 fn is_doc_comment(a: &Attribute) -> bool {
-    matches!(a.path.get_ident(), Some(ident) if ident == "doc" && peek_at_token_stream(a.tokens.clone().into(), Token![=]))
+    matches!(
+        a.path().get_ident(),
+        Some(ident) if ident == "doc" && peek_at_token_stream(a.to_token_stream(), Token![=])
+    )
 }
 
 fn peek_at_token_stream(s: TokenStream, p: impl Peek) -> bool {
@@ -225,6 +228,6 @@ fn peek_at_token_stream(s: TokenStream, p: impl Peek) -> bool {
         _ = input.step(|_| Ok(((), syn::buffer::Cursor::empty())));
         Ok(r)
     })
-    .parse(s)
+    .parse2(s)
     .unwrap()
 }

@@ -1,6 +1,7 @@
 use crate::{error::compile_error_at, Result};
 
-use proc_macro2::{Delimiter, Span};
+use proc_macro2::{Delimiter, Group, Span};
+use quote::ToTokens;
 use syn::{
     parse::{Parse, ParseStream, Parser},
     spanned::Spanned,
@@ -18,12 +19,19 @@ pub(crate) fn fold_attrs<A, R>(
         .iter()
         .filter(|&a| filter(a))
         .flat_map(|attribute| {
-            let Some(key) = attribute.path.get_ident().cloned() else {
-                return vec![Err(compile_error_at("expected an ident", attribute.path.span()))];
+            let Some(key) = attribute.path().get_ident().cloned() else {
+                return vec![Err(compile_error_at("expected an ident", attribute.path().span()))];
             };
 
+            let args = match attribute.parse_args() {
+                Ok(v) => v,
+                Err(err) => return vec![Err(err.into())],
+            };
+
+            let args_with_parents = Group::new(Delimiter::Parenthesis, args).to_token_stream();
+
             match (|input: ParseStream<'_>| Attrs::parse_with_key(input, key))
-                .parse(attribute.tokens.clone().into())
+                .parse2(args_with_parents)
             {
                 Ok(ok) => ok.0.into_iter().map(&parse).collect(),
                 Err(err) => vec![Err(err.into())],
@@ -105,7 +113,7 @@ impl Attrs {
                 }
 
                 let mut attrs =
-                    (|input: ParseStream<'_>| input.parse_terminated::<_, Token![,]>(Attrs::parse))
+                    (|input: ParseStream<'_>| input.parse_terminated(Attrs::parse, Token![,]))
                         .parse(group.token_stream().into())?
                         .into_iter()
                         .reduce(|mut l, r| {
@@ -204,12 +212,13 @@ impl AttrValue {
         match self {
             Self::None(_) => "nothing",
             Self::Lit(l) => match l {
-                Str(_) | ByteStr(_) => "a string",
+                Str(_) | ByteStr(_) | CStr(_) => "a string",
                 Char(_) => "a character",
                 Byte(_) | Int(_) => "an integer",
                 Float(_) => "a floating point integer",
                 Bool(_) => "a boolean",
                 Verbatim(_) => ":shrug:",
+                _ => ":mag:",
             },
             Self::Array(_, _) => "an array",
             Self::Path(_) => "a path",
@@ -239,8 +248,8 @@ impl Parse for AttrValue {
         } else if input.peek(syn::token::Bracket) {
             let content;
             let array_span = syn::bracketed!(content in input).span;
-            let array = content.parse_terminated::<_, Token![,]>(AttrValue::parse)?;
-            Ok(AttrValue::Array(array.into_iter().collect(), array_span))
+            let array = content.parse_terminated(AttrValue::parse, Token![,])?;
+            Ok(AttrValue::Array(array.into_iter().collect(), array_span.span()))
         } else {
             Ok(AttrValue::Path(
                 input
