@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `stack_size` setter to `DispatcherBuilder` ([PR 1185](https://github.com/teloxide/teloxide/pull/1185))
 - `utils::render` module to render HTML/Markdown-formatted output ([PR 1152](https://github.com/teloxide/teloxide/pull/1152))
 - `Bot::from_env` now can read and use `TELOXIDE_API_URL` environmental variable ([PR 1197](https://github.com/teloxide/teloxide/pull/1197))
+- Improved developer experience:
+  - Added devcontainer support. It was tested with VS Codium on Fedora/Podman and Ubuntu/Docker, but should work for any platform that supports devcontainers
+  - Added Justfile for common tasks. E.g. run `just ci` for a full check, similar to what we do in CI (do it before sending PR!)
 
 ### Changed
 
