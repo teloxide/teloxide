@@ -20,7 +20,7 @@ impl<'de> Deserialize<'de> for UntilDate {
     {
         struct UntilDateVisitor;
 
-        impl<'v> Visitor<'v> for UntilDateVisitor {
+        impl Visitor<'_> for UntilDateVisitor {
             type Value = UntilDate;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {

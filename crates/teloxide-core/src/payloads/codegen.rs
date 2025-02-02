@@ -27,8 +27,8 @@ fn codegen_payloads() {
         let uses = uses(&method);
 
         let method_doc = render_doc(&method.doc, method.sibling.as_deref());
-        let eq_hash_derive = eq_hash_suitable(&method).then(|| " Eq, Hash,").unwrap_or("");
-        let default_derive = default_needed(&method).then(|| " Default,").unwrap_or("");
+        let eq_hash_derive = if eq_hash_suitable(&method) { " Eq, Hash," } else { "" };
+        let default_derive = if default_needed(&method) { " Default," } else { "" };
 
         let return_ty = method.return_ty.to_string();
 

@@ -261,12 +261,7 @@ mod tests {
         let res = deserialize_response::<Vec<Update>>(json).unwrap();
         assert_matches!(
             res,
-            [
-                Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) },
-                Update { id: UpdateId(1), kind: UpdateKind::Error(v) } if v.is_object(),
-                Update { id: UpdateId(2), kind: UpdateKind::PollAnswer(_) },
-                Update { id: UpdateId(3), kind: UpdateKind::Error(v) } if v.is_object(),
-            ]
+            [Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) }, Update { id: UpdateId(1), kind: UpdateKind::Error(v) } if v.is_object(), Update { id: UpdateId(2), kind: UpdateKind::PollAnswer(_) }, Update { id: UpdateId(3), kind: UpdateKind::Error(v) } if v.is_object()]
         );
     }
 }

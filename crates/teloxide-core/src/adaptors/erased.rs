@@ -90,7 +90,7 @@ where
     }
 }
 
-impl<'a, T, E> IntoFuture for ErasedRequest<'a, T, E>
+impl<T, E> IntoFuture for ErasedRequest<'_, T, E>
 where
     T: Payload,
     E: std::error::Error + Send,
