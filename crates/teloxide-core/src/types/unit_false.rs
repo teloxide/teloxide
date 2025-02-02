@@ -26,7 +26,7 @@ impl<'de> Deserialize<'de> for False {
 
 struct FalseVisitor;
 
-impl<'de> Visitor<'de> for FalseVisitor {
+impl Visitor<'_> for FalseVisitor {
     type Value = False;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {

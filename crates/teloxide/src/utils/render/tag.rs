@@ -20,16 +20,16 @@ impl<'a> Tag<'a> {
     }
 }
 
-impl<'a> Eq for Tag<'a> {}
+impl Eq for Tag<'_> {}
 
-impl<'a> PartialEq for Tag<'a> {
+impl PartialEq for Tag<'_> {
     fn eq(&self, other: &Self) -> bool {
         // We don't check kind here
         self.place == other.place && self.offset == other.offset && self.index == other.index
     }
 }
 
-impl<'a> Ord for Tag<'a> {
+impl Ord for Tag<'_> {
     fn cmp(&self, other: &Self) -> Ordering {
         self.offset.cmp(&other.offset).then_with(|| self.place.cmp(&other.place)).then_with(|| {
             match other.place {
@@ -40,7 +40,7 @@ impl<'a> Ord for Tag<'a> {
     }
 }
 
-impl<'a> PartialOrd for Tag<'a> {
+impl PartialOrd for Tag<'_> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
     }

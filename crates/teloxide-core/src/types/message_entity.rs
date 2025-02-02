@@ -344,13 +344,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "б" && entity.kind() == &Strikethrough,
-                entity if entity.text() == "ы" && entity.kind() == &Bold,
-                entity if entity.text() == "б" && entity.kind() == &Italic,
-                entity if entity.text() == "а" && entity.kind() == &Code,
-
-            ]
+            [entity if entity.text() == "б" && entity.kind() == &Strikethrough, entity if entity.text() == "ы" && entity.kind() == &Bold, entity if entity.text() == "б" && entity.kind() == &Italic, entity if entity.text() == "а" && entity.kind() == &Code]
         );
     }
 
@@ -361,10 +355,7 @@ mod tests {
             &[MessageEntity { kind: Hashtag, offset: 5, length: 3 }],
         );
 
-        assert_matches!(
-            parsed,
-            [entity if entity.text() == "#tt" && entity.kind() == &Hashtag]
-        );
+        assert_matches!(parsed, [entity if entity.text() == "#tt" && entity.kind() == &Hashtag]);
     }
 
     #[test]
@@ -381,11 +372,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "b " && entity.kind() == &Bold,
-                entity if entity.text() == "i b" && entity.kind() == &Bold,
-                entity if entity.text() == "i" && entity.kind() == &Italic,
-            ]
+            [entity if entity.text() == "b " && entity.kind() == &Bold, entity if entity.text() == "i b" && entity.kind() == &Bold, entity if entity.text() == "i" && entity.kind() == &Italic]
         );
     }
 
@@ -409,10 +396,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "" && entity.kind() == &Bold,
-                entity if entity.text() == "" && entity.kind() == &Italic,
-            ]
+            [entity if entity.text() == "" && entity.kind() == &Bold, entity if entity.text() == "" && entity.kind() == &Italic]
         );
     }
 }

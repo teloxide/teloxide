@@ -159,7 +159,7 @@ enum Target<'a> {
     Field { method_name: Option<&'a str>, field_name: Option<&'a str> },
 }
 
-impl<'a> Target<'a> {
+impl Target<'_> {
     fn is_exact(&self) -> bool {
         match self {
             Target::Method(m) => m.is_some(),
