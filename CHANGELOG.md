@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `utils::render` module to render HTML/Markdown-formatted output ([PR 1152](https://github.com/teloxide/teloxide/pull/1152))
 - `Bot::from_env` now can read and use `TELOXIDE_API_URL` environmental variable ([PR 1197](https://github.com/teloxide/teloxide/pull/1197))
 
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Add `filter_chat_background_set` to `MessageFilterExt` trait
+
+[pr1159]: https://github.com/teloxide/teloxide/pull/1159
+
 ### Changed
 
 - Environment bumps: ([PR 1147](https://github.com/teloxide/teloxide/pull/1147), [PR 1225](https://github.com/teloxide/teloxide/pull/1225))
