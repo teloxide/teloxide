@@ -1,4 +1,4 @@
 [toolchain]
-channel = "nightly-2024-07-03"
+channel = "nightly-2025-02-02"
 components = ["rustfmt", "clippy"]
 profile = "minimal"

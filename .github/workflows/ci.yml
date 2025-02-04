@@ -20,7 +20,7 @@ env:
   # - crates/teloxide-core/src/codegen.rs
   # - rust-toolchain.toml
   # - below in the test matrix
-  rust_nightly: nightly-2024-07-03
+  rust_nightly: nightly-2025-02-02
   # When updating this, also update:
   # - **/README.md
   # - **/src/lib.rs
@@ -105,7 +105,7 @@ jobs:
             toolchain: beta
             features: "--features full"
           - rust: nightly
-            toolchain: nightly-2024-07-03
+            toolchain: nightly-2025-02-02
             features: "--features full nightly"
           - rust: msrv
             toolchain: 1.80.0
@@ -138,6 +138,7 @@ jobs:
       - name: Downgrade deps for MSRV
         if: ${{ matrix.rust == 'msrv' }}
         run: |
+            cargo update -p home --precise 0.5.9
             exit 0
         
 
