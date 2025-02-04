@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added new `Send` and `Sync` trait bounds to the `UListener` and `Eh` generic parameters of `try_dispatch_with_listener` and `dispatch_with_listener` ([PR 1185](https://github.com/teloxide/teloxide/pull/1185)) [**BC**]
 - Renamed `Limits::messages_per_min_channel` to `messages_per_min_channel_or_supergroup` to reflect its actual behavior ([PR 1214](https://github.com/teloxide/teloxide/pull/1214))
 - Added derive `Clone`, `Debug`, `PartialEq`, `Eq`, `Hash` to `ChatPermissions` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
+- Added derive `Clone`, `Debug` to `Settings` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
 
 ### Fixed
 
