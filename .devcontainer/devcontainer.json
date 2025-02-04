@@ -1,0 +1,23 @@
+{
+    "build": {
+        "dockerfile": "Containerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens",
+                "rust-lang.rust-analyzer",
+                "serayuzgur.crates",
+                "tamasfe.even-better-toml",
+                "nefrob.vscode-just-syntax",
+                "Gruntfuggly.todo-tree"
+            ]
+        }
+    },
+    // ↓ Required for SELinux enabled systems
+    "workspaceMount": "",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "runArgs": [
+        "--volume=${localWorkspaceFolder}:/workspaces/${localWorkspaceFolderBasename}:Z"
+    ]
+}
