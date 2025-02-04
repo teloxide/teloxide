@@ -23,9 +23,18 @@ pub(crate) fn fold_attrs<A, R>(
                 return vec![Err(compile_error_at("expected an ident", attribute.path().span()))];
             };
 
+            // TODO: rewrite `Attrs` parser to syn 2 fully
+            //
+            // syn 2 has many breaking changes compared to syn 1.
+            // At this place, code was adapted to support syn 2, ensuring that the same
+            // tokens are passed to `Attrs::parse_with_key(input, key)`.
+            //
+            // The internal logic remains unchanged, similar to syn 1.
+            // In the future, parsing should be rewritten to take advantage of syn 2’s
+            // improvements for code deduplication and maintainability.
+
             let args = match attribute.parse_args() {
                 Ok(v) => Group::new(Delimiter::Parenthesis, v).to_token_stream(),
-                // TODO: rewrite Attrs parser to syn 2 fully
                 Err(_) => {
                     let value = match attribute.meta.require_name_value() {
                         Ok(v) => v.value.to_token_stream(),
