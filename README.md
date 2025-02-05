@@ -16,6 +16,9 @@
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
   </a>
+  <a href="https://devpod.sh/open#https://github.com/teloxide/teloxide">
+    <img src="https://img.shields.io/badge/Open_in-DevPod-blueviolet">
+  </a>
 
   A full-featured framework that empowers you to easily build [Telegram bots](https://telegram.org/blog/bot-revolution) using [Rust](https://www.rust-lang.org/). It handles all the difficult stuff so you can focus only on your business logic.
 </div>

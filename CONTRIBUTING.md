@@ -71,18 +71,39 @@ git rebase master
 git push --force-with-lease
 ```
 
+### Developing with DevPod
+
+If you want, you can develop `teloxide` inside a DevPod container. You can read more about DevPod [here](https://devpod.sh/docs/what-is-devpod).
+
+Option 1:
+
+```shell
+git clone <your-fork> teloxide
+cd teloxide
+devpod up .
+```
+
+Option 2:
+
+```shell
+devpod up https://github.com/teloxide/teloxide
+```
+
 ### Testing
 
 When you open a PR, it will be tested in the CI. We recommend you test the PR before opening it:
 
 ```shell
+just ci
+```
+
+Or manually, if you don't have `just` tool:
+
+```shell
 # Formatting (use `-- --check` if you only want to check)
 cargo fmt --all
 
-# Build
-cargo build --features "full nightly"
-
-# Run linter
+# Run linter (compiles code too)
 cargo clippy --all-targets --features "full nightly"
 
 # Running tests

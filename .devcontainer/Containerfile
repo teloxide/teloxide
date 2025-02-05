@@ -1,0 +1,9 @@
+FROM quay.io/fedora/fedora:latest
+
+RUN echo -e "\nmax_parallel_downloads=10" | tee -a /etc/dnf/dnf.conf
+RUN dnf copr enable -y shdwchn10/AllTheTools
+RUN dnf install -y gcc git sudo chezmoi gpg just zsh starship which openssl-devel && dnf clean all
+RUN useradd -u 1000 -G wheel user && passwd -d user
+
+USER user
+RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain nightly-2025-02-02 -y
