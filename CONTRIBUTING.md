@@ -73,7 +73,7 @@ git push --force-with-lease
 
 ### Developing with DevPod
 
-If you want, you can develop teloxide inside devpod container. You can read more about devpod [here](https://devpod.sh/docs/what-is-devpod).
+If you want, you can develop `teloxide` inside a DevPod container. You can read more about DevPod [here](https://devpod.sh/docs/what-is-devpod).
 
 Option 1:
 
