@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `refundStarPayment` TBA method
   - Add `effect_id` field to the `MessageCommon` struct
   - Add `message_effect_id` parameter to `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, and `sendMediaGroup` methods
+  - Add `show_caption_above_media` field to `MediaAnimation`, `MediaPhoto`, `MediaVideo`, `InputMediaPhoto`, `InputMediaVideo`, `InputMediaAnimation`, `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif`, `InlineQueryResultPhoto`, `InlineQueryResultVideo`, `InlineQueryResultCachedGif`, `InlineQueryResultCachedMpeg4Gif`, `InlineQueryResultCachedPhoto` and `InlineQueryResultCachedVideo` structs
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264

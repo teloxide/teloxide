@@ -384,6 +384,10 @@ pub struct MediaAnimation {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_media_spoiler: bool,
@@ -466,6 +470,10 @@ pub struct MediaPhoto {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_media_spoiler: bool,
@@ -526,6 +534,10 @@ pub struct MediaVideo {
     /// bot commands, etc. that appear in the caption.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
 
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -987,6 +999,37 @@ mod getters {
                 }) => Some(caption_entities),
                 _ => None,
             }
+        }
+
+        /// Returns `true` if the caption must be shown above the message media.
+        ///
+        /// Getter for [`MediaPhoto::show_caption_above_media`],
+        /// [`MediaVideo::show_caption_above_media`] and
+        /// [`MediaAnimation::show_caption_above_media`].
+        #[must_use]
+        pub fn show_caption_above_media(&self) -> bool {
+            self.common()
+                .map(|m| match m.media_kind {
+                    MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
+                    | MediaKind::Photo(MediaPhoto { show_caption_above_media, .. })
+                    | MediaKind::Video(MediaVideo { show_caption_above_media, .. }) => {
+                        show_caption_above_media
+                    }
+                    MediaKind::Audio(_)
+                    | MediaKind::Contact(_)
+                    | MediaKind::Document(_)
+                    | MediaKind::Game(_)
+                    | MediaKind::Venue(_)
+                    | MediaKind::Location(_)
+                    | MediaKind::Poll(_)
+                    | MediaKind::Sticker(_)
+                    | MediaKind::Story(_)
+                    | MediaKind::Text(_)
+                    | MediaKind::VideoNote(_)
+                    | MediaKind::Voice(_)
+                    | MediaKind::Migration(_) => false,
+                })
+                .unwrap_or(false)
         }
 
         /// Returns `true` if the message media is covered by a spoiler
@@ -2743,5 +2786,47 @@ mod tests {
         }"#;
         let message: Message = from_str(json).unwrap();
         assert_eq!(message.effect_id().unwrap(), "5123233223429587601")
+    }
+
+    #[test]
+    fn show_caption_above_media() {
+        let json = r#"{
+            "message_id": 140,
+            "from": {
+                "id": 1459074222,
+                "is_bot": false,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "language_code": "en",
+                "is_premium": true
+            },
+            "chat": {
+                "id": 1459074222,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "type": "private"
+            },
+            "date": 1739041615,
+            "photo": [
+                {
+                    "file_id": "AgACAgIAAxkBAAOMZ6erTx2-IA9WEXr4NkeUY5AjdvQAArTxMRtfc0FJ1gKSaUEGAfMBAAMCAANzAAM2BA",
+                    "file_unique_id": "AQADtPExG19zQUl4",
+                    "file_size": 322,
+                    "width": 59,
+                    "height": 90
+                },
+                {
+                    "file_id": "AgACAgIAAxkBAAOMZ6erTx2-IA9WEXr4NkeUY5AjdvQAArTxMRtfc0FJ1gKSaUEGAfMBAAMCAANtAAM2BA",
+                    "file_unique_id": "AQADtPExG19zQUly",
+                    "file_size": 358,
+                    "width": 82,
+                    "height": 125
+                }
+            ],
+            "caption": "El Psy Kongroo",
+            "show_caption_above_media": true
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert!(message.show_caption_above_media())
     }
 }
