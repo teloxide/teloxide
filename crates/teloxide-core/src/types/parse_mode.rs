@@ -60,6 +60,12 @@ use serde::{Deserialize, Serialize};
 /// >Block quotation continued
 /// >Block quotation continued
 /// >The last line of the block quotation
+/// **>The expandable block quotation started right after the previous block quotation
+/// >It is separated from the previous block quotation by an empty bold entity
+/// >Expandable block quotation continued
+/// >Hidden by default part of the expandable block quotation started
+/// >Expandable block quotation continued
+/// >The last line of the expandable block quotation with the expandability mark||
 /// ````
 ///
 /// Please note:
@@ -105,6 +111,10 @@ use serde::{Deserialize, Serialize};
          Rust programming language</code></pre>"]
 /// <blockquote>Block quotation started\nBlock quotation continued\nThe last
 /// line of the block quotation</blockquote>
+/// <blockquote expandable>Expandable block quotation started\nExpandable block
+/// quotation continued\nExpandable block quotation continued\nHidden by default
+/// part of the block quotation started\nExpandable block quotation
+/// continued\nThe last line of the block quotation</blockquote>
 /// ````
 /// 
 /// Please note:

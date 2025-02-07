@@ -250,6 +250,7 @@ pub enum MessageEntityKind {
     PhoneNumber,
     Bold,
     Blockquote,
+    ExpandableBlockquote,
     Italic,
     Underline,
     Strikethrough,
@@ -295,6 +296,23 @@ mod tests {
             MessageEntity { kind: MessageEntityKind::Blockquote, offset: 32, length: 92 },
             from_str::<MessageEntity>(r#"{"type": "blockquote", "offset": 32, "length": 92}"#)
                 .unwrap()
+        );
+    }
+
+    #[test]
+    fn expandable_blockquote() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity {
+                kind: MessageEntityKind::ExpandableBlockquote,
+                offset: 69,
+                length: 420
+            },
+            from_str::<MessageEntity>(
+                r#"{"type": "expandable_blockquote", "offset": 69, "length": 420}"#
+            )
+            .unwrap()
         );
     }
 

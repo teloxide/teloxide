@@ -7,6 +7,7 @@ use super::{ComplexTag, Kind, NewLineRepeatedTag, Place, SimpleTag, Tag, TagWrit
 pub static MARKDOWN: TagWriter = TagWriter {
     bold: SimpleTag::new("*", "*"),
     blockquote: NewLineRepeatedTag::new("**>", ">", ""),
+    expandable_blockquote: NewLineRepeatedTag::new("**>", ">", "||"),
     italic: SimpleTag::new("_\r", "_\r"),
     underline: SimpleTag::new("__\r", "__\r"),
     strikethrough: SimpleTag::new("~", "~"),
@@ -28,6 +29,11 @@ fn write_tag(tag: &Tag, buf: &mut String) {
             Place::Start => buf.push_str(MARKDOWN.blockquote.start),
             Place::MidNewLine => buf.push_str(MARKDOWN.blockquote.repeat),
             Place::End => buf.push_str(MARKDOWN.blockquote.end),
+        },
+        Kind::ExpandableBlockquote => match tag.place {
+            Place::Start => buf.push_str(MARKDOWN.expandable_blockquote.start),
+            Place::MidNewLine => buf.push_str(MARKDOWN.expandable_blockquote.repeat),
+            Place::End => buf.push_str(MARKDOWN.expandable_blockquote.end),
         },
         Kind::Italic => buf.push_str(MARKDOWN.italic.get_tag(tag.place)),
         Kind::Underline => buf.push_str(MARKDOWN.underline.get_tag(tag.place)),
