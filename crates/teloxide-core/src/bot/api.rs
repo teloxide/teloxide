@@ -1461,6 +1461,22 @@ impl Requester for Bot {
         )
     }
 
+    type RefundStarPayment = JsonRequest<payloads::RefundStarPayment>;
+
+    fn refund_star_payment<C>(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: C,
+    ) -> Self::RefundStarPayment
+    where
+        C: Into<String>,
+    {
+        Self::RefundStarPayment::new(
+            self.clone(),
+            payloads::RefundStarPayment::new(user_id, telegram_payment_charge_id),
+        )
+    }
+
     type SetPassportDataErrors = JsonRequest<payloads::SetPassportDataErrors>;
 
     fn set_passport_data_errors<E>(&self, user_id: UserId, errors: E) -> Self::SetPassportDataErrors

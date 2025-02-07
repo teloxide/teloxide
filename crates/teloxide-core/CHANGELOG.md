@@ -62,6 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
   - Document that .MP3 and .M4A files can be used as voice messages
 
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Add `refundStarPayment` TBA method
+
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
 [pr1271]: https://github.com/teloxide/teloxide/pull/1271

@@ -4503,6 +4503,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("refundStarPayment", "RefundStarPayment", "refund_star_payment"),
+            return_ty: True,
+            doc: Doc(
+                md: "Refunds a successful payment in [Telegram Stars]. Returns True on success.",
+                md_links: {"Telegram Stars":"https://t.me/BotNews/90"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#refundstarpayment",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Identifier of the user whose payment will be refunded"),
+                ),
+                Param(
+                    name: "telegram_payment_charge_id",
+                    ty: String,
+                    descr: Doc(md: "Telegram payment identifier"),
+                ),
+            ],
+        ),
+        Method(
             names: ("setPassportDataErrors", "SetPassportDataErrors", "set_passport_data_errors"),
             return_ty: True,
             doc: Doc(md: "Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns _True_ on success.\n\nUse this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues."),
