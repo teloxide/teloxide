@@ -26,6 +26,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
+            /// Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages
+            pub show_caption_above_media: bool,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

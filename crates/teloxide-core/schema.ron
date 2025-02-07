@@ -437,6 +437,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the new caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media. Ignored if a new caption isn't specified"),
+                ),
+                Param(
                     name: "disable_notification",
                     ty: Option(bool),
                     descr: Doc(
@@ -570,6 +575,11 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
+                ),
+                Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
                 ),
                 Param(
                     name: "has_spoiler",
@@ -903,6 +913,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
+                ),
+                Param(
                     name: "has_spoiler",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True if the video needs to be covered with a spoiler animation"),
@@ -1022,6 +1037,11 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
+                ),
+                Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
                 ),
                 Param(
                     name: "has_spoiler",
@@ -3578,6 +3598,11 @@ Schema(
                     name: "caption_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_"),
+                ),
+                Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages"),
                 ),
                 Param(
                     name: "reply_markup",
