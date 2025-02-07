@@ -15,9 +15,10 @@ impl_payload! {
             pub description: String [into],
             /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
             pub payload: String [into],
-            /// Payments provider token, obtained via [Botfather]
+            /// Payments provider token, obtained via [Botfather]. Pass an empty string for payments in [Telegram Stars].
             ///
             /// [Botfather]: https://t.me/botfather
+            /// [Telegram Stars]: https://t.me/BotNews/90
             pub provider_token: String [into],
             /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].
             ///

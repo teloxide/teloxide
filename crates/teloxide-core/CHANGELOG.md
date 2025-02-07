@@ -93,12 +93,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Move most of the fields and methods from `Chat` to `ChatFullInfo` struct
   - Return `ChatFullInfo` struct from `getChat` method instead of `Chat`
 
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Update documentation on `provider_token` fields
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
+[pr1280]: https://github.com/teloxide/teloxide/pull/1280
 
 ### Removed
 
