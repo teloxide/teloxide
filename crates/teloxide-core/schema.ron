@@ -276,6 +276,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -585,6 +590,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -693,6 +703,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -786,6 +801,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -906,6 +926,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1017,6 +1042,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1108,6 +1138,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent message from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1193,6 +1228,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1253,6 +1293,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1331,6 +1376,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1616,6 +1666,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1693,6 +1748,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1827,6 +1887,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1886,6 +1951,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -3793,6 +3863,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -4305,6 +4380,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -4585,6 +4665,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
