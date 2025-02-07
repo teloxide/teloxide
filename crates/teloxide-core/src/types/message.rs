@@ -786,6 +786,14 @@ mod getters {
         }
 
         #[must_use]
+        pub fn sender_boost_count(&self) -> Option<u16> {
+            match &self.kind {
+                Common(MessageCommon { sender_boost_count, .. }) => *sender_boost_count,
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn forward_date(&self) -> Option<DateTime<Utc>> {
             self.forward_origin().map(|f| f.date())
         }
