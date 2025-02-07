@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 7.4 ([#1280](pr1280))
   - Add `refundStarPayment` TBA method
+  - Add `effect_id` field to the `MessageCommon` struct
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264

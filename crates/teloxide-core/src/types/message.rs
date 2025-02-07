@@ -119,6 +119,9 @@ pub struct MessageCommon {
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
 
+    /// Unique identifier of the message effect added to the message
+    pub effect_id: Option<String>,
+
     /// Information about the original message for forwarded messages
     pub forward_origin: Option<MessageOrigin>,
 
@@ -760,6 +763,14 @@ mod getters {
         pub fn author_signature(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon { author_signature, .. }) => author_signature.as_deref(),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn effect_id(&self) -> Option<&str> {
+            match &self.kind {
+                Common(MessageCommon { effect_id, .. }) => effect_id.as_deref(),
                 _ => None,
             }
         }
@@ -2706,5 +2717,31 @@ mod tests {
             message.boost_added().expect("Failed to get ChatBoostAdded from Message!"),
             &ChatBoostAdded { boost_count: 4 }
         )
+    }
+
+    #[test]
+    fn effect_id() {
+        let json = r#"{
+            "message_id": 139,
+            "from": {
+                "id": 1459074222,
+                "is_bot": false,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "language_code": "en",
+                "is_premium": true
+            },
+            "chat": {
+                "id": 1459074222,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "type": "private"
+            },
+            "date": 1739038521,
+            "text": "El Psy Kongroo",
+            "effect_id": "5123233223429587601"
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.effect_id().unwrap(), "5123233223429587601")
     }
 }
