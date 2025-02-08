@@ -1,10 +1,10 @@
 use std::fmt::Write;
 
-use super::{ComplexTag, Kind, Place, SimpleTag, Tag, TagWriter};
+use super::{ComplexTag, Kind, NewLineRepeatedTag, Place, SimpleTag, Tag, TagWriter};
 
 pub static HTML: TagWriter = TagWriter {
     bold: SimpleTag::new("<b>", "</b>"),
-    blockquote: SimpleTag::new("<blockquote>", "</blockquote>"),
+    blockquote: NewLineRepeatedTag::new("<blockquote>", "", "</blockquote>"),
     italic: SimpleTag::new("<i>", "</i>"),
     underline: SimpleTag::new("<u>", "</u>"),
     strikethrough: SimpleTag::new("<s>", "</s>"),
@@ -22,7 +22,11 @@ pub static HTML: TagWriter = TagWriter {
 fn write_tag(tag: &Tag, buf: &mut String) {
     match tag.kind {
         Kind::Bold => buf.push_str(HTML.bold.get_tag(tag.place)),
-        Kind::Blockquote => buf.push_str(HTML.blockquote.get_tag(tag.place)),
+        Kind::Blockquote => match tag.place {
+            Place::Start => buf.push_str(HTML.blockquote.start),
+            Place::MidNewLine => (), // HTML doesn't need an explicit tag for that
+            Place::End => buf.push_str(HTML.blockquote.end),
+        },
         Kind::Italic => buf.push_str(HTML.italic.get_tag(tag.place)),
         Kind::Underline => buf.push_str(HTML.underline.get_tag(tag.place)),
         Kind::Strikethrough => buf.push_str(HTML.strikethrough.get_tag(tag.place)),
@@ -33,12 +37,14 @@ fn write_tag(tag: &Tag, buf: &mut String) {
                 Some(lang) => write!(buf, "{}{}{}", HTML.pre.start, lang, HTML.pre.middle).unwrap(),
                 None => buf.push_str(HTML.pre_no_lang.start),
             },
+            Place::MidNewLine => unreachable!(),
             Place::End => buf.push_str(lang.map_or(HTML.pre_no_lang.end, |_| HTML.pre.end)),
         },
         Kind::TextLink(url) => match tag.place {
             Place::Start => {
                 write!(buf, "{}{}{}", HTML.text_link.start, url, HTML.text_link.middle).unwrap()
             }
+            Place::MidNewLine => unreachable!(),
             Place::End => buf.push_str(HTML.text_link.end),
         },
         Kind::TextMention(id) => match tag.place {
@@ -46,6 +52,7 @@ fn write_tag(tag: &Tag, buf: &mut String) {
                 write!(buf, "{}{}{}", HTML.text_mention.start, id, HTML.text_mention.middle)
                     .unwrap()
             }
+            Place::MidNewLine => unreachable!(),
             Place::End => buf.push_str(HTML.text_mention.end),
         },
         Kind::CustomEmoji(custom_emoji_id) => match tag.place {
@@ -55,6 +62,7 @@ fn write_tag(tag: &Tag, buf: &mut String) {
                 HTML.custom_emoji.start, custom_emoji_id, HTML.custom_emoji.middle
             )
             .unwrap(),
+            Place::MidNewLine => unreachable!(),
             Place::End => buf.push_str(HTML.custom_emoji.end),
         },
     }
