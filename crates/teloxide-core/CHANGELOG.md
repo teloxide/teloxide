@@ -70,6 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
   - Add `ExpandableBlockquote` message entity
 
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Add `RevenueWithdrawalState` struct
+
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
 [pr1271]: https://github.com/teloxide/teloxide/pull/1271
@@ -111,6 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
 [pr1280]: https://github.com/teloxide/teloxide/pull/1280
+[pr1281]: https://github.com/teloxide/teloxide/pull/1281
 
 ### Removed
 
