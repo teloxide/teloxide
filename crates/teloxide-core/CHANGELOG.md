@@ -43,10 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
 
 - `ApiError::BotKickedFromChannel` ([#1157][pr1157])
+- `sender_boost_count` method to the `Message` struct ([#1264][pr1264])
 - `From<&Message> for MessageId` impl ([#1271][pr1271])
 - `protect_content` parameter to the `sendVoice` method ([#1265][pr1265])
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
+[pr1264]: https://github.com/teloxide/teloxide/pull/1264
 [pr1271]: https://github.com/teloxide/teloxide/pull/1271
 [pr1265]: https://github.com/teloxide/teloxide/pull/1265
 
