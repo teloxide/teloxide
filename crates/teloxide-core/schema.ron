@@ -1103,6 +1103,11 @@ Schema(
                     )
                 ),
                 Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent message from forwarding and saving"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
