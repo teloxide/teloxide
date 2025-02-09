@@ -1823,6 +1823,12 @@ impl From<Message> for MessageId {
     }
 }
 
+impl From<&Message> for MessageId {
+    fn from(message: &Message) -> MessageId {
+        message.id
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use chrono::DateTime;
