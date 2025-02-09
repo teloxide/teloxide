@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now `InlineQueryResultsButton` serializes properly ([issue 1181](https://github.com/teloxide/teloxide/issues/1181))
 - Now `ThreadId` is able to serialize in multipart requests ([PR 1179](https://github.com/teloxide/teloxide/pull/1179))
 - Now stack does not overflow on dispatch ([issue 1154](https://github.com/teloxide/teloxide/issues/1154))
+- Implement `RequestReplyExt` and `RequestLinkPreviewExt` on setters from `teloxide_core::payloads` so syntax sugar can work on bot adaptors too ([PR 1270](https://github.com/teloxide/teloxide/pull/1270))
 - Now blockquote handling in the render module works correctly ([PR 1267](https://github.com/teloxide/teloxide/pull/1267))
 
 ## 0.13.0 - 2024-08-16
