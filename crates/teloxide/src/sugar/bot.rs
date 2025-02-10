@@ -1,6 +1,8 @@
 //! Additions to [`Bot`].
 //!
 //! [`Bot`]: crate::Bot
+use futures::stream::{self, Stream, StreamExt};
+
 use crate::{prelude::*, types::*};
 
 /// Syntax sugar for [`Message`] manipulations.
@@ -108,6 +110,8 @@ pub trait BotMessagesExt: Requester {
     fn copy<C>(&self, to_chat_id: C, message: &Message) -> Self::CopyMessage
     where
         C: Into<Recipient>;
+
+    fn iter_star_transactions(&self) -> impl Stream<Item = StarTransaction>;
 }
 
 impl<R> BotMessagesExt for R
@@ -178,5 +182,18 @@ where
         C: Into<Recipient>,
     {
         self.copy_message(to_chat_id, message.chat.id, message.id)
+    }
+
+    fn iter_star_transactions(&self) -> impl Stream<Item = StarTransaction> {
+        stream::unfold(0, move |state| async move {
+            let transactions: Result<StarTransactions, <R as Requester>::Err> =
+                self.get_star_transactions().offset(state).await;
+
+            match transactions {
+                Ok(transactions) => Some((stream::iter(transactions.transactions), state + 100)),
+                Err(_) => None,
+            }
+        })
+        .flatten()
     }
 }

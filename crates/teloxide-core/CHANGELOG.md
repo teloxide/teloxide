@@ -73,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 7.5 ([#1281](pr1281))
   - Add `StarTransactions`, `StarTransaction`, `TransactionPartner` and `RevenueWithdrawalState` structs
   - Add `getStarTransactions` TBA method
+  - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
