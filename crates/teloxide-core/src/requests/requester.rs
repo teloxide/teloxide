@@ -1251,6 +1251,11 @@ pub trait Requester {
     where
         P: Into<String>;
 
+    type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetStarTransactions`].
+    fn get_star_transactions(&self) -> Self::GetStarTransactions;
+
     type RefundStarPayment: Request<Payload = RefundStarPayment, Err = Self::Err>;
 
     /// For Telegram documentation see [`RefundStarPayment`].
@@ -1451,6 +1456,7 @@ macro_rules! forward_all {
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
+            get_star_transactions,
             refund_star_payment,
             set_passport_data_errors,
             send_game,

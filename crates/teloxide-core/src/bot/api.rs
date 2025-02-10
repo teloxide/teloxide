@@ -1461,6 +1461,12 @@ impl Requester for Bot {
         )
     }
 
+    type GetStarTransactions = JsonRequest<payloads::GetStarTransactions>;
+
+    fn get_star_transactions(&self) -> Self::GetStarTransactions {
+        Self::GetStarTransactions::new(self.clone(), payloads::GetStarTransactions::new())
+    }
+
     type RefundStarPayment = JsonRequest<payloads::RefundStarPayment>;
 
     fn refund_star_payment<C>(

@@ -308,6 +308,7 @@ where
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_star_transactions,
         refund_star_payment,
         set_passport_data_errors,
         send_game,
@@ -989,6 +990,8 @@ trait ErasableRequester<'a> {
         pre_checkout_query_id: String,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
+
+    fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err>;
 
     fn refund_star_payment(
         &self,
@@ -1968,6 +1971,10 @@ where
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()
+    }
+
+    fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err> {
+        Requester::get_star_transactions(self).erase()
     }
 
     fn refund_star_payment(

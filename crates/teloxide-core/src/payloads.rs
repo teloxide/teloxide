@@ -76,6 +76,7 @@ mod get_my_default_administrator_rights;
 mod get_my_description;
 mod get_my_name;
 mod get_my_short_description;
+mod get_star_transactions;
 mod get_sticker_set;
 mod get_updates;
 mod get_user_chat_boosts;
@@ -216,6 +217,7 @@ pub use get_my_default_administrator_rights::{
 pub use get_my_description::{GetMyDescription, GetMyDescriptionSetters};
 pub use get_my_name::{GetMyName, GetMyNameSetters};
 pub use get_my_short_description::{GetMyShortDescription, GetMyShortDescriptionSetters};
+pub use get_star_transactions::{GetStarTransactions, GetStarTransactionsSetters};
 pub use get_sticker_set::{GetStickerSet, GetStickerSetSetters};
 pub use get_updates::{GetUpdates, GetUpdatesSetters};
 pub use get_user_chat_boosts::{GetUserChatBoosts, GetUserChatBoostsSetters};
