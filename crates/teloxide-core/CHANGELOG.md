@@ -109,6 +109,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 7.4 ([#1280](pr1280))
   - Update documentation on `provider_token` fields
 
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Update documentation on `InlineKeyboardButton` struct
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
