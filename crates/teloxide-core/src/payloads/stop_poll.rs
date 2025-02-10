@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, MessageId, Poll, Recipient};
+use crate::types::{BusinessConnectionId, InlineKeyboardMarkup, MessageId, Poll, Recipient};
 
 impl_payload! {
     /// Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
@@ -16,6 +16,8 @@ impl_payload! {
             pub message_id: MessageId,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message to be edited was sent
+            pub business_connection_id: BusinessConnectionId,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
