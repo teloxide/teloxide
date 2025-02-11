@@ -33,7 +33,7 @@ impl<E: 'static> UpdateHandlerTracingExt<E> for UpdateHandler<E> {
 
         dptree::from_fn_with_description(description, move |deps: DependencyMap, cont| {
             let self_c = self.clone();
-            let f = f.clone();
+            let f = Arc::clone(&f);
 
             async move {
                 let f = f.inject(&deps);
