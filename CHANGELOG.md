@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed `Limits::messages_per_min_channel` to `messages_per_min_channel_or_supergroup` to reflect its actual behavior ([PR 1214](https://github.com/teloxide/teloxide/pull/1214))
 - Added derive `Clone`, `Debug`, `PartialEq`, `Eq`, `Hash` to `ChatPermissions` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
 - Added derive `Clone`, `Debug` to `Settings` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
+- The `Throttle` adaptor now also throttles `forward_messages` and `copy_messages` like their non-batch counterparts, as well as `send_game` ([PR 1229](https://github.com/teloxide/teloxide/pull/1229))
 
 ### Fixed
 
