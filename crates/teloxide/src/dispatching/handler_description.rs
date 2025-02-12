@@ -9,6 +9,7 @@ use teloxide_core::types::AllowedUpdate;
 /// Handler description that is used by [`Dispatcher`].
 ///
 /// [`Dispatcher`]: crate::dispatching::Dispatcher
+#[derive(Debug, Clone)]
 pub struct DpHandlerDescription {
     allowed: InterestSet<Kind>,
 }
