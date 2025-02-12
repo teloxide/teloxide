@@ -25,7 +25,7 @@ pub fn bold(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn blockquote(s: &str) -> String {
-    format!(">{s}")
+    format!("**>{}", s.replace('\n', "\n>"))
 }
 
 /// Applies the italic font style to the string.
