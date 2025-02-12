@@ -60,6 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `allow_paid_broadcast` field to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_poll`, `send_dice`, `send_invoice`, `send_game`, `send_media_group` and `copy_message` methods
   - Add `TransactionPartnerTelegramApi` struct and `TelegramApi` variant to `TransactionPartner` enum
 
+- Support for TBA 8.0
+  - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))

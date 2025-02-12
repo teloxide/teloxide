@@ -4799,6 +4799,19 @@ Schema(
                     descr: Doc(md: "Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)"),
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(
+                        md: "Unique identifier of the business connection on behalf of which the link will be created. For payments in [Telegram Stars] only.",
+                        md_links: {"Telegram Stars":"https://t.me/BotNews/90"}
+                    ),
+                ),
+                Param(
+                    name: "subscription_period",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always be 2592000 (30 days) if specified. Any number of subscriptions can be active for a given bot at the same time, including multiple concurrent subscriptions from the same user."),
+                ),
+                Param(
                     name: "max_tip_amount",
                     ty: Option(u32),
                     descr: Doc(
