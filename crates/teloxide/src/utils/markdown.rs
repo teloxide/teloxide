@@ -224,6 +224,11 @@ mod tests {
     }
 
     #[test]
+    fn test_blockquote() {
+        assert_eq!(blockquote("foobar\n\nfoo\nbar"), "**>foobar\n>\n>foo\n>bar");
+    }
+
+    #[test]
     fn test_code_block() {
         assert_eq!(
             code_block("pre-'formatted'\nfixed-width \\code `block`"),
