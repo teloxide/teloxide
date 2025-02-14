@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PaidMedia, RevenueWithdrawalState, User};
+use crate::types::{PaidMedia, RevenueWithdrawalState, Seconds, User};
 
 /// This object describes the source of a transaction, or its recipient for
 /// outgoing transactions.
@@ -36,6 +36,9 @@ pub struct TransactionPartnerUser {
 
     /// Bot-specified invoice payload.
     pub invoice_payload: Option<String>,
+
+    /// The duration of the paid subscription.
+    pub subscription_period: Option<Seconds>,
 
     /// Information about the paid media bought by the user.
     pub paid_media: Option<Vec<PaidMedia>>,
