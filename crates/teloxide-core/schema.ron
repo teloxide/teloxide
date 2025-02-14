@@ -4990,6 +4990,30 @@ Schema(
             ],
         ),
         Method(
+            names: ("editUserStarSubscription", "EditUserStarSubscription", "edit_user_star_subscription"),
+            return_ty: True,
+            doc: Doc(md: "Allows the bot to cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#edituserstarsubscription",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Identifier of the user whose subscription will be edited"),
+                ),
+                Param(
+                    name: "telegram_payment_charge_id",
+                    ty: RawTy("TelegramTransactionId"),
+                    descr: Doc(md: "Telegram payment identifier for the subscription"),
+                ),
+                Param(
+                    name: "is_canceled",
+                    ty: bool,
+                    descr: Doc(md: "Pass `true` to cancel extension of the user subscription; the subscription must be active up to the end of the current subscription period. Pass `false` to allow the user to re-enable a subscription that was previously canceled by the bot."),
+                ),
+            ],
+        ),
+        Method(
             names: ("setPassportDataErrors", "SetPassportDataErrors", "set_passport_data_errors"),
             return_ty: True,
             doc: Doc(md: "Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns _True_ on success.\n\nUse this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues."),

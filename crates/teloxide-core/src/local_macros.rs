@@ -1496,6 +1496,14 @@ macro_rules! requester_forward {
             $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId))
         }
     };
+    (@method edit_user_star_subscription $body:ident $ty:ident) => {
+        type EditUserStarSubscription = $ty![EditUserStarSubscription];
+
+        fn edit_user_star_subscription(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool) -> Self::EditUserStarSubscription {
+            let this = self;
+            $body!(edit_user_star_subscription this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool))
+        }
+    };
     (@method set_passport_data_errors $body:ident $ty:ident) => {
         type SetPassportDataErrors = $ty![SetPassportDataErrors];
 

@@ -316,6 +316,7 @@ where
         answer_pre_checkout_query,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
@@ -1019,6 +1020,13 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err>;
 
     fn set_passport_data_errors(
         &self,
@@ -2015,6 +2023,21 @@ where
         telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err> {
         Requester::refund_star_payment(self, user_id, telegram_payment_charge_id).erase()
+    }
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err> {
+        Requester::edit_user_star_subscription(
+            self,
+            user_id,
+            telegram_payment_charge_id,
+            is_canceled,
+        )
+        .erase()
     }
 
     fn set_passport_data_errors(

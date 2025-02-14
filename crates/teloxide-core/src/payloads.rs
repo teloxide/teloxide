@@ -58,6 +58,7 @@ mod edit_message_reply_markup;
 mod edit_message_reply_markup_inline;
 mod edit_message_text;
 mod edit_message_text_inline;
+mod edit_user_star_subscription;
 mod export_chat_invite_link;
 mod forward_message;
 mod forward_messages;
@@ -202,6 +203,7 @@ pub use edit_message_reply_markup_inline::{
 };
 pub use edit_message_text::{EditMessageText, EditMessageTextSetters};
 pub use edit_message_text_inline::{EditMessageTextInline, EditMessageTextInlineSetters};
+pub use edit_user_star_subscription::{EditUserStarSubscription, EditUserStarSubscriptionSetters};
 pub use export_chat_invite_link::{ExportChatInviteLink, ExportChatInviteLinkSetters};
 pub use forward_message::{ForwardMessage, ForwardMessageSetters};
 pub use forward_messages::{ForwardMessages, ForwardMessagesSetters};

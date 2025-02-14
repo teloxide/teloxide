@@ -1510,6 +1510,24 @@ impl Requester for Bot {
         )
     }
 
+    type EditUserStarSubscription = JsonRequest<payloads::EditUserStarSubscription>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> Self::EditUserStarSubscription {
+        Self::EditUserStarSubscription::new(
+            self.clone(),
+            payloads::EditUserStarSubscription::new(
+                user_id,
+                telegram_payment_charge_id,
+                is_canceled,
+            ),
+        )
+    }
+
     type SetPassportDataErrors = JsonRequest<payloads::SetPassportDataErrors>;
 
     fn set_passport_data_errors<E>(&self, user_id: UserId, errors: E) -> Self::SetPassportDataErrors

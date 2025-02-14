@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 8.0
   - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
   - Add `subscription_expiration_date`, `is_recurring` and `is_first_recurring` fields to the `SuccessfulPayment` struct
+  - Add `editUserStarSubscription` TBA method
 
 ### Changed
 

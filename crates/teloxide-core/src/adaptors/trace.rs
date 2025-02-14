@@ -244,6 +244,7 @@ where
         answer_pre_checkout_query,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
