@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `text_entities` filed to `PollOption` struct
   - Add `question_parse_mode` and `question_entities` parameters to `sendPoll` method
   - Add `InputPollOption` struct
+  - Add `Percentage` struct
   - Add `BackgroundFill` and `BackgroundType` enum
   - Add `ChatBackground` variant to `MessageKind` enum
   - Add `max_reaction_count` field to `ChatFullInfo` struct

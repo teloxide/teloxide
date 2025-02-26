@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BackgroundFill, Document};
+use crate::types::{BackgroundFill, Document, Percentage};
 
 /// This object describes the type of a background.
 #[derive(Clone, Debug)]
@@ -24,7 +24,7 @@ pub struct BackgroundTypeFill {
     pub fill: BackgroundFill,
 
     /// Dimming of the background in dark themes, as a percentage; 0-100
-    pub dark_theme_dimming: u8,
+    pub dark_theme_dimming: Percentage,
 }
 
 /// The background is a wallpaper in the JPEG format.
@@ -36,7 +36,7 @@ pub struct BackgroundTypeWallpaper {
     pub document: Document,
 
     /// Dimming of the background in dark themes, as a percentage; 0-100
-    pub dark_theme_dimming: u8,
+    pub dark_theme_dimming: Percentage,
 
     /// `true`, if the wallpaper is downscaled to fit in a 450x450 square and
     /// then box-blurred with radius 12
@@ -63,7 +63,7 @@ pub struct BackgroundTypePattern {
 
     /// Intensity of the pattern when it is shown above the filled background;
     /// 0-100
-    pub intensity: u8,
+    pub intensity: Percentage,
 
     /// `true`, if the background fill must be applied only to the pattern
     /// itself. All other pixels are black in this case. For dark themes only
