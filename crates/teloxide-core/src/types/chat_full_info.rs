@@ -108,7 +108,7 @@ pub struct ChatPublicFullInfo {
     /// crate::payloads::ExportChatInviteLink
     pub invite_link: Option<String>,
 
-    /// `True`, if messages from the chat can't be forwarded to other chats.
+    /// `true`, if messages from the chat can't be forwarded to other chats.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_protected_content: bool,
 
@@ -134,13 +134,13 @@ pub struct ChatPrivateFullInfo {
     /// Bio of the other party in a private chat.
     pub bio: Option<String>,
 
-    /// `True`, if privacy settings of the other party in the private chat
+    /// `true`, if privacy settings of the other party in the private chat
     /// allows to use `tg://user?id=<user_id>` links only in chats with the
     /// user.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_private_forwards: bool,
 
-    /// `True`, if the privacy settings of the other party restrict sending
+    /// `true`, if the privacy settings of the other party restrict sending
     /// voice and video note messages in the private chat.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_restricted_voice_and_video_messages: bool,
@@ -179,6 +179,7 @@ pub struct PublicChatChannelFullInfo {
 
     /// Unique identifier for the linked chat, i.e. the discussion group
     /// identifier for a channel and vice versa.
+    // SMELL: TBA uses here Integer instead of ChatId so we do that too :c
     pub linked_chat_id: Option<i64>,
 }
 
@@ -219,7 +220,7 @@ pub struct PublicChatSupergroupFullInfo {
     /// A default chat member permissions, for groups and supergroups.
     pub permissions: Option<ChatPermissions>,
 
-    ///  For supergroups, the minimum allowed delay between consecutive messages
+    /// For supergroups, the minimum allowed delay between consecutive messages
     /// sent by each unprivileged user.
     pub slow_mode_delay: Option<Seconds>,
 
@@ -234,12 +235,12 @@ pub struct PublicChatSupergroupFullInfo {
     /// The location to which the supergroup is connected.
     pub location: Option<ChatLocation>,
 
-    /// True, if users need to join the supergroup before they can send
+    /// `true`, if users need to join the supergroup before they can send
     /// messages.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub join_to_send_messages: bool,
 
-    /// True, if all users directly joining the supergroup without using an
+    /// `true`, if all users directly joining the supergroup without using an
     /// invite link need to be approved by supergroup administrators.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub join_by_request: bool,
@@ -251,6 +252,10 @@ impl ChatFullInfo {
         matches!(self.kind, ChatKindFullInfo::Private(_))
     }
 
+    /// Note that Group and Supergroup are two similar but still different types
+    /// of chat groups!
+    ///
+    /// See [blog post](https://telegram.org/blog/supergroups#supergroups)
     #[must_use]
     pub fn is_group(&self) -> bool {
         if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
@@ -260,6 +265,10 @@ impl ChatFullInfo {
         }
     }
 
+    /// Note that Group and Supergroup are two similar but still different types
+    /// of chat groups!
+    ///
+    /// See [blog post](https://telegram.org/blog/supergroups#supergroups)
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
         if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
@@ -430,7 +439,7 @@ impl ChatFullInfo {
         None
     }
 
-    /// True, if users need to join the supergroup before they can send
+    /// `true`, if users need to join the supergroup before they can send
     /// messages.
     #[must_use]
     pub fn join_to_send_messages(&self) -> bool {
@@ -443,7 +452,7 @@ impl ChatFullInfo {
         false
     }
 
-    /// True, if all users directly joining the supergroup need to be approved
+    /// `true`, if all users directly joining the supergroup need to be approved
     /// by supergroup administrators.
     #[must_use]
     pub fn join_by_request(&self) -> bool {
@@ -480,7 +489,7 @@ impl ChatFullInfo {
         }
     }
 
-    /// `True`, if messages from the chat can't be forwarded to other chats.
+    /// `true`, if messages from the chat can't be forwarded to other chats.
     #[must_use]
     pub fn has_protected_content(&self) -> bool {
         match &self.kind {
@@ -526,7 +535,7 @@ impl ChatFullInfo {
         }
     }
 
-    /// `True`, if privacy settings of the other party in the private chat
+    /// `true`, if privacy settings of the other party in the private chat
     /// allows to use tg://user?id=<user_id> links only in chats with the
     /// user.
     #[must_use]
