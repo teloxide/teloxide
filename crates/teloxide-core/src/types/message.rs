@@ -1813,6 +1813,13 @@ impl Message {
     /// Note that this function may return quite a few users as it scans
     /// replies, message entities and more. Also note that this
     /// function can return duplicate users.
+    ///
+    /// In earlier versions of the `teloixde-core`, this function
+    /// returned mentioned users in [`chat`] from which the Message was
+    /// forwarded. E.g. from pinned messages in the chat. This functionality
+    /// was lost with the TBA 7.3 update.
+    ///
+    /// [`chat`]: Self::forward_from_chat
     pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
         use crate::util::{flatten, mentioned_users_from_entities};
 

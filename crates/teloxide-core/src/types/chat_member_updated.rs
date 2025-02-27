@@ -46,6 +46,12 @@ impl ChatMemberUpdated {
     /// This might be useful to track information about users.
     ///
     /// Note that this function can return duplicate users.
+    ///
+    /// In earlier versions of the `teloixde-core`, this function
+    /// returned mentioned users in [`chat`] e.g. from pinned messages in
+    /// the chat. This functionality was lost with the TBA 7.3 update.
+    ///
+    /// [`chat`]: Self::chat
     pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
         [
             &self.from,
