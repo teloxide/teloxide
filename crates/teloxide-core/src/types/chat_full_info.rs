@@ -14,7 +14,7 @@ pub struct ChatFullInfo {
     pub id: ChatId,
 
     #[serde(flatten)]
-    pub kind: ChatKindFullInfo,
+    pub kind: ChatFullInfoKind,
 
     /// A chat photo.
     pub photo: Option<ChatPhoto>,
@@ -82,19 +82,19 @@ pub struct ChatFullInfo {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ChatKindFullInfo {
-    Public(Box<ChatPublicFullInfo>),
-    Private(Box<ChatPrivateFullInfo>),
+pub enum ChatFullInfoKind {
+    Public(Box<ChatFullInfoPublic>),
+    Private(Box<ChatFullInfoPrivate>),
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChatPublicFullInfo {
+pub struct ChatFullInfoPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
 
     #[serde(flatten)]
-    pub kind: PublicChatKindFullInfo,
+    pub kind: ChatFullInfoPublicKind,
 
     /// A description, for groups, supergroups and channel chats.
     pub description: Option<String>,
@@ -120,7 +120,7 @@ pub struct ChatPublicFullInfo {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(from = "serde_helper::ChatPrivateFullInfo", into = "serde_helper::ChatPrivateFullInfo")]
-pub struct ChatPrivateFullInfo {
+pub struct ChatFullInfoPrivate {
     /// A username, for private chats, supergroups and channels if
     /// available.
     pub username: Option<String>,
@@ -165,15 +165,15 @@ pub struct ChatPrivateFullInfo {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
-pub enum PublicChatKindFullInfo {
-    Channel(PublicChatChannelFullInfo),
-    Group(PublicChatGroupFullInfo),
-    Supergroup(PublicChatSupergroupFullInfo),
+pub enum ChatFullInfoPublicKind {
+    Channel(ChatFullInfoPublicChannel),
+    Group(ChatFullInfoPublicGroup),
+    Supergroup(ChatFullInfoPublicSupergroup),
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PublicChatChannelFullInfo {
+pub struct ChatFullInfoPublicChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
 
@@ -185,14 +185,14 @@ pub struct PublicChatChannelFullInfo {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PublicChatGroupFullInfo {
+pub struct ChatFullInfoPublicGroup {
     /// A default chat member permissions, for groups and supergroups.
     pub permissions: Option<ChatPermissions>,
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct PublicChatSupergroupFullInfo {
+pub struct ChatFullInfoPublicSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
     pub username: Option<String>,
@@ -249,7 +249,7 @@ pub struct PublicChatSupergroupFullInfo {
 impl ChatFullInfo {
     #[must_use]
     pub fn is_private(&self) -> bool {
-        matches!(self.kind, ChatKindFullInfo::Private(_))
+        matches!(self.kind, ChatFullInfoKind::Private(_))
     }
 
     /// Note that Group and Supergroup are two similar but still different types
@@ -261,8 +261,8 @@ impl ChatFullInfo {
     /// [`is_group_chat`]: Self::is_group_chat
     #[must_use]
     pub fn is_group(&self) -> bool {
-        if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
-            matches!(**chat_pub, ChatPublicFullInfo { kind: PublicChatKindFullInfo::Group(_), .. })
+        if let ChatFullInfoKind::Public(chat_pub) = &self.kind {
+            matches!(**chat_pub, ChatFullInfoPublic { kind: ChatFullInfoPublicKind::Group(_), .. })
         } else {
             false
         }
@@ -277,10 +277,10 @@ impl ChatFullInfo {
     /// [`is_group_chat`]: Self::is_group_chat
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
-        if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
+        if let ChatFullInfoKind::Public(chat_pub) = &self.kind {
             matches!(
                 **chat_pub,
-                ChatPublicFullInfo { kind: PublicChatKindFullInfo::Supergroup(_), .. }
+                ChatFullInfoPublic { kind: ChatFullInfoPublicKind::Supergroup(_), .. }
             )
         } else {
             false
@@ -289,10 +289,10 @@ impl ChatFullInfo {
 
     #[must_use]
     pub fn is_channel(&self) -> bool {
-        if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
+        if let ChatFullInfoKind::Public(chat_pub) = &self.kind {
             matches!(
                 **chat_pub,
-                ChatPublicFullInfo { kind: PublicChatKindFullInfo::Channel(_), .. }
+                ChatFullInfoPublic { kind: ChatFullInfoPublicKind::Channel(_), .. }
             )
         } else {
             false
@@ -316,7 +316,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn title(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => this.title.as_deref(),
+            ChatFullInfoKind::Public(this) => this.title.as_deref(),
             _ => None,
         }
     }
@@ -325,15 +325,15 @@ impl ChatFullInfo {
     #[must_use]
     pub fn username(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => match &this.kind {
-                PublicChatKindFullInfo::Channel(PublicChatChannelFullInfo { username, .. })
-                | PublicChatKindFullInfo::Supergroup(PublicChatSupergroupFullInfo {
+            ChatFullInfoKind::Public(this) => match &this.kind {
+                ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel { username, .. })
+                | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
                     username,
                     ..
                 }) => username.as_deref(),
-                PublicChatKindFullInfo::Group(_) => None,
+                ChatFullInfoPublicKind::Group(_) => None,
             },
-            ChatKindFullInfo::Private(this) => this.username.as_deref(),
+            ChatFullInfoKind::Private(this) => this.username.as_deref(),
         }
     }
 
@@ -342,16 +342,16 @@ impl ChatFullInfo {
     #[must_use]
     pub fn linked_chat_id(&self) -> Option<i64> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => match &this.kind {
-                PublicChatKindFullInfo::Channel(PublicChatChannelFullInfo {
+            ChatFullInfoKind::Public(this) => match &this.kind {
+                ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel {
                     linked_chat_id,
                     ..
                 })
-                | PublicChatKindFullInfo::Supergroup(PublicChatSupergroupFullInfo {
+                | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
                     linked_chat_id,
                     ..
                 }) => *linked_chat_id,
-                PublicChatKindFullInfo::Group(_) => None,
+                ChatFullInfoPublicKind::Group(_) => None,
             },
             _ => None,
         }
@@ -360,9 +360,9 @@ impl ChatFullInfo {
     /// A default chat member permissions, for groups and supergroups.
     #[must_use]
     pub fn permissions(&self) -> Option<ChatPermissions> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Group(PublicChatGroupFullInfo { permissions })
-            | PublicChatKindFullInfo::Supergroup(PublicChatSupergroupFullInfo {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Group(ChatFullInfoPublicGroup { permissions })
+            | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
                 permissions,
                 ..
             }) = &this.kind
@@ -377,8 +377,8 @@ impl ChatFullInfo {
     /// For supergroups, name of group sticker set.
     #[must_use]
     pub fn sticker_set_name(&self) -> Option<&str> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.sticker_set_name.as_deref();
             }
         }
@@ -389,8 +389,8 @@ impl ChatFullInfo {
     /// `true`, if the bot can change the group sticker set.
     #[must_use]
     pub fn can_set_sticker_set(&self) -> bool {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.can_set_sticker_set;
             }
         }
@@ -403,8 +403,8 @@ impl ChatFullInfo {
     /// group.
     #[must_use]
     pub fn custom_emoji_sticker_set_name(&self) -> Option<&str> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.custom_emoji_sticker_set_name.as_deref();
             }
         }
@@ -416,8 +416,8 @@ impl ChatFullInfo {
     /// unpriviledged user.
     #[must_use]
     pub fn slow_mode_delay(&self) -> Option<Seconds> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.slow_mode_delay;
             }
         }
@@ -429,8 +429,8 @@ impl ChatFullInfo {
     /// identifier for a channel and vice versa.
     #[must_use]
     pub fn unrestrict_boost_count(&self) -> Option<u16> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.unrestrict_boost_count;
             }
         }
@@ -441,8 +441,8 @@ impl ChatFullInfo {
     /// The location to which the supergroup is connected.
     #[must_use]
     pub fn location(&self) -> Option<&ChatLocation> {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.location.as_ref();
             }
         }
@@ -454,8 +454,8 @@ impl ChatFullInfo {
     /// messages.
     #[must_use]
     pub fn join_to_send_messages(&self) -> bool {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.join_to_send_messages;
             }
         }
@@ -467,8 +467,8 @@ impl ChatFullInfo {
     /// by supergroup administrators.
     #[must_use]
     pub fn join_by_request(&self) -> bool {
-        if let ChatKindFullInfo::Public(this) = &self.kind {
-            if let PublicChatKindFullInfo::Supergroup(this) = &this.kind {
+        if let ChatFullInfoKind::Public(this) = &self.kind {
+            if let ChatFullInfoPublicKind::Supergroup(this) = &this.kind {
                 return this.join_by_request;
             }
         }
@@ -480,7 +480,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn description(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => this.description.as_deref(),
+            ChatFullInfoKind::Public(this) => this.description.as_deref(),
             _ => None,
         }
     }
@@ -495,7 +495,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn invite_link(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => this.invite_link.as_deref(),
+            ChatFullInfoKind::Public(this) => this.invite_link.as_deref(),
             _ => None,
         }
     }
@@ -504,7 +504,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn has_protected_content(&self) -> bool {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => this.has_protected_content,
+            ChatFullInfoKind::Public(this) => this.has_protected_content,
             _ => false,
         }
     }
@@ -514,7 +514,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn available_reactions(&self) -> Option<&[ReactionType]> {
         match &self.kind {
-            ChatKindFullInfo::Public(this) => this.available_reactions.as_deref(),
+            ChatFullInfoKind::Public(this) => this.available_reactions.as_deref(),
             _ => None,
         }
     }
@@ -523,7 +523,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn first_name(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Private(this) => this.first_name.as_deref(),
+            ChatFullInfoKind::Private(this) => this.first_name.as_deref(),
             _ => None,
         }
     }
@@ -532,7 +532,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn last_name(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Private(this) => this.last_name.as_deref(),
+            ChatFullInfoKind::Private(this) => this.last_name.as_deref(),
             _ => None,
         }
     }
@@ -541,7 +541,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn bio(&self) -> Option<&str> {
         match &self.kind {
-            ChatKindFullInfo::Private(this) => this.bio.as_deref(),
+            ChatFullInfoKind::Private(this) => this.bio.as_deref(),
             _ => None,
         }
     }
@@ -552,7 +552,7 @@ impl ChatFullInfo {
     #[must_use]
     pub fn has_private_forwards(&self) -> bool {
         match &self.kind {
-            ChatKindFullInfo::Private(this) => this.has_private_forwards,
+            ChatFullInfoKind::Private(this) => this.has_private_forwards,
             _ => false,
         }
     }
@@ -600,7 +600,7 @@ mod serde_helper {
         business_opening_hours: Option<BusinessOpeningHours>,
     }
 
-    impl From<ChatPrivateFullInfo> for super::ChatPrivateFullInfo {
+    impl From<ChatPrivateFullInfo> for super::ChatFullInfoPrivate {
         fn from(
             ChatPrivateFullInfo {
                 r#type: _,
@@ -633,9 +633,9 @@ mod serde_helper {
         }
     }
 
-    impl From<super::ChatPrivateFullInfo> for ChatPrivateFullInfo {
+    impl From<super::ChatFullInfoPrivate> for ChatPrivateFullInfo {
         fn from(
-            super::ChatPrivateFullInfo {
+            super::ChatFullInfoPrivate {
                 username,
                 first_name,
                 last_name,
@@ -647,7 +647,7 @@ mod serde_helper {
                 business_intro,
                 business_location,
                 business_opening_hours,
-            }: super::ChatPrivateFullInfo,
+            }: super::ChatFullInfoPrivate,
         ) -> Self {
             Self {
                 r#type: Type::Private,
@@ -677,9 +677,9 @@ mod tests {
     fn channel_de() {
         let expected = ChatFullInfo {
             id: ChatId(-1),
-            kind: ChatKindFullInfo::Public(Box::new(ChatPublicFullInfo {
+            kind: ChatFullInfoKind::Public(Box::new(ChatFullInfoPublic {
                 title: None,
-                kind: PublicChatKindFullInfo::Channel(PublicChatChannelFullInfo {
+                kind: ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel {
                     username: Some("channel_name".into()),
                     linked_chat_id: None,
                 }),
@@ -725,7 +725,7 @@ mod tests {
     fn private_chat_de() {
         let chat = ChatFullInfo {
             id: ChatId(0),
-            kind: ChatKindFullInfo::Private(Box::new(ChatPrivateFullInfo {
+            kind: ChatFullInfoKind::Private(Box::new(ChatFullInfoPrivate {
                 username: Some("username".into()),
                 first_name: Some("Anon".into()),
                 last_name: None,
@@ -773,7 +773,7 @@ mod tests {
     fn private_roundtrip() {
         let chat = ChatFullInfo {
             id: ChatId(0),
-            kind: ChatKindFullInfo::Private(Box::new(ChatPrivateFullInfo {
+            kind: ChatFullInfoKind::Private(Box::new(ChatFullInfoPrivate {
                 username: Some("username".into()),
                 first_name: Some("Anon".into()),
                 last_name: None,
