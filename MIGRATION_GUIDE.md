@@ -77,7 +77,7 @@ Also `available_reactions` was moved from `Chat` to `ChatPublicFullInfo`. `ChatF
 +live_period: Some(1.into()),
 ```
 
-`mentioned_users()` method in the `ChatMemberUpdated` and `Message` structs no longer able to track mentioned users in the chat e.g. from pinned messages in it. The only way to track them again is to call `get_chat()` method and call `mentioned_users()` on the returned `ChatFullInfo` struct.
+`mentioned_users()` method in the `ChatMemberUpdated` and `Message` structs no longer able to track mentioned users in the chat e.g. from pinned messages in it. `mentioned_users()` method in the `ChatJoinRequest` struct was removed completely as it become useless. The only way to track mentioned users again is to call `get_chat()` method and call `mentioned_users()` on the returned `ChatFullInfo` struct.
 
 ## 0.11 -> 0.12
 

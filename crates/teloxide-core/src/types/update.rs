@@ -227,16 +227,14 @@ impl Update {
         // 2 = LRR
         // 3 = RLL
         // 4 = RLR
-        // 5 = RRL
-        // 6 = RRR
+        // 5 = RR
 
         let i0 = |x| L(L(x));
         let i1 = |x| L(R(L(x)));
         let i2 = |x| L(R(R(x)));
         let i3 = |x| R(L(L(x)));
         let i4 = |x| R(L(R(x)));
-        let i5 = |x| R(R(L(x)));
-        let i6 = |x| R(R(R(x)));
+        let i5 = |x| R(R(x));
 
         match &self.kind {
             UpdateKind::Message(message)
@@ -250,7 +248,7 @@ impl Update {
                 if let Some(user) = answer.user() {
                     return i1(once(user));
                 }
-                i6(empty())
+                i5(empty())
             }
 
             UpdateKind::InlineQuery(query) => i1(once(&query.from)),
@@ -264,31 +262,31 @@ impl Update {
                 if let Some(user) = answer.voter.user() {
                     return i1(once(user));
                 }
-                i6(empty())
+                i5(empty())
             }
 
             UpdateKind::MyChatMember(member) | UpdateKind::ChatMember(member) => {
                 i4(member.mentioned_users())
             }
-            UpdateKind::ChatJoinRequest(request) => i5(request.mentioned_users()),
 
             UpdateKind::ChatBoost(b) => {
                 if let Some(user) = b.boost.source.user() {
                     return i1(once(user));
                 }
-                i6(empty())
+                i5(empty())
             }
             UpdateKind::RemovedChatBoost(b) => {
                 if let Some(user) = b.source.user() {
                     return i1(once(user));
                 }
-                i6(empty())
+                i5(empty())
             }
 
-            UpdateKind::MessageReactionCount(_)
+            UpdateKind::ChatJoinRequest(_)
+            | UpdateKind::MessageReactionCount(_)
             | UpdateKind::BusinessConnection(_)
             | UpdateKind::DeletedBusinessMessages(_)
-            | UpdateKind::Error(_) => i6(empty()),
+            | UpdateKind::Error(_) => i5(empty()),
         }
     }
 

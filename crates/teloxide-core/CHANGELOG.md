@@ -106,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 7.3 ([#1159](pr1159))
   - Remove some degraded functionality (because of `Chat` to `ChatFullInfo` migration):
-    - `fn mentioned_users` from `chat_member_updated.rs` and `chat_join_request.rs` lost ability to track chat users
+    - `fn mentioned_users` from `chat_member_updated.rs` lost ability to track chat users
+    - `fn mentioned_users` from `chat_join_request.rs` was removed completely
     - `fn mentioned_users` from `Message` lost ability to track chat users (e.g. from pins) and chat users from forward
     - `fn mentioned_users_rec` was removed from `Chat` and not included in `ChatFullInfo` struct
 
