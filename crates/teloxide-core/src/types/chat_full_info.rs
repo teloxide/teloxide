@@ -253,9 +253,12 @@ impl ChatFullInfo {
     }
 
     /// Note that Group and Supergroup are two similar but still different types
-    /// of chat groups!
+    /// of chat groups! Use [`is_group_chat`] to check if it's any kind of group
+    /// chat.
     ///
     /// See [blog post](https://telegram.org/blog/supergroups#supergroups)
+    ///
+    /// [`is_group_chat`]: Self::is_group_chat
     #[must_use]
     pub fn is_group(&self) -> bool {
         if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
@@ -266,9 +269,12 @@ impl ChatFullInfo {
     }
 
     /// Note that Group and Supergroup are two similar but still different types
-    /// of chat groups!
+    /// of chat groups! Use [`is_group_chat`] to check if it's any kind of group
+    /// chat.
     ///
     /// See [blog post](https://telegram.org/blog/supergroups#supergroups)
+    ///
+    /// [`is_group_chat`]: Self::is_group_chat
     #[must_use]
     pub fn is_supergroup(&self) -> bool {
         if let ChatKindFullInfo::Public(chat_pub) = &self.kind {
@@ -296,6 +302,11 @@ impl ChatFullInfo {
     #[must_use]
     pub fn is_chat(&self) -> bool {
         self.is_private() || self.is_group() || self.is_supergroup()
+    }
+
+    #[must_use]
+    pub fn is_group_chat(&self) -> bool {
+        self.is_group() || self.is_supergroup()
     }
 }
 

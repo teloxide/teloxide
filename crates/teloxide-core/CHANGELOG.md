@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BackgroundFill` and `BackgroundType` enum
   - Add `ChatBackground` variant to `MessageKind` enum
   - Add `max_reaction_count` field to `ChatFullInfo` struct
+  - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
   - Document that .MP3 and .M4A files can be used as voice messages
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
