@@ -34,7 +34,7 @@ pub struct ChatMemberUpdated {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub via_join_request: bool,
 
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     /// True, if the user joined the chat via a chat folder invite link
     pub via_chat_folder_invite_link: bool,
 }

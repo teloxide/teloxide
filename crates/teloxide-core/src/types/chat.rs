@@ -73,7 +73,7 @@ pub struct PublicChatSupergroup {
     pub username: Option<String>,
 
     /// `true`, if the supergroup chat is a forum (has topics enabled).
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_forum: bool,
 }
 

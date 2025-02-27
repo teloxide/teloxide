@@ -162,7 +162,6 @@ pub struct ChatPrivateFullInfo {
     pub business_opening_hours: Option<BusinessOpeningHours>,
 }
 
-#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
@@ -202,7 +201,7 @@ pub struct PublicChatSupergroupFullInfo {
     pub active_usernames: Option<Vec<String>>,
 
     /// `true`, if the supergroup chat is a forum (has topics enabled).
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_forum: bool,
 
     /// For supergroups, name of group sticker set.
