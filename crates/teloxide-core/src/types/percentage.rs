@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 
 /// Percentage from 0 to 100
@@ -22,8 +24,28 @@ impl Percentage {
     }
 
     /// Returns the percentage
-    pub const fn perc(self) -> u8 {
+    pub const fn value(self) -> u8 {
         self.0
+    }
+}
+
+impl TryFrom<u8> for Percentage {
+    type Error = &'static str;
+
+    fn try_from(value: u8) -> Result<Self, Self::Error> {
+        if value <= 100 {
+            Ok(Self(value))
+        } else {
+            Err("Percentage only accepts values less than or equal to 100!")
+        }
+    }
+}
+
+impl Deref for Percentage {
+    type Target = u8;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
@@ -44,7 +66,7 @@ mod tests {
         let S { intensity: actual } = serde_json::from_str(r#"{"intensity":69}"#).unwrap();
 
         assert_eq!(expected, actual);
-        assert_eq!(actual.perc(), 69);
+        assert_eq!(actual.value(), 69);
     }
 
     #[test]
