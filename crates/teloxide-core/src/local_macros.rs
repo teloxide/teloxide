@@ -1457,6 +1457,14 @@ macro_rules! requester_forward {
             $body!(answer_pre_checkout_query this (pre_checkout_query_id: P, ok: bool))
         }
     };
+    (@method get_star_transactions $body:ident $ty:ident) => {
+        type GetStarTransactions = $ty![GetStarTransactions];
+
+        fn get_star_transactions(&self, ) -> Self::GetStarTransactions {
+            let this = self;
+            $body!(get_star_transactions this ())
+        }
+    };
     (@method refund_star_payment $body:ident $ty:ident) => {
         type RefundStarPayment = $ty![RefundStarPayment];
 

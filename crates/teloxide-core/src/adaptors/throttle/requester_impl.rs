@@ -194,6 +194,7 @@ where
         answer_shipping_query,
         create_invoice_link,
         answer_pre_checkout_query,
+        get_star_transactions,
         refund_star_payment,
         set_passport_data_errors,
         set_game_score,

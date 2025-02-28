@@ -70,6 +70,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
   - Add `ExpandableBlockquote` message entity
 
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Add `StarTransactions`, `StarTransaction`, `TransactionPartner` and `RevenueWithdrawalState` structs
+  - Add `getStarTransactions` TBA method
+  - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
+  - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
+
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
 [pr1271]: https://github.com/teloxide/teloxide/pull/1271
@@ -104,6 +110,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 7.4 ([#1280](pr1280))
   - Update documentation on `provider_token` fields
 
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Update documentation on `InlineKeyboardButton` struct
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
@@ -111,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
 [pr1280]: https://github.com/teloxide/teloxide/pull/1280
+[pr1281]: https://github.com/teloxide/teloxide/pull/1281
 
 ### Removed
 

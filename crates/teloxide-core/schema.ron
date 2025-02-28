@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.4", date: "May 28, 2024"),
+    api_version: ApiVersion(ver: "7.5", date: "June 18, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -1451,6 +1451,11 @@ Schema(
                     descr: Doc(md: "Longitude of new location"),
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "live_period",
                     ty: Option(RawTy("LivePeriod")),
                     descr: Doc(md: "New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged"),
@@ -1510,6 +1515,11 @@ Schema(
                     descr: Doc(md: "Longitude of new location"),
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "horizontal_accuracy",
                     ty: Option(f64),
                     descr: Doc(md: "The radius of uncertainty for the location, measured in meters; 0-1500"),
@@ -1562,6 +1572,11 @@ Schema(
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("ReplyMarkup")),
                     descr: Doc(
@@ -1589,6 +1604,11 @@ Schema(
                     name: "inline_message_id",
                     ty: String,
                     descr: Doc(md: "Identifier of the inline message"),
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -3464,7 +3484,7 @@ Schema(
             names: ("editMessageText", "EditMessageText", "edit_message_text"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to edit text and [games] messages. On success, the edited Message is returned.",
+                md: "Use this method to edit text and [games] messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
                 md_links: {"games": "https://core.telegram.org/bots/api#games"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#editmessagetext",
@@ -3485,6 +3505,11 @@ Schema(
                     name: "text",
                     ty: String,
                     descr: Doc(md: "New text of the message, 1-4096 characters after entities parsing")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "parse_mode",
@@ -3518,7 +3543,7 @@ Schema(
             names: ("editMessageTextInline", "EditMessageTextInline", "edit_message_text_inline"),
             return_ty: True,
             doc: Doc(
-                md: "Use this method to edit text and [games] messages. On success, _True_ is returned.",
+                md: "Use this method to edit text and [games] messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
                 md_links: {"games": "https://core.telegram.org/bots/api#games"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#editmessagetext",
@@ -3534,6 +3559,11 @@ Schema(
                     name: "text",
                     ty: String,
                     descr: Doc(md: "New text of the message, 1-4096 characters after entities parsing")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "parse_mode",
@@ -3566,7 +3596,7 @@ Schema(
         Method(
             names: ("editMessageCaption", "EditMessageCaption", "edit_message_caption"),
             return_ty: RawTy("Message"),
-            doc: Doc(md: "Use this method to edit captions of messages. On success, the edited Message is returned."),
+            doc: Doc(md: "Use this method to edit captions of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagecaption",
             tg_category: "Updating messages",
             sibling: Some("editMessageCaptionInline"),
@@ -3580,6 +3610,11 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "caption",
@@ -3617,7 +3652,7 @@ Schema(
         Method(
             names: ("editMessageCaptionInline", "EditMessageCaptionInline", "edit_message_caption_inline"),
             return_ty: True,
-            doc: Doc(md: "Use this method to edit captions of messages. On success, _True_ is returned."),
+            doc: Doc(md: "Use this method to edit captions of messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagetext",
             tg_category: "Updating messages",
             sibling: Some("editMessageCaption"),
@@ -3626,6 +3661,11 @@ Schema(
                     name: "inline_message_id",
                     ty: String,
                     descr: Doc(md: "Identifier of the inline message")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "caption",
@@ -3659,7 +3699,7 @@ Schema(
         Method(
             names: ("editMessageMedia", "EditMessageMedia", "edit_message_media"),
             return_ty: RawTy("Message"),
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemedia",
             tg_category: "Updating messages",
             sibling: Some("editMessageMediaInline"),
@@ -3680,6 +3720,11 @@ Schema(
                     descr: Doc(md: "A JSON-serialized object for a new media content of the message")
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
@@ -3692,7 +3737,7 @@ Schema(
         Method(
             names: ("editMessageMediaInline", "EditMessageMediaInline", "edit_message_media_inline"),
             return_ty: True,
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemediainline",
             tg_category: "Updating messages",
             sibling: Some("editMessageMedia"),
@@ -3708,6 +3753,11 @@ Schema(
                     descr: Doc(md: "A JSON-serialized object for a new media content of the message")
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
@@ -3720,7 +3770,7 @@ Schema(
         Method(
             names: ("editMessageReplyMarkup", "EditMessageReplyMarkup", "edit_message_reply_markup"),
             return_ty: RawTy("Message"),
-            doc: Doc(md: "Use this method to edit only the reply markup of messages. On success, the edited Message is returned."),
+            doc: Doc(md: "Use this method to edit only the reply markup of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagereplymarkup",
             tg_category: "Updating messages",
             sibling: Some("editMessageMediaInline"),
@@ -3736,6 +3786,11 @@ Schema(
                     descr: Doc(md: "Identifier of the message to edit")
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
+                ),
+                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
@@ -3748,7 +3803,7 @@ Schema(
         Method(
             names: ("editMessageReplyMarkupInline", "EditMessageReplyMarkupInline", "edit_message_reply_markup_inline"),
             return_ty: True,
-            doc: Doc(md: "Use this method to edit only the reply markup of messages. On success, _True_ is returned."),
+            doc: Doc(md: "Use this method to edit only the reply markup of messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagereplymarkup",
             tg_category: "Updating messages",
             sibling: Some("editMessageReplyMarkup"),
@@ -3757,6 +3812,11 @@ Schema(
                     name: "inline_message_id",
                     ty: String,
                     descr: Doc(md: "Identifier of the inline message")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -3784,6 +3844,11 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Identifier of the message to edit")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message to be edited was sent"),
                 ),
                 Param(
                     name: "reply_markup",
@@ -4604,6 +4669,28 @@ Schema(
                     name: "error_message",
                     ty: Option(String),
                     descr: Doc(md: "Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. \"Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!\"). Telegram will display this message to the user."),
+                ),
+            ],
+        ),
+        Method(
+            names: ("getStarTransactions", "GetStarTransactions", "get_star_transactions"),
+            return_ty: RawTy("StarTransactions"),
+            doc: Doc(
+                md: "Returns the bot's Telegram Star transactions in chronological order. On success, returns a [StarTransactions] object..",
+                md_links: {"StarTransactions":"https://core.telegram.org/bots/api#startransactions"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getstartransactions",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "offset",
+                    ty: Option(u32),
+                    descr: Doc(md: "Number of transactions to skip in the response"),
+                ),
+                Param(
+                    name: "limit",
+                    ty: Option(u8),
+                    descr: Doc(md: "The maximum number of transactions to be retrieved. Values between 1-100 are accepted. Defaults to 100."),
                 ),
             ],
         ),

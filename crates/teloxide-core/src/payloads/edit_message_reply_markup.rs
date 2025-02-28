@@ -2,10 +2,10 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, Message, MessageId, Recipient};
+use crate::types::{BusinessConnectionId, InlineKeyboardMarkup, Message, MessageId, Recipient};
 
 impl_payload! {
-    /// Use this method to edit only the reply markup of messages. On success, the edited Message is returned.
+    /// Use this method to edit only the reply markup of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.
     ///
     /// See also: [`EditMessageMediaInline`](crate::payloads::EditMessageMediaInline)
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
@@ -18,6 +18,8 @@ impl_payload! {
             pub message_id: MessageId,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message to be edited was sent
+            pub business_connection_id: BusinessConnectionId,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
