@@ -39,7 +39,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.3", date: "May 6, 2024"),
+    api_version: ApiVersion(ver: "7.4", date: "May 28, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -276,6 +276,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -432,6 +437,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the new caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media. Ignored if a new caption isn't specified"),
+                ),
+                Param(
                     name: "disable_notification",
                     ty: Option(bool),
                     descr: Doc(
@@ -567,6 +577,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
+                ),
+                Param(
                     name: "has_spoiler",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True if the photo needs to be covered with a spoiler animation"),
@@ -583,6 +598,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -693,6 +713,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -786,6 +811,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -883,6 +913,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
+                ),
+                Param(
                     name: "has_spoiler",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True if the video needs to be covered with a spoiler animation"),
@@ -904,6 +939,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -999,6 +1039,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the photo caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media"),
+                ),
+                Param(
                     name: "has_spoiler",
                     ty: Option(bool),
                     descr: Doc(md: "Pass True if the animation needs to be covered with a spoiler animation"),
@@ -1015,6 +1060,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1108,6 +1158,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent message from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1193,6 +1248,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1253,6 +1313,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1331,6 +1396,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1616,6 +1686,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1693,6 +1768,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1827,6 +1907,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1886,6 +1971,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -3510,6 +3600,11 @@ Schema(
                     descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_"),
                 ),
                 Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages"),
+                ),
+                Param(
                     name: "reply_markup",
                     ty: Option(RawTy("InlineKeyboardMarkup")),
                     descr: Doc(
@@ -3791,6 +3886,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -4190,8 +4290,11 @@ Schema(
                     name: "provider_token",
                     ty: String,
                     descr: Doc(
-                        md: "Payments provider token, obtained via [Botfather]",
-                        md_links: {"Botfather":"https://t.me/botfather"}
+                        md: "Payments provider token, obtained via [Botfather]. Pass an empty string for payments in [Telegram Stars].",
+                        md_links: {
+                            "Botfather":"https://t.me/botfather",
+                            "Telegram Stars": "https://t.me/BotNews/90"
+                        }
                     ),
                 ),
                 Param(
@@ -4302,6 +4405,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -4342,8 +4450,11 @@ Schema(
                     name: "provider_token",
                     ty: String,
                     descr: Doc(
-                        md: "Payments provider token, obtained via [Botfather]",
-                        md_links: {"Botfather":"https://t.me/botfather"}
+                        md: "Payments provider token, obtained via [Botfather]. Pass an empty string for payments in [Telegram Stars].",
+                        md_links: {
+                            "Botfather":"https://t.me/botfather",
+                            "Telegram Stars": "https://t.me/BotNews/90"
+                        }
                     ),
                 ),
                 Param(
@@ -4497,6 +4608,28 @@ Schema(
             ],
         ),
         Method(
+            names: ("refundStarPayment", "RefundStarPayment", "refund_star_payment"),
+            return_ty: True,
+            doc: Doc(
+                md: "Refunds a successful payment in [Telegram Stars]. Returns True on success.",
+                md_links: {"Telegram Stars":"https://t.me/BotNews/90"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#refundstarpayment",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Identifier of the user whose payment will be refunded"),
+                ),
+                Param(
+                    name: "telegram_payment_charge_id",
+                    ty: String,
+                    descr: Doc(md: "Telegram payment identifier"),
+                ),
+            ],
+        ),
+        Method(
             names: ("setPassportDataErrors", "SetPassportDataErrors", "set_passport_data_errors"),
             return_ty: True,
             doc: Doc(md: "Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns _True_ on success.\n\nUse this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues."),
@@ -4557,6 +4690,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
                     name: "reply_parameters",

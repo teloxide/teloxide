@@ -5,6 +5,7 @@ use super::{ComplexTag, Kind, NewLineRepeatedTag, Place, SimpleTag, Tag, TagWrit
 pub static HTML: TagWriter = TagWriter {
     bold: SimpleTag::new("<b>", "</b>"),
     blockquote: NewLineRepeatedTag::new("<blockquote>", "", "</blockquote>"),
+    expandable_blockquote: NewLineRepeatedTag::new("<blockquote expandable>", "", "</blockquote>"),
     italic: SimpleTag::new("<i>", "</i>"),
     underline: SimpleTag::new("<u>", "</u>"),
     strikethrough: SimpleTag::new("<s>", "</s>"),
@@ -26,6 +27,11 @@ fn write_tag(tag: &Tag, buf: &mut String) {
             Place::Start => buf.push_str(HTML.blockquote.start),
             Place::MidNewLine => (), // HTML doesn't need an explicit tag for that
             Place::End => buf.push_str(HTML.blockquote.end),
+        },
+        Kind::ExpandableBlockquote => match tag.place {
+            Place::Start => buf.push_str(HTML.expandable_blockquote.start),
+            Place::MidNewLine => (), // HTML doesn't need an explicit tag for that
+            Place::End => buf.push_str(HTML.expandable_blockquote.end),
         },
         Kind::Italic => buf.push_str(HTML.italic.get_tag(tag.place)),
         Kind::Underline => buf.push_str(HTML.underline.get_tag(tag.place)),

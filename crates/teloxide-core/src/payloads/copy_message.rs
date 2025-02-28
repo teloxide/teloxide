@@ -32,6 +32,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the new caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
+            /// Pass True, if the caption must be shown above the message media. Ignored if a new caption isn't specified
+            pub show_caption_above_media: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

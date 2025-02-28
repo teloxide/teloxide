@@ -1251,6 +1251,17 @@ pub trait Requester {
     where
         P: Into<String>;
 
+    type RefundStarPayment: Request<Payload = RefundStarPayment, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RefundStarPayment`].
+    fn refund_star_payment<T>(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: T,
+    ) -> Self::RefundStarPayment
+    where
+        T: Into<String>;
+
     type SetPassportDataErrors: Request<Payload = SetPassportDataErrors, Err = Self::Err>;
 
     /// For Telegram documentation see [`SetPassportDataErrors`].
@@ -1440,6 +1451,7 @@ macro_rules! forward_all {
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
+            refund_star_payment,
             set_passport_data_errors,
             send_game,
             set_game_score,

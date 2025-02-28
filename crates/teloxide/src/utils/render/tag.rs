@@ -66,6 +66,7 @@ pub enum Place {
 pub enum Kind<'a> {
     Bold,
     Blockquote,
+    ExpandableBlockquote,
     Italic,
     Underline,
     Strikethrough,
@@ -126,6 +127,7 @@ impl NewLineRepeatedTag {
 pub struct TagWriter {
     pub bold: SimpleTag,
     pub blockquote: NewLineRepeatedTag,
+    pub expandable_blockquote: NewLineRepeatedTag,
     pub italic: SimpleTag,
     pub underline: SimpleTag,
     pub strikethrough: SimpleTag,
@@ -149,6 +151,11 @@ impl TagWriter {
                     Place::Start => self.blockquote.start.len(),
                     Place::MidNewLine => self.blockquote.repeat.len(),
                     Place::End => self.blockquote.end.len(),
+                },
+                Kind::ExpandableBlockquote => match tag.place {
+                    Place::Start => self.expandable_blockquote.start.len(),
+                    Place::MidNewLine => self.expandable_blockquote.repeat.len(),
+                    Place::End => self.expandable_blockquote.end.len(),
                 },
                 Kind::Italic => self.italic.get_tag(tag.place).len(),
                 Kind::Underline => self.underline.get_tag(tag.place).len(),

@@ -62,6 +62,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
   - Document that .MP3 and .M4A files can be used as voice messages
 
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Add `refundStarPayment` TBA method
+  - Add `effect_id` field to the `MessageCommon` struct
+  - Add `message_effect_id` parameter to `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, and `sendMediaGroup` methods
+  - Add `show_caption_above_media` field to `MediaAnimation`, `MediaPhoto`, `MediaVideo`, `InputMediaPhoto`, `InputMediaVideo`, `InputMediaAnimation`, `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif`, `InlineQueryResultPhoto`, `InlineQueryResultVideo`, `InlineQueryResultCachedGif`, `InlineQueryResultCachedMpeg4Gif`, `InlineQueryResultCachedPhoto` and `InlineQueryResultCachedVideo` structs
+  - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
+  - Add `ExpandableBlockquote` message entity
+
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
 [pr1271]: https://github.com/teloxide/teloxide/pull/1271
@@ -93,12 +101,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Move most of the fields and methods from `Chat` to `ChatFullInfo` struct
   - Return `ChatFullInfo` struct from `getChat` method instead of `Chat`
 
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Update documentation on `provider_token` fields
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
+[pr1280]: https://github.com/teloxide/teloxide/pull/1280
 
 ### Removed
 

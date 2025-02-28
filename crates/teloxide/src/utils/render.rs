@@ -37,6 +37,7 @@ impl<'a> Renderer<'a> {
                     e.kind,
                     MEK::Bold
                         | MEK::Blockquote
+                        | MEK::ExpandableBlockquote
                         | MEK::Italic
                         | MEK::Underline
                         | MEK::Strikethrough
@@ -57,6 +58,7 @@ impl<'a> Renderer<'a> {
             let kind = match &entity.kind {
                 MEK::Bold => Kind::Bold,
                 MEK::Blockquote => Kind::Blockquote,
+                MEK::ExpandableBlockquote => Kind::ExpandableBlockquote,
                 MEK::Italic => Kind::Italic,
                 MEK::Underline => Kind::Underline,
                 MEK::Strikethrough => Kind::Strikethrough,
@@ -73,7 +75,7 @@ impl<'a> Renderer<'a> {
             // vector and then just store the index here?
             tags.push(Tag::start(kind.clone(), entity.offset, index));
 
-            if matches!(kind, Kind::Blockquote) {
+            if matches!(kind, Kind::Blockquote | Kind::ExpandableBlockquote) {
                 let new_lines_indexes: Vec<usize> = text
                     .chars()
                     .skip(entity.offset)
@@ -229,7 +231,9 @@ mod test {
     #[test]
     fn test_render_complex() {
         let text = "Hi how are you?\nnested entities are cool\nIm in a Blockquote!\nIm in a \
-                    multiline Blockquote!\n\nIm in a multiline Blockquote!";
+                    multiline Blockquote!\n\nIm in a multiline Blockquote!\nIm in an expandable \
+                    Blockquote!\nIm in an expandable multiline Blockquote!\n\nIm in an expandable \
+                    multiline Blockquote!";
         let entities = vec![
             MessageEntity { kind: MEK::Bold, offset: 0, length: 2 },
             MessageEntity { kind: MEK::Italic, offset: 3, length: 3 },
@@ -252,6 +256,8 @@ mod test {
             MessageEntity { kind: MEK::Code, offset: 36, length: 4 },
             MessageEntity { kind: MEK::Blockquote, offset: 41, length: 19 },
             MessageEntity { kind: MEK::Blockquote, offset: 61, length: 60 },
+            MessageEntity { kind: MEK::ExpandableBlockquote, offset: 122, length: 31 },
+            MessageEntity { kind: MEK::ExpandableBlockquote, offset: 154, length: 84 },
         ];
 
         let render = Renderer::new(text, &entities);
@@ -261,13 +267,17 @@ mod test {
             "<b>Hi</b> <i>how</i> <u>are</u> <s>you</s>?\n<b>n</b><b><u><s>este</s></u>d</b> \
             <a href=\"https://t.me/\">entities</a> <a href=\"tg://user?id=1234567\">are</a> <code>cool</code>\n\
             <blockquote>Im in a Blockquote!</blockquote>\n\
-            <blockquote>Im in a multiline Blockquote!\n\nIm in a multiline Blockquote!</blockquote>"
+            <blockquote>Im in a multiline Blockquote!\n\nIm in a multiline Blockquote!</blockquote>\n\
+            <blockquote expandable>Im in an expandable Blockquote!</blockquote>\n\
+            <blockquote expandable>Im in an expandable multiline Blockquote!\n\nIm in an expandable multiline Blockquote!</blockquote>"
         );
         assert_eq!(
             render.as_markdown(),
             "*Hi* _\rhow_\r __\rare__\r ~you~?\n*n**__\r~este~__\rd* [entities](https://t.me/) \
              [are](tg://user?id=1234567) `cool`\n**>Im in a Blockquote\\!\n**>Im in a multiline \
-             Blockquote\\!\n>\n>Im in a multiline Blockquote\\!"
+             Blockquote\\!\n>\n>Im in a multiline Blockquote\\!\n**>Im in an expandable \
+             Blockquote\\!||\n**>Im in an expandable multiline Blockquote\\!\n>\n>Im in an \
+             expandable multiline Blockquote\\!||"
         );
     }
 }

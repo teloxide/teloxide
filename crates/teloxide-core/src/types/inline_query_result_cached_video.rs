@@ -39,6 +39,10 @@ pub struct InlineQueryResultCachedVideo {
     /// specified instead of `parse_mode`.
     pub caption_entities: Option<Vec<MessageEntity>>,
 
+    /// Pass `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// [Inline keyboard] attached to the message.
     ///
     /// [Inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
@@ -63,6 +67,7 @@ impl InlineQueryResultCachedVideo {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         }
@@ -119,6 +124,11 @@ impl InlineQueryResultCachedVideo {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    pub fn show_caption_above_media(mut self, val: bool) -> Self {
+        self.show_caption_above_media = val;
         self
     }
 

@@ -325,9 +325,11 @@ pub struct InputMessageContentInvoice {
     /// the user, use for your internal processes.
     pub payload: String,
 
-    /// Payment provider token, obtained via [@Botfather]
+    /// Payment provider token, obtained via [@Botfather].
+    /// Pass an empty string for payments in [Telegram Stars].
     ///
     /// [@Botfather]: https://t.me/Botfather
+    /// [Telegram Stars]: https://t.me/BotNews/90
     pub provider_token: String,
 
     /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
