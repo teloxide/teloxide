@@ -254,7 +254,7 @@ impl_api_error! {
         /// 1. [`SendMessage`]
         ///
         /// [`SendMessage`]: crate::payloads::SendMessage
-        MessageToReplyNotFound = "Bad Request: reply message not found",
+        MessageToReplyNotFound = "Bad Request: message to be replied not found",
 
         /// Occurs when bot tries to
         MessageIdentifierNotSpecified = "Bad Request: message identifier is not specified",
@@ -859,7 +859,7 @@ mod tests {
                 ApiError::MessageToEditNotFound,
             ),
             (
-                "{\"data\": \"Bad Request: reply message not found\"}",
+                "{\"data\": \"Bad Request: message to be replied not found\"}",
                 ApiError::MessageToReplyNotFound,
             ),
             (
