@@ -22,6 +22,8 @@ pub enum ReactionType {
         /// Custom emoji identifier.
         custom_emoji_id: String,
     },
+    /// Paid reaction.
+    Paid,
 }
 
 impl ReactionType {
