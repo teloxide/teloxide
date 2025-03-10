@@ -218,6 +218,20 @@ name = "bytemuck"
 version = "1.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ef657dfab802224e671f5818e9a4935f9b1957ed18e58292690cc39e7a4092a3"
+dependencies = [
+ "bytemuck_derive",
+]
+
+[[package]]
+name = "bytemuck_derive"
+version = "1.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3fa76293b4f7bb636ab88fd78228235b5248b4d05cc589aed610f954af5d7c7a"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "byteorder"
@@ -2481,6 +2495,7 @@ version = "0.10.1"
 dependencies = [
  "aho-corasick",
  "bitflags",
+ "bytemuck",
  "bytes",
  "chrono",
  "cool_asserts",
