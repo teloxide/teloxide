@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now blockquote handling in the render module works correctly ([PR 1267](https://github.com/teloxide/teloxide/pull/1267))
 - Now blockquote generation in the `utils::markdown` module works correctly ([PR 1273](https://github.com/teloxide/teloxide/pull/1273))
 - Fixed calculation of per-second limits in the `Throttle` adaptor ([PR 1212](https://github.com/teloxide/teloxide/pull/1212))
+- Parsing of `get_chat` responses for channels with paid reactions ([PR 1284](https://github.com/teloxide/teloxide/pull/1284))
 
 ## 0.13.0 - 2024-08-16
 
