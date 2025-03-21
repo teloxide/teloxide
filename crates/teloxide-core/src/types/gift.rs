@@ -2,6 +2,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Sticker;
 
+/// This object represents a list of gifts.
+#[derive(Clone, Debug)]
+#[derive(PartialEq)]
+#[derive(Serialize, Deserialize)]
+pub struct Gifts {
+    /// The list of gifts.
+    pub gifts: Vec<Gift>,
+}
+
+
 /// Represents a gift that can be sent by the bot.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug)]
