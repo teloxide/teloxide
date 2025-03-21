@@ -230,6 +230,7 @@ mod game;
 mod game_high_score;
 mod general_forum_topic_hidden;
 mod general_forum_topic_unhidden;
+mod gift;
 mod giveaway;
 mod giveaway_completed;
 mod giveaway_created;
