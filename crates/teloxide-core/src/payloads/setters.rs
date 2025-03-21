@@ -21,6 +21,7 @@ pub use crate::payloads::{
     EditMessageReplyMarkupSetters as _, EditMessageTextInlineSetters as _,
     EditMessageTextSetters as _, ExportChatInviteLinkSetters as _, ForwardMessageSetters as _,
     ForwardMessagesSetters as _, GetBusinessConnectionSetters as _,
+    GetAvailableGiftsSetters as _, GetBusinessConnectionSetters as _,
     GetChatAdministratorsSetters as _, GetChatMemberCountSetters as _, GetChatMemberSetters as _,
     GetChatMembersCountSetters as _, GetChatMenuButtonSetters as _, GetChatSetters as _,
     GetCustomEmojiStickersSetters as _, GetFileSetters as _, GetForumTopicIconStickersSetters as _,

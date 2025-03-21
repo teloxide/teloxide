@@ -5063,6 +5063,18 @@ Schema(
                 )
             ],
         ),
+        Method(
+            names: ("getAvailableGifts", "GetAvailableGifts", "get_available_gifts"),
+            return_ty: RawTy("Gifts"),
+            doc: Doc(
+                md: "Returns the list of gifts that can be sent by the bot to users and channel chats. On success, returns a [Gifts] object.",
+                md_links: {"Gifts": "https://core.telegram.org/bots/api#gifts"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getavailablegifts",
+            tg_category: "Payments",
+            params: [],
+        )
+
     ],
     tg_categories: {
         "Getting updates": "https://core.telegram.org/bots/api#getting-updates",

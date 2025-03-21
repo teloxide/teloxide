@@ -1632,4 +1632,10 @@ impl Requester for Bot {
     {
         Self::UnpinAllChatMessages::new(self.clone(), payloads::UnpinAllChatMessages::new(chat_id))
     }
+
+    type GetAvailableGifts = JsonRequest<payloads::GetAvailableGifts>;
+
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts {
+        Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
 }

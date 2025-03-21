@@ -58,6 +58,7 @@ pub use game::*;
 pub use game_high_score::*;
 pub use general_forum_topic_hidden::*;
 pub use general_forum_topic_unhidden::*;
+pub use gift::*;
 pub use giveaway::*;
 pub use giveaway_completed::*;
 pub use giveaway_created::*;
