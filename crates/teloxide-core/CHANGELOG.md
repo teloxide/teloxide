@@ -78,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 8.0 ([#1280](pr1280))
   - Add `Gift` and `Gifts`  structs
+  - Add `get_available_gifts` TBA method
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264

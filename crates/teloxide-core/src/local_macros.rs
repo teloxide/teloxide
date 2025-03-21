@@ -1513,6 +1513,14 @@ macro_rules! requester_forward {
             let this = self;
             $body!(get_game_high_scores this (user_id: UserId, target: T))
         }
+    };
+    (@method get_available_gifts $body:ident $ty:ident) => {
+        type GetAvailableGifts = $ty![GetAvailableGifts];
+
+        fn get_available_gifts(&self, ) -> Self::GetAvailableGifts {
+            let this = self;
+            $body!(get_available_gifts this ())
+        }
     };// END BLOCK requester_forward_at_method
 }
 
