@@ -325,7 +325,8 @@ where
         decline_chat_join_request,
         get_available_gifts,
         send_gift,
-        set_user_emoji_status
+        set_user_emoji_status,
+        save_prepared_inline_message
         => fwd_erased, fty
     }
 }
@@ -1058,15 +1059,18 @@ trait ErasableRequester<'a> {
 
     fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
 
-    fn send_gift(
-        &self,
-        gift_id: String,
-    ) -> ErasedRequest<'a, SendGift, Self::Err>;
+    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, SendGift, Self::Err>;
 
     fn set_user_emoji_status(
         &self,
         user_id: UserId,
     ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -2083,7 +2087,18 @@ where
         Requester::send_gift(self, gift_id).erase()
     }
 
-    fn set_user_emoji_status(&self, gift_id: String) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
-        Requester::set_user_emoji_status(self, gift_id).erase()
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, user_id).erase()
+    }
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err> {
+        Requester::save_prepared_inline_message(self, user_id, result).erase()
     }
 }

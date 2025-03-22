@@ -297,7 +297,8 @@ where
         decline_chat_join_request,
         get_available_gifts,
         send_gift,
-        set_user_emoji_status
+        set_user_emoji_status,
+        save_prepared_inline_message
         => fid, ftyid
     }
 }
