@@ -5122,9 +5122,34 @@ Schema(
                     descr: Doc(md: "A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
                 ),
             ],
+        ),
+        Method(
+            names: ("setUserEmojiStatus", "SetUserEmojiStatus", "set_user_emoji_status"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method requestEmojiStatusAccess. Returns True on success.",
+                md_links: {},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setuseremojistatus",
+            tg_category: "Users",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "emoji_status_custom_emoji_id",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status."),
+                ),
+                Param(
+                    name: "emoji_status_expiration_date",
+                    ty: Option(i64),
+                    descr: Doc(md: "Expiration date of the emoji status, if any"),
+                ),
+            ],
         )
-
-
     ],
     tg_categories: {
         "Getting updates": "https://core.telegram.org/bots/api#getting-updates",

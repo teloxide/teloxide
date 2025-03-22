@@ -165,9 +165,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
   - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
 
-- Support for TBA 8.0 ([#1280](pr1280))
+- Support for TBA 8.0 ()
   - Add `Gift` and `Gifts`  structs
-  - Add `get_available_gifts` and `send_gift` TBA methods
+  - Add `get_available_gifts`, `send_gift` and `set_user_emoji_status` TBA methods
   - Add `Gift` field to `TransactionPartnerUser`.
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157

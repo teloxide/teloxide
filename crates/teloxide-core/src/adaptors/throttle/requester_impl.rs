@@ -207,7 +207,8 @@ where
         decline_chat_join_request,
         get_game_high_scores,
         get_available_gifts,
-        send_gift
+        send_gift,
+        set_user_emoji_status
         => fid, ftyid
     }
 }

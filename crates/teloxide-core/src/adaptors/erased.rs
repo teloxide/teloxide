@@ -324,7 +324,8 @@ where
         approve_chat_join_request,
         decline_chat_join_request,
         get_available_gifts,
-        send_gift
+        send_gift,
+        set_user_emoji_status
         => fwd_erased, fty
     }
 }
@@ -1060,7 +1061,12 @@ trait ErasableRequester<'a> {
     fn send_gift(
         &self,
         gift_id: String,
-    ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
+    ) -> ErasedRequest<'a, SendGift, Self::Err>;
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -2073,7 +2079,11 @@ where
         Requester::get_available_gifts(self).erase()
     }
 
-    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
+    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, SendGift, Self::Err> {
         Requester::send_gift(self, gift_id).erase()
+    }
+
+    fn set_user_emoji_status(&self, gift_id: String) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, gift_id).erase()
     }
 }

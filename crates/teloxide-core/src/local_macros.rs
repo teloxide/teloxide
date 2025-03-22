@@ -1552,6 +1552,14 @@ macro_rules! requester_forward {
             let this = self;
             $body!(send_gift this (gift_id: G))
         }
+    };
+    (@method set_user_emoji_status $body:ident $ty:ident) => {
+        type SetUserEmojiStatus = $ty![SetUserEmojiStatus];
+
+        fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+            let this = self;
+            $body!(set_user_emoji_status this (user_id: UserId))
+        }
     };// END BLOCK requester_forward_at_method
 }
 
