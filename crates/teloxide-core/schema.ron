@@ -4984,7 +4984,50 @@ Schema(
                     descr: Doc(md: "Expiration date of the emoji status, if any"),
                 ),
             ],
+        ),
+        Method(
+            names: ("savePreparedInlineMessage", "SavePreparedInlineMessage", "save_prepared_inline_message"),
+            return_ty: RawTy("PreparedInlineMessage"),
+            doc: Doc(
+                md: "Stores a message that can be sent by a user of a Mini App. Returns a [PreparedInlineMessage] object.",
+                md_links: {"PreparedInlineMessage": "https://core.telegram.org/bots/api#preparedinlinemessage"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#savepreparedinlinemessage",
+            tg_category: "Inline mode",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that can use the prepared message"),
+                ),
+                Param(
+                    name: "result",
+                    ty: RawTy("InlineQueryResult"),
+                    descr: Doc(md: "A JSON-serialized object describing the message to be sent"),
+                ),
+                Param(
+                    name: "allow_user_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the message can be sent to private chats with users"),
+                ),
+                Param(
+                    name: "allow_bot_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the message can be sent to private chats with bots"),
+                ),
+                Param(
+                    name: "allow_group_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the message can be sent to group and supergroup chats"),
+                ),
+                Param(
+                    name: "allow_channel_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass True if the message can be sent to channel chats"),
+                ),
+            ],
         )
+
     ],
     tg_categories: {
         "Getting updates": "https://core.telegram.org/bots/api#getting-updates",

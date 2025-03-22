@@ -1626,4 +1626,17 @@ impl Requester for Bot {
     fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
         Self::SetUserEmojiStatus::new(self.clone(), payloads::SetUserEmojiStatus::new(user_id))
     }
+
+    type SavePreparedInlineMessage = JsonRequest<payloads::SavePreparedInlineMessage>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage {
+        Self::SavePreparedInlineMessage::new(
+            self.clone(),
+            payloads::SavePreparedInlineMessage::new(user_id, result),
+        )
+    }
 }

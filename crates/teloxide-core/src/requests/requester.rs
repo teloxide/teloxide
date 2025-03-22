@@ -1332,6 +1332,15 @@ pub trait Requester {
 
     /// For Telegram documentation see [`SetUserEmojiStatus`].
     fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
+
+    type SavePreparedInlineMessage: Request<Payload = SavePreparedInlineMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SavePreparedInlineMessage`].
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage;
     // END BLOCK requester_methods
 }
 
@@ -1484,7 +1493,8 @@ macro_rules! forward_all {
             decline_chat_join_request,
             get_available_gifts,
             send_gift,
-            set_user_emoji_status
+            set_user_emoji_status,
+            save_prepared_inline_message
             => $body, $ty
         }
     };

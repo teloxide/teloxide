@@ -95,6 +95,7 @@ mod reopen_general_forum_topic;
 mod replace_sticker_in_set;
 mod restrict_chat_member;
 mod revoke_chat_invite_link;
+mod save_prepared_inline_message;
 mod send_animation;
 mod send_audio;
 mod send_chat_action;
@@ -239,6 +240,9 @@ pub use reopen_general_forum_topic::{ReopenGeneralForumTopic, ReopenGeneralForum
 pub use replace_sticker_in_set::{ReplaceStickerInSet, ReplaceStickerInSetSetters};
 pub use restrict_chat_member::{RestrictChatMember, RestrictChatMemberSetters};
 pub use revoke_chat_invite_link::{RevokeChatInviteLink, RevokeChatInviteLinkSetters};
+pub use save_prepared_inline_message::{
+    SavePreparedInlineMessage, SavePreparedInlineMessageSetters,
+};
 pub use send_animation::{SendAnimation, SendAnimationSetters};
 pub use send_audio::{SendAudio, SendAudioSetters};
 pub use send_chat_action::{SendChatAction, SendChatActionSetters};

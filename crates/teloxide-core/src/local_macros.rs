@@ -1537,6 +1537,14 @@ macro_rules! requester_forward {
             let this = self;
             $body!(set_user_emoji_status this (user_id: UserId))
         }
+    };
+    (@method save_prepared_inline_message $body:ident $ty:ident) => {
+        type SavePreparedInlineMessage = $ty![SavePreparedInlineMessage];
+
+        fn save_prepared_inline_message(&self, user_id: UserId, result: InlineQueryResult) -> Self::SavePreparedInlineMessage {
+            let this = self;
+            $body!(save_prepared_inline_message this (user_id: UserId, result: InlineQueryResult))
+        }
     };// END BLOCK requester_forward_at_method
 }
 
