@@ -166,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
 
 - Support for TBA 8.0 ()
-  - Add `Gift` and `Gifts`  structs
+  - Add `Gift`, `Gifts` and `PreparedInlineMessage`  structs
   - Add `get_available_gifts`, `send_gift` and `set_user_emoji_status` TBA methods
   - Add `Gift` field to `TransactionPartnerUser`.
 
