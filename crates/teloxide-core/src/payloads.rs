@@ -137,6 +137,7 @@ mod set_sticker_mask_position;
 mod set_sticker_position_in_set;
 mod set_sticker_set_thumbnail;
 mod set_sticker_set_title;
+mod set_user_emoji_status;
 mod set_webhook;
 mod stop_message_live_location;
 mod stop_message_live_location_inline;
@@ -286,6 +287,7 @@ pub use set_sticker_mask_position::{SetStickerMaskPosition, SetStickerMaskPositi
 pub use set_sticker_position_in_set::{SetStickerPositionInSet, SetStickerPositionInSetSetters};
 pub use set_sticker_set_thumbnail::{SetStickerSetThumbnail, SetStickerSetThumbnailSetters};
 pub use set_sticker_set_title::{SetStickerSetTitle, SetStickerSetTitleSetters};
+pub use set_user_emoji_status::{SetUserEmojiStatus, SetUserEmojiStatusSetters};
 pub use set_webhook::{SetWebhook, SetWebhookSetters};
 pub use stop_message_live_location::{StopMessageLiveLocation, StopMessageLiveLocationSetters};
 pub use stop_message_live_location_inline::{

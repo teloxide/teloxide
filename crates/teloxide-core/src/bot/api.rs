@@ -1620,4 +1620,10 @@ impl Requester for Bot {
     {
         Self::SendGift::new(self.clone(), payloads::SendGift::new(gift_id))
     }
+
+    type SetUserEmojiStatus = JsonRequest<payloads::SetUserEmojiStatus>;
+
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+        Self::SetUserEmojiStatus::new(self.clone(), payloads::SetUserEmojiStatus::new(user_id))
+    }
 }

@@ -1327,6 +1327,11 @@ pub trait Requester {
     fn send_gift<G>(&self, gift_id: G) -> Self::SendGift
     where
         G: Into<String>;
+
+    type SetUserEmojiStatus: Request<Payload = SetUserEmojiStatus, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetUserEmojiStatus`].
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
     // END BLOCK requester_methods
 }
 
@@ -1478,7 +1483,8 @@ macro_rules! forward_all {
             approve_chat_join_request,
             decline_chat_join_request,
             get_available_gifts,
-            send_gift
+            send_gift,
+            set_user_emoji_status
             => $body, $ty
         }
     };

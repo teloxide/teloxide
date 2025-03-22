@@ -219,7 +219,8 @@ where
         approve_chat_join_request,
         decline_chat_join_request,
         get_available_gifts,
-        send_gift
+        send_gift,
+        set_user_emoji_status
         => f, fty
     }
 }

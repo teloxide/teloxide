@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{ChatId, MessageEntity, True, UserId};
+use crate::types::{ChatId, MessageEntity, ParseMode, True, UserId};
 
 impl_payload! {
     /// Sends a gift to the given user or channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success.
@@ -22,7 +22,9 @@ impl_payload! {
             /// Text that will be shown along with the gift; 0–128 characters
             pub text: String [into],
             /// Mode for parsing entities in the text. See formatting options for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
-            pub text_parse_mode: String [into],
+            ///
+            /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
+            pub text_parse_mode: ParseMode,
             /// A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
             pub text_entities: Vec<MessageEntity> [collect],
         }
