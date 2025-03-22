@@ -1638,4 +1638,13 @@ impl Requester for Bot {
     fn get_available_gifts(&self) -> Self::GetAvailableGifts {
         Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
     }
+
+    type SendGift = JsonRequest<payloads::SendGift>;
+
+    fn send_gift<G>(&self, gift_id: G) -> Self::SendGift
+    where
+        G: Into<String>,
+    {
+        Self::SendGift::new(self.clone(), payloads::SendGift::new(gift_id))
+    }
 }

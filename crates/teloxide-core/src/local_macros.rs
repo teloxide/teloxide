@@ -1544,6 +1544,14 @@ macro_rules! requester_forward {
             let this = self;
             $body!(get_available_gifts this ())
         }
+    };
+    (@method send_gift $body:ident $ty:ident) => {
+        type SendGift = $ty![SendGift];
+
+        fn send_gift<G>(&self, gift_id: G) -> Self::SendGift where G: Into<String> {
+            let this = self;
+            $body!(send_gift this (gift_id: G))
+        }
     };// END BLOCK requester_forward_at_method
 }
 

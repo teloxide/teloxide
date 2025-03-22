@@ -323,7 +323,8 @@ where
         get_game_high_scores,
         approve_chat_join_request,
         decline_chat_join_request,
-        get_available_gifts
+        get_available_gifts,
+        send_gift
         => fwd_erased, fty
     }
 }
@@ -1055,6 +1056,11 @@ trait ErasableRequester<'a> {
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
 
     fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
+
+    fn send_gift(
+        &self,
+        gift_id: String,
+    ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -2063,9 +2069,11 @@ where
         Requester::get_game_high_scores(self, user_id, target).erase()
     }
 
-
     fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
         Requester::get_available_gifts(self).erase()
     }
 
+    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
+        Requester::send_gift(self, gift_id).erase()
+    }
 }

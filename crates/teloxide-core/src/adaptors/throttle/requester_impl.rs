@@ -206,7 +206,8 @@ where
         approve_chat_join_request,
         decline_chat_join_request,
         get_game_high_scores,
-        get_available_gifts
+        get_available_gifts,
+        send_gift
         => fid, ftyid
     }
 }

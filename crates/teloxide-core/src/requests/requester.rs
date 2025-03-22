@@ -1353,6 +1353,13 @@ pub trait Requester {
 
     /// For Telegram documentation see [`GetAvailableGifts`].
     fn get_available_gifts(&self) -> Self::GetAvailableGifts;
+
+    type SendGift: Request<Payload = SendGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGift`].
+    fn send_gift<G>(&self, gift_id: G) -> Self::SendGift
+    where
+        G: Into<String>;
     // END BLOCK requester_methods
 }
 
@@ -1506,7 +1513,8 @@ macro_rules! forward_all {
             get_game_high_scores,
             approve_chat_join_request,
             decline_chat_join_request,
-            get_available_gifts
+            get_available_gifts,
+            send_gift
             => $body, $ty
         }
     };
