@@ -79,6 +79,12 @@ pretty_env_logger = "0.5"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
 ```
 
+_Note: if there is functionality in master that is not released yet, you can pull the Git repository as follows:_
+
+```toml
+teloxide = { git = "https://github.com/teloxide/teloxide.git", features = ["macros"] }
+```
+
 ## API overview
 
 ### The dices bot
