@@ -148,7 +148,7 @@ impl Bot {
                 } else {
                     &env_api_url
                 };
-                let api_url = reqwest::Url::parse(&env_api_url)
+                let api_url = reqwest::Url::parse(env_api_url)
                     .expect("Failed to parse the `TELOXIDE_API_URL` env variable");
                 bot.set_api_url(api_url)
             }
