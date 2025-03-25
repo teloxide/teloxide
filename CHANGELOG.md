@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added derive `Clone`, `Debug`, `PartialEq`, `Eq`, `Hash` to `ChatPermissions` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
 - Added derive `Clone`, `Debug` to `Settings` ([PR 1242](https://github.com/teloxide/teloxide/pull/1242))
 - The `Throttle` adaptor now also throttles `forward_messages` and `copy_messages` like their non-batch counterparts, as well as `send_game` ([PR 1229](https://github.com/teloxide/teloxide/pull/1229))
+- Also parse commands from text captions ([PR 1285](https://github.com/teloxide/teloxide/pull/1285))
 
 ### Fixed
 
@@ -50,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Now blockquote handling in the render module works correctly ([PR 1267](https://github.com/teloxide/teloxide/pull/1267))
 - Now blockquote generation in the `utils::markdown` module works correctly ([PR 1273](https://github.com/teloxide/teloxide/pull/1273))
 - Fixed calculation of per-second limits in the `Throttle` adaptor ([PR 1212](https://github.com/teloxide/teloxide/pull/1212))
+- Parsing of `get_chat` responses for channels with paid reactions ([PR 1284](https://github.com/teloxide/teloxide/pull/1284))
 - Fix the issue where requests will not consider API URL subpath ([PR 1295](https://github.com/teloxide/teloxide/pull/1295))
 
 ## 0.13.0 - 2024-08-16

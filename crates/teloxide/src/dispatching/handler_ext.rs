@@ -109,7 +109,7 @@ where
 {
     dptree::filter_map(move |message: Message, me: Me| {
         let bot_name = me.user.username.expect("Bots must have a username");
-        message.text().and_then(|text| C::parse(text, &bot_name).ok())
+        message.text().or_else(|| message.caption()).and_then(|text| C::parse(text, &bot_name).ok())
     })
 }
 
@@ -135,11 +135,12 @@ where
     dptree::filter_map(move |message: Message, me: Me| {
         let bot_name = me.user.username.expect("Bots must have a username");
 
-        let command = message.text().and_then(|text| C::parse(text, &bot_name).ok());
+        let text_or_caption = message.text().or_else(|| message.caption());
+        let command = text_or_caption.and_then(|text| C::parse(text, &bot_name).ok());
         // If the parsing succeeds with a bot_name,
         // but fails without - there is a mention
         let is_username_required =
-            message.text().and_then(|text| C::parse(text, "").ok()).is_none();
+            text_or_caption.and_then(|text| C::parse(text, "").ok()).is_none();
 
         if !is_username_required {
             return None;
