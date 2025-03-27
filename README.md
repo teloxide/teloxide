@@ -38,7 +38,7 @@
 [Redis]: https://redis.io/
 [Sqlite]: https://www.sqlite.org
 
- - **Strongly typed commands.** Define bot commands as an `enum` and teloxide will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
+ - **Strongly typed commands.** Define bot commands as an `enum` and `teloxide` will parse them automatically — just like JSON structures in [`serde-json`] and command-line arguments in [`structopt`].
 
 [`structopt`]: https://github.com/TeXitoi/structopt
 [`serde-json`]: https://github.com/serde-rs/json
@@ -295,9 +295,9 @@ async fn receive_location(
 
 ## Testing
 
-A community made crate [`teloxide_tests`](https://github.com/LasterAlex/teloxide_tests) can be used to test your bots.
+The community has made a crate called [`teloxide_tests`](https://github.com/LasterAlex/teloxide_tests) for testing `teloxide` bots.
 
-[Some testing examples >>](https://github.com/LasterAlex/teloxide_tests/tree/master/examples)
+[See some testing examples >>](https://github.com/LasterAlex/teloxide_tests/tree/master/examples)
 
 ## Tutorials
 
@@ -324,11 +324,17 @@ A: No, only the bots API.
 
 **Q: Can I use webhooks?**
 
-A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot`](crates/teloxide/examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot`](crates/teloxide/examples/heroku_ping_pong.rs).
+A: You can! `teloxide` has a built-in support for webhooks in `dispatching::update_listeners::webhooks` module. See how it's used in [`examples/ngrok_ping_pong_bot.rs`](crates/teloxide/examples/ngrok_ping_pong.rs) and [`examples/heroku_ping_pong_bot.rs`](crates/teloxide/examples/heroku_ping_pong.rs).
 
 **Q: Can I handle both callback queries and messages within a single dialogue?**
 
 A: Yes, see [`examples/purchase.rs`](crates/teloxide/examples/purchase.rs).
+
+**Q: How can I organize complex logic?**
+
+A: You can use [`CommonVoiceBot`] as an example of a bot with a nested dialogue structure distributed across different files.
+
+[`CommonVoiceBot`]: https://gitlab.com/alenpaulvarghese/commonvoicebot
 
 ## Community bots
 
@@ -350,20 +356,7 @@ Feel free to propose your own bot to our collection!
  - [`fr0staman/fr0staman_bot`](https://github.com/fr0staman/fr0staman_bot) — Feature rich Telegram game-like bot with pigs 🐽.
  - [`franciscofigueira/transferBot`](https://github.com/franciscofigueira/transferBot) — Telegram bot that notifies of crypto token transfers.
 
-<details>
-<summary>Show bots using `teloxide` older than v0.6.0</summary>
-
- - [`mxseev/logram`](https://github.com/mxseev/logram) — Utility that takes logs from anywhere and sends them to Telegram.
- - [`alexkonovalov/PedigreeBot`](https://github.com/alexkonovalov/PedigreeBot) — A Telegram bot for building family trees.
- - [`Hermitter/tepe`](https://github.com/Hermitter/tepe) — A CLI to command a bot to send messages and files over Telegram.
- - [`myblackbeard/basketball-betting-bot`](https://github.com/myblackbeard/basketball-betting-bot) — The bot lets you bet on NBA games against your buddies.
- - [`dracarys18/grpmr-rs`](https://github.com/dracarys18/grpmr-rs) — Modular Telegram Group Manager Bot written in Rust.
- - [`ArtHome12/cognito_bot`](https://github.com/ArtHome12/cognito_bot) — The bot is designed to anonymize messages to a group.
- - [`crapstone/hsctt`](https://codeberg.org/crapstones-bots/hsctt) — A bot that converts HTTP status codes into text.
-
-</details>
-
-See [1900+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
+See [2500+ other public repositories using `teloxide` >>](https://github.com/teloxide/teloxide/network/dependents)
 
 ## Contributing
 
