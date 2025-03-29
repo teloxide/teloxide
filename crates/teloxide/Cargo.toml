@@ -244,3 +244,7 @@ required-features = ["ctrlc_handler"]
 [[example]]
 name = "throw_dice"
 required-features = ["ctrlc_handler"]
+
+[[example]]
+name = "middlewares"
+required-features = ["ctrlc_handler"]
