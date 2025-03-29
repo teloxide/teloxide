@@ -1417,28 +1417,26 @@ macro_rules! requester_forward {
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
-        fn send_invoice<Ch, T, D, Pa, P, C, Pri>(&self, chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::SendInvoice where Ch: Into<Recipient>,
+        fn send_invoice<Ch, T, D, Pa, C, P>(&self, chat_id: Ch, title: T, description: D, payload: Pa, currency: C, prices: P) -> Self::SendInvoice where Ch: Into<Recipient>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice> {
+        P: IntoIterator<Item = LabeledPrice> {
             let this = self;
-            $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
+            $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, currency: C, prices: P))
         }
     };
     (@method create_invoice_link $body:ident $ty:ident) => {
         type CreateInvoiceLink = $ty![CreateInvoiceLink];
 
-        fn create_invoice_link<T, D, Pa, P, C, Pri>(&self, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::CreateInvoiceLink where T: Into<String>,
+        fn create_invoice_link<T, D, Pa, C, P>(&self, title: T, description: D, payload: Pa, currency: C, prices: P) -> Self::CreateInvoiceLink where T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice> {
+        P: IntoIterator<Item = LabeledPrice> {
             let this = self;
-            $body!(create_invoice_link this (title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
+            $body!(create_invoice_link this (title: T, description: D, payload: Pa, currency: C, prices: P))
         }
     };
     (@method answer_shipping_query $body:ident $ty:ident) => {

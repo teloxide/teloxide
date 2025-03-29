@@ -1194,44 +1194,40 @@ pub trait Requester {
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
-    fn send_invoice<Ch, T, D, Pa, P, C, Pri>(
+    fn send_invoice<Ch, T, D, Pa, C, P>(
         &self,
         chat_id: Ch,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
-        prices: Pri,
+        prices: P,
     ) -> Self::SendInvoice
     where
         Ch: Into<Recipient>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice>;
+        P: IntoIterator<Item = LabeledPrice>;
 
     type CreateInvoiceLink: Request<Payload = CreateInvoiceLink, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateInvoiceLink`].
-    fn create_invoice_link<T, D, Pa, P, C, Pri>(
+    fn create_invoice_link<T, D, Pa, C, P>(
         &self,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
-        prices: Pri,
+        prices: P,
     ) -> Self::CreateInvoiceLink
     where
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice>;
+        P: IntoIterator<Item = LabeledPrice>;
 
     type AnswerShippingQuery: Request<Payload = AnswerShippingQuery, Err = Self::Err>;
 

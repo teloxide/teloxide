@@ -1368,13 +1368,12 @@ impl Requester for Bot {
 
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
-    fn send_invoice<Ch, T, D, Pa, P, C, Pri>(
+    fn send_invoice<Ch, T, D, Pa, C, Pri>(
         &self,
         chat_id: Ch,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
         prices: Pri,
     ) -> Self::SendInvoice
@@ -1383,32 +1382,22 @@ impl Requester for Bot {
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
         Pri: IntoIterator<Item = LabeledPrice>,
     {
         Self::SendInvoice::new(
             self.clone(),
-            payloads::SendInvoice::new(
-                chat_id,
-                title,
-                description,
-                payload,
-                provider_token,
-                currency,
-                prices,
-            ),
+            payloads::SendInvoice::new(chat_id, title, description, payload, currency, prices),
         )
     }
 
     type CreateInvoiceLink = JsonRequest<payloads::CreateInvoiceLink>;
 
-    fn create_invoice_link<T, D, Pa, P, C, Pri>(
+    fn create_invoice_link<T, D, Pa, C, Pri>(
         &self,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
         prices: Pri,
     ) -> Self::CreateInvoiceLink
@@ -1416,20 +1405,12 @@ impl Requester for Bot {
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
         Pri: IntoIterator<Item = LabeledPrice>,
     {
         Self::CreateInvoiceLink::new(
             self.clone(),
-            payloads::CreateInvoiceLink::new(
-                title,
-                description,
-                payload,
-                provider_token,
-                currency,
-                prices,
-            ),
+            payloads::CreateInvoiceLink::new(title, description, payload, currency, prices),
         )
     }
 
