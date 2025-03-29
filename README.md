@@ -336,6 +336,13 @@ A: You can use [`CommonVoiceBot`] as an example of a bot with a nested dialogue 
 
 [`CommonVoiceBot`]: https://gitlab.com/alenpaulvarghese/commonvoicebot
 
+**Q: Where can I find a WebApp example?**
+
+A: Check out [@TheAwiteb]'s [WebApp `teloxide` example].
+
+[@TheAwiteb]: https://github.com/TheAwiteb
+[WebApp `teloxide` example]: https://gist.github.com/TheAwiteb/8d809b34b619b01e64453bb31dbd8bf4
+
 ## Community bots
 
 Feel free to propose your own bot to our collection!
