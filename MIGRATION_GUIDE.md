@@ -3,6 +3,8 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.13 -> 0.14
+
 ### teloxide
 
 We have finally introduced three different categories for syntactic sugar:

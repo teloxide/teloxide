@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.14.0 - 2025-03-29
+
 ### Added
 
 - `filter_boost_added` and `filter_reply_to_story` filters to the `MessageFilterExt` trait ([PR 1131](https://github.com/teloxide/teloxide/pull/1131))
