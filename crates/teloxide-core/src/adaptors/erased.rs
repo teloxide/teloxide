@@ -955,26 +955,21 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err>;
 
-    // we can't change telegram API
-    #[allow(clippy::too_many_arguments)]
     fn send_invoice(
         &self,
         chat_id: Recipient,
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> ErasedRequest<'a, SendInvoice, Self::Err>;
 
-    #[allow(clippy::too_many_arguments)]
     fn create_invoice_link(
         &self,
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> ErasedRequest<'a, CreateInvoiceLink, Self::Err>;
@@ -1918,43 +1913,22 @@ where
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> ErasedRequest<'a, SendInvoice, Self::Err> {
-        Requester::send_invoice(
-            self,
-            chat_id,
-            title,
-            description,
-            payload,
-            provider_token,
-            currency,
-            prices,
-        )
-        .erase()
+        Requester::send_invoice(self, chat_id, title, description, payload, currency, prices)
+            .erase()
     }
 
-    #[allow(clippy::too_many_arguments)]
     fn create_invoice_link(
         &self,
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> ErasedRequest<'a, CreateInvoiceLink, Self::Err> {
-        Requester::create_invoice_link(
-            self,
-            title,
-            description,
-            payload,
-            provider_token,
-            currency,
-            prices,
-        )
-        .erase()
+        Requester::create_invoice_link(self, title, description, payload, currency, prices).erase()
     }
 
     fn answer_shipping_query(

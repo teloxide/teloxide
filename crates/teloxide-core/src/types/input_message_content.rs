@@ -326,11 +326,11 @@ pub struct InputMessageContentInvoice {
     pub payload: String,
 
     /// Payment provider token, obtained via [@Botfather].
-    /// Pass an empty string for payments in [Telegram Stars].
+    /// Pass `None` for payments in [Telegram Stars].
     ///
     /// [@Botfather]: https://t.me/Botfather
     /// [Telegram Stars]: https://t.me/BotNews/90
-    pub provider_token: String,
+    pub provider_token: Option<String>,
 
     /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
     /// `XTR` for payments in [Telegram Stars].
@@ -405,7 +405,6 @@ impl InputMessageContentInvoice {
         title: T,
         description: D,
         payload: PA,
-        provider_token: PT,
         currency: C,
         prices: PR,
     ) -> Self
@@ -413,14 +412,12 @@ impl InputMessageContentInvoice {
         T: Into<String>,
         D: Into<String>,
         PA: Into<String>,
-        PT: Into<String>,
         C: Into<String>,
         PR: IntoIterator<Item = LabeledPrice>,
     {
         let title = title.into();
         let description = description.into();
         let payload = payload.into();
-        let provider_token = provider_token.into();
         let currency = currency.into();
         let prices = prices.into_iter().collect();
 
@@ -428,7 +425,7 @@ impl InputMessageContentInvoice {
             title,
             description,
             payload,
-            provider_token,
+            provider_token: None,
             currency,
             prices,
             max_tip_amount: None,
@@ -476,7 +473,7 @@ impl InputMessageContentInvoice {
     where
         T: Into<String>,
     {
-        self.provider_token = val.into();
+        self.provider_token = Some(val.into());
         self
     }
 

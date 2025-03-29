@@ -4353,9 +4353,9 @@ Schema(
                 ),
                 Param(
                     name: "provider_token",
-                    ty: String,
+                    ty: Option(String),
                     descr: Doc(
-                        md: "Payments provider token, obtained via [Botfather]. Pass an empty string for payments in [Telegram Stars].",
+                        md: "Payments provider token, obtained via [Botfather]. Pass `None` for payments in [Telegram Stars].",
                         md_links: {
                             "Botfather":"https://t.me/botfather",
                             "Telegram Stars": "https://t.me/BotNews/90"
@@ -4513,9 +4513,9 @@ Schema(
                 ),
                 Param(
                     name: "provider_token",
-                    ty: String,
+                    ty: Option(String),
                     descr: Doc(
-                        md: "Payments provider token, obtained via [Botfather]. Pass an empty string for payments in [Telegram Stars].",
+                        md: "Payments provider token, obtained via [Botfather]. Pass `None` for payments in [Telegram Stars].",
                         md_links: {
                             "Botfather":"https://t.me/botfather",
                             "Telegram Stars": "https://t.me/BotNews/90"

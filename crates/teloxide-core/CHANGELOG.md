@@ -109,6 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 7.4 ([#1280](pr1280))
   - Update documentation on `provider_token` fields
+  - `provider_token` field in `InputMessageContentInvoice` struct and `sendInvoice` and `createInvoiceLink` methods is now optional ([#1306](pr1306))
 
 - Support for TBA 7.5 ([#1281](pr1281))
   - Update documentation on `InlineKeyboardButton` struct
@@ -121,6 +122,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
 [pr1280]: https://github.com/teloxide/teloxide/pull/1280
 [pr1281]: https://github.com/teloxide/teloxide/pull/1281
+[pr1306]: https://github.com/teloxide/teloxide/pull/1306
 
 ### Removed
 
