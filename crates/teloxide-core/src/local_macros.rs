@@ -1511,6 +1511,38 @@ macro_rules! requester_forward {
             let this = self;
             $body!(get_game_high_scores this (user_id: UserId, target: T))
         }
+    };
+    (@method get_available_gifts $body:ident $ty:ident) => {
+        type GetAvailableGifts = $ty![GetAvailableGifts];
+
+        fn get_available_gifts(&self, ) -> Self::GetAvailableGifts {
+            let this = self;
+            $body!(get_available_gifts this ())
+        }
+    };
+    (@method send_gift $body:ident $ty:ident) => {
+        type SendGift = $ty![SendGift];
+
+        fn send_gift<G>(&self, gift_id: G) -> Self::SendGift where G: Into<String> {
+            let this = self;
+            $body!(send_gift this (gift_id: G))
+        }
+    };
+    (@method set_user_emoji_status $body:ident $ty:ident) => {
+        type SetUserEmojiStatus = $ty![SetUserEmojiStatus];
+
+        fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+            let this = self;
+            $body!(set_user_emoji_status this (user_id: UserId))
+        }
+    };
+    (@method save_prepared_inline_message $body:ident $ty:ident) => {
+        type SavePreparedInlineMessage = $ty![SavePreparedInlineMessage];
+
+        fn save_prepared_inline_message(&self, user_id: UserId, result: InlineQueryResult) -> Self::SavePreparedInlineMessage {
+            let this = self;
+            $body!(save_prepared_inline_message this (user_id: UserId, result: InlineQueryResult))
+        }
     };// END BLOCK requester_forward_at_method
 }
 

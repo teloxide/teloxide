@@ -316,7 +316,11 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        get_available_gifts,
+        send_gift,
+        set_user_emoji_status,
+        save_prepared_inline_message
         => fwd_erased, fty
     }
 }
@@ -1026,6 +1030,21 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
+
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
+
+    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, SendGift, Self::Err>;
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -2000,5 +2019,28 @@ where
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err> {
         Requester::get_game_high_scores(self, user_id, target).erase()
+    }
+
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
+        Requester::get_available_gifts(self).erase()
+    }
+
+    fn send_gift(&self, gift_id: String) -> ErasedRequest<'a, SendGift, Self::Err> {
+        Requester::send_gift(self, gift_id).erase()
+    }
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, user_id).erase()
+    }
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err> {
+        Requester::save_prepared_inline_message(self, user_id, result).erase()
     }
 }
