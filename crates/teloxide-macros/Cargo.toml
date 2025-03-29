@@ -1,6 +1,6 @@
 [package]
 name = "teloxide-macros"
-version = "0.8.0"
+version = "0.9.0"
 description = "The teloxide's procedural macros"
 
 rust-version.workspace = true
