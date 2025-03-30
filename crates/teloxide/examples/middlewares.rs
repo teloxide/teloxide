@@ -14,11 +14,16 @@ async fn main() {
         .inspect(|msg: Message| println!("Before (message #{}).", msg.id))
         // Our "endpoint".
         .map_async(my_endpoint)
-        // Executes after the endpoint.
+        // Executes after the endpoint (even if it fails).
         .inspect(|msg: Message| {
             println!("After (message #{}).", msg.id);
         })
-        .endpoint(|result: HandlerResult| async move { result });
+        // Retrieve the result of the endpoint and pass it to the dispatcher.
+        .endpoint(|result: HandlerResult| async move {
+            // Alternatively, we could also pattern-match on this value for more
+            // fine-grained behaviour.
+            result
+        });
 
     Dispatcher::builder(bot, handler).enable_ctrlc_handler().build().dispatch().await;
 }
