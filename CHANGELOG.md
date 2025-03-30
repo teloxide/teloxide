@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Fixed docs build ([PR 1311](https://github.com/teloxide/teloxide/pull/1311))
+
 ## 0.14.0 - 2025-03-29
 
 ### Added
