@@ -5,7 +5,7 @@ type HandlerResult = Result<(), teloxide::RequestError>;
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    log::info!("Starting purchase bot...");
+    log::info!("Starting middleware bot...");
 
     let bot = Bot::from_env();
 
