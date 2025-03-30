@@ -36,6 +36,7 @@ macro_rules! req_future {
             $(where $($wh)*)? = impl ::core::future::Future<Output = $Out>;
 
             #[cfg(feature = "nightly")]
+            #[define_opaque($i)]
             pub(crate) fn def<$T>($( $arg: $ArgTy ),*) -> $i<$T>
             $(where $($wh)*)?
             {

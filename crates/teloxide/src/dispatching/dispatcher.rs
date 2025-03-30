@@ -254,15 +254,13 @@ where
 /// ## Update grouping
 ///
 /// `Dispatcher` generally processes updates concurrently. However, by default,
-/// updates from the same chat are processed sequentially. [Learn more about
-/// update grouping].
-///
-/// [update grouping]: distribution_function#update-grouping
+/// updates from the same chat are processed sequentially. Learn more about
+/// [update grouping].
 ///
 /// See also: ["Dispatching or
 /// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 ///
-/// [`distribution_function`]: DispatcherBuilder::distribution_function
+/// [update grouping]: DispatcherBuilder#update-grouping
 pub struct Dispatcher<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
