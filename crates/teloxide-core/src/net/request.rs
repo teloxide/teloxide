@@ -1,4 +1,4 @@
-use std::{any::TypeId, time::Duration};
+use std::{any::TypeId, sync::Arc, time::Duration};
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
@@ -156,7 +156,7 @@ where
 
             response
         })
-        .map_err(|source| RequestError::InvalidJson { source, raw: text.into() })?
+        .map_err(|source| RequestError::InvalidJson { source: Arc::new(source), raw: text.into() })?
         .into()
 }
 
