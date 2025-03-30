@@ -48,16 +48,16 @@ pub enum RequestError {
 }
 
 /// An error caused by downloading a file.
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Clone)]
 pub enum DownloadError {
     /// A network error while downloading a file from Telegram.
     #[error("A network error: {0}")]
     // NOTE: this variant must not be created by anything except the explicit From impl
-    Network(#[source] reqwest::Error),
+    Network(#[source] Arc<reqwest::Error>),
 
     /// An I/O error while writing a file to destination.
     #[error("An I/O error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(#[from] Arc<std::io::Error>),
 }
 
 pub trait AsResponseParameters {
@@ -750,15 +750,15 @@ impl_api_error! {
 impl From<DownloadError> for RequestError {
     fn from(download_err: DownloadError) -> Self {
         match download_err {
-            DownloadError::Network(err) => RequestError::Network(Arc::new(err)),
-            DownloadError::Io(err) => RequestError::Io(Arc::new(err)),
+            DownloadError::Network(err) => RequestError::Network(err),
+            DownloadError::Io(err) => RequestError::Io(err),
         }
     }
 }
 
 impl From<reqwest::Error> for DownloadError {
     fn from(error: reqwest::Error) -> Self {
-        DownloadError::Network(hide_token(error))
+        DownloadError::Network(Arc::new(hide_token(error)))
     }
 }
 

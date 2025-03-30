@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `RequestError::Network` now accepts `Arc<reqwest::Error>` [**BC**]
   - `RequestError::InvalidJson` now accepts `source: Arc<serde_json::Error>` [**BC**]
   - `RequestError::Io` now accepts `Arc<io::Error>` [**BC**]
+- Implement `Clone` for `teloxide::DownloadError`
+  - `DownloadError::Network` now accepts `Arc<reqwest::Error>` [**BC**]
+  - `DownloadError::Io` now accepts `Arc<std::io::Error>` [**BC**]
 
 ## 0.14.1 - 2025-03-30
 
