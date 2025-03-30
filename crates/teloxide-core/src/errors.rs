@@ -1,13 +1,13 @@
 //! Possible error types.
 
-use std::io;
+use std::{io, sync::Arc};
 
 use thiserror::Error;
 
 use crate::types::{ChatId, ResponseParameters, Seconds};
 
 /// An error caused by sending a request to Telegram.
-#[derive(Debug, Error)]
+#[derive(Debug, Error, Clone)]
 pub enum RequestError {
     /// A Telegram API error.
     #[error("A Telegram's error: {0}")]
@@ -26,7 +26,7 @@ pub enum RequestError {
     /// Network error while sending a request to Telegram.
     #[error("A network error: {0}")]
     // NOTE: this variant must not be created by anything except the explicit From impl
-    Network(#[source] reqwest::Error),
+    Network(#[source] Arc<reqwest::Error>),
 
     /// Error while parsing a response from Telegram.
     ///
@@ -37,14 +37,14 @@ pub enum RequestError {
     #[error("An error while parsing JSON: {source} (raw: {raw:?})")]
     InvalidJson {
         #[source]
-        source: serde_json::Error,
+        source: Arc<serde_json::Error>,
         /// The raw string JSON that couldn't been parsed
         raw: Box<str>,
     },
 
     /// Occurs when trying to send a file to Telegram.
     #[error("An I/O error: {0}")]
-    Io(#[from] io::Error),
+    Io(#[from] Arc<io::Error>),
 }
 
 /// An error caused by downloading a file.
@@ -750,8 +750,8 @@ impl_api_error! {
 impl From<DownloadError> for RequestError {
     fn from(download_err: DownloadError) -> Self {
         match download_err {
-            DownloadError::Network(err) => RequestError::Network(err),
-            DownloadError::Io(err) => RequestError::Io(err),
+            DownloadError::Network(err) => RequestError::Network(Arc::new(err)),
+            DownloadError::Io(err) => RequestError::Io(Arc::new(err)),
         }
     }
 }
@@ -764,7 +764,7 @@ impl From<reqwest::Error> for DownloadError {
 
 impl From<reqwest::Error> for RequestError {
     fn from(error: reqwest::Error) -> Self {
-        RequestError::Network(hide_token(error))
+        RequestError::Network(Arc::new(hide_token(error)))
     }
 }
 
