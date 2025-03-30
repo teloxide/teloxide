@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, sync::Arc};
 
 use serde::ser;
 
@@ -39,7 +39,7 @@ impl std::error::Error for Error {}
 impl From<Error> for RequestError {
     fn from(err: Error) -> Self {
         match err {
-            Error::Io(ioerr) => RequestError::Io(ioerr),
+            Error::Io(ioerr) => RequestError::Io(Arc::new(ioerr)),
 
             // This should be ok since we (hopefuly) don't write request those may trigger errors
             // and `Error` is internal.
