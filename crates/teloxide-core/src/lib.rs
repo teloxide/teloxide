@@ -48,7 +48,6 @@
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`
 //!   - Used to built docs (`#![feature(doc_cfg, doc_notable_trait)]`)
 //!
-//! [`AutoSend`]: adaptors::AutoSend
 //! [`Trace`]: adaptors::Trace
 //! [`ErasedRequester`]: adaptors::ErasedRequester
 //! [`Throttle`]: adaptors::Throttle

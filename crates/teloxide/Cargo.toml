@@ -29,7 +29,11 @@ sqlite-storage-nativetls = [
     "native-tls",
 ]
 sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
-postgres-storage-nativetls = ["sqlx", "sqlx/runtime-tokio-native-tls", "native-tls"]
+postgres-storage-nativetls = [
+    "sqlx",
+    "sqlx/runtime-tokio-native-tls",
+    "native-tls",
+]
 postgres-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
 redis-storage = ["deadpool-redis"]
 
@@ -81,8 +85,8 @@ full = [
 
 [dependencies]
 # replace me by the actual version when release, and return path when it's time to make 0-day fixes
-teloxide-core = { version = "0.11", default-features = false }
-teloxide-macros = { version = "0.9", optional = true }
+teloxide-core = { path = "../../crates/teloxide-core", default-features = false }
+teloxide-macros = { path = "../../crates/teloxide-macros", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -111,9 +115,11 @@ either = "1.9.0"
 sqlx = { version = "0.8.1", optional = true, default-features = false, features = [
     "macros",
     "sqlite",
-    "postgres"
+    "postgres",
 ] }
-deadpool-redis = { version = "0.20", features = ["rt_tokio_1"], optional = true }
+deadpool-redis = { version = "0.20", features = [
+    "rt_tokio_1",
+], optional = true }
 serde_cbor = { version = "0.11", optional = true }
 bincode = { version = "1.3", optional = true }
 axum = { version = "0.8.0", optional = true }
@@ -165,7 +171,11 @@ required-features = [
 [[test]]
 name = "postgres"
 path = "tests/postgres.rs"
-required-features = ["postgres-storage-nativetls", "cbor-serializer", "bincode-serializer"]
+required-features = [
+    "postgres-storage-nativetls",
+    "cbor-serializer",
+    "bincode-serializer",
+]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = [
