@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Add two examples to demonstrate how to execute functions _before_ and _after_ some endpoint:
+  - [`examples/middlewares.rs`]
+  - [`examples/middlewares_fallible.rs`]
+
+[`examples/middlewares.rs`]: crates/teloxide/examples/middlewares.rs
+[`examples/middlewares_fallible.rs`]: crates/teloxide/examples/middlewares_fallible.rs
+
 ### Changed
 
 - Implement `Clone` for `teloxide::RequestError`
