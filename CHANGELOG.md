@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement `Clone` for `teloxide::DownloadError`
   - `DownloadError::Network` now accepts `Arc<reqwest::Error>` [**BC**]
   - `DownloadError::Io` now accepts `Arc<std::io::Error>` [**BC**]
+- If `TELOXIDE_DIALOGUE_BEHAVIOUR` environment variable is set to `default`, `.enter_dialogue` will never error, instead setting the dialogue to default ([PR 1187](https://github.com/teloxide/teloxide/pull/1187))
+- `D` (state) now has to implement `Clone` for `HandlerExt::enter_dialogue` and `dialogue::enter` [**BC**]
 
 ## 0.14.1 - 2025-03-30
 

@@ -46,6 +46,11 @@ pub trait HandlerExt<Output> {
     ///     passes the dialogue state forwards. Otherwise, logs an error and the
     ///     rest of the chain is not executed.
     ///
+    /// If `TELOXIDE_DIALOGUE_BEHAVIOUR` environmental variable exists and is
+    /// equal to "default", this function will not panic if it can't get the
+    /// dialogue (if, for example, the state enum was updated). Setting the
+    /// value to "panic" will return the initial behaviour.
+    ///
     /// ## Dependency requirements
     ///
     ///  - `Arc<S>`
@@ -58,7 +63,7 @@ pub trait HandlerExt<Output> {
     where
         S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
-        D: Default + Send + Sync + 'static,
+        D: Default + Clone + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
 }
 
@@ -84,7 +89,7 @@ where
     where
         S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
-        D: Default + Send + Sync + 'static,
+        D: Default + Clone + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
         self.chain(super::dialogue::enter::<Upd, S, D, Output>())
