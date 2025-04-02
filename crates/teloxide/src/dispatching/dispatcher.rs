@@ -5,6 +5,7 @@ use crate::{
     },
     error_handlers::{ErrorHandler, LoggingErrorHandler},
     requests::{Request, Requester},
+    stop::StopToken,
     types::{Update, UpdateKind},
     update_listeners::{self, UpdateListener},
 };
@@ -240,15 +241,13 @@ where
 /// ## Update grouping
 ///
 /// `Dispatcher` generally processes updates concurrently. However, by default,
-/// updates from the same chat are processed sequentially. [Learn more about
-/// update grouping].
-///
-/// [update grouping]: distribution_function#update-grouping
+/// updates from the same chat are processed sequentially. Learn more about
+/// [update grouping].
 ///
 /// See also: ["Dispatching or
 /// REPLs?"](../dispatching/index.html#dispatching-or-repls)
 ///
-/// [`distribution_function`]: DispatcherBuilder::distribution_function
+/// [update grouping]: DispatcherBuilder#update-grouping
 pub struct Dispatcher<R, Err, Key> {
     bot: R,
     dependencies: DependencyMap,
@@ -318,7 +317,7 @@ impl<R, Err, Key> Dispatcher<R, Err, Key>
 where
     R: Requester + Clone + Send + Sync + 'static,
     Err: Send + Sync + 'static,
-    Key: Hash + Eq + Clone,
+    Key: Hash + Eq + Clone + Send,
 {
     /// Starts your bot with the default parameters.
     ///
@@ -355,8 +354,8 @@ where
         update_listener: UListener,
         update_listener_error_handler: Arc<Eh>,
     ) where
-        UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
+        UListener: UpdateListener + Send + 'a,
+        Eh: ErrorHandler<UListener::Err> + Send + Sync + 'a,
         UListener::Err: Debug,
     {
         self.try_dispatch_with_listener(update_listener, update_listener_error_handler)
@@ -377,8 +376,8 @@ where
         update_listener_error_handler: Arc<Eh>,
     ) -> Result<(), R::Err>
     where
-        UListener: UpdateListener + 'a,
-        Eh: ErrorHandler<UListener::Err> + 'a,
+        UListener: UpdateListener + Send + 'a,
+        Eh: ErrorHandler<UListener::Err> + Send + Sync + 'a,
         UListener::Err: Debug,
     {
         // FIXME: there should be a way to check if dependency is already inserted
@@ -391,33 +390,45 @@ where
         log::debug!("hinting allowed updates: {:?}", allowed_updates);
         update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
-        let mut stop_token = Some(update_listener.stop_token());
+        let stop_token = Some(update_listener.stop_token());
+        self.start_listening(update_listener, update_listener_error_handler, stop_token).await;
 
+        Ok(())
+    }
+
+    async fn start_listening<'a, UListener, Eh>(
+        &'a mut self,
+        mut update_listener: UListener,
+        update_listener_error_handler: Arc<Eh>,
+        mut stop_token: Option<StopToken>,
+    ) where
+        UListener: UpdateListener + 'a,
+        Eh: ErrorHandler<UListener::Err> + 'a,
+        UListener::Err: Debug,
+    {
         self.state.start_dispatching();
 
-        {
-            let stream = update_listener.as_stream();
-            tokio::pin!(stream);
+        let stream = update_listener.as_stream();
+        tokio::pin!(stream);
 
-            loop {
-                self.remove_inactive_workers_if_needed().await;
+        loop {
+            self.remove_inactive_workers_if_needed().await;
 
-                let res = future::select(stream.next(), pin!(self.state.wait_for_changes()))
-                    .map(either)
-                    .await
-                    .map_either(|l| l.0, |r| r.0);
+            let res = future::select(stream.next(), pin!(self.state.wait_for_changes()))
+                .map(either)
+                .await
+                .map_either(|l| l.0, |r| r.0);
 
-                match res {
-                    Either::Left(upd) => match upd {
-                        Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
-                        None => break,
-                    },
-                    Either::Right(()) => {
-                        if self.state.is_shutting_down() {
-                            if let Some(token) = stop_token.take() {
-                                log::debug!("Start shutting down dispatching...");
-                                token.stop();
-                            }
+            match res {
+                Either::Left(upd) => match upd {
+                    Some(upd) => self.process_update(upd, &update_listener_error_handler).await,
+                    None => break,
+                },
+                Either::Right(()) => {
+                    if self.state.is_shutting_down() {
+                        if let Some(token) = stop_token.take() {
+                            log::debug!("Start shutting down dispatching...");
+                            token.stop();
                         }
                     }
                 }
@@ -435,7 +446,6 @@ where
             .await;
 
         self.state.done();
-        Ok(())
     }
 
     async fn process_update<LErr, LErrHandler>(

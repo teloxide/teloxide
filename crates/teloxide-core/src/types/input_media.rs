@@ -42,6 +42,10 @@ pub struct InputMediaPhoto {
     /// specified instead of `parse_mode`.
     pub caption_entities: Option<Vec<MessageEntity>>,
 
+    /// Pass `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// Pass `true` if the photo needs to be covered with a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_spoiler: bool,
@@ -49,7 +53,14 @@ pub struct InputMediaPhoto {
 
 impl InputMediaPhoto {
     pub const fn new(media: InputFile) -> Self {
-        Self { media, caption: None, parse_mode: None, caption_entities: None, has_spoiler: false }
+        Self {
+            media,
+            caption: None,
+            parse_mode: None,
+            caption_entities: None,
+            show_caption_above_media: false,
+            has_spoiler: false,
+        }
     }
 
     pub fn media(mut self, val: InputFile) -> Self {
@@ -75,6 +86,11 @@ impl InputMediaPhoto {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    pub fn show_caption_above_media(mut self, val: bool) -> Self {
+        self.show_caption_above_media = val;
         self
     }
 
@@ -118,6 +134,10 @@ pub struct InputMediaVideo {
     /// specified instead of `parse_mode`.
     pub caption_entities: Option<Vec<MessageEntity>>,
 
+    /// Pass `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// Video width.
     pub width: Option<u16>,
 
@@ -143,6 +163,7 @@ impl InputMediaVideo {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             width: None,
             height: None,
             duration: None,
@@ -179,6 +200,11 @@ impl InputMediaVideo {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    pub fn show_caption_above_media(mut self, val: bool) -> Self {
+        self.show_caption_above_media = val;
         self
     }
 
@@ -243,6 +269,10 @@ pub struct InputMediaAnimation {
     /// specified instead of `parse_mode`.
     pub caption_entities: Option<Vec<MessageEntity>>,
 
+    /// Pass `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// Animation width.
     pub width: Option<u16>,
 
@@ -269,6 +299,7 @@ impl InputMediaAnimation {
             height: None,
             duration: None,
             caption_entities: None,
+            show_caption_above_media: false,
             has_spoiler: false,
         }
     }
@@ -301,6 +332,11 @@ impl InputMediaAnimation {
         C: IntoIterator<Item = MessageEntity>,
     {
         self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    pub fn show_caption_above_media(mut self, val: bool) -> Self {
+        self.show_caption_above_media = val;
         self
     }
 
@@ -573,6 +609,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             has_spoiler: false,
         });
 
@@ -593,6 +630,7 @@ mod tests {
             duration: None,
             supports_streaming: None,
             caption_entities: None,
+            show_caption_above_media: false,
             has_spoiler: false,
         });
 
@@ -612,6 +650,7 @@ mod tests {
             height: None,
             duration: None,
             caption_entities: None,
+            show_caption_above_media: false,
             has_spoiler: false,
         });
 

@@ -38,6 +38,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Unique identifier of the message effect to be added to the message; for private chats only
+            pub message_effect_id: String [into],
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
         }

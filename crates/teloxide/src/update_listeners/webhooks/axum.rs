@@ -1,4 +1,4 @@
-use std::{convert::Infallible, future::Future, pin::Pin};
+use std::{convert::Infallible, future::Future};
 
 use axum::{
     extract::{FromRequestParts, State},
@@ -273,15 +273,10 @@ struct XTelegramBotApiSecretToken(Option<Vec<u8>>);
 impl<S> FromRequestParts<S> for XTelegramBotApiSecretToken {
     type Rejection = StatusCode;
 
-    fn from_request_parts<'l0, 'l1, 'at>(
-        req: &'l0 mut Parts,
-        _state: &'l1 S,
-    ) -> Pin<Box<dyn Future<Output = Result<Self, Self::Rejection>> + Send + 'at>>
-    where
-        'l0: 'at,
-        'l1: 'at,
-        Self: 'at,
-    {
+    fn from_request_parts(
+        req: &mut Parts,
+        _state: &S,
+    ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
         use crate::update_listeners::webhooks::check_secret;
 
         let res = req
@@ -295,6 +290,6 @@ impl<S> FromRequestParts<S> for XTelegramBotApiSecretToken {
             .transpose()
             .map(Self);
 
-        Box::pin(async { res }) as _
+        async { res }
     }
 }

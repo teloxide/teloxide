@@ -2,10 +2,13 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineKeyboardMarkup, Message, MessageEntity, MessageId, ParseMode, Recipient};
+use crate::types::{
+    BusinessConnectionId, InlineKeyboardMarkup, Message, MessageEntity, MessageId, ParseMode,
+    Recipient,
+};
 
 impl_payload! {
-    /// Use this method to edit captions of messages. On success, the edited Message is returned.
+    /// Use this method to edit captions of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.
     ///
     /// See also: [`EditMessageCaptionInline`](crate::payloads::EditMessageCaptionInline)
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
@@ -18,6 +21,8 @@ impl_payload! {
             pub message_id: MessageId,
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message to be edited was sent
+            pub business_connection_id: BusinessConnectionId,
             /// New caption of the message, 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
@@ -26,6 +31,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
+            /// Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages
+            pub show_caption_above_media: bool,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating

@@ -1,6 +1,104 @@
 This document describes breaking changes of `teloxide` crate, as well as the ways to update code.
 Note that the list of required changes is not fully exhaustive and it may lack something in rare cases.
 
+## unreleased
+
+## 0.13 -> 0.14
+
+### teloxide
+
+We have finally introduced three different categories for syntactic sugar:
+
+1. A new trait `RequestReplyExt` that adds `.reply_to(msg)`, equivalent to `.reply_parameters(ReplyParameters::new(msg.id))`
+
+```diff
+- bot.send_dice(msg.chat.id).reply_parameters(ReplyParameters::new(msg.id)).await?;
++ bot.send_dice(msg.chat.id).reply_to(msg).await?;
+// or
++ bot.send_dice(msg.chat.id).reply_to(msg.id).await?;
+```
+
+2. A new trait `RequestLinkPreviewExt` that adds `.disable_link_preview(true)`, equivalent to `.link_preview_options(options)`
+
+```diff
+- let options = LinkPreviewOptions {
+-     is_disabled: true,
+-     url: None,
+-     prefer_small_media: false,
+-     prefer_large_media: false,
+-     show_above_text: false,
+- };
+- bot.send_message(msg.chat.id, "https://github.com/teloxide/teloxide").link_preview_options(options).await?;
++ bot.send_message(msg.chat.id, "https://github.com/teloxide/teloxide").disable_link_preview(true).await?;
+```
+
+3. A new trait `BotMessagesExt` that adds a shorter method for anything that requires both `msg.id` and `msg.chat.id`:
+
+```diff
+- bot.edit_message_text(msg.chat.id, msg.id, text).await?;
++ bot.edit_text(msg, text).await?;
+```
+
+```diff
+- bot.forward_message(to_chat_id, msg.chat.id, msg.id).await?;
++ bot.forward(to_chat_id, msg).await?;
+```
+
+```diff
+- bot.delete_message(msg.chat.id, msg.id).await?;
++ bot.delete(msg).await?;
+```
+
+And others like `bot.edit_live_location`, `bot.stop_live_location`, `bot.set_reaction`, `bot.pin`, `bot.unpin`, `bot.edit_caption`, `bot.edit_media`, `bot.edit_reply_markup`, `bot.stop_poll_message` and `bot.copy` methods
+
+#### Breaking changes introduced by newer TBA versions support
+
+Type of argument `options` in `send_poll` method was changed from `Vec<String>` to `Vec<InputPollOption>`. But `InputPollOption` can be constructed from `String/&str`:
+
+```diff
+-let options: Vec<String> = vec!["First".to_owned(), "Second".to_owned(), "Third".to_owned()];
+-bot.send_poll(msg.chat.id, "Question", options).await?;
++let options: Vec<InputPollOption> = vec!["First".into(), "Second".into(), "Third".into()];
++bot.send_poll(msg.chat.id, "Question", options).await?;
+```
+
+`getChat` method now returns `ChatFullInfo` struct instead of `Chat` and most of the fields and methods was moved from `Chat` to `ChatFullInfo`.
+Also `available_reactions` was moved from `Chat` to `ChatPublicFullInfo`. `ChatFullInfo` got `available_reactions` method for convenience:
+
+```diff
+-let chat: Chat = bot.get_chat(msg.chat.id).await?;
+-let availible_reactions = chat.available_reactions;
++let chat: ChatFullInfo = bot.get_chat(msg.chat.id).await?;
++let availible_reactions = chat.available_reactions();
+```
+
+`live_period` field type became `LivePeriod` everywhere instead of `u32` and it implements `Into<LivePeriod> for u32`:
+
+```diff
+-live_period: Some(1),
++live_period: Some(1.into()),
+```
+
+`mentioned_users()` method in the `ChatMemberUpdated` and `Message` structs no longer able to track mentioned users in the chat e.g. from pinned messages in it. `mentioned_users()` method in the `ChatJoinRequest` struct was removed completely as it become useless. The only way to track mentioned users again is to call `get_chat()` method and call `mentioned_users()` on the returned `ChatFullInfo` struct.
+
+`provider_token` field in `InputMessageContentInvoice` struct and `sendInvoice` and `createInvoiceLink` methods is now optional:
+
+```diff
+bot.create_invoice_link(
+    "Name",
+    "Description",
+    "payload",
+-    "",
+    "XTR",
+    [LabeledPrice {
+        label: "Subscription",
+        amount: 100,
+    }],
+)
++.provider_token("provider_token")
+.await?;
+```
+
 ## 0.11 -> 0.12
 
 ### teloxide

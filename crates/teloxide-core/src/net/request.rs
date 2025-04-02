@@ -1,4 +1,4 @@
-use std::{any::TypeId, time::Duration};
+use std::{any::TypeId, sync::Arc, time::Duration};
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
@@ -156,7 +156,7 @@ where
 
             response
         })
-        .map_err(|source| RequestError::InvalidJson { source, raw: text.into() })?
+        .map_err(|source| RequestError::InvalidJson { source: Arc::new(source), raw: text.into() })?
         .into()
 }
 
@@ -261,12 +261,7 @@ mod tests {
         let res = deserialize_response::<Vec<Update>>(json).unwrap();
         assert_matches!(
             res,
-            [
-                Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) },
-                Update { id: UpdateId(1), kind: UpdateKind::Error(v) } if v.is_object(),
-                Update { id: UpdateId(2), kind: UpdateKind::PollAnswer(_) },
-                Update { id: UpdateId(3), kind: UpdateKind::Error(v) } if v.is_object(),
-            ]
+            [Update { id: UpdateId(0), kind: UpdateKind::PollAnswer(_) }, Update { id: UpdateId(1), kind: UpdateKind::Error(v) } if v.is_object(), Update { id: UpdateId(2), kind: UpdateKind::PollAnswer(_) }, Update { id: UpdateId(3), kind: UpdateKind::Error(v) } if v.is_object()]
         );
     }
 }

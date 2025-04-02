@@ -250,6 +250,7 @@ pub enum MessageEntityKind {
     PhoneNumber,
     Bold,
     Blockquote,
+    ExpandableBlockquote,
     Italic,
     Underline,
     Strikethrough,
@@ -299,6 +300,23 @@ mod tests {
     }
 
     #[test]
+    fn expandable_blockquote() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity {
+                kind: MessageEntityKind::ExpandableBlockquote,
+                offset: 69,
+                length: 420
+            },
+            from_str::<MessageEntity>(
+                r#"{"type": "expandable_blockquote", "offset": 69, "length": 420}"#
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
     fn pre() {
         use serde_json::from_str;
 
@@ -344,13 +362,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "б" && entity.kind() == &Strikethrough,
-                entity if entity.text() == "ы" && entity.kind() == &Bold,
-                entity if entity.text() == "б" && entity.kind() == &Italic,
-                entity if entity.text() == "а" && entity.kind() == &Code,
-
-            ]
+            [entity if entity.text() == "б" && entity.kind() == &Strikethrough, entity if entity.text() == "ы" && entity.kind() == &Bold, entity if entity.text() == "б" && entity.kind() == &Italic, entity if entity.text() == "а" && entity.kind() == &Code]
         );
     }
 
@@ -361,10 +373,7 @@ mod tests {
             &[MessageEntity { kind: Hashtag, offset: 5, length: 3 }],
         );
 
-        assert_matches!(
-            parsed,
-            [entity if entity.text() == "#tt" && entity.kind() == &Hashtag]
-        );
+        assert_matches!(parsed, [entity if entity.text() == "#tt" && entity.kind() == &Hashtag]);
     }
 
     #[test]
@@ -381,11 +390,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "b " && entity.kind() == &Bold,
-                entity if entity.text() == "i b" && entity.kind() == &Bold,
-                entity if entity.text() == "i" && entity.kind() == &Italic,
-            ]
+            [entity if entity.text() == "b " && entity.kind() == &Bold, entity if entity.text() == "i b" && entity.kind() == &Bold, entity if entity.text() == "i" && entity.kind() == &Italic]
         );
     }
 
@@ -409,10 +414,7 @@ mod tests {
 
         assert_matches!(
             parsed,
-            [
-                entity if entity.text() == "" && entity.kind() == &Bold,
-                entity if entity.text() == "" && entity.kind() == &Italic,
-            ]
+            [entity if entity.text() == "" && entity.kind() == &Bold, entity if entity.text() == "" && entity.kind() == &Italic]
         );
     }
 }

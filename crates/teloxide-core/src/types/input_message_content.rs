@@ -1,7 +1,7 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{LabeledPrice, LinkPreviewOptions, MessageEntity, ParseMode};
+use crate::types::{LabeledPrice, LinkPreviewOptions, LivePeriod, MessageEntity, ParseMode};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
@@ -97,8 +97,9 @@ pub struct InputMessageContentLocation {
     pub horizontal_accuracy: Option<f64>,
 
     /// Period in seconds for which the location can be updated, should be
-    /// between 60 and 86400.
-    pub live_period: Option<u32>,
+    /// between 60 and 86400, or 0x7FFFFFFF for live locations that can be
+    /// edited indefinitely.
+    pub live_period: Option<LivePeriod>,
 
     /// For live locations, a direction in which the user is moving, in degrees.
     /// Must be between 1 and 360 if specified.
@@ -136,7 +137,7 @@ impl InputMessageContentLocation {
     }
 
     #[must_use]
-    pub const fn live_period(mut self, val: u32) -> Self {
+    pub const fn live_period(mut self, val: LivePeriod) -> Self {
         self.live_period = Some(val);
         self
     }
@@ -324,10 +325,12 @@ pub struct InputMessageContentInvoice {
     /// the user, use for your internal processes.
     pub payload: String,
 
-    /// Payment provider token, obtained via [@Botfather]
+    /// Payment provider token, obtained via [@Botfather].
+    /// Pass `None` for payments in [Telegram Stars].
     ///
     /// [@Botfather]: https://t.me/Botfather
-    pub provider_token: String,
+    /// [Telegram Stars]: https://t.me/BotNews/90
+    pub provider_token: Option<String>,
 
     /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
     /// `XTR` for payments in [Telegram Stars].
@@ -402,7 +405,6 @@ impl InputMessageContentInvoice {
         title: T,
         description: D,
         payload: PA,
-        provider_token: PT,
         currency: C,
         prices: PR,
     ) -> Self
@@ -410,14 +412,12 @@ impl InputMessageContentInvoice {
         T: Into<String>,
         D: Into<String>,
         PA: Into<String>,
-        PT: Into<String>,
         C: Into<String>,
         PR: IntoIterator<Item = LabeledPrice>,
     {
         let title = title.into();
         let description = description.into();
         let payload = payload.into();
-        let provider_token = provider_token.into();
         let currency = currency.into();
         let prices = prices.into_iter().collect();
 
@@ -425,7 +425,7 @@ impl InputMessageContentInvoice {
             title,
             description,
             payload,
-            provider_token,
+            provider_token: None,
             currency,
             prices,
             max_tip_amount: None,
@@ -473,7 +473,7 @@ impl InputMessageContentInvoice {
     where
         T: Into<String>,
     {
-        self.provider_token = val.into();
+        self.provider_token = Some(val.into());
         self
     }
 

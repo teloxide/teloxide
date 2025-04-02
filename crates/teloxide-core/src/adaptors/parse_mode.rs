@@ -282,6 +282,8 @@ where
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_star_transactions,
+        refund_star_payment,
         set_passport_data_errors,
         send_game,
         set_game_score,

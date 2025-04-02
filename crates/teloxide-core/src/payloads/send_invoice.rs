@@ -22,10 +22,6 @@ impl_payload! {
             pub description: String [into],
             /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
             pub payload: String [into],
-            /// Payments provider token, obtained via [Botfather]
-            ///
-            /// [Botfather]: https://t.me/botfather
-            pub provider_token: String [into],
             /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass `XTR` for payments in [Telegram Stars].
             ///
             /// [more on currencies]: https://core.telegram.org/bots/payments#supported-currencies
@@ -37,6 +33,11 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Payments provider token, obtained via [Botfather]. Pass `None` for payments in [Telegram Stars].
+            ///
+            /// [Botfather]: https://t.me/botfather
+            /// [Telegram Stars]: https://t.me/BotNews/90
+            pub provider_token: String [into],
             /// The maximum accepted amount for tips in the smallest units of the currency (integer, **not** float/double). For example, for a maximum tip of `US$ 1.45` pass `max_tip_amount = 145`. See the exp parameter in [`currencies.json`], it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
             ///
             /// [`currencies.json`]: https://core.telegram.org/bots/payments/currencies.json
@@ -75,6 +76,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Unique identifier of the message effect to be added to the message; for private chats only
+            pub message_effect_id: String [into],
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.

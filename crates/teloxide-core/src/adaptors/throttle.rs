@@ -185,11 +185,17 @@ enum ChatIdHash {
 }
 
 impl ChatIdHash {
-    fn is_channel(&self) -> bool {
+    fn is_channel_or_supergroup(&self) -> bool {
         match self {
             &Self::Id(id) => id.is_channel_or_supergroup(),
             Self::ChannelUsernameHash(_) => true,
         }
+    }
+}
+
+impl From<&ChatId> for ChatIdHash {
+    fn from(value: &ChatId) -> Self {
+        ChatIdHash::Id(*value)
     }
 }
 

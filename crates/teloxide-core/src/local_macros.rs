@@ -36,6 +36,7 @@ macro_rules! req_future {
             $(where $($wh)*)? = impl ::core::future::Future<Output = $Out>;
 
             #[cfg(feature = "nightly")]
+            #[define_opaque($i)]
             pub(crate) fn def<$T>($( $arg: $ArgTy ),*) -> $i<$T>
             $(where $($wh)*)?
             {
@@ -646,7 +647,7 @@ macro_rules! requester_forward {
 
         fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll where C: Into<Recipient>,
         Q: Into<String>,
-        O: IntoIterator<Item = String> {
+        O: IntoIterator<Item = InputPollOption> {
             let this = self;
             $body!(send_poll this (chat_id: C, question: Q, options: O))
         }
@@ -1417,28 +1418,26 @@ macro_rules! requester_forward {
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
-        fn send_invoice<Ch, T, D, Pa, P, C, Pri>(&self, chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::SendInvoice where Ch: Into<Recipient>,
+        fn send_invoice<Ch, T, D, Pa, C, P>(&self, chat_id: Ch, title: T, description: D, payload: Pa, currency: C, prices: P) -> Self::SendInvoice where Ch: Into<Recipient>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice> {
+        P: IntoIterator<Item = LabeledPrice> {
             let this = self;
-            $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
+            $body!(send_invoice this (chat_id: Ch, title: T, description: D, payload: Pa, currency: C, prices: P))
         }
     };
     (@method create_invoice_link $body:ident $ty:ident) => {
         type CreateInvoiceLink = $ty![CreateInvoiceLink];
 
-        fn create_invoice_link<T, D, Pa, P, C, Pri>(&self, title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri) -> Self::CreateInvoiceLink where T: Into<String>,
+        fn create_invoice_link<T, D, Pa, C, P>(&self, title: T, description: D, payload: Pa, currency: C, prices: P) -> Self::CreateInvoiceLink where T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice> {
+        P: IntoIterator<Item = LabeledPrice> {
             let this = self;
-            $body!(create_invoice_link this (title: T, description: D, payload: Pa, provider_token: P, currency: C, prices: Pri))
+            $body!(create_invoice_link this (title: T, description: D, payload: Pa, currency: C, prices: P))
         }
     };
     (@method answer_shipping_query $body:ident $ty:ident) => {
@@ -1455,6 +1454,22 @@ macro_rules! requester_forward {
         fn answer_pre_checkout_query<P>(&self, pre_checkout_query_id: P, ok: bool) -> Self::AnswerPreCheckoutQuery where P: Into<String> {
             let this = self;
             $body!(answer_pre_checkout_query this (pre_checkout_query_id: P, ok: bool))
+        }
+    };
+    (@method get_star_transactions $body:ident $ty:ident) => {
+        type GetStarTransactions = $ty![GetStarTransactions];
+
+        fn get_star_transactions(&self, ) -> Self::GetStarTransactions {
+            let this = self;
+            $body!(get_star_transactions this ())
+        }
+    };
+    (@method refund_star_payment $body:ident $ty:ident) => {
+        type RefundStarPayment = $ty![RefundStarPayment];
+
+        fn refund_star_payment<T>(&self, user_id: UserId, telegram_payment_charge_id: T) -> Self::RefundStarPayment where T: Into<String> {
+            let this = self;
+            $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: T))
         }
     };
     (@method set_passport_data_errors $body:ident $ty:ident) => {

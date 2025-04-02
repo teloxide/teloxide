@@ -501,6 +501,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -521,6 +522,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -557,6 +559,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -582,6 +585,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -613,6 +617,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -633,6 +638,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -669,6 +675,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -694,6 +701,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -726,6 +734,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -747,6 +756,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -782,6 +792,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -806,6 +817,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Text(InputMessageContentText {
                 message_text: String::from("message_text"),
@@ -881,6 +893,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: None,
             input_message_content: None,
         });
@@ -903,6 +916,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             reply_markup: Some(InlineKeyboardMarkup::default()),
             input_message_content: Some(InputMessageContent::Location(
                 InputMessageContentLocation {
@@ -934,6 +948,7 @@ mod tests {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: false,
             video_width: None,
             video_height: None,
             video_duration: None,
@@ -960,6 +975,7 @@ mod tests {
             caption: Some(String::from("caption")),
             parse_mode: Some(ParseMode::Html),
             caption_entities: None,
+            show_caption_above_media: false,
             video_width: Some(1),
             video_height: Some(1),
             video_duration: Some(Seconds::from_seconds(1)),
@@ -1271,7 +1287,7 @@ mod tests {
             longitude: 1.0,
             title: String::from("title"),
             horizontal_accuracy: Some(1.0),
-            live_period: Some(1),
+            live_period: Some(1.into()),
             heading: Some(1),
             proximity_alert_radius: Some(1),
             reply_markup: Some(InlineKeyboardMarkup::default()),

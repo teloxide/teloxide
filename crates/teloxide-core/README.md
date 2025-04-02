@@ -12,7 +12,7 @@
     <img src="https://img.shields.io/badge/license-MIT-blue.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%207.2%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%207.5%20(inclusively)-green.svg">
   </a>
   <a href="https://crates.io/crates/teloxide_core">
     <img src="https://img.shields.io/crates/v/teloxide_core.svg">
@@ -25,7 +25,7 @@
 </div>
 
 ```toml
-teloxide-core = "0.10.1"
+teloxide-core = "0.11.1"
 ```
 _Compiler support: requires rustc 1.80+_.
 

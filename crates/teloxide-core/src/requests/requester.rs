@@ -397,7 +397,7 @@ pub trait Requester {
     where
         C: Into<Recipient>,
         Q: Into<String>,
-        O: IntoIterator<Item = String>;
+        O: IntoIterator<Item = InputPollOption>;
 
     type SendDice: Request<Payload = SendDice, Err = Self::Err>;
 
@@ -1194,44 +1194,40 @@ pub trait Requester {
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
-    fn send_invoice<Ch, T, D, Pa, P, C, Pri>(
+    fn send_invoice<Ch, T, D, Pa, C, P>(
         &self,
         chat_id: Ch,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
-        prices: Pri,
+        prices: P,
     ) -> Self::SendInvoice
     where
         Ch: Into<Recipient>,
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice>;
+        P: IntoIterator<Item = LabeledPrice>;
 
     type CreateInvoiceLink: Request<Payload = CreateInvoiceLink, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateInvoiceLink`].
-    fn create_invoice_link<T, D, Pa, P, C, Pri>(
+    fn create_invoice_link<T, D, Pa, C, P>(
         &self,
         title: T,
         description: D,
         payload: Pa,
-        provider_token: P,
         currency: C,
-        prices: Pri,
+        prices: P,
     ) -> Self::CreateInvoiceLink
     where
         T: Into<String>,
         D: Into<String>,
         Pa: Into<String>,
-        P: Into<String>,
         C: Into<String>,
-        Pri: IntoIterator<Item = LabeledPrice>;
+        P: IntoIterator<Item = LabeledPrice>;
 
     type AnswerShippingQuery: Request<Payload = AnswerShippingQuery, Err = Self::Err>;
 
@@ -1250,6 +1246,22 @@ pub trait Requester {
     ) -> Self::AnswerPreCheckoutQuery
     where
         P: Into<String>;
+
+    type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetStarTransactions`].
+    fn get_star_transactions(&self) -> Self::GetStarTransactions;
+
+    type RefundStarPayment: Request<Payload = RefundStarPayment, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RefundStarPayment`].
+    fn refund_star_payment<T>(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: T,
+    ) -> Self::RefundStarPayment
+    where
+        T: Into<String>;
 
     type SetPassportDataErrors: Request<Payload = SetPassportDataErrors, Err = Self::Err>;
 
@@ -1440,6 +1452,8 @@ macro_rules! forward_all {
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
+            get_star_transactions,
+            refund_star_payment,
             set_passport_data_errors,
             send_game,
             set_game_score,

@@ -1,4 +1,4 @@
-use std::future::Future;
+use std::{future::Future, sync::Arc};
 
 use bytes::Bytes;
 use futures::{
@@ -100,7 +100,7 @@ where
         let mut res = r?.error_for_status()?;
 
         while let Some(chunk) = res.chunk().await? {
-            dst.write_all(&chunk).await?;
+            dst.write_all(&chunk).await.map_err(Arc::new)?;
         }
 
         Ok(())

@@ -43,7 +43,9 @@ where
 
     B::SendMessage: Clone + Send + Sync + 'static,
     B::ForwardMessage: Clone + Send + Sync + 'static,
+    B::ForwardMessages: Clone + Send + Sync + 'static,
     B::CopyMessage: Clone + Send + Sync + 'static,
+    B::CopyMessages: Clone + Send + Sync + 'static,
     B::SendPhoto: Clone + Send + Sync + 'static,
     B::SendAudio: Clone + Send + Sync + 'static,
     B::SendDocument: Clone + Send + Sync + 'static,
@@ -59,13 +61,16 @@ where
     B::SendDice: Clone + Send + Sync + 'static,
     B::SendSticker: Clone + Send + Sync + 'static,
     B::SendInvoice: Clone + Send + Sync + 'static,
+    B::SendGame: Clone + Send + Sync + 'static,
 {
     type Err = B::Err;
 
     requester_forward! {
         send_message,
         forward_message,
+        forward_messages,
         copy_message,
+        copy_messages,
         send_photo,
         send_audio,
         send_document,
@@ -80,7 +85,8 @@ where
         send_poll,
         send_dice,
         send_sticker,
-        send_invoice
+        send_invoice,
+        send_game
         => f, fty
     }
 
@@ -92,8 +98,6 @@ where
         set_webhook,
         delete_webhook,
         get_webhook_info,
-        forward_messages,
-        copy_messages,
         edit_message_live_location,
         edit_message_live_location_inline,
         stop_message_live_location,
@@ -190,8 +194,9 @@ where
         answer_shipping_query,
         create_invoice_link,
         answer_pre_checkout_query,
+        get_star_transactions,
+        refund_star_payment,
         set_passport_data_errors,
-        send_game,
         set_game_score,
         set_game_score_inline,
         approve_chat_join_request,

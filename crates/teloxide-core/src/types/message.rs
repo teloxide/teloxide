@@ -5,15 +5,16 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::types::{
-    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBoostAdded, ChatId, ChatShared,
-    Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
-    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
-    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
-    LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
-    MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PassportData, PhotoSize, Poll,
-    ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
-    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
-    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
+    ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
+    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
+    GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
+    InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
+    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
+    TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -90,6 +91,7 @@ pub enum MessageKind {
     Dice(MessageDice),
     ProximityAlertTriggered(MessageProximityAlertTriggered),
     ChatBoostAdded(MessageChatBoostAdded),
+    ChatBackground(MessageChatBackground),
     ForumTopicCreated(MessageForumTopicCreated),
     ForumTopicEdited(MessageForumTopicEdited),
     ForumTopicClosed(MessageForumTopicClosed),
@@ -116,6 +118,9 @@ pub struct MessageCommon {
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
+
+    /// Unique identifier of the message effect added to the message
+    pub effect_id: Option<String>,
 
     /// Information about the original message for forwarded messages
     pub forward_origin: Option<MessageOrigin>,
@@ -379,6 +384,10 @@ pub struct MediaAnimation {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_media_spoiler: bool,
@@ -461,6 +470,10 @@ pub struct MediaPhoto {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_media_spoiler: bool,
@@ -522,6 +535,10 @@ pub struct MediaVideo {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub caption_entities: Vec<MessageEntity>,
 
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
     /// `true`, if the message media is covered by a spoiler animation.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_media_spoiler: bool,
@@ -582,6 +599,13 @@ pub struct MessageProximityAlertTriggered {
 pub struct MessageChatBoostAdded {
     /// Service message. User boosted the chat.
     pub boost_added: ChatBoostAdded,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChatBackground {
+    /// Service message. Chat background set.
+    pub chat_background_set: ChatBackground,
 }
 
 #[serde_with::skip_serializing_none]
@@ -727,12 +751,12 @@ mod getters {
     };
 
     use super::{
-        MessageChatBoostAdded, MessageForumTopicClosed, MessageForumTopicCreated,
-        MessageForumTopicEdited, MessageForumTopicReopened, MessageGeneralForumTopicHidden,
-        MessageGeneralForumTopicUnhidden, MessageGiveaway, MessageGiveawayCompleted,
-        MessageGiveawayCreated, MessageGiveawayWinners, MessageMessageAutoDeleteTimerChanged,
-        MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
-        MessageWebAppData, MessageWriteAccessAllowed,
+        MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
+        MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
+        MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
+        MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
+        MessageMessageAutoDeleteTimerChanged, MessageVideoChatEnded, MessageVideoChatScheduled,
+        MessageVideoChatStarted, MessageWebAppData, MessageWriteAccessAllowed,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -751,6 +775,14 @@ mod getters {
         pub fn author_signature(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon { author_signature, .. }) => author_signature.as_deref(),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn effect_id(&self) -> Option<&str> {
+            match &self.kind {
+                Common(MessageCommon { effect_id, .. }) => effect_id.as_deref(),
                 _ => None,
             }
         }
@@ -781,6 +813,14 @@ mod getters {
         pub fn reply_to_story(&self) -> Option<&Story> {
             match &self.kind {
                 Common(MessageCommon { reply_to_story, .. }) => reply_to_story.as_ref(),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn sender_boost_count(&self) -> Option<u16> {
+            match &self.kind {
+                Common(MessageCommon { sender_boost_count, .. }) => *sender_boost_count,
                 _ => None,
             }
         }
@@ -959,6 +999,37 @@ mod getters {
                 }) => Some(caption_entities),
                 _ => None,
             }
+        }
+
+        /// Returns `true` if the caption must be shown above the message media.
+        ///
+        /// Getter for [`MediaPhoto::show_caption_above_media`],
+        /// [`MediaVideo::show_caption_above_media`] and
+        /// [`MediaAnimation::show_caption_above_media`].
+        #[must_use]
+        pub fn show_caption_above_media(&self) -> bool {
+            self.common()
+                .map(|m| match m.media_kind {
+                    MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
+                    | MediaKind::Photo(MediaPhoto { show_caption_above_media, .. })
+                    | MediaKind::Video(MediaVideo { show_caption_above_media, .. }) => {
+                        show_caption_above_media
+                    }
+                    MediaKind::Audio(_)
+                    | MediaKind::Contact(_)
+                    | MediaKind::Document(_)
+                    | MediaKind::Game(_)
+                    | MediaKind::Venue(_)
+                    | MediaKind::Location(_)
+                    | MediaKind::Poll(_)
+                    | MediaKind::Sticker(_)
+                    | MediaKind::Story(_)
+                    | MediaKind::Text(_)
+                    | MediaKind::VideoNote(_)
+                    | MediaKind::Voice(_)
+                    | MediaKind::Migration(_) => false,
+                })
+                .unwrap_or(false)
         }
 
         /// Returns `true` if the message media is covered by a spoiler
@@ -1415,6 +1486,16 @@ mod getters {
         }
 
         #[must_use]
+        pub fn chat_background_set(&self) -> Option<&types::ChatBackground> {
+            match &self.kind {
+                ChatBackground(MessageChatBackground { chat_background_set }) => {
+                    Some(chat_background_set)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn forum_topic_created(&self) -> Option<&types::ForumTopicCreated> {
             match &self.kind {
                 ForumTopicCreated(MessageForumTopicCreated { forum_topic_created }) => {
@@ -1784,8 +1865,15 @@ impl Message {
     /// This might be useful to track information about users.
     ///
     /// Note that this function may return quite a few users as it scans
-    /// replies, pinned messages, message entities and more. Also note that this
+    /// replies, message entities and more. Also note that this
     /// function can return duplicate users.
+    ///
+    /// In earlier versions of the `teloixde-core`, this function
+    /// returned mentioned users in [`chat`] from which the Message was
+    /// forwarded. E.g. from pinned messages in the chat. This functionality
+    /// was lost with the TBA 7.3 update.
+    ///
+    /// [`chat`]: Self::forward_from_chat
     pub fn mentioned_users(&self) -> impl Iterator<Item = &User> {
         use crate::util::{flatten, mentioned_users_from_entities};
 
@@ -1794,12 +1882,10 @@ impl Message {
         self.from
             .iter()
             .chain(self.via_bot.as_ref())
-            .chain(self.chat.mentioned_users_rec())
             .chain(flatten(self.reply_to_message().map(Self::mentioned_users_rec)))
             .chain(flatten(self.new_chat_members()))
             .chain(self.left_chat_member())
             .chain(self.forward_from_user())
-            .chain(flatten(self.forward_from_chat().map(Chat::mentioned_users_rec)))
             .chain(flatten(self.game().map(Game::mentioned_users)))
             .chain(flatten(self.entities().map(mentioned_users_from_entities)))
             .chain(flatten(self.caption_entities().map(mentioned_users_from_entities)))
@@ -1819,6 +1905,12 @@ impl Message {
 /// Implemented for syntax sugar, see issue <https://github.com/teloxide/teloxide/issues/1143>
 impl From<Message> for MessageId {
     fn from(message: Message) -> MessageId {
+        message.id
+    }
+}
+
+impl From<&Message> for MessageId {
+    fn from(message: &Message) -> MessageId {
         message.id
     }
 }
@@ -1906,22 +1998,7 @@ mod tests {
                         first_name: Some("Андрей".to_string()),
                         last_name: Some("Власов".to_string()),
                         username: Some("aka_dude".to_string()),
-                        bio: None,
-                        has_private_forwards: None,
-                        has_restricted_voice_and_video_messages: None,
-                        personal_chat: None,
-                        birthdate: None,
-                        business_intro: None,
-                        business_location: None,
-                        business_opening_hours: None,
                     }),
-                    photo: None,
-                    available_reactions: None,
-                    has_aggressive_anti_spam_enabled: false,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    chat_full_info: ChatFullInfo::default()
                 },
                 sender_business_bot: None,
                 kind: MessageKind::ChatShared(MessageChatShared {
@@ -2140,34 +2217,13 @@ mod tests {
 
         let group = Chat {
             id: ChatId(-1001160242915),
-            kind: ChatKind::Public(Box::new(ChatPublic {
+            kind: ChatKind::Public(ChatPublic {
                 title: Some("a".to_owned()),
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
-                    sticker_set_name: None,
-                    can_set_sticker_set: None,
-                    custom_emoji_sticker_set_name: None,
-                    permissions: None,
-                    slow_mode_delay: None,
-                    unrestrict_boost_count: None,
-                    linked_chat_id: None,
-                    location: None,
-                    join_by_request: None,
-                    join_to_send_messages: None,
-                    active_usernames: None,
                     is_forum: false,
                 }),
-                description: None,
-                invite_link: None,
-                has_protected_content: None,
-            })),
-            message_auto_delete_time: None,
-            photo: None,
-            available_reactions: None,
-            pinned_message: None,
-            has_hidden_members: false,
-            has_aggressive_anti_spam_enabled: false,
-            chat_full_info: ChatFullInfo::default(),
+            }),
         };
 
         assert!(message.from.as_ref().unwrap().is_anonymous());
@@ -2231,7 +2287,8 @@ mod tests {
   "venue": {
    "location": {
     "latitude": 0.0,
-    "longitude": 0.0
+    "longitude": 0.0,
+    "live_period": 900
    },
    "title": "Title",
    "address": "Address",
@@ -2247,7 +2304,7 @@ mod tests {
                     longitude: 0.0,
                     latitude: 0.0,
                     horizontal_accuracy: None,
-                    live_period: None,
+                    live_period: Some(900.into()),
                     heading: None,
                     proximity_alert_radius: None
                 },
@@ -2445,23 +2502,10 @@ mod tests {
             &Giveaway {
                 chats: vec![Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(Box::new(ChatPublic {
+                    kind: ChatKind::Public(ChatPublic {
                         title: Some("Test".to_owned()),
-                        kind: PublicChatKind::Channel(PublicChatChannel {
-                            username: None,
-                            linked_chat_id: None
-                        }),
-                        description: None,
-                        invite_link: None,
-                        has_protected_content: None
-                    })),
-                    photo: None,
-                    available_reactions: None,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo::default()
+                        kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                    }),
                 }],
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
                 winner_count: 1,
@@ -2554,45 +2598,19 @@ mod tests {
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(Box::new(ChatPublic {
+                        kind: ChatKind::Public(ChatPublic {
                             title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel {
-                                linked_chat_id: None,
-                                username: None
-                            }),
-                            description: None,
-                            invite_link: None,
-                            has_protected_content: None
-                        })),
-                        chat_full_info: ChatFullInfo::default(),
-                        available_reactions: None,
-                        photo: None,
-                        has_aggressive_anti_spam_enabled: false,
-                        has_hidden_members: false,
-                        message_auto_delete_time: None,
-                        pinned_message: None
+                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                        }),
                     }),
                     is_topic_message: false,
                     date: DateTime::from_timestamp(1721161230, 0).unwrap(),
                     chat: Chat {
                         id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(Box::new(ChatPublic {
+                        kind: ChatKind::Public(ChatPublic {
                             title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel {
-                                username: None,
-                                linked_chat_id: None
-                            }),
-                            description: None,
-                            invite_link: None,
-                            has_protected_content: None
-                        })),
-                        photo: None,
-                        available_reactions: None,
-                        pinned_message: None,
-                        message_auto_delete_time: None,
-                        has_hidden_members: false,
-                        has_aggressive_anti_spam_enabled: false,
-                        chat_full_info: ChatFullInfo::default()
+                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                        }),
                     },
                     via_bot: None,
                     sender_business_bot: None,
@@ -2600,23 +2618,12 @@ mod tests {
                         giveaway: Giveaway {
                             chats: vec![Chat {
                                 id: ChatId(-1002236736395),
-                                kind: ChatKind::Public(Box::new(ChatPublic {
+                                kind: ChatKind::Public(ChatPublic {
                                     title: Some("Test".to_owned()),
                                     kind: PublicChatKind::Channel(PublicChatChannel {
                                         username: None,
-                                        linked_chat_id: None
                                     }),
-                                    description: None,
-                                    invite_link: None,
-                                    has_protected_content: None
-                                })),
-                                photo: None,
-                                available_reactions: None,
-                                pinned_message: None,
-                                message_auto_delete_time: None,
-                                has_hidden_members: false,
-                                has_aggressive_anti_spam_enabled: false,
-                                chat_full_info: ChatFullInfo::default()
+                                }),
                             }],
                             winners_selection_date: DateTime::from_timestamp(1721162701, 0)
                                 .unwrap(),
@@ -2701,23 +2708,10 @@ mod tests {
             &GiveawayWinners {
                 chat: Chat {
                     id: ChatId(-1002236736395),
-                    kind: ChatKind::Public(Box::new(ChatPublic {
+                    kind: ChatKind::Public(ChatPublic {
                         title: Some("Test".to_owned()),
-                        kind: PublicChatKind::Channel(PublicChatChannel {
-                            username: None,
-                            linked_chat_id: None
-                        }),
-                        description: None,
-                        invite_link: None,
-                        has_protected_content: None
-                    })),
-                    photo: None,
-                    available_reactions: None,
-                    pinned_message: None,
-                    message_auto_delete_time: None,
-                    has_hidden_members: false,
-                    has_aggressive_anti_spam_enabled: false,
-                    chat_full_info: ChatFullInfo::default()
+                        kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
+                    }),
                 },
                 giveaway_message_id: MessageId(27),
                 winners_selection_date: DateTime::from_timestamp(1721162701, 0).unwrap(),
@@ -2766,5 +2760,73 @@ mod tests {
             message.boost_added().expect("Failed to get ChatBoostAdded from Message!"),
             &ChatBoostAdded { boost_count: 4 }
         )
+    }
+
+    #[test]
+    fn effect_id() {
+        let json = r#"{
+            "message_id": 139,
+            "from": {
+                "id": 1459074222,
+                "is_bot": false,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "language_code": "en",
+                "is_premium": true
+            },
+            "chat": {
+                "id": 1459074222,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "type": "private"
+            },
+            "date": 1739038521,
+            "text": "El Psy Kongroo",
+            "effect_id": "5123233223429587601"
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.effect_id().unwrap(), "5123233223429587601")
+    }
+
+    #[test]
+    fn show_caption_above_media() {
+        let json = r#"{
+            "message_id": 140,
+            "from": {
+                "id": 1459074222,
+                "is_bot": false,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "language_code": "en",
+                "is_premium": true
+            },
+            "chat": {
+                "id": 1459074222,
+                "first_name": "shadowchain",
+                "username": "shdwchn10",
+                "type": "private"
+            },
+            "date": 1739041615,
+            "photo": [
+                {
+                    "file_id": "AgACAgIAAxkBAAOMZ6erTx2-IA9WEXr4NkeUY5AjdvQAArTxMRtfc0FJ1gKSaUEGAfMBAAMCAANzAAM2BA",
+                    "file_unique_id": "AQADtPExG19zQUl4",
+                    "file_size": 322,
+                    "width": 59,
+                    "height": 90
+                },
+                {
+                    "file_id": "AgACAgIAAxkBAAOMZ6erTx2-IA9WEXr4NkeUY5AjdvQAArTxMRtfc0FJ1gKSaUEGAfMBAAMCAANtAAM2BA",
+                    "file_unique_id": "AQADtPExG19zQUly",
+                    "file_size": 358,
+                    "width": 82,
+                    "height": 125
+                }
+            ],
+            "caption": "El Psy Kongroo",
+            "show_caption_above_media": true
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert!(message.show_caption_above_media())
     }
 }

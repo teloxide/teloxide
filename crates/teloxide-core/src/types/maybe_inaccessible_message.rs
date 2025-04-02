@@ -10,7 +10,7 @@ use crate::types::{Chat, InaccessibleMessage, Message, MessageId};
 #[serde(untagged)]
 pub enum MaybeInaccessibleMessage {
     Inaccessible(InaccessibleMessage),
-    Regular(Message),
+    Regular(Box<Message>),
 }
 
 impl MaybeInaccessibleMessage {
@@ -52,7 +52,7 @@ impl<'de> Deserialize<'de> for MaybeInaccessibleMessage {
                 message_id: message.id,
             }));
         }
-        Ok(MaybeInaccessibleMessage::Regular(message))
+        Ok(MaybeInaccessibleMessage::Regular(Box::new(message)))
     }
 }
 

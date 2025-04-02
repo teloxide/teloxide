@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.11.1 - 2025-03-30
+
+### Fixed
+
+- Fixed docs build ([PR 1311](https://github.com/teloxide/teloxide/pull/1311))
+
+## 0.11.0 - 2025-03-29
+
 ### Added
 
 - Support for TBA 7.1 ([#1131](pr1131))
@@ -43,8 +51,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
 
 - `ApiError::BotKickedFromChannel` ([#1157][pr1157])
+- `sender_boost_count` method to the `Message` struct ([#1264][pr1264])
+- `From<&Message> for MessageId` impl ([#1271][pr1271])
+- `protect_content` parameter to the `sendVoice` method ([#1265][pr1265])
+
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Add `via_join_request` field to `ChatMemberUpdated` struct
+  - Add `LivePeriod` enum and replace `u32` with it in all `live_period` fields
+  - Add `live_period` parameter to `editMessageLiveLocation` method
+  - Add `question_entities` field to `Poll` struct
+  - Add `text_entities` filed to `PollOption` struct
+  - Add `question_parse_mode` and `question_entities` parameters to `sendPoll` method
+  - Add `InputPollOption` struct
+  - Add `Percentage` struct
+  - Add `BackgroundFill` and `BackgroundType` enum
+  - Add `ChatBackground` variant to `MessageKind` enum
+  - Add `max_reaction_count` field to `ChatFullInfo` struct
+  - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
+  - Document that .MP3 and .M4A files can be used as voice messages
+
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Add `refundStarPayment` TBA method
+  - Add `effect_id` field to the `MessageCommon` struct
+  - Add `message_effect_id` parameter to `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, and `sendMediaGroup` methods
+  - Add `show_caption_above_media` field to `MediaAnimation`, `MediaPhoto`, `MediaVideo`, `InputMediaPhoto`, `InputMediaVideo`, `InputMediaAnimation`, `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif`, `InlineQueryResultPhoto`, `InlineQueryResultVideo`, `InlineQueryResultCachedGif`, `InlineQueryResultCachedMpeg4Gif`, `InlineQueryResultCachedPhoto` and `InlineQueryResultCachedVideo` structs
+  - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
+  - Add `ExpandableBlockquote` message entity
+
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Add `StarTransactions`, `StarTransaction`, `TransactionPartner` and `RevenueWithdrawalState` structs
+  - Add `getStarTransactions` TBA method
+  - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
+  - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
+[pr1264]: https://github.com/teloxide/teloxide/pull/1264
+[pr1271]: https://github.com/teloxide/teloxide/pull/1271
+[pr1265]: https://github.com/teloxide/teloxide/pull/1265
 
 ### Changed
 
@@ -67,16 +110,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Remove a useless generic type in the `KeyboardMarkup::selective` function ([#1176][pr1176])
 
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Change `options` parameter type in method `sendPoll` to `InputPollOption`
+  - Move most of the fields and methods from `Chat` to `ChatFullInfo` struct
+  - Return `ChatFullInfo` struct from `getChat` method instead of `Chat`
+
+- Support for TBA 7.4 ([#1280](pr1280))
+  - Update documentation on `provider_token` fields
+  - `provider_token` field in `InputMessageContentInvoice` struct and `sendInvoice` and `createInvoiceLink` methods is now optional ([#1306](pr1306))
+
+- Support for TBA 7.5 ([#1281](pr1281))
+  - Update documentation on `InlineKeyboardButton` struct
+
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
 [pr1146]: https://github.com/teloxide/teloxide/pull/1146
 [pr1147]: https://github.com/teloxide/teloxide/pull/1147
 [pr1151]: https://github.com/teloxide/teloxide/pull/1151
 [pr1176]: https://github.com/teloxide/teloxide/pull/1176
+[pr1280]: https://github.com/teloxide/teloxide/pull/1280
+[pr1281]: https://github.com/teloxide/teloxide/pull/1281
+[pr1306]: https://github.com/teloxide/teloxide/pull/1306
 
 ### Removed
 
 - `Currency` enum removed, its usages replaced with `String`.
+
+- Support for TBA 7.3 ([#1159](pr1159))
+  - Remove some degraded functionality (because of `Chat` to `ChatFullInfo` migration):
+    - `fn mentioned_users` from `chat_member_updated.rs` lost ability to track chat users
+    - `fn mentioned_users` from `chat_join_request.rs` was removed completely
+    - `fn mentioned_users` from `Message` lost ability to track chat users (e.g. from pins) and chat users from forward
+    - `fn mentioned_users_rec` was removed from `Chat` and not included in `ChatFullInfo` struct
+
+[pr1159]: https://github.com/teloxide/teloxide/pull/1159
 
 ## 0.10.1 - 2024-08-17
 

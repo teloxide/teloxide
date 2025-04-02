@@ -159,7 +159,7 @@ enum Target<'a> {
     Field { method_name: Option<&'a str>, field_name: Option<&'a str> },
 }
 
-impl<'a> Target<'a> {
+impl Target<'_> {
     fn is_exact(&self) -> bool {
         match self {
             Target::Method(m) => m.is_some(),
@@ -235,14 +235,14 @@ fn intra_links(doc: &mut Doc) {
         });
 
     for repl in repls_t {
-        if let Some(value) = doc.md_links.remove(repl.as_str()) {
+        if let Some(value) = doc.md_links.swap_remove(repl.as_str()) {
             doc.md = doc.md.replace(format!("[{repl}]").as_str(), &format!("[`{repl}`]"));
             doc.md_links.insert(format!("`{repl}`"), value);
         }
     }
 
     for repl in repls_m {
-        if let Some(value) = doc.md_links.remove(repl.as_str()) {
+        if let Some(value) = doc.md_links.swap_remove(repl.as_str()) {
             let repln = to_uppercase(&repl);
             doc.md = doc.md.replace(format!("[{repl}]").as_str(), &format!("[`{repln}`]"));
             doc.md_links.insert(format!("`{repln}`"), value);

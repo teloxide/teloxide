@@ -4,10 +4,10 @@ contributing_url = "https://github.com/teloxide/teloxide/blob/master/CONTRIBUTIN
 
 [assign.adhoc_groups]
 # This is a special group that will be used if none of the `owners` entries matches.
-fallback = ["@Hirrolot"]
+# fallback = ["@hirrolot"]
 
 [assign.owners]
-"crates/teloxide" = ["@Hirrolot"]
+"crates/teloxide" = ["@hirrolot"]
 
 
 [autolabel."S-waiting-on-review"]

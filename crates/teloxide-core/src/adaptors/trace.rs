@@ -45,7 +45,7 @@ impl<B> Trace<B> {
     }
 
     pub fn settings(&self) -> Settings {
-        self.settings
+        self.settings.clone()
     }
 }
 
@@ -64,6 +64,7 @@ bitflags::bitflags! {
     /// // Trace requests verbosely and responses (non verbosely)
     /// let _ = Settings::TRACE_REQUESTS_VERBOSE | Settings::TRACE_RESPONSES;
     /// ```
+    #[derive(Debug, Clone)]
     pub struct Settings: u8 {
         /// Trace requests (only request kind, e.g. `send_message`)
         const TRACE_REQUESTS = 1;
@@ -71,7 +72,7 @@ bitflags::bitflags! {
         /// Trace requests verbosely (with all parameters).
         ///
         /// Implies [`TRACE_REQUESTS`]
-        const TRACE_REQUESTS_VERBOSE = (1 << 1) | Self::TRACE_REQUESTS.bits;
+        const TRACE_REQUESTS_VERBOSE = (1 << 1) | Self::TRACE_REQUESTS.bits();
 
         /// Trace responses (only request kind, e.g. `send_message`)
         const TRACE_RESPONSES = 1 << 2;
@@ -79,17 +80,17 @@ bitflags::bitflags! {
         /// Trace responses verbosely (with full response).
         ///
         /// Implies [`TRACE_RESPONSES`]
-        const TRACE_RESPONSES_VERBOSE = (1 << 3) | Self::TRACE_RESPONSES.bits;
+        const TRACE_RESPONSES_VERBOSE = (1 << 3) | Self::TRACE_RESPONSES.bits();
 
         /// Trace everything.
         ///
         /// Implies [`TRACE_REQUESTS`] and [`TRACE_RESPONSES`].
-        const TRACE_EVERYTHING = Self::TRACE_REQUESTS.bits | Self::TRACE_RESPONSES.bits;
+        const TRACE_EVERYTHING = Self::TRACE_REQUESTS.bits() | Self::TRACE_RESPONSES.bits();
 
         /// Trace everything verbosely.
         ///
         /// Implies [`TRACE_REQUESTS_VERBOSE`] and [`TRACE_RESPONSES_VERBOSE`].
-        const TRACE_EVERYTHING_VERBOSE = Self::TRACE_REQUESTS_VERBOSE.bits | Self::TRACE_RESPONSES_VERBOSE.bits;
+        const TRACE_EVERYTHING_VERBOSE = Self::TRACE_REQUESTS_VERBOSE.bits() | Self::TRACE_RESPONSES_VERBOSE.bits();
     }
 }
 
@@ -103,7 +104,7 @@ macro_rules! fwd_inner {
     ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
         TraceRequest {
             inner: $this.inner().$m($($arg),*),
-            settings: $this.settings
+            settings: $this.settings.clone()
         }
     };
 }
@@ -238,6 +239,8 @@ where
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_star_transactions,
+        refund_star_payment,
         set_passport_data_errors,
         send_game,
         set_game_score,

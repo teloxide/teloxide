@@ -23,7 +23,7 @@ use xshell::{cmd, Shell};
 
 fn ensure_rustfmt(sh: &Shell) {
     // FIXME(waffle): find a better way to set toolchain
-    let toolchain = "nightly-2024-07-03";
+    let toolchain = "nightly-2025-03-30";
 
     let version = cmd!(sh, "rustup run {toolchain} rustfmt --version").read().unwrap_or_default();
 
@@ -36,7 +36,7 @@ fn ensure_rustfmt(sh: &Shell) {
 }
 
 pub fn reformat(text: String) -> String {
-    let toolchain = "nightly-2024-07-03";
+    let toolchain = "nightly-2025-03-30";
 
     let sh = Shell::new().unwrap();
     ensure_rustfmt(&sh);
@@ -125,10 +125,10 @@ pub fn replace_block(path: &Path, title: &str, new: &str) -> String {
     let mut starts = vec![];
     let mut ends = vec![];
 
-    let searcher = AhoCorasick::new_auto_configured(&[start, end]);
+    let searcher = AhoCorasick::new(&[start, end]).expect("Wrong block pattern");
 
     for finding in searcher.find_iter(&file) {
-        match finding.pattern() {
+        match finding.pattern().as_usize() {
             // start
             0 => starts.push(finding.start()..finding.end()),
             // end

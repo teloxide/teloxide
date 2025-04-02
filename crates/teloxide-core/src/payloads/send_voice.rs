@@ -9,7 +9,7 @@ use crate::types::{
 
 impl_payload! {
     @[multipart = voice]
-    /// Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as [`Audio`] or [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
+    /// Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS, or in .MP3 format, or in .M4A format (other formats may be sent as [`Audio`] or [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// [`Document`]: crate::types::Document
     /// [`Audio`]: crate::types::Audio
@@ -43,6 +43,10 @@ impl_payload! {
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
             pub disable_notification: bool,
+            /// Protects the contents of sent message from forwarding and saving
+            pub protect_content: bool,
+            /// Unique identifier of the message effect to be added to the message; for private chats only
+            pub message_effect_id: String [into],
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

@@ -21,9 +21,7 @@ pub enum InlineKeyboardButtonKind {
     ///
     /// Links in the form of `tg://user?id=<user_id>` can be used to mention a
     /// user by their ID without using a username, if this is allowed by
-    /// their privacy settings. This will only work in Telegram versions
-    /// released after December 7, 2021. Older clients will display _unsupported
-    /// message_.
+    /// their privacy settings.
     Url(reqwest::Url),
 
     /// An HTTPS URL used to automatically authorize the user. Can be used as a
@@ -41,7 +39,8 @@ pub enum InlineKeyboardButtonKind {
     /// Description of the [Web App] that will be launched when the user presses
     /// the button. The Web App will be able to send an arbitrary message on
     /// behalf of the user using the method [`AnswerWebAppQuery`]. Available
-    /// only in private chats between a user and the bot.
+    /// only in private chats between a user and the bot. Not supported for
+    /// messages sent on behalf of a Telegram Business account.
     ///
     /// [Web App]: https://core.telegram.org/bots/webapps
     /// [`AnswerWebAppQuery`]: crate::payloads::AnswerWebAppQuery
@@ -50,7 +49,8 @@ pub enum InlineKeyboardButtonKind {
     /// If set, pressing the button will prompt the user to select one of their
     /// chats, open that chat and insert the bot‘s username and the specified
     /// inline query in the input field. Can be empty, in which case just the
-    /// bot’s username will be inserted.
+    /// bot’s username will be inserted. Not supported for messages sent on
+    /// behalf of a Telegram Business account.
     ///
     /// Note: This offers an easy way for users to start using your bot in
     /// [inline mode] when they are currently in a private chat with it.
@@ -67,13 +67,16 @@ pub enum InlineKeyboardButtonKind {
     /// Can be empty, in which case only the bot’s username will be
     /// inserted.
     ///
-    ///This offers a quick way for the user to open your bot in inline mode in
-    /// the same chat – good for selecting something from multiple options.
+    /// This offers a quick way for the user to open your bot in inline mode in
+    /// the same chat – good for selecting something from multiple options. Not
+    /// supported in channels and for messages sent on behalf of a Telegram
+    /// Business account.
     SwitchInlineQueryCurrentChat(String),
 
     /// If set, pressing the button will prompt the user to select one of their
     /// chats of the specified type, open that chat and insert the bot's
-    /// username and the specified inline query in the input field
+    /// username and the specified inline query in the input field. Not
+    /// supported for messages sent on behalf of a Telegram Business account.
     SwitchInlineQueryChosenChat(SwitchInlineQueryChosenChat),
 
     /// Description of the game that will be launched when the user presses the

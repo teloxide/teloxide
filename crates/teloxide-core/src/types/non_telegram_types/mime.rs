@@ -67,7 +67,7 @@ impl Serialize for MimeSer<'_> {
 }
 
 struct MimeVisitor;
-impl<'a> Visitor<'a> for MimeVisitor {
+impl Visitor<'_> for MimeVisitor {
     type Value = MimeDe;
 
     fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {

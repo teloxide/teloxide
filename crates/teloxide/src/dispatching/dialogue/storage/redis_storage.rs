@@ -67,13 +67,10 @@ where
         Box::pin(async move {
             let mut conn = self.pool.get().await?;
 
-            let deleted_rows_count = redis::pipe()
-                .atomic()
-                .del(chat_id)
-                .query_async::<_, redis::Value>(&mut conn)
-                .await?;
+            let deleted_rows_count =
+                redis::pipe().atomic().del(chat_id).query_async(&mut conn).await?;
 
-            if let redis::Value::Bulk(values) = deleted_rows_count {
+            if let redis::Value::Array(values) = deleted_rows_count {
                 // False positive
                 #[allow(clippy::collapsible_match)]
                 if let redis::Value::Int(deleted_rows_count) = values[0] {

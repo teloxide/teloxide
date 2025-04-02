@@ -27,7 +27,6 @@
 [`teloxide-macros`]: https://github.com/teloxide/teloxide-macros
 [`native-tls`]: https://docs.rs/native-tls
 [`rustls`]: https://docs.rs/rustls
-[`teloxide::utils::UpState`]: utils::UpState
 [`teloxide-core` features]: https://docs.rs/teloxide-core/latest/teloxide_core/#cargo-features
 
 [`DispatcherBuilder::enable_ctrlc_handler`]: dispatching::DispatcherBuilder::enable_ctrlc_handler

@@ -4,6 +4,10 @@
 
 use teloxide_core::types::{User, UserId};
 
+pub(super) const ESCAPE_CHARS: [char; 19] = [
+    '\\', '_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!',
+];
+
 /// Applies the bold font style to the string.
 ///
 /// Passed string will not be automatically escaped because it can contain
@@ -21,7 +25,17 @@ pub fn bold(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn blockquote(s: &str) -> String {
-    format!(">{s}")
+    format!("**>{}", s.replace('\n', "\n>"))
+}
+
+/// Applies the expandable block quotation style to the string.
+///
+/// Passed string will not be automatically escaped because it can contain
+/// nested markup.
+#[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
+              without using its output does nothing useful"]
+pub fn expandable_blockquote(s: &str) -> String {
+    format!("**>{}||", s.replace('\n', "\n>"))
 }
 
 /// Applies the italic font style to the string.
@@ -119,11 +133,8 @@ pub fn code_inline(s: &str) -> String {
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape(s: &str) -> String {
-    const CHARS: [char; 18] =
-        ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'];
-
     s.chars().fold(String::with_capacity(s.len()), |mut s, c| {
-        if CHARS.contains(&c) {
+        if ESCAPE_CHARS.contains(&c) {
             s.push('\\');
         }
         s.push(c);
@@ -223,6 +234,16 @@ mod tests {
     }
 
     #[test]
+    fn test_blockquote() {
+        assert_eq!(blockquote("foobar\n\nfoo\nbar"), "**>foobar\n>\n>foo\n>bar");
+    }
+
+    #[test]
+    fn test_expandable_blockquote() {
+        assert_eq!(expandable_blockquote("foobar\n\nfoo\nbar"), "**>foobar\n>\n>foo\n>bar||");
+    }
+
+    #[test]
     fn test_code_block() {
         assert_eq!(
             code_block("pre-'formatted'\nfixed-width \\code `block`"),
@@ -247,10 +268,11 @@ mod tests {
 
     #[test]
     fn test_escape() {
+        assert_eq!(escape("\\!"), r"\\\!");
         assert_eq!(escape("* foobar *"), r"\* foobar \*");
         assert_eq!(
             escape(r"_ * [ ] ( ) ~ \ ` > # + - = | { } . !"),
-            r"\_ \* \[ \] \( \) \~ \ \` \> \# \+ \- \= \| \{ \} \. \!",
+            r"\_ \* \[ \] \( \) \~ \\ \` \> \# \+ \- \= \| \{ \} \. \!",
         );
     }
 

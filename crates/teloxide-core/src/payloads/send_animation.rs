@@ -45,6 +45,8 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in the photo caption, which can be specified instead of _parse\_mode_
             pub caption_entities: Vec<MessageEntity> [collect],
+            /// Pass True, if the caption must be shown above the message media
+            pub show_caption_above_media: bool,
             /// Pass True if the animation needs to be covered with a spoiler animation
             pub has_spoiler: bool,
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -53,6 +55,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Unique identifier of the message effect to be added to the message; for private chats only
+            pub message_effect_id: String [into],
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.
