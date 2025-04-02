@@ -227,7 +227,7 @@ pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpH
 where
     S: Storage<D> + ?Sized + Send + Sync + 'static,
     <S as Storage<D>>::Error: Debug + Send,
-    D: Default + Send + Sync + 'static,
+    D: Default + Clone + Send + Sync + 'static,
     Upd: GetChatId + Clone + Send + Sync + 'static,
     Output: Send + Sync + 'static,
 {
@@ -240,15 +240,19 @@ where
             Ok(dialogue) => Some(dialogue),
             Err(err) => match std::env::var(TELOXIDE_DIALOGUE_BEHAVIOUR).as_deref() {
                 Ok("default") => {
-                    dialogue.update(D::default()).await.ok()?;
-                    Some(D::default())
+                    let default = D::default();
+                    dialogue.update(default.clone()).await.ok()?;
+                    Some(default)
                 }
                 Ok("panic") | Err(_) => {
                     log::error!("dialogue.get_or_default() failed: {:?}", err);
                     None
                 }
                 Ok(_) => {
-                    panic!("`TELOXIDE_DIALOGUE_BEHAVIOUR` env variable should be one of: default/panic")
+                    panic!(
+                        "`TELOXIDE_DIALOGUE_BEHAVIOUR` env variable should be one of: \
+                         default/panic"
+                    )
                 }
             },
         }

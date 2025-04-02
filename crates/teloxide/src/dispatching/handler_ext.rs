@@ -63,7 +63,7 @@ pub trait HandlerExt<Output> {
     where
         S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
-        D: Default + Send + Sync + 'static,
+        D: Default + Clone + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static;
 }
 
@@ -89,7 +89,7 @@ where
     where
         S: Storage<D> + ?Sized + Send + Sync + 'static,
         <S as Storage<D>>::Error: Debug + Send,
-        D: Default + Send + Sync + 'static,
+        D: Default + Clone + Send + Sync + 'static,
         Upd: GetChatId + Clone + Send + Sync + 'static,
     {
         self.chain(super::dialogue::enter::<Upd, S, D, Output>())
