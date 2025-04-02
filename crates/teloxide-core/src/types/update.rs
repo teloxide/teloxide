@@ -449,7 +449,7 @@ impl<'de> Deserialize<'de> for UpdateKind {
             }
         }
 
-        deserializer.deserialize_any(Visitor)
+        stacker::maybe_grow(256 * 1024, 1024 * 1024, || deserializer.deserialize_any(Visitor))
     }
 }
 
