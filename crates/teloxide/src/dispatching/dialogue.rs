@@ -241,7 +241,7 @@ where
             Err(err) => match std::env::var(TELOXIDE_DIALOGUE_BEHAVIOUR).as_deref() {
                 Ok("default") => {
                     dialogue.update(D::default()).await.ok()?;
-                    dialogue.get_or_default().await.ok()
+                    Some(D::default())
                 }
                 Ok("panic") | Err(_) => {
                     log::error!("dialogue.get_or_default() failed: {:?}", err);
