@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./media/teloxide-logo.png" width="250"/>
+  <img src="https://github.com/teloxide/teloxide/blob/master/media/teloxide-logo.png?raw=true" width="250"/>
   <h1><code>teloxide</code></h1>
   <a href="https://docs.rs/teloxide/">
     <img src="https://docs.rs/teloxide/badge.svg">
