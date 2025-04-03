@@ -3,6 +3,45 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.14.1 -> 0.15.0
+
+### teloxide
+
+The `DispatcherBuilder::stack_size` method is now a no-op; you can remove it from your code if you use it:
+
+```diff
+Dispatcher::builder(bot, handler)
+    .dependencies(dptree::deps![/* ... */])
+    .default_handler(|upd| async move {
+        log::warn!("Unhandled update: {:?}", upd);
+    })
+    .error_handler(LoggingErrorHandler::with_custom_text(
+        "An error has occurred in the dispatcher",
+    ))
+-    .stack_size(8 * 1024 * 1024)
++
+    .enable_ctrlc_handler()
+    .build()
+    .dispatch()
+    .await;
+```
+
+Some underlying errors in `RequestError` and `DownloadError` are now wrapped in an `Arc` (e.g., `reqwest::Error`, `serde_json::Error` and others). If you happen to construct those variants, you must now wrap them via `Arc::new`:
+
+```diff
+- RequestError::Network(my_error)
++ RequestError::Network(Arc::new(my_error))
+```
+
+(This is done in order to implement `Clone` for `RequestError` and `DownloadError`.)
+
+Also, note that our examples now contain code with "middlewares" that show how to execute functions _before_ and _after_ some endpoint:
+  - [`examples/middlewares.rs`]
+  - [`examples/middlewares_fallible.rs`]
+
+[`examples/middlewares.rs`]: crates/teloxide/examples/middlewares.rs
+[`examples/middlewares_fallible.rs`]: crates/teloxide/examples/middlewares_fallible.rs
+
 ## 0.13 -> 0.14
 
 ### teloxide
