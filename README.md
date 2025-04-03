@@ -112,7 +112,7 @@ async fn main() {
 ```
 
 <div align="center">
-    <img src="./media/throw-dice.gif" width="420" />
+    <img src="https://github.com/teloxide/teloxide/blob/master/media/throw-dice.gif?raw=true" width="420" />
 </div>
 
 ### Commands
@@ -169,7 +169,7 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
 ```
 
 <div align="center">
-    <img src="./media/command.gif" width="420" />
+    <img src="https://github.com/teloxide/teloxide/blob/master/media/command.gif?raw=true" width="420" />
 </div>
 
 ### Dialogues management
@@ -288,7 +288,7 @@ async fn receive_location(
 ```
 
 <div align="center">
-    <img src="./media/dialogue.gif" width="420" />
+    <img src="https://github.com/teloxide/teloxide/blob/master/media/dialogue.gif?raw=true" width="420" />
 </div>
 
 [More examples >>](crates/teloxide/examples/)
