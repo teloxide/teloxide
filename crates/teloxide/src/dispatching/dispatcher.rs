@@ -105,6 +105,15 @@ where
         Self { worker_queue_size: size, ..self }
     }
 
+    /// Specifies the stack size available to the dispatcher.
+    ///
+    /// By default, it's 8 * 1024 * 1024 bytes (8 MiB).
+    #[must_use]
+    #[deprecated(since = "0.15.0", note = "This method is a no-op; you can just remove it.")]
+    pub fn stack_size(self, _size: usize) -> Self {
+        self
+    }
+
     /// Specifies the distribution function that decides how updates are grouped
     /// before execution.
     ///

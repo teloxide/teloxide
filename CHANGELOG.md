@@ -6,15 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
-### Fixed
-
-- Stack overflow issues using `stacker` crate
-- Thread being locked because of thread spawining in dispatcher
-
-### Removed
-
-- `stack_size` setter to `DispatcherBuilder` [**BC**]
-
 ### Added
 
 - Add two examples to demonstrate how to execute functions _before_ and _after_ some endpoint:
@@ -35,6 +26,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `DownloadError::Io` now accepts `Arc<std::io::Error>` [**BC**]
 - If `TELOXIDE_DIALOGUE_BEHAVIOUR` environment variable is set to `default`, `.enter_dialogue` will never error, instead setting the dialogue to default ([PR 1187](https://github.com/teloxide/teloxide/pull/1187))
 - `D` (state) now has to implement `Clone` for `HandlerExt::enter_dialogue` and `dialogue::enter` [**BC**]
+
+### Deprecated
+
+- `DispatcherBuilder::stack_size` because it is now a no-op (see [PR 1320](https://github.com/teloxide/teloxide/pull/1320) for more details).
+
+### Fixed
+
+- Stack overflow issues using `stacker` crate ([PR 1320](https://github.com/teloxide/teloxide/pull/1320))
+- Thread being locked because of thread spawining in dispatcher ([issue 1236](https://github.com/teloxide/teloxide/issues/1236))
 
 ## 0.14.1 - 2025-03-30
 
