@@ -33,7 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Stack overflow issues using `stacker` crate ([PR 1320](https://github.com/teloxide/teloxide/pull/1320))
 - Thread being locked because of thread spawining in dispatcher ([issue 1236](https://github.com/teloxide/teloxide/issues/1236))
 
 ## 0.14.1 - 2025-03-30
