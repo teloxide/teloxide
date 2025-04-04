@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.11.2 - 2025-04-04
+
 ### Fixed
 
 - Stack overflow issues using the `stacker` crate ([PR 1320](https://github.com/teloxide/teloxide/pull/1320))
