@@ -367,4 +367,4 @@ See [2500+ other public repositories using `teloxide` >>](https://github.com/tel
 
 ## Contributing
 
-See [`CONRIBUTING.md`](CONTRIBUTING.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
