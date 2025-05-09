@@ -10,6 +10,7 @@ use crate::{net::TelegramResponse, requests::ResponseResult, RequestError};
 
 const DELAY_ON_SERVER_ERROR: Duration = Duration::from_secs(10);
 
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all, fields(method_name = %method_name)))]
 pub async fn request_multipart<T>(
     client: &Client,
     token: &str,
@@ -49,6 +50,7 @@ where
     process_response(response).await
 }
 
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all, fields(method_name = %method_name)))]
 pub async fn request_json<T>(
     client: &Client,
     token: &str,
@@ -89,6 +91,7 @@ where
     process_response(response).await
 }
 
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
 async fn process_response<T>(response: Response) -> ResponseResult<T>
 where
     T: DeserializeOwned + 'static,
@@ -102,6 +105,7 @@ where
     deserialize_response(text)
 }
 
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
 fn deserialize_response<T>(text: String) -> Result<T, RequestError>
 where
     T: DeserializeOwned + 'static,

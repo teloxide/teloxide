@@ -45,6 +45,7 @@ macros = ["teloxide-macros"]
 ctrlc_handler = ["tokio/signal"]
 
 tracing = ["dep:tracing"]
+tracing-core = ["teloxide-core/tracing"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
@@ -80,6 +81,7 @@ full = [
     "trace-adaptor",
     "erased",
     "tracing",
+    "tracing-core",
 ]
 
 
