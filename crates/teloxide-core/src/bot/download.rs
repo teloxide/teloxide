@@ -15,6 +15,7 @@ impl Download for Bot {
     // another hand written `Future`. (waffle)
     type Fut<'dst> = BoxFuture<'dst, Result<(), Self::Err<'dst>>>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn download_file<'dst>(
         &self,
         path: &str,
@@ -34,6 +35,7 @@ impl Download for Bot {
 
     type Stream = BoxStream<'static, Result<Bytes, Self::StreamErr>>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn download_file_stream(&self, path: &str) -> Self::Stream {
         net::download_file_stream(
             &self.client,

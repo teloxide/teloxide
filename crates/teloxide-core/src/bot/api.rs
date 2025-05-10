@@ -17,36 +17,42 @@ impl Requester for Bot {
 
     type GetUpdates = JsonRequest<payloads::GetUpdates>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_updates(&self) -> Self::GetUpdates {
         Self::GetUpdates::new(self.clone(), payloads::GetUpdates::new())
     }
 
     type SetWebhook = MultipartRequest<payloads::SetWebhook>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_webhook(&self, url: Url) -> Self::SetWebhook {
         Self::SetWebhook::new(self.clone(), payloads::SetWebhook::new(url))
     }
 
     type DeleteWebhook = JsonRequest<payloads::DeleteWebhook>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_webhook(&self) -> Self::DeleteWebhook {
         Self::DeleteWebhook::new(self.clone(), payloads::DeleteWebhook::new())
     }
 
     type GetWebhookInfo = JsonRequest<payloads::GetWebhookInfo>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_webhook_info(&self) -> Self::GetWebhookInfo {
         Self::GetWebhookInfo::new(self.clone(), payloads::GetWebhookInfo::new())
     }
 
     type GetMe = JsonRequest<payloads::GetMe>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_me(&self) -> Self::GetMe {
         Self::GetMe::new(self.clone(), payloads::GetMe::new())
     }
 
     type SendMessage = JsonRequest<payloads::SendMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_message<C, T>(&self, chat_id: C, text: T) -> Self::SendMessage
     where
         C: Into<Recipient>,
@@ -57,6 +63,7 @@ impl Requester for Bot {
 
     type ForwardMessage = JsonRequest<payloads::ForwardMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn forward_message<C, F>(
         &self,
         chat_id: C,
@@ -74,6 +81,8 @@ impl Requester for Bot {
     }
 
     type ForwardMessages = JsonRequest<payloads::ForwardMessages>;
+
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn forward_messages<C, F, M>(
         &self,
         chat_id: C,
@@ -93,6 +102,7 @@ impl Requester for Bot {
 
     type SendPhoto = MultipartRequest<payloads::SendPhoto>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_photo<C>(&self, chat_id: C, photo: InputFile) -> Self::SendPhoto
     where
         C: Into<Recipient>,
@@ -102,6 +112,7 @@ impl Requester for Bot {
 
     type SendAudio = MultipartRequest<payloads::SendAudio>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_audio<C>(&self, chat_id: C, audio: InputFile) -> Self::SendAudio
     where
         C: Into<Recipient>,
@@ -111,6 +122,7 @@ impl Requester for Bot {
 
     type SendDocument = MultipartRequest<payloads::SendDocument>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_document<C>(&self, chat_id: C, document: InputFile) -> Self::SendDocument
     where
         C: Into<Recipient>,
@@ -120,6 +132,7 @@ impl Requester for Bot {
 
     type SendVideo = MultipartRequest<payloads::SendVideo>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_video<C>(&self, chat_id: C, video: InputFile) -> Self::SendVideo
     where
         C: Into<Recipient>,
@@ -129,6 +142,7 @@ impl Requester for Bot {
 
     type SendAnimation = MultipartRequest<payloads::SendAnimation>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_animation<C>(&self, chat_id: C, animation: InputFile) -> Self::SendAnimation
     where
         C: Into<Recipient>,
@@ -138,6 +152,7 @@ impl Requester for Bot {
 
     type SendVoice = MultipartRequest<payloads::SendVoice>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_voice<C>(&self, chat_id: C, voice: InputFile) -> Self::SendVoice
     where
         C: Into<Recipient>,
@@ -147,6 +162,7 @@ impl Requester for Bot {
 
     type SendVideoNote = MultipartRequest<payloads::SendVideoNote>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_video_note<C>(&self, chat_id: C, video_note: InputFile) -> Self::SendVideoNote
     where
         C: Into<Recipient>,
@@ -156,6 +172,7 @@ impl Requester for Bot {
 
     type SendMediaGroup = MultipartRequest<payloads::SendMediaGroup>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_media_group<C, M>(&self, chat_id: C, media: M) -> Self::SendMediaGroup
     where
         C: Into<Recipient>,
@@ -166,6 +183,7 @@ impl Requester for Bot {
 
     type SendLocation = JsonRequest<payloads::SendLocation>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_location<C>(&self, chat_id: C, latitude: f64, longitude: f64) -> Self::SendLocation
     where
         C: Into<Recipient>,
@@ -178,6 +196,7 @@ impl Requester for Bot {
 
     type EditMessageLiveLocation = JsonRequest<payloads::EditMessageLiveLocation>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_live_location<C>(
         &self,
         chat_id: C,
@@ -196,6 +215,7 @@ impl Requester for Bot {
 
     type EditMessageLiveLocationInline = JsonRequest<payloads::EditMessageLiveLocationInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_live_location_inline<I>(
         &self,
         inline_message_id: I,
@@ -213,6 +233,7 @@ impl Requester for Bot {
 
     type StopMessageLiveLocation = JsonRequest<payloads::StopMessageLiveLocation>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn stop_message_live_location<C>(
         &self,
         chat_id: C,
@@ -229,6 +250,7 @@ impl Requester for Bot {
 
     type StopMessageLiveLocationInline = JsonRequest<payloads::StopMessageLiveLocationInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn stop_message_live_location_inline<I>(
         &self,
         inline_message_id: I,
@@ -244,6 +266,7 @@ impl Requester for Bot {
 
     type SendVenue = JsonRequest<payloads::SendVenue>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_venue<C, T, A>(
         &self,
         chat_id: C,
@@ -265,6 +288,7 @@ impl Requester for Bot {
 
     type SendContact = JsonRequest<payloads::SendContact>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_contact<C, P, F>(&self, chat_id: C, phone_number: P, first_name: F) -> Self::SendContact
     where
         C: Into<Recipient>,
@@ -279,6 +303,7 @@ impl Requester for Bot {
 
     type SendPoll = JsonRequest<payloads::SendPoll>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_poll<C, Q, O>(&self, chat_id: C, question: Q, options: O) -> Self::SendPoll
     where
         C: Into<Recipient>,
@@ -290,6 +315,7 @@ impl Requester for Bot {
 
     type SendDice = JsonRequest<payloads::SendDice>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_dice<C>(&self, chat_id: C) -> Self::SendDice
     where
         C: Into<Recipient>,
@@ -299,6 +325,7 @@ impl Requester for Bot {
 
     type SendChatAction = JsonRequest<payloads::SendChatAction>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_chat_action<C>(
         &self,
         chat_id: C,
@@ -312,6 +339,7 @@ impl Requester for Bot {
 
     type SetMessageReaction = JsonRequest<payloads::SetMessageReaction>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::SetMessageReaction
     where
         C: Into<Recipient>,
@@ -324,12 +352,14 @@ impl Requester for Bot {
 
     type GetUserProfilePhotos = JsonRequest<payloads::GetUserProfilePhotos>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos {
         Self::GetUserProfilePhotos::new(self.clone(), payloads::GetUserProfilePhotos::new(user_id))
     }
 
     type GetFile = JsonRequest<payloads::GetFile>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_file<F>(&self, file_id: F) -> Self::GetFile
     where
         F: Into<String>,
@@ -339,6 +369,7 @@ impl Requester for Bot {
 
     type KickChatMember = JsonRequest<payloads::KickChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn kick_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::KickChatMember
     where
         C: Into<Recipient>,
@@ -348,6 +379,7 @@ impl Requester for Bot {
 
     type BanChatMember = JsonRequest<payloads::BanChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn ban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::BanChatMember
     where
         C: Into<Recipient>,
@@ -357,6 +389,7 @@ impl Requester for Bot {
 
     type UnbanChatMember = JsonRequest<payloads::UnbanChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unban_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::UnbanChatMember
     where
         C: Into<Recipient>,
@@ -366,6 +399,7 @@ impl Requester for Bot {
 
     type RestrictChatMember = JsonRequest<payloads::RestrictChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn restrict_chat_member<C>(
         &self,
         chat_id: C,
@@ -383,6 +417,7 @@ impl Requester for Bot {
 
     type PromoteChatMember = JsonRequest<payloads::PromoteChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn promote_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::PromoteChatMember
     where
         C: Into<Recipient>,
@@ -395,6 +430,7 @@ impl Requester for Bot {
 
     type SetChatAdministratorCustomTitle = JsonRequest<payloads::SetChatAdministratorCustomTitle>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_administrator_custom_title<Ch, Cu>(
         &self,
         chat_id: Ch,
@@ -413,6 +449,7 @@ impl Requester for Bot {
 
     type BanChatSenderChat = JsonRequest<payloads::BanChatSenderChat>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn ban_chat_sender_chat<C, S>(&self, chat_id: C, sender_chat_id: S) -> Self::BanChatSenderChat
     where
         C: Into<Recipient>,
@@ -426,6 +463,7 @@ impl Requester for Bot {
 
     type UnbanChatSenderChat = JsonRequest<payloads::UnbanChatSenderChat>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unban_chat_sender_chat<C, S>(
         &self,
         chat_id: C,
@@ -443,6 +481,7 @@ impl Requester for Bot {
 
     type SetChatPermissions = JsonRequest<payloads::SetChatPermissions>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_permissions<C>(
         &self,
         chat_id: C,
@@ -459,6 +498,7 @@ impl Requester for Bot {
 
     type ExportChatInviteLink = JsonRequest<payloads::ExportChatInviteLink>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn export_chat_invite_link<C>(&self, chat_id: C) -> Self::ExportChatInviteLink
     where
         C: Into<Recipient>,
@@ -468,6 +508,7 @@ impl Requester for Bot {
 
     type CreateChatInviteLink = JsonRequest<payloads::CreateChatInviteLink>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn create_chat_invite_link<C>(&self, chat_id: C) -> Self::CreateChatInviteLink
     where
         C: Into<Recipient>,
@@ -477,6 +518,7 @@ impl Requester for Bot {
 
     type EditChatInviteLink = JsonRequest<payloads::EditChatInviteLink>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_chat_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatInviteLink
     where
         C: Into<Recipient>,
@@ -490,6 +532,7 @@ impl Requester for Bot {
 
     type RevokeChatInviteLink = JsonRequest<payloads::RevokeChatInviteLink>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn revoke_chat_invite_link<C, I>(
         &self,
         chat_id: C,
@@ -507,6 +550,7 @@ impl Requester for Bot {
 
     type ApproveChatJoinRequest = JsonRequest<payloads::ApproveChatJoinRequest>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn approve_chat_join_request<C>(
         &self,
         chat_id: C,
@@ -523,6 +567,7 @@ impl Requester for Bot {
 
     type DeclineChatJoinRequest = JsonRequest<payloads::DeclineChatJoinRequest>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn decline_chat_join_request<C>(
         &self,
         chat_id: C,
@@ -539,6 +584,7 @@ impl Requester for Bot {
 
     type SetChatPhoto = MultipartRequest<payloads::SetChatPhoto>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_photo<C>(&self, chat_id: C, photo: InputFile) -> Self::SetChatPhoto
     where
         C: Into<Recipient>,
@@ -548,6 +594,7 @@ impl Requester for Bot {
 
     type DeleteChatPhoto = JsonRequest<payloads::DeleteChatPhoto>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_chat_photo<C>(&self, chat_id: C) -> Self::DeleteChatPhoto
     where
         C: Into<Recipient>,
@@ -557,6 +604,7 @@ impl Requester for Bot {
 
     type SetChatTitle = JsonRequest<payloads::SetChatTitle>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_title<C, T>(&self, chat_id: C, title: T) -> Self::SetChatTitle
     where
         C: Into<Recipient>,
@@ -567,6 +615,7 @@ impl Requester for Bot {
 
     type SetChatDescription = JsonRequest<payloads::SetChatDescription>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_description<C>(&self, chat_id: C) -> Self::SetChatDescription
     where
         C: Into<Recipient>,
@@ -576,6 +625,7 @@ impl Requester for Bot {
 
     type PinChatMessage = JsonRequest<payloads::PinChatMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn pin_chat_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::PinChatMessage
     where
         C: Into<Recipient>,
@@ -585,6 +635,7 @@ impl Requester for Bot {
 
     type UnpinChatMessage = JsonRequest<payloads::UnpinChatMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unpin_chat_message<C>(&self, chat_id: C) -> Self::UnpinChatMessage
     where
         C: Into<Recipient>,
@@ -594,6 +645,7 @@ impl Requester for Bot {
 
     type LeaveChat = JsonRequest<payloads::LeaveChat>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn leave_chat<C>(&self, chat_id: C) -> Self::LeaveChat
     where
         C: Into<Recipient>,
@@ -603,6 +655,7 @@ impl Requester for Bot {
 
     type GetChat = JsonRequest<payloads::GetChat>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat<C>(&self, chat_id: C) -> Self::GetChat
     where
         C: Into<Recipient>,
@@ -612,6 +665,7 @@ impl Requester for Bot {
 
     type GetChatAdministrators = JsonRequest<payloads::GetChatAdministrators>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat_administrators<C>(&self, chat_id: C) -> Self::GetChatAdministrators
     where
         C: Into<Recipient>,
@@ -624,6 +678,7 @@ impl Requester for Bot {
 
     type GetChatMembersCount = JsonRequest<payloads::GetChatMembersCount>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat_members_count<C>(&self, chat_id: C) -> Self::GetChatMembersCount
     where
         C: Into<Recipient>,
@@ -633,6 +688,7 @@ impl Requester for Bot {
 
     type GetChatMemberCount = JsonRequest<payloads::GetChatMemberCount>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat_member_count<C>(&self, chat_id: C) -> Self::GetChatMemberCount
     where
         C: Into<Recipient>,
@@ -642,6 +698,7 @@ impl Requester for Bot {
 
     type GetChatMember = JsonRequest<payloads::GetChatMember>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat_member<C>(&self, chat_id: C, user_id: UserId) -> Self::GetChatMember
     where
         C: Into<Recipient>,
@@ -651,6 +708,7 @@ impl Requester for Bot {
 
     type SetChatStickerSet = JsonRequest<payloads::SetChatStickerSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_sticker_set<C, S>(&self, chat_id: C, sticker_set_name: S) -> Self::SetChatStickerSet
     where
         C: Into<Recipient>,
@@ -664,6 +722,7 @@ impl Requester for Bot {
 
     type DeleteChatStickerSet = JsonRequest<payloads::DeleteChatStickerSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_chat_sticker_set<C>(&self, chat_id: C) -> Self::DeleteChatStickerSet
     where
         C: Into<Recipient>,
@@ -673,6 +732,7 @@ impl Requester for Bot {
 
     type GetForumTopicIconStickers = JsonRequest<payloads::GetForumTopicIconStickers>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_forum_topic_icon_stickers(&self) -> Self::GetForumTopicIconStickers {
         Self::GetForumTopicIconStickers::new(
             self.clone(),
@@ -682,6 +742,7 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn create_forum_topic<C, N, I>(
         &self,
         chat_id: C,
@@ -702,6 +763,7 @@ impl Requester for Bot {
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::EditForumTopic
     where
         C: Into<Recipient>,
@@ -714,6 +776,7 @@ impl Requester for Bot {
 
     type CloseForumTopic = JsonRequest<payloads::CloseForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn close_forum_topic<C>(&self, chat_id: C, message_thread_id: ThreadId) -> Self::CloseForumTopic
     where
         C: Into<Recipient>,
@@ -726,6 +789,7 @@ impl Requester for Bot {
 
     type ReopenForumTopic = JsonRequest<payloads::ReopenForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn reopen_forum_topic<C>(
         &self,
         chat_id: C,
@@ -742,6 +806,7 @@ impl Requester for Bot {
 
     type DeleteForumTopic = JsonRequest<payloads::DeleteForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_forum_topic<C>(
         &self,
         chat_id: C,
@@ -758,6 +823,7 @@ impl Requester for Bot {
 
     type UnpinAllForumTopicMessages = JsonRequest<payloads::UnpinAllForumTopicMessages>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unpin_all_forum_topic_messages<C>(
         &self,
         chat_id: C,
@@ -774,6 +840,7 @@ impl Requester for Bot {
 
     type EditGeneralForumTopic = JsonRequest<payloads::EditGeneralForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_general_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::EditGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -787,6 +854,7 @@ impl Requester for Bot {
 
     type CloseGeneralForumTopic = JsonRequest<payloads::CloseGeneralForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn close_general_forum_topic<C>(&self, chat_id: C) -> Self::CloseGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -799,6 +867,7 @@ impl Requester for Bot {
 
     type ReopenGeneralForumTopic = JsonRequest<payloads::ReopenGeneralForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn reopen_general_forum_topic<C>(&self, chat_id: C) -> Self::ReopenGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -811,6 +880,7 @@ impl Requester for Bot {
 
     type HideGeneralForumTopic = JsonRequest<payloads::HideGeneralForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn hide_general_forum_topic<C>(&self, chat_id: C) -> Self::HideGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -823,6 +893,7 @@ impl Requester for Bot {
 
     type UnhideGeneralForumTopic = JsonRequest<payloads::UnhideGeneralForumTopic>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unhide_general_forum_topic<C>(&self, chat_id: C) -> Self::UnhideGeneralForumTopic
     where
         C: Into<Recipient>,
@@ -836,6 +907,7 @@ impl Requester for Bot {
     type UnpinAllGeneralForumTopicMessages =
         JsonRequest<payloads::UnpinAllGeneralForumTopicMessages>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unpin_all_general_forum_topic_messages<C>(
         &self,
         chat_id: C,
@@ -851,6 +923,7 @@ impl Requester for Bot {
 
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
     where
         C: Into<String>,
@@ -863,6 +936,7 @@ impl Requester for Bot {
 
     type GetUserChatBoosts = JsonRequest<payloads::GetUserChatBoosts>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_user_chat_boosts<C>(&self, chat_id: C, user_id: UserId) -> Self::GetUserChatBoosts
     where
         C: Into<Recipient>,
@@ -875,6 +949,7 @@ impl Requester for Bot {
 
     type SetMyCommands = JsonRequest<payloads::SetMyCommands>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_my_commands<C>(&self, commands: C) -> Self::SetMyCommands
     where
         C: IntoIterator<Item = BotCommand>,
@@ -884,6 +959,7 @@ impl Requester for Bot {
 
     type GetBusinessConnection = JsonRequest<payloads::GetBusinessConnection>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_business_connection(
         &self,
         business_connection_id: BusinessConnectionId,
@@ -896,59 +972,70 @@ impl Requester for Bot {
 
     type GetMyCommands = JsonRequest<payloads::GetMyCommands>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_my_commands(&self) -> Self::GetMyCommands {
         Self::GetMyCommands::new(self.clone(), payloads::GetMyCommands::new())
     }
 
     type SetMyName = JsonRequest<payloads::SetMyName>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_my_name(&self) -> Self::SetMyName {
         Self::SetMyName::new(self.clone(), payloads::SetMyName::new())
     }
 
     type GetMyName = JsonRequest<payloads::GetMyName>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_my_name(&self) -> Self::GetMyName {
         Self::GetMyName::new(self.clone(), payloads::GetMyName::new())
     }
 
     type SetMyDescription = JsonRequest<payloads::SetMyDescription>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_my_description(&self) -> Self::SetMyDescription {
         Self::SetMyDescription::new(self.clone(), payloads::SetMyDescription::new())
     }
 
     type GetMyDescription = JsonRequest<payloads::GetMyDescription>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_my_description(&self) -> Self::GetMyDescription {
         Self::GetMyDescription::new(self.clone(), payloads::GetMyDescription::new())
     }
 
     type SetMyShortDescription = JsonRequest<payloads::SetMyShortDescription>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_my_short_description(&self) -> Self::SetMyShortDescription {
         Self::SetMyShortDescription::new(self.clone(), payloads::SetMyShortDescription::new())
     }
 
     type GetMyShortDescription = JsonRequest<payloads::GetMyShortDescription>;
+
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_my_short_description(&self) -> Self::GetMyShortDescription {
         Self::GetMyShortDescription::new(self.clone(), payloads::GetMyShortDescription::new())
     }
 
     type SetChatMenuButton = JsonRequest<payloads::SetChatMenuButton>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_chat_menu_button(&self) -> Self::SetChatMenuButton {
         Self::SetChatMenuButton::new(self.clone(), payloads::SetChatMenuButton::new())
     }
 
     type GetChatMenuButton = JsonRequest<payloads::GetChatMenuButton>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_chat_menu_button(&self) -> Self::GetChatMenuButton {
         Self::GetChatMenuButton::new(self.clone(), payloads::GetChatMenuButton::new())
     }
 
     type SetMyDefaultAdministratorRights = JsonRequest<payloads::SetMyDefaultAdministratorRights>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_my_default_administrator_rights(&self) -> Self::SetMyDefaultAdministratorRights {
         Self::SetMyDefaultAdministratorRights::new(
             self.clone(),
@@ -958,6 +1045,7 @@ impl Requester for Bot {
 
     type GetMyDefaultAdministratorRights = JsonRequest<payloads::GetMyDefaultAdministratorRights>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_my_default_administrator_rights(&self) -> Self::GetMyDefaultAdministratorRights {
         Self::GetMyDefaultAdministratorRights::new(
             self.clone(),
@@ -967,12 +1055,14 @@ impl Requester for Bot {
 
     type DeleteMyCommands = JsonRequest<payloads::DeleteMyCommands>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_my_commands(&self) -> Self::DeleteMyCommands {
         Self::DeleteMyCommands::new(self.clone(), payloads::DeleteMyCommands::new())
     }
 
     type AnswerInlineQuery = JsonRequest<payloads::AnswerInlineQuery>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
     where
         I: Into<String>,
@@ -986,6 +1076,7 @@ impl Requester for Bot {
 
     type AnswerWebAppQuery = JsonRequest<payloads::AnswerWebAppQuery>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn answer_web_app_query<W>(
         &self,
         web_app_query_id: W,
@@ -1002,6 +1093,7 @@ impl Requester for Bot {
 
     type EditMessageText = JsonRequest<payloads::EditMessageText>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_text<C, T>(
         &self,
         chat_id: C,
@@ -1020,6 +1112,7 @@ impl Requester for Bot {
 
     type EditMessageTextInline = JsonRequest<payloads::EditMessageTextInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_text_inline<I, T>(
         &self,
         inline_message_id: I,
@@ -1037,6 +1130,7 @@ impl Requester for Bot {
 
     type EditMessageCaption = JsonRequest<payloads::EditMessageCaption>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_caption<C>(&self, chat_id: C, message_id: MessageId) -> Self::EditMessageCaption
     where
         C: Into<Recipient>,
@@ -1049,6 +1143,7 @@ impl Requester for Bot {
 
     type EditMessageCaptionInline = JsonRequest<payloads::EditMessageCaptionInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_caption_inline<I>(&self, inline_message_id: I) -> Self::EditMessageCaptionInline
     where
         I: Into<String>,
@@ -1061,6 +1156,7 @@ impl Requester for Bot {
 
     type EditMessageMedia = MultipartRequest<payloads::EditMessageMedia>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_media<C>(
         &self,
         chat_id: C,
@@ -1078,6 +1174,7 @@ impl Requester for Bot {
 
     type EditMessageMediaInline = MultipartRequest<payloads::EditMessageMediaInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_media_inline<I>(
         &self,
         inline_message_id: I,
@@ -1094,6 +1191,7 @@ impl Requester for Bot {
 
     type EditMessageReplyMarkup = JsonRequest<payloads::EditMessageReplyMarkup>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_reply_markup<C>(
         &self,
         chat_id: C,
@@ -1110,6 +1208,7 @@ impl Requester for Bot {
 
     type EditMessageReplyMarkupInline = JsonRequest<payloads::EditMessageReplyMarkupInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn edit_message_reply_markup_inline<I>(
         &self,
         inline_message_id: I,
@@ -1125,6 +1224,7 @@ impl Requester for Bot {
 
     type StopPoll = JsonRequest<payloads::StopPoll>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn stop_poll<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopPoll
     where
         C: Into<Recipient>,
@@ -1134,6 +1234,7 @@ impl Requester for Bot {
 
     type DeleteMessage = JsonRequest<payloads::DeleteMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage
     where
         C: Into<Recipient>,
@@ -1142,6 +1243,8 @@ impl Requester for Bot {
     }
 
     type DeleteMessages = JsonRequest<payloads::DeleteMessages>;
+
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_messages<C, M>(&self, chat_id: C, message_ids: M) -> Self::DeleteMessages
     where
         C: Into<Recipient>,
@@ -1152,6 +1255,7 @@ impl Requester for Bot {
 
     type SendSticker = MultipartRequest<payloads::SendSticker>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_sticker<C>(&self, chat_id: C, sticker: InputFile) -> Self::SendSticker
     where
         C: Into<Recipient>,
@@ -1161,6 +1265,7 @@ impl Requester for Bot {
 
     type GetStickerSet = JsonRequest<payloads::GetStickerSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_sticker_set<N>(&self, name: N) -> Self::GetStickerSet
     where
         N: Into<String>,
@@ -1170,6 +1275,7 @@ impl Requester for Bot {
 
     type GetCustomEmojiStickers = JsonRequest<payloads::GetCustomEmojiStickers>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
         C: IntoIterator<Item = String>,
@@ -1182,6 +1288,7 @@ impl Requester for Bot {
 
     type UploadStickerFile = MultipartRequest<payloads::UploadStickerFile>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn upload_sticker_file(
         &self,
         user_id: UserId,
@@ -1196,6 +1303,7 @@ impl Requester for Bot {
 
     type CreateNewStickerSet = MultipartRequest<payloads::CreateNewStickerSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn create_new_sticker_set<N, T, S>(
         &self,
         user_id: UserId,
@@ -1216,6 +1324,7 @@ impl Requester for Bot {
 
     type AddStickerToSet = MultipartRequest<payloads::AddStickerToSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn add_sticker_to_set<N>(
         &self,
         user_id: UserId,
@@ -1233,6 +1342,7 @@ impl Requester for Bot {
 
     type SetStickerPositionInSet = JsonRequest<payloads::SetStickerPositionInSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_position_in_set<S>(
         &self,
         sticker: S,
@@ -1249,6 +1359,7 @@ impl Requester for Bot {
 
     type DeleteStickerFromSet = JsonRequest<payloads::DeleteStickerFromSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_sticker_from_set<S>(&self, sticker: S) -> Self::DeleteStickerFromSet
     where
         S: Into<String>,
@@ -1258,6 +1369,7 @@ impl Requester for Bot {
 
     type ReplaceStickerInSet = JsonRequest<payloads::ReplaceStickerInSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn replace_sticker_in_set<N, O>(
         &self,
         user_id: UserId,
@@ -1282,6 +1394,7 @@ impl Requester for Bot {
 
     type SetStickerSetThumbnail = MultipartRequest<payloads::SetStickerSetThumbnail>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_set_thumbnail<N>(
         &self,
         name: N,
@@ -1300,6 +1413,7 @@ impl Requester for Bot {
     type SetCustomEmojiStickerSetThumbnail =
         JsonRequest<payloads::SetCustomEmojiStickerSetThumbnail>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_custom_emoji_sticker_set_thumbnail<N>(
         &self,
         name: N,
@@ -1315,6 +1429,7 @@ impl Requester for Bot {
 
     type SetStickerSetTitle = JsonRequest<payloads::SetStickerSetTitle>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_set_title<N, T>(&self, name: N, title: T) -> Self::SetStickerSetTitle
     where
         N: Into<String>,
@@ -1325,6 +1440,7 @@ impl Requester for Bot {
 
     type DeleteStickerSet = JsonRequest<payloads::DeleteStickerSet>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn delete_sticker_set<N>(&self, name: N) -> Self::DeleteStickerSet
     where
         N: Into<String>,
@@ -1334,6 +1450,7 @@ impl Requester for Bot {
 
     type SetStickerEmojiList = JsonRequest<payloads::SetStickerEmojiList>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_emoji_list<S, E>(&self, sticker: S, emoji_list: E) -> Self::SetStickerEmojiList
     where
         S: Into<String>,
@@ -1347,6 +1464,7 @@ impl Requester for Bot {
 
     type SetStickerKeywords = JsonRequest<payloads::SetStickerKeywords>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_keywords<S>(&self, sticker: S) -> Self::SetStickerKeywords
     where
         S: Into<String>,
@@ -1356,6 +1474,7 @@ impl Requester for Bot {
 
     type SetStickerMaskPosition = JsonRequest<payloads::SetStickerMaskPosition>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_sticker_mask_position<S>(&self, sticker: S) -> Self::SetStickerMaskPosition
     where
         S: Into<String>,
@@ -1368,6 +1487,7 @@ impl Requester for Bot {
 
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_invoice<Ch, T, D, Pa, C, Pri>(
         &self,
         chat_id: Ch,
@@ -1393,6 +1513,7 @@ impl Requester for Bot {
 
     type CreateInvoiceLink = JsonRequest<payloads::CreateInvoiceLink>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn create_invoice_link<T, D, Pa, C, Pri>(
         &self,
         title: T,
@@ -1416,6 +1537,7 @@ impl Requester for Bot {
 
     type AnswerShippingQuery = JsonRequest<payloads::AnswerShippingQuery>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
     where
         S: Into<String>,
@@ -1428,6 +1550,7 @@ impl Requester for Bot {
 
     type AnswerPreCheckoutQuery = JsonRequest<payloads::AnswerPreCheckoutQuery>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn answer_pre_checkout_query<P>(
         &self,
         pre_checkout_query_id: P,
@@ -1444,12 +1567,14 @@ impl Requester for Bot {
 
     type GetStarTransactions = JsonRequest<payloads::GetStarTransactions>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_star_transactions(&self) -> Self::GetStarTransactions {
         Self::GetStarTransactions::new(self.clone(), payloads::GetStarTransactions::new())
     }
 
     type RefundStarPayment = JsonRequest<payloads::RefundStarPayment>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn refund_star_payment<C>(
         &self,
         user_id: UserId,
@@ -1466,6 +1591,7 @@ impl Requester for Bot {
 
     type SetPassportDataErrors = JsonRequest<payloads::SetPassportDataErrors>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_passport_data_errors<E>(&self, user_id: UserId, errors: E) -> Self::SetPassportDataErrors
     where
         E: IntoIterator<Item = crate::types::PassportElementError>,
@@ -1478,6 +1604,7 @@ impl Requester for Bot {
 
     type SendGame = JsonRequest<payloads::SendGame>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn send_game<C, G>(&self, chat_id: C, game_short_name: G) -> Self::SendGame
     where
         C: Into<ChatId>,
@@ -1488,6 +1615,7 @@ impl Requester for Bot {
 
     type SetGameScore = JsonRequest<payloads::SetGameScore>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_game_score(
         &self,
         user_id: UserId,
@@ -1503,6 +1631,7 @@ impl Requester for Bot {
 
     type SetGameScoreInline = JsonRequest<payloads::SetGameScoreInline>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn set_game_score_inline<I>(
         &self,
         user_id: UserId,
@@ -1520,6 +1649,7 @@ impl Requester for Bot {
 
     type GetGameHighScores = JsonRequest<payloads::GetGameHighScores>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores
     where
         T: Into<crate::types::TargetMessage>,
@@ -1532,18 +1662,21 @@ impl Requester for Bot {
 
     type LogOut = JsonRequest<payloads::LogOut>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn log_out(&self) -> Self::LogOut {
         Self::LogOut::new(self.clone(), payloads::LogOut::new())
     }
 
     type Close = JsonRequest<payloads::Close>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn close(&self) -> Self::Close {
         Self::Close::new(self.clone(), payloads::Close::new())
     }
 
     type CopyMessage = JsonRequest<payloads::CopyMessage>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn copy_message<C, F>(
         &self,
         chat_id: C,
@@ -1561,6 +1694,8 @@ impl Requester for Bot {
     }
 
     type CopyMessages = JsonRequest<payloads::CopyMessages>;
+
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn copy_messages<C, F, M>(
         &self,
         chat_id: C,
@@ -1580,6 +1715,7 @@ impl Requester for Bot {
 
     type UnpinAllChatMessages = JsonRequest<payloads::UnpinAllChatMessages>;
 
+    #[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
     fn unpin_all_chat_messages<C>(&self, chat_id: C) -> Self::UnpinAllChatMessages
     where
         C: Into<Recipient>,

@@ -43,6 +43,7 @@
 //! - `erased` — enables [`ErasedRequester`] bot adaptor
 //! - `throttle` — enables [`Throttle`] bot adaptor
 //! - `cache_me` — enables [`CacheMe`] bot adaptor
+//! - `tracing` -- enables requests tracing
 //! - `full` — enables all features except `nightly` and tls-related
 //! - `nightly` — enables nightly-only features, currently:
 //!   - Removes some future boxing using `#![feature(type_alias_impl_trait)]`

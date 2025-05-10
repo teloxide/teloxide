@@ -37,6 +37,9 @@ throttle = ["vecrem"]
 # Trace bot adaptor
 trace_adaptor = []
 
+# Tracing requests
+tracing = ["dep:tracing"]
+
 # Erased bot adaptor
 erased = []
 
@@ -44,7 +47,7 @@ erased = []
 cache_me = []
 
 # All features except nightly and tls-related
-full = ["throttle", "trace_adaptor", "erased", "cache_me"]
+full = ["throttle", "trace_adaptor", "erased", "cache_me", "tracing"]
 
 
 [dependencies]
@@ -82,6 +85,7 @@ rgb = "0.8.48"
 
 vecrem = { version = "0.1", optional = true }
 
+tracing = { version = "0.1", optional = true }
 
 [dev-dependencies]
 pretty_env_logger = "0.5"
