@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use dptree::di::{DependencyMap, Injectable};
+use dptree::di::Injectable;
 use futures::future::BoxFuture;
 
 use crate::{
@@ -78,7 +78,7 @@ pub trait CommandReplExt {
         <R as Requester>::GetWebhookInfo: Send,
         <R as Requester>::GetMe: Send,
         <R as Requester>::DeleteWebhook: Send,
-        H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static;
+        H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static;
 
     /// A REPL for commands with a custom [`UpdateListener`].
     ///
@@ -86,7 +86,7 @@ pub trait CommandReplExt {
     #[must_use]
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
-        H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+        H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static,
         L: UpdateListener + Send + 'a,
         L::Err: Debug + Send + 'a,
         R: Requester + Clone + Send + Sync + 'static,
@@ -105,7 +105,7 @@ where
         <R as Requester>::GetWebhookInfo: Send,
         <R as Requester>::GetMe: Send,
         <R as Requester>::DeleteWebhook: Send,
-        H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+        H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static,
     {
         let cloned_bot = bot.clone();
 
@@ -121,7 +121,7 @@ where
 
     fn repl_with_listener<'a, R, H, L, Args>(bot: R, handler: H, listener: L) -> BoxFuture<'a, ()>
     where
-        H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+        H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static,
         L: UpdateListener + Send + 'a,
         L::Err: Debug + Send + 'a,
         R: Requester + Clone + Send + Sync + 'static,

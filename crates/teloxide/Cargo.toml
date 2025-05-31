@@ -91,10 +91,7 @@ teloxide-macros = { version = "0.9", optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = "0.3.0"
-
-# Uncomment this if you want to test teloxide with a specific dptree commit
-# dptree = { git = "https://github.com/teloxide/dptree", rev = "df578e4" }
+dptree = { git = "https://github.com/teloxide/dptree", rev = "75ca1157f49c72f4772623597e566a90e63db759" }
 
 tokio = { version = "1.39", features = ["fs", "rt-multi-thread"] }
 tokio-util = "0.7"

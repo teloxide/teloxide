@@ -5,7 +5,7 @@ use crate::{
     types::Update,
     update_listeners::{self, UpdateListener},
 };
-use dptree::di::{DependencyMap, Injectable};
+use dptree::di::Injectable;
 use std::fmt::Debug;
 
 /// A [REPL] for messages.
@@ -53,7 +53,7 @@ pub async fn repl<R, H, Args>(bot: R, handler: H)
 where
     R: Requester + Send + Sync + Clone + 'static,
     <R as Requester>::GetUpdates: Send,
-    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+    H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static,
 {
     let cloned_bot = bot.clone();
     repl_with_listener(bot, handler, update_listeners::polling_default(cloned_bot).await).await;
@@ -106,7 +106,7 @@ where
 pub async fn repl_with_listener<R, H, L, Args>(bot: R, handler: H, listener: L)
 where
     R: Requester + Clone + Send + Sync + 'static,
-    H: Injectable<DependencyMap, ResponseResult<()>, Args> + Send + Sync + 'static,
+    H: Injectable<ResponseResult<()>, Args> + Send + Sync + 'static,
     L: UpdateListener + Send,
     L::Err: Debug,
 {

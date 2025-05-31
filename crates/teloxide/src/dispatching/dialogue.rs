@@ -105,7 +105,7 @@ pub use self::{PostgresStorage, PostgresStorageError};
 pub use get_chat_id::GetChatId;
 pub use storage::*;
 
-use dptree::{prelude::DependencyMap, Handler};
+use dptree::Handler;
 use teloxide_core::types::ChatId;
 
 use std::{fmt::Debug, marker::PhantomData, sync::Arc};
@@ -223,7 +223,7 @@ where
 ///
 /// [`HandlerExt::enter_dialogue`]: super::HandlerExt::enter_dialogue
 #[must_use]
-pub fn enter<Upd, S, D, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+pub fn enter<Upd, S, D, Output>() -> Handler<'static, Output, DpHandlerDescription>
 where
     S: Storage<D> + ?Sized + Send + Sync + 'static,
     <S as Storage<D>>::Error: Debug + Send,
