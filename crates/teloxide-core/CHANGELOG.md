@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed the default opening mode for Direct Link Mini Apps.
   - Added support for launching Web Apps via t.me link in the class `MenuButtonWebApp`.
 
+- Support for TBA 7.7
+  - Added the class `RefundedPayment`, containing information about a refunded payment.
+  - Added the field `refunded_payment` to the class `Message`, describing a service message about a refunded payment.
 
 ## 0.11.2 - 2025-04-04
 
