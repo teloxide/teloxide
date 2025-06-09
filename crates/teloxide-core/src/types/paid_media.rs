@@ -1,12 +1,13 @@
-use serde::{Deserialize, Serialize};
 use crate::types::{PhotoSize, Seconds, Video};
+use serde::{Deserialize, Serialize};
 
 /// Describes the paid media added to a message.
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
 pub struct PaidMediaInfo {
-    /// The number of Telegram Stars that must be paid to buy access to the media. From 1 to 10000
+    /// The number of Telegram Stars that must be paid to buy access to the
+    /// media. From 1 to 10000
     pub star_count: u16,
 
     /// Information about the paid media.

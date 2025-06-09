@@ -1,6 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Animation, Audio, Chat, Contact, Dice, Document, Game, Giveaway, GiveawayWinners, Invoice, LinkPreviewOptions, Location, MessageId, MessageOrigin, PaidMediaInfo, PhotoSize, Poll, Sticker, Story, Venue, Video, VideoNote, Voice};
+use crate::types::{
+    Animation, Audio, Chat, Contact, Dice, Document, Game, Giveaway, GiveawayWinners, Invoice,
+    LinkPreviewOptions, Location, MessageId, MessageOrigin, PaidMediaInfo, PhotoSize, Poll,
+    Sticker, Story, Venue, Video, VideoNote, Voice,
+};
 
 /// This object contains information about a message that is being replied to,
 /// which may come from another chat or forum topic.

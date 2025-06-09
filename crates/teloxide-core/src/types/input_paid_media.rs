@@ -1,5 +1,5 @@
-use serde::Serialize;
 use crate::types::{InputFile, Seconds};
+use serde::Serialize;
 
 /// This object describes the paid media to be sent.
 ///
@@ -64,7 +64,14 @@ pub struct InputPaidMediaVideo {
 
 impl InputPaidMediaVideo {
     pub fn new(media: InputFile) -> Self {
-        Self { media, thumbnail: None, width: None, height: None, duration: None, supports_streaming: None }
+        Self {
+            media,
+            thumbnail: None,
+            width: None,
+            height: None,
+            duration: None,
+            supports_streaming: None,
+        }
     }
 
     pub fn media(mut self, val: InputFile) -> Self {

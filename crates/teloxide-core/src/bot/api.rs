@@ -6,12 +6,11 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, InputPollOption, InputSticker, LabeledPrice, MessageId, Recipient, Rgb,
-        StickerFormat, ThreadId, UserId,
+        InputMedia, InputPaidMedia, InputPollOption, InputSticker, LabeledPrice, MessageId,
+        Recipient, Rgb, StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
-use crate::types::InputPaidMedia;
 
 impl Requester for Bot {
     type Err = crate::errors::RequestError;
@@ -1593,8 +1592,11 @@ impl Requester for Bot {
     fn send_paid_media<C, M>(&self, chat_id: C, star_count: u16, media: M) -> Self::SendPaidMedia
     where
         C: Into<Recipient>,
-        M: IntoIterator<Item=InputPaidMedia>
+        M: IntoIterator<Item = InputPaidMedia>,
     {
-        Self::SendPaidMedia::new(self.clone(), payloads::SendPaidMedia::new(chat_id, star_count, media))
+        Self::SendPaidMedia::new(
+            self.clone(),
+            payloads::SendPaidMedia::new(chat_id, star_count, media),
+        )
     }
 }

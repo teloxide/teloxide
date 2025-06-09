@@ -7,13 +7,12 @@ use crate::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
         EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
-        SendPhoto, SendPoll, SendVideo, SendVoice,
+        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
     types::*,
 };
-use crate::payloads::SendPaidMedia;
 
 /// Default parse mode adaptor, see
 /// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode).
