@@ -3,6 +3,11 @@ use crate::types::{MessageEntity, PollType, Seconds, User};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+/// Unique poll identifier.
+#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct PollId(pub String);
+
 /// This object contains information about a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#poll).
@@ -10,7 +15,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct Poll {
     /// Unique poll identifier.
-    pub id: String,
+    pub id: PollId,
 
     /// Poll question, 1-300 characters.
     pub question: String,

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- New id types ([#1153](pr1153))
+  - Add `PollId` struct
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed
