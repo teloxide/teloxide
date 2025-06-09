@@ -11,10 +11,10 @@ use crate::types::{
     GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
     InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story,
-    SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
+    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, RefundedPayment,
+    Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
+    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -107,6 +107,7 @@ pub enum MessageKind {
     VideoChatEnded(MessageVideoChatEnded),
     VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited),
     WebAppData(MessageWebAppData),
+    RefundedPayment(MessageRefundedPayment),
     /// An empty, content-less message, that can appear in callback queries
     /// attached to old messages.
     Empty {},
@@ -755,6 +756,14 @@ pub struct MessageVideoChatParticipantsInvited {
 pub struct MessageWebAppData {
     /// Service message: data sent by a Web App.
     pub web_app_data: WebAppData,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageRefundedPayment {
+    /// Message is a service message about a refunded payment, information about
+    /// the payment
+    pub refunded_payment: RefundedPayment,
 }
 
 mod getters {
@@ -1710,6 +1719,14 @@ mod getters {
                     media_kind: MediaKind::PaidMedia(MediaPaidMedia { paid_media, .. }),
                     ..
                 }) => Some(paid_media),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn refunded_payment(&self) -> Option<&types::RefundedPayment> {
+            match &self.kind {
+                RefundedPayment(payment) => Some(&payment.refunded_payment),
                 _ => None,
             }
         }
