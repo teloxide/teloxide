@@ -976,7 +976,7 @@ trait ErasableRequester<'a> {
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err>;
 
@@ -1933,7 +1933,7 @@ where
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err> {
         Requester::answer_shipping_query(self, shipping_query_id, ok).erase()

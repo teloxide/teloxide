@@ -4626,7 +4626,7 @@ Schema(
             params: [
                 Param(
                     name: "shipping_query_id",
-                    ty: String,
+                    ty: RawTy("ShippingQueryId"),
                     descr: Doc(md: "Unique identifier for the query to be answered"),
                 ),
                 Param(

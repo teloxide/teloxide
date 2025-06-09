@@ -1443,9 +1443,9 @@ macro_rules! requester_forward {
     (@method answer_shipping_query $body:ident $ty:ident) => {
         type AnswerShippingQuery = $ty![AnswerShippingQuery];
 
-        fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery where S: Into<String> {
+        fn answer_shipping_query(&self, shipping_query_id: ShippingQueryId, ok: bool) -> Self::AnswerShippingQuery {
             let this = self;
-            $body!(answer_shipping_query this (shipping_query_id: S, ok: bool))
+            $body!(answer_shipping_query this (shipping_query_id: ShippingQueryId, ok: bool))
         }
     };
     (@method answer_pre_checkout_query $body:ident $ty:ident) => {

@@ -7,7 +7,8 @@ use crate::{
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, FileId,
         InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker, LabeledPrice,
-        MessageId, PreCheckoutQueryId, Recipient, Rgb, StickerFormat, ThreadId, UserId,
+        MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId, StickerFormat, ThreadId,
+        UserId,
     },
     Bot,
 };
@@ -1413,10 +1414,11 @@ impl Requester for Bot {
 
     type AnswerShippingQuery = JsonRequest<payloads::AnswerShippingQuery>;
 
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>,
-    {
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery {
         Self::AnswerShippingQuery::new(
             self.clone(),
             payloads::AnswerShippingQuery::new(shipping_query_id, ok),

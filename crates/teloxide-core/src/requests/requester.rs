@@ -1231,9 +1231,11 @@ pub trait Requester {
     type AnswerShippingQuery: Request<Payload = AnswerShippingQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerShippingQuery`].
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>;
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery;
 
     type AnswerPreCheckoutQuery: Request<Payload = AnswerPreCheckoutQuery, Err = Self::Err>;
 
