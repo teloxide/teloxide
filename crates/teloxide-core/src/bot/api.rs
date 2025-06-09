@@ -7,7 +7,7 @@ use crate::{
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, FileId,
         InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker, LabeledPrice,
-        MessageId, Recipient, Rgb, StickerFormat, ThreadId, UserId,
+        MessageId, PreCheckoutQueryId, Recipient, Rgb, StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
@@ -1425,14 +1425,11 @@ impl Requester for Bot {
 
     type AnswerPreCheckoutQuery = JsonRequest<payloads::AnswerPreCheckoutQuery>;
 
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>,
-    {
+    ) -> Self::AnswerPreCheckoutQuery {
         Self::AnswerPreCheckoutQuery::new(
             self.clone(),
             payloads::AnswerPreCheckoutQuery::new(pre_checkout_query_id, ok),

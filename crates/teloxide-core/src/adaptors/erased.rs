@@ -982,7 +982,7 @@ trait ErasableRequester<'a> {
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
 
@@ -1941,7 +1941,7 @@ where
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PollId` struct
   - Add `CallbackQueryId` struct
   - Add `FileId` and `FileUniqueId` structs
+  - Add `PreCheckoutQueryId` struct
 
 ### Changed
 
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
   - Changed `id` field to `FileId` in `File` and in `get_file` method
   - Changed `unique_id` field to `FileUniqueId` in `File`
+  - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
 
 ## 0.11.2 - 2025-04-04
 

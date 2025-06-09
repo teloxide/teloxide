@@ -1451,9 +1451,9 @@ macro_rules! requester_forward {
     (@method answer_pre_checkout_query $body:ident $ty:ident) => {
         type AnswerPreCheckoutQuery = $ty![AnswerPreCheckoutQuery];
 
-        fn answer_pre_checkout_query<P>(&self, pre_checkout_query_id: P, ok: bool) -> Self::AnswerPreCheckoutQuery where P: Into<String> {
+        fn answer_pre_checkout_query(&self, pre_checkout_query_id: PreCheckoutQueryId, ok: bool) -> Self::AnswerPreCheckoutQuery {
             let this = self;
-            $body!(answer_pre_checkout_query this (pre_checkout_query_id: P, ok: bool))
+            $body!(answer_pre_checkout_query this (pre_checkout_query_id: PreCheckoutQueryId, ok: bool))
         }
     };
     (@method get_star_transactions $body:ident $ty:ident) => {

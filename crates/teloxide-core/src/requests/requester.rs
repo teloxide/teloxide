@@ -1238,13 +1238,11 @@ pub trait Requester {
     type AnswerPreCheckoutQuery: Request<Payload = AnswerPreCheckoutQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerPreCheckoutQuery`].
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>;
+    ) -> Self::AnswerPreCheckoutQuery;
 
     type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
 
