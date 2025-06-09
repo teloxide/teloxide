@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added the class `RefundedPayment`, containing information about a refunded payment.
   - Added the field `refunded_payment` to the class `Message`, describing a service message about a refunded payment.
 
+- Support for TBA 7.8
+  - Added the field `has_main_web_app` to the class `User`, which is returned in the response to getMe.
+  - Added the parameter `business_connection_id` to the methods `pinChatMessage` and `unpinChatMessage`, allowing bots to manage pinned messages on behalf of a business account.
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed
