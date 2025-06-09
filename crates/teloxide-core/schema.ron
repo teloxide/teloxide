@@ -2767,6 +2767,11 @@ Schema(
             tg_category: "Available methods",
             params: [
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be pinned"),
+                ),
+                Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
@@ -2790,6 +2795,11 @@ Schema(
             tg_doc: "https://core.telegram.org/bots/api#unpinchatmessage",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be unpinned"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),

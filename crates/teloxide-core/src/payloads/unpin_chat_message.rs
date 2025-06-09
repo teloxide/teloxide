@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{MessageId, Recipient, True};
+use crate::types::{BusinessConnectionId, MessageId, Recipient, True};
 
 impl_payload! {
     /// Use this method to remove a message from the list of pinned messages in a chat. If the chat is not a private chat, the bot must be an administrator in the chat for this to work and must have the 'can_pin_messages' admin right in a supergroup or 'can_edit_messages' admin right in a channel. Returns _True_ on success.
@@ -13,6 +13,8 @@ impl_payload! {
             pub chat_id: Recipient [into],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be unpinned
+            pub business_connection_id: BusinessConnectionId,
             /// Identifier of a message to unpin. If not specified, the most recent pinned message (by sending date) will be unpinned.
             #[serde(flatten)]
             pub message_id: MessageId,
