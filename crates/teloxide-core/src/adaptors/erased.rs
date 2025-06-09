@@ -146,6 +146,9 @@ macro_rules! fwd_erased {
     (@convert send_media_group, $arg:ident, media : $T:ty) => {
         $arg.into_iter().collect()
     };
+    (@convert send_paid_media, $arg:ident, media : $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert $m:ident, $arg:ident, options : $T:ty) => {
         $arg.into_iter().collect()
     };
@@ -206,6 +209,7 @@ where
         send_video_note,
         send_media_group,
         send_location,
+        send_paid_media,
         edit_message_live_location,
         edit_message_live_location_inline,
         stop_message_live_location,
@@ -421,6 +425,13 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         media: Vec<InputMedia>,
     ) -> ErasedRequest<'a, SendMediaGroup, Self::Err>;
+
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u16,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err>;
 
     fn send_location(
         &self,
@@ -1168,6 +1179,15 @@ where
         media: Vec<InputMedia>,
     ) -> ErasedRequest<'a, SendMediaGroup, Self::Err> {
         Requester::send_media_group(self, chat_id, media).erase()
+    }
+
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u16,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err> {
+        Requester::send_paid_media(self, chat_id, star_count, media).erase()
     }
 
     fn send_location(

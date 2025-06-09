@@ -23,7 +23,7 @@ pub struct PaidMediaInfo {
 pub enum PaidMedia {
     Preview(PaidMediaPreview),
     Photo(PaidMediaPhoto),
-    Video(PaidMediaVideo),
+    Video(Box<PaidMediaVideo>),
 }
 
 /// The paid media isn't available before the payment.

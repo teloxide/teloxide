@@ -79,7 +79,6 @@ where
         send_voice,
         send_video_note,
         send_media_group,
-        send_paid_media,
         send_location,
         send_venue,
         send_contact,
@@ -202,7 +201,8 @@ where
         set_game_score_inline,
         approve_chat_join_request,
         decline_chat_join_request,
-        get_game_high_scores
+        get_game_high_scores,
+        send_paid_media
         => fid, ftyid
     }
 }
