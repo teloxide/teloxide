@@ -740,7 +740,7 @@ trait ErasableRequester<'a> {
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err>;
 
     fn get_user_chat_boosts(
@@ -1602,7 +1602,7 @@ where
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err> {
         Requester::answer_callback_query(self, callback_query_id).erase()
     }

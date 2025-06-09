@@ -26,6 +26,7 @@
 //!   + `PollType` type of poll, either “quiz” or “regular”
 //!   + `DiceEmoji` emoji that can be used in `sendDice` one of “🎲”, “🎯”, or “🏀”
 //!   + `TargetMessage` either `inline_message_id: String` or `chat_id: ChatId` and `message_id: i64`
+//!   + Many string ids, e.g. `BusinessConnectionId`, `CallbackQueryId`, etc
 //! * Integers represented with more strict (when possible) types, e.g.:
 //!   `u8` (unsigned, 8-bit integer), `u32` (unsigned, 32-bit),
 //!   `i64` (signed, 64-bit), etc
@@ -3109,7 +3110,7 @@ Schema(
             params: [
                 Param(
                     name: "callback_query_id",
-                    ty: String,
+                    ty: RawTy("CallbackQueryId"),
                     descr: Doc(md: "Unique identifier for the query to be answered"),
                 ),
                 Param(

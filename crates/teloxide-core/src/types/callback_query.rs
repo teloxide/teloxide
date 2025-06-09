@@ -2,6 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{MaybeInaccessibleMessage, Message, User};
 
+/// A unique identifier for this query.
+#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct CallbackQueryId(pub String);
+
 /// This object represents an incoming callback query from a callback button in
 /// an [inline keyboard].
 ///
@@ -18,8 +23,8 @@ use crate::types::{MaybeInaccessibleMessage, Message, User};
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CallbackQuery {
-    /// An unique identifier for this query.
-    pub id: String,
+    /// A unique identifier for this query.
+    pub id: CallbackQueryId,
 
     /// A sender.
     pub from: User,
@@ -93,7 +98,7 @@ mod tests {
             "game_short_name":"game_name"
         }"#;
         let expected = CallbackQuery {
-            id: "id".to_string(),
+            id: CallbackQueryId("id".to_owned()),
             from: User {
                 id: UserId(12345),
                 is_bot: false,

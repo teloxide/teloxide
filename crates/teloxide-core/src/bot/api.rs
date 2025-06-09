@@ -5,9 +5,9 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, InputPollOption, InputSticker, LabeledPrice, MessageId, Recipient, Rgb,
-        StickerFormat, ThreadId, UserId,
+        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions,
+        InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker, LabeledPrice,
+        MessageId, Recipient, Rgb, StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
@@ -851,10 +851,10 @@ impl Requester for Bot {
 
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
-    fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
-    where
-        C: Into<String>,
-    {
+    fn answer_callback_query(
+        &self,
+        callback_query_id: CallbackQueryId,
+    ) -> Self::AnswerCallbackQuery {
         Self::AnswerCallbackQuery::new(
             self.clone(),
             payloads::AnswerCallbackQuery::new(callback_query_id),

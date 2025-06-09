@@ -1049,9 +1049,9 @@ macro_rules! requester_forward {
     (@method answer_callback_query $body:ident $ty:ident) => {
         type AnswerCallbackQuery = $ty![AnswerCallbackQuery];
 
-        fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery where C: Into<String> {
+        fn answer_callback_query(&self, callback_query_id: CallbackQueryId) -> Self::AnswerCallbackQuery {
             let this = self;
-            $body!(answer_callback_query this (callback_query_id: C))
+            $body!(answer_callback_query this (callback_query_id: CallbackQueryId))
         }
     };
     (@method get_user_chat_boosts $body:ident $ty:ident) => {
