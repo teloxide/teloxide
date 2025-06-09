@@ -4,18 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::types::{
-    Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
-    ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
-    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
-    GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
-    InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
-    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
-    TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
-};
+use crate::types::{Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded, ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMedia, PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed};
 
 /// This object represents a message.
 ///
@@ -365,6 +354,7 @@ pub enum MediaKind {
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
+    PaidMedia(MediaPaidMedia),
     Migration(ChatMigration),
 }
 
@@ -577,6 +567,29 @@ pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,
     // Note: for backward compatibility telegram also sends `location` field, but we ignore it
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MediaPaidMedia {
+    /// Information about the paid media
+    pub paid_media: PaidMediaInfo,
+
+    /// Caption for the photo, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// For messages with a caption, special entities like usernames, URLs,
+    /// bot commands, etc. that appear in the caption.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub caption_entities: Vec<MessageEntity>,
+
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
+    /// The unique identifier of a media message group this message belongs
+    /// to.
+    pub media_group_id: Option<String>,
 }
 
 #[serde_with::skip_serializing_none]
