@@ -2133,7 +2133,7 @@ Schema(
             params: [
                 Param(
                     name: "file_id",
-                    ty: String,
+                    ty: RawTy("FileId"),
                     descr: Doc(md: "File identifier to get info about")
                 ),
             ],

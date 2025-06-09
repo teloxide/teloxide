@@ -5,7 +5,7 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions,
+        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, FileId,
         InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker, LabeledPrice,
         MessageId, Recipient, Rgb, StickerFormat, ThreadId, UserId,
     },
@@ -330,10 +330,7 @@ impl Requester for Bot {
 
     type GetFile = JsonRequest<payloads::GetFile>;
 
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>,
-    {
+    fn get_file(&self, file_id: FileId) -> Self::GetFile {
         Self::GetFile::new(self.clone(), payloads::GetFile::new(file_id))
     }
 

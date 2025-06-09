@@ -432,9 +432,7 @@ pub trait Requester {
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetFile`].
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>;
+    fn get_file(&self, file_id: FileId) -> Self::GetFile;
 
     type BanChatMember: Request<Payload = BanChatMember, Err = Self::Err>;
 

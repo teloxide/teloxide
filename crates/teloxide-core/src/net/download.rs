@@ -36,7 +36,7 @@ pub trait Download {
     /// use teloxide_core::{
     ///     net::Download,
     ///     requests::{Request, Requester},
-    ///     types::File,
+    ///     types::{File, FileId},
     ///     Bot,
     /// };
     /// use tokio::fs;
@@ -44,7 +44,7 @@ pub trait Download {
     /// # async fn run() -> Result<(), Box<dyn std::error::Error>> {
     /// let bot = Bot::new("TOKEN");
     ///
-    /// let file = bot.get_file("*file_id*").await?;
+    /// let file = bot.get_file(FileId("*file_id*".to_string())).await?;
     /// let mut dst = fs::File::create("/tmp/test.png").await?;
     /// bot.download_file(&file.path, &mut dst).await?;
     /// # Ok(()) }

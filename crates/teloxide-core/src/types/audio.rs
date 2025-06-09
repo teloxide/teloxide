@@ -36,6 +36,8 @@ pub struct Audio {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::{FileId, FileUniqueId};
+
     use super::*;
 
     #[test]
@@ -57,13 +59,21 @@ mod tests {
             }
         }"#;
         let expected = Audio {
-            file: FileMeta { id: "id".to_string(), unique_id: "".to_string(), size: 123_456 },
+            file: FileMeta {
+                id: FileId("id".to_string()),
+                unique_id: FileUniqueId("".to_string()),
+                size: 123_456,
+            },
             duration: Seconds::from_seconds(60),
             performer: Some("Performer".to_string()),
             title: Some("Title".to_string()),
             mime_type: Some("application/zip".parse().unwrap()),
             thumbnail: Some(PhotoSize {
-                file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
+                file: FileMeta {
+                    id: FileId("id".to_owned()),
+                    unique_id: FileUniqueId("".to_owned()),
+                    size: 3452,
+                },
                 width: 320,
                 height: 320,
             }),

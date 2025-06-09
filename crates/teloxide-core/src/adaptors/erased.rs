@@ -497,7 +497,7 @@ trait ErasableRequester<'a> {
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err>;
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err>;
 
     fn ban_chat_member(
         &self,
@@ -1271,7 +1271,7 @@ where
         Requester::get_user_profile_photos(self, user_id).erase()
     }
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err> {
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err> {
         Requester::get_file(self, file_id).erase()
     }
 

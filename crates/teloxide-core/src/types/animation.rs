@@ -36,6 +36,8 @@ pub struct Animation {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::{FileId, FileUniqueId};
+
     use super::*;
 
     #[test]
@@ -57,12 +59,20 @@ mod tests {
         "mime_type":"video/gif",
         "file_size":6500}"#;
         let expected = Animation {
-            file: FileMeta { id: "id".to_string(), unique_id: "".to_string(), size: 6500 },
+            file: FileMeta {
+                id: FileId("id".to_owned()),
+                unique_id: FileUniqueId("".to_string()),
+                size: 6500,
+            },
             width: 320,
             height: 320,
             duration: Seconds::from_seconds(59),
             thumbnail: Some(PhotoSize {
-                file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
+                file: FileMeta {
+                    id: FileId("id".to_owned()),
+                    unique_id: FileUniqueId("".to_owned()),
+                    size: 3452,
+                },
                 width: 320,
                 height: 320,
             }),

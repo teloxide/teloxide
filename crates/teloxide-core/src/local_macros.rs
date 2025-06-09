@@ -687,9 +687,9 @@ macro_rules! requester_forward {
     (@method get_file $body:ident $ty:ident) => {
         type GetFile = $ty![GetFile];
 
-        fn get_file<F>(&self, file_id: F) -> Self::GetFile where F: Into<String> {
+        fn get_file(&self, file_id: FileId) -> Self::GetFile {
             let this = self;
-            $body!(get_file this (file_id: F))
+            $body!(get_file this (file_id: FileId))
         }
     };
     (@method ban_chat_member $body:ident $ty:ident) => {
