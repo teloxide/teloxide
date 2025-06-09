@@ -771,7 +771,8 @@ mod getters {
         MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
         MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
         MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        MessageUsersShared, MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
+        MessageUsersShared, MessageVideoChatParticipantsInvited, PaidMediaInfo, PhotoSize, Story,
+        TextQuote, User,
     };
 
     use super::{
@@ -932,6 +933,10 @@ mod getters {
                 | Common(MessageCommon {
                     media_kind: MediaKind::Audio(MediaAudio { media_group_id, .. }),
                     ..
+                })
+                | Common(MessageCommon {
+                    media_kind: MediaKind::PaidMedia(MediaPaidMedia { media_group_id, .. }),
+                    ..
                 }) => media_group_id.as_ref().map(Deref::deref),
                 _ => None,
             }
@@ -1019,6 +1024,10 @@ mod getters {
                 })
                 | Common(MessageCommon {
                     media_kind: MediaKind::Voice(MediaVoice { caption_entities, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
+                    media_kind: MediaKind::PaidMedia(MediaPaidMedia { caption_entities, .. }),
                     ..
                 }) => Some(caption_entities),
                 _ => None,
@@ -1208,7 +1217,8 @@ mod getters {
                         | MediaKind::Document(MediaDocument { caption, .. })
                         | MediaKind::Photo(MediaPhoto { caption, .. })
                         | MediaKind::Video(MediaVideo { caption, .. })
-                        | MediaKind::Voice(MediaVoice { caption, .. }),
+                        | MediaKind::Voice(MediaVoice { caption, .. })
+                        | MediaKind::PaidMedia(MediaPaidMedia { caption, .. }),
                     ..
                 }) => caption.as_ref().map(Deref::deref),
                 _ => None,
@@ -1690,6 +1700,17 @@ mod getters {
             match &self.kind {
                 Common(MessageCommon { has_protected_content, .. }) => *has_protected_content,
                 _ => false,
+            }
+        }
+
+        #[must_use]
+        pub fn paid_media(&self) -> Option<&PaidMediaInfo> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::PaidMedia(MediaPaidMedia { paid_media, .. }),
+                    ..
+                }) => Some(paid_media),
+                _ => None,
             }
         }
 
