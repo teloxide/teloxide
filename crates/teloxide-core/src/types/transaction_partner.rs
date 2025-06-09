@@ -31,4 +31,7 @@ pub struct TransactionPartnerFragment {
 pub struct TransactionPartnerUser {
     /// Information about the user.
     pub user: User,
+
+    /// Bot-specified invoice payload. Can be available only for “invoice_payment” transactions.
+    pub invoice_payload: Option<String>
 }
