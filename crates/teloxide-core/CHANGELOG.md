@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+- Support for TBA 7.6
+  - Added the classes `PaidMedia`, `PaidMediaInfo`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo`, containing information about paid media.
+  - Added the method `sendPaidMedia` and the classes `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo`, to support sending paid media.
+  - Documented that the methods `copyMessage` and `copyMessages` cannot be used to copy paid media.
+  - Added the field `can_send_paid_media` to the class `ChatFullInfo`.
+  - Added the field `paid_media` to the classes `Message` and `ExternalReplyInfo`.
+  - Added the class `TransactionPartnerTelegramAds`, containing information about Telegram Star transactions involving the Telegram Ads Platform.
+  - Added the field `invoice_payload` to the class `TransactionPartnerUser`, containing the bot-specified invoice payload.
+  - Changed the default opening mode for Direct Link Mini Apps.
+  - Added support for launching Web Apps via t.me link in the class `MenuButtonWebApp`.
+
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed
