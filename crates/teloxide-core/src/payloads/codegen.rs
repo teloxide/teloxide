@@ -62,6 +62,7 @@ fn codegen_payloads() {
             || matches!(
                 &*method.names.1,
                 "SendMediaGroup"
+                    | "SendPaidMedia"
                     | "EditMessageMedia"
                     | "EditMessageMediaInline"
                     | "CreateNewStickerSet"

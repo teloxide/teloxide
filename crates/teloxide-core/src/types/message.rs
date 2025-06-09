@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::types::{Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded, ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMedia, PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed};
+use crate::types::{Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded, ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed};
 
 /// This object represents a message.
 ///
@@ -750,18 +750,7 @@ mod getters {
     use chrono::{DateTime, Utc};
     use std::ops::Deref;
 
-    use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, LinkPreviewOptions,
-        MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
-        MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory,
-        MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
-        MessageChannelChatCreated, MessageChatShared, MessageCommon, MessageConnectedWebsite,
-        MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated, MessageId,
-        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
-        MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
-        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        MessageUsersShared, MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
-    };
+    use crate::types::{self, message::MessageKind::*, Chat, ChatId, ChatMigration, LinkPreviewOptions, MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaidMedia, MediaPhoto, MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message, MessageChannelChatCreated, MessageChatShared, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared, MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User};
 
     use super::{
         MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
@@ -1025,7 +1014,8 @@ mod getters {
                 .map(|m| match m.media_kind {
                     MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
                     | MediaKind::Photo(MediaPhoto { show_caption_above_media, .. })
-                    | MediaKind::Video(MediaVideo { show_caption_above_media, .. }) => {
+                    | MediaKind::Video(MediaVideo { show_caption_above_media, .. })
+                    | MediaKind::PaidMedia(MediaPaidMedia { show_caption_above_media, .. }) => {
                         show_caption_above_media
                     }
                     MediaKind::Audio(_)
@@ -1070,7 +1060,8 @@ mod getters {
                     | MediaKind::Text(_)
                     | MediaKind::VideoNote(_)
                     | MediaKind::Voice(_)
-                    | MediaKind::Migration(_) => false,
+                    | MediaKind::Migration(_)
+                    | MediaKind::PaidMedia(_) => false,
                 })
                 .unwrap_or(false)
         }

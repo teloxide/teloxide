@@ -172,6 +172,7 @@ pub use web_app_info::*;
 pub use webhook_info::*;
 pub use write_access_allowed::*;
 pub use paid_media::*;
+pub use input_paid_media::*;
 
 mod allowed_update;
 mod animation;
@@ -341,6 +342,7 @@ mod inline_query_result_video;
 mod inline_query_result_voice;
 mod story_id;
 mod paid_media;
+mod input_paid_media;
 
 mod encrypted_credentials;
 mod encrypted_passport_element;

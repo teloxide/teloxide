@@ -13,6 +13,7 @@ use crate::{
     requests::{HasPayload, Output, Request},
     types::*,
 };
+use crate::payloads::SendPaidMedia;
 
 /// Default parse mode adaptor, see
 /// [`RequesterExt::parse_mode`](crate::requests::RequesterExt::parse_mode).
@@ -290,7 +291,8 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        send_paid_media
         => fid, ftyid
     }
 }
@@ -377,6 +379,12 @@ impl VisitParseModes for EditMessageMedia {
 impl VisitParseModes for EditMessageMediaInline {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+impl VisitParseModes for SendPaidMedia {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visitor(&mut self.parse_mode)
     }
 }
 

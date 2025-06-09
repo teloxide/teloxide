@@ -301,6 +301,14 @@ pub trait Requester {
         C: Into<Recipient>,
         M: IntoIterator<Item = InputMedia>;
 
+    type SendPaidMedia: Request<Payload = SendPaidMedia, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendPaidMedia`].
+    fn send_paid_media<C, M>(&self, chat_id: C, star_count: u16, media: M) -> Self::SendPaidMedia
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia>;
+
     type SendLocation: Request<Payload = SendLocation, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendLocation`].
@@ -1349,6 +1357,7 @@ macro_rules! forward_all {
             send_voice,
             send_video_note,
             send_media_group,
+            send_paid_media,
             send_location,
             edit_message_live_location,
             edit_message_live_location_inline,

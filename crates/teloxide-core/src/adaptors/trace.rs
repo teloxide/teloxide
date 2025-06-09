@@ -136,6 +136,7 @@ where
         send_voice,
         send_video_note,
         send_media_group,
+        send_paid_media,
         send_location,
         edit_message_live_location,
         edit_message_live_location_inline,

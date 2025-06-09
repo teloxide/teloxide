@@ -11,6 +11,7 @@ use crate::{
     },
     Bot,
 };
+use crate::types::InputPaidMedia;
 
 impl Requester for Bot {
     type Err = crate::errors::RequestError;
@@ -1585,5 +1586,15 @@ impl Requester for Bot {
         C: Into<Recipient>,
     {
         Self::UnpinAllChatMessages::new(self.clone(), payloads::UnpinAllChatMessages::new(chat_id))
+    }
+
+    type SendPaidMedia = JsonRequest<payloads::SendPaidMedia>;
+
+    fn send_paid_media<C, M>(&self, chat_id: C, star_count: u16, media: M) -> Self::SendPaidMedia
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item=InputPaidMedia>
+    {
+        Self::SendPaidMedia::new(self.clone(), payloads::SendPaidMedia::new(chat_id, star_count, media))
     }
 }

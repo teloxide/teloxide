@@ -6,8 +6,8 @@ use crate::types::{PhotoSize, Seconds, Video};
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
 pub struct PaidMediaInfo {
-    /// The number of Telegram Stars that must be paid to buy access to the media.
-    pub star_count: u32,
+    /// The number of Telegram Stars that must be paid to buy access to the media. From 1 to 10000
+    pub star_count: u16,
 
     /// Information about the paid media.
     pub paid_media: Vec<PaidMedia>,

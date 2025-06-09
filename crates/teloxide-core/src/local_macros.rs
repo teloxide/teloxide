@@ -582,6 +582,15 @@ macro_rules! requester_forward {
             $body!(send_media_group this (chat_id: C, media: M))
         }
     };
+    (@method send_paid_media $body:ident $ty:ident) => {
+        type SendPaidMedia = $ty![SendPaidMedia];
+
+        fn send_paid_media<C, M>(&self, chat_id: C, star_count: u16, media: M) -> Self::SendPaidMedia where C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia> {
+            let this = self;
+            $body!(send_paid_media this (chat_id: C, star_count: u16, media: M))
+        }
+    };
     (@method send_location $body:ident $ty:ident) => {
         type SendLocation = $ty![SendLocation];
 
