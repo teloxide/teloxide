@@ -181,6 +181,10 @@ pub struct ChatFullInfoPublicChannel {
     /// identifier for a channel and vice versa.
     // SMELL: TBA uses here Integer instead of ChatId so we do that too :c
     pub linked_chat_id: Option<i64>,
+
+    /// `true`, if paid media messages can be sent or forwarded to the channel chat.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub can_send_paid_media: bool,
 }
 
 #[serde_with::skip_serializing_none]
@@ -682,6 +686,7 @@ mod tests {
                 kind: ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel {
                     username: Some("channel_name".into()),
                     linked_chat_id: None,
+                    can_send_paid_media: false,
                 }),
                 description: None,
                 invite_link: None,
