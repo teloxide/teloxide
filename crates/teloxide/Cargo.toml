@@ -91,7 +91,7 @@ teloxide-macros = { version = "0.9", optional = true }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 
-dptree = { git = "https://github.com/teloxide/dptree", rev = "75ca1157f49c72f4772623597e566a90e63db759" }
+dptree =  "0.4.3"
 
 tokio = { version = "1.39", features = ["fs", "rt-multi-thread"] }
 tokio-util = "0.7"
