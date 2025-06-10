@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+use teloxide_core::types::CustomEmojiId;
+
 #[derive(Clone)]
 pub struct Tag<'a> {
     pub place: Place,
@@ -75,7 +77,7 @@ pub enum Kind<'a> {
     Pre(Option<&'a str>),
     TextLink(&'a str),
     TextMention(u64),
-    CustomEmoji(&'a str),
+    CustomEmoji(&'a CustomEmojiId),
 }
 
 pub struct SimpleTag {
@@ -181,7 +183,7 @@ impl TagWriter {
                     Place::End => self.text_mention.middle.len() + self.text_mention.end.len(),
                 },
                 Kind::CustomEmoji(custom_emoji_id) => match tag.place {
-                    Place::Start => self.custom_emoji.start.len() + custom_emoji_id.len(),
+                    Place::Start => self.custom_emoji.start.len() + custom_emoji_id.0.len(),
                     Place::MidNewLine => unreachable!(),
                     Place::End => self.custom_emoji.middle.len() + self.custom_emoji.end.len(),
                 },

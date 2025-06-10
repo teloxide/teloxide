@@ -51,7 +51,7 @@ async fn main() {
 
             // Send it off! One thing to note -- the ID we use here must be of the query
             // we're responding to.
-            let response = bot.answer_inline_query(&q.id, results).send().await;
+            let response = bot.answer_inline_query(q.id.clone(), results).send().await;
             if let Err(err) = response {
                 log::error!("Error in handler: {:?}", err);
             }
