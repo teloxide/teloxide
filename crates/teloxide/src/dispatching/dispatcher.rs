@@ -201,6 +201,10 @@ where
     }
 
     /// Constructs [`Dispatcher`].
+    ///
+    /// ## Panics
+    /// This function will panic at run-time if [`dptree`] fails to type-check
+    /// the provided handler. An appropriate error message will be emitted.
     #[must_use]
     pub fn build(self) -> Dispatcher<R, Err, Key> {
         let Self {
