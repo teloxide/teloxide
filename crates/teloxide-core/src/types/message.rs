@@ -113,6 +113,23 @@ pub enum MessageKind {
     Empty {},
 }
 
+/// Unique identifier of the message effect added to the message
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str)]
+pub struct EffectId(pub String);
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
@@ -121,7 +138,7 @@ pub struct MessageCommon {
     pub author_signature: Option<String>,
 
     /// Unique identifier of the message effect added to the message
-    pub effect_id: Option<String>,
+    pub effect_id: Option<EffectId>,
 
     /// Information about the original message for forwarded messages
     pub forward_origin: Option<MessageOrigin>,
@@ -756,7 +773,7 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, LinkPreviewOptions,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
         MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory,
         MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
@@ -798,9 +815,9 @@ mod getters {
         }
 
         #[must_use]
-        pub fn effect_id(&self) -> Option<&str> {
+        pub fn effect_id(&self) -> Option<&EffectId> {
             match &self.kind {
-                Common(MessageCommon { effect_id, .. }) => effect_id.as_deref(),
+                Common(MessageCommon { effect_id, .. }) => effect_id.as_ref(),
                 _ => None,
             }
         }
@@ -2803,7 +2820,7 @@ mod tests {
             "effect_id": "5123233223429587601"
         }"#;
         let message: Message = from_str(json).unwrap();
-        assert_eq!(message.effect_id().unwrap(), "5123233223429587601")
+        assert_eq!(message.effect_id().unwrap().to_string(), "5123233223429587601")
     }
 
     #[test]

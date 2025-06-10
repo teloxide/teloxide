@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `BoostId` struct
   - Add `CustomEmojiId` struct
   - Add `MediaGroupId` struct
+  - Add `EffectId` struct
 
 ### Changed
 
@@ -39,6 +40,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
   - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
   - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
+  - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
+  - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
+  - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
 
 ## 0.11.2 - 2025-04-04
 

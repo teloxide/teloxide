@@ -278,7 +278,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -602,7 +602,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -715,7 +715,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -815,7 +815,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -943,7 +943,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1064,7 +1064,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1160,7 +1160,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1250,7 +1250,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1317,7 +1317,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1400,7 +1400,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1708,7 +1708,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1792,7 +1792,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1929,7 +1929,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1995,7 +1995,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -3955,7 +3955,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -4472,7 +4472,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -4781,7 +4781,7 @@ Schema(
                 ),
                 Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(

@@ -4,7 +4,7 @@ use serde::Serialize;
 use url::Url;
 
 use crate::types::{
-    InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ReplyParameters, ThreadId,
+    EffectId, InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ReplyParameters, ThreadId,
 };
 
 impl_payload! {
@@ -77,7 +77,7 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
-            pub message_effect_id: String [into],
+            pub message_effect_id: EffectId,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.
