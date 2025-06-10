@@ -39,6 +39,7 @@ use std::fmt::Debug;
 ///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
+/// [`DependencyMap`]: dptree::di::DependencyMap
 ///
 /// ## Stopping
 //
