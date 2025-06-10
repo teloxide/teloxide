@@ -555,7 +555,7 @@ Schema(
                     name: "photo",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
+                        md: "Photo to send. Pass a file_id as FileId to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     )
                 ),
@@ -655,7 +655,7 @@ Schema(
                     name: "audio",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "Audio file to send. Pass a file_id as FileId to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -765,7 +765,7 @@ Schema(
                     name: "document",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "File to send. Pass a file_id as FileId to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -868,7 +868,7 @@ Schema(
                     name: "video",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Video to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
+                        md: "Video to send. Pass a file_id as FileId to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -994,7 +994,7 @@ Schema(
                     name: "animation",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Animation to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
+                        md: "Animation to send. Pass a file_id as FileId to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -1118,7 +1118,7 @@ Schema(
                     name: "voice",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "Audio file to send. Pass a file_id as FileId to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -1213,7 +1213,7 @@ Schema(
                     name: "video_note",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported",
+                        md: "Video note to send. Pass a file_id as FileId to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -3931,7 +3931,7 @@ Schema(
                     name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Sticker to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
+                        md: "Sticker to send. Pass a file_id as FileId to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     )
                 ),
@@ -4197,7 +4197,7 @@ Schema(
                     name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
-                        md: "A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.",
+                        md: "A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as FileId to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),

@@ -18,7 +18,7 @@ impl_payload! {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
-            /// Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported
+            /// Video note to send. Pass a file_id as FileId to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
             pub video_note: InputFile,
