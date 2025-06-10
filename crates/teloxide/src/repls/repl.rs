@@ -94,6 +94,7 @@ where
 ///
 /// [`Me`]: crate::types::Me
 /// [`Message`]: crate::types::Message
+/// [`DependencyMap`]: dptree::di::DependencyMap
 ///
 /// ## Stopping
 //
