@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Chat, ChatBoostSource};
+use crate::types::{BoostId, Chat, ChatBoostSource};
 
 /// This object represents a boost removed from a chat.
 #[serde_with::skip_serializing_none]
@@ -10,9 +10,8 @@ pub struct ChatBoostRemoved {
     /// Chat which was boosted
     pub chat: Chat,
 
-    // FIXME: BoostId
     /// Unique identifier of the boost
-    pub boost_id: String,
+    pub boost_id: BoostId,
 
     /// Point in time (Unix timestamp) when the boost was removed
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]

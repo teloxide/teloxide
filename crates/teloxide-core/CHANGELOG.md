@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PreCheckoutQueryId` struct
   - Add `ShippingQueryId` struct
   - Add `InlineQueryId` struct
+  - Add `BoostId` struct
 
 ### Changed
 
@@ -27,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
   - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
   - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
+  - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
 
 ## 0.11.2 - 2025-04-04
 

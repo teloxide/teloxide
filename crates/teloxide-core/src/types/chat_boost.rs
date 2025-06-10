@@ -3,12 +3,17 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::ChatBoostSource;
 
+/// Unique identifier of the boost
+#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct BoostId(pub String);
+
 /// This object contains information about a chat boost.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ChatBoost {
     /// Unique identifier of the boost.
-    pub boost_id: String,
+    pub boost_id: BoostId,
 
     /// Point in time (Unix timestamp) when the chat was boosted.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
