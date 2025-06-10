@@ -2,7 +2,7 @@
 // Required for the `filter_from` currently
 #![allow(deprecated)]
 
-use dptree::{di::DependencyMap, Handler};
+use dptree::Handler;
 
 use crate::{
     dispatching::DpHandlerDescription,
@@ -26,11 +26,11 @@ macro_rules! define_ext {
 
     (@sig $func:ident, $fn_doc:expr) => {
         #[doc = $fn_doc]
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription>;
+        fn $func() -> Handler<'static, Out, DpHandlerDescription>;
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr, $Allowed:ident) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
+        fn $func() -> Handler<'static, Out, DpHandlerDescription> {
             dptree::filter_map_with_description(DpHandlerDescription::of(AllowedUpdate::$Allowed), move |input: $for_ty| {
                 $proj_fn(input)
             })
@@ -38,7 +38,7 @@ macro_rules! define_ext {
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
+        fn $func() -> Handler<'static, Out, DpHandlerDescription> {
             dptree::filter_map(move |input: $for_ty| {
                 $proj_fn(input)
             })

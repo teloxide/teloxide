@@ -10,7 +10,7 @@ use crate::{
     update_listeners::{self, UpdateListener},
 };
 
-use dptree::di::{DependencyMap, DependencySupplier};
+use dptree::di::DependencyMap;
 use either::Either;
 use futures::{
     future::{self, BoxFuture},
@@ -201,6 +201,10 @@ where
     }
 
     /// Constructs [`Dispatcher`].
+    ///
+    /// ## Panics
+    /// This function will panic at run-time if [`dptree`] fails to type-check
+    /// the provided handler. An appropriate error message will be emitted.
     #[must_use]
     pub fn build(self) -> Dispatcher<R, Err, Key> {
         let Self {
@@ -213,6 +217,16 @@ where
             worker_queue_size,
             ctrlc_handler,
         } = self;
+
+        dptree::type_check(
+            handler.sig(),
+            &dependencies,
+            &[
+                dptree::Type::of::<R>(),
+                dptree::Type::of::<teloxide_core::types::Update>(),
+                dptree::Type::of::<teloxide_core::types::Me>(),
+            ],
+        );
 
         // If the `ctrlc_handler` feature is not enabled, don't emit a warning.
         let _ = ctrlc_handler;
@@ -288,8 +302,7 @@ struct Worker {
 // webhooks, so we can allow this too. See more there: https://core.telegram.org/bots/api#making-requests-when-getting-updates
 
 /// A handler that processes updates from Telegram.
-pub type UpdateHandler<Err> =
-    dptree::Handler<'static, DependencyMap, Result<(), Err>, DpHandlerDescription>;
+pub type UpdateHandler<Err> = dptree::Handler<'static, Result<(), Err>, DpHandlerDescription>;
 
 type DefaultHandler = Arc<dyn Fn(Arc<Update>) -> BoxFuture<'static, ()> + Send + Sync>;
 
