@@ -1,6 +1,7 @@
 #![allow(clippy::large_enum_variant)]
 
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -394,6 +395,23 @@ pub struct MediaAnimation {
     // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
+/// The unique identifier of a media message group the message belongs to.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str)]
+pub struct MediaGroupId(pub String);
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaAudio {
@@ -410,7 +428,7 @@ pub struct MediaAudio {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -436,7 +454,7 @@ pub struct MediaDocument {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -480,7 +498,7 @@ pub struct MediaPhoto {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -545,7 +563,7 @@ pub struct MediaVideo {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -751,7 +769,7 @@ mod getters {
     };
 
     use super::{
-        MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
+        MediaGroupId, MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
         MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
         MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
         MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
@@ -891,7 +909,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn media_group_id(&self) -> Option<&str> {
+        pub fn media_group_id(&self) -> Option<&MediaGroupId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Video(MediaVideo { media_group_id, .. }),
@@ -908,7 +926,7 @@ mod getters {
                 | Common(MessageCommon {
                     media_kind: MediaKind::Audio(MediaAudio { media_group_id, .. }),
                     ..
-                }) => media_group_id.as_ref().map(Deref::deref),
+                }) => media_group_id.as_ref(),
                 _ => None,
             }
         }
