@@ -1,13 +1,17 @@
 [assign]
 warn_non_default_branch = true
 contributing_url = "https://github.com/teloxide/teloxide/blob/master/CONTRIBUTING.md"
+users_on_vacation = ["@syrtcevvi"]
 
 [assign.adhoc_groups]
 # This is a special group that will be used if none of the `owners` entries matches.
-# fallback = ["@hirrolot"]
+fallback = ["@hirrolot", "@shdwchn10", "@syrtcevvi", "@LasterAlex"]
 
 [assign.owners]
-"crates/teloxide" = ["@hirrolot"]
+"crates/teloxide" = ["@hirrolot", "@LasterAlex", "@shdwchn10"]
+"crates/teloxide-core" = ["@LasterAlex", "@shdwchn10"]
+"crates/teloxide-macros" = ["@hirrolot", "@LasterAlex"]
+".devcontainer" = ["@shdwchn10"]
 
 
 [autolabel."S-waiting-on-review"]
