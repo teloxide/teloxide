@@ -19,7 +19,7 @@ use std::{
     sync::Arc, task,
 };
 
-use crate::types::InputSticker;
+use crate::types::{self, InputSticker};
 
 /// This object represents the contents of a file to be uploaded.
 ///
@@ -37,7 +37,7 @@ enum InnerFile {
     File(PathBuf),
     Bytes(bytes::Bytes),
     Url(url::Url),
-    FileId(String),
+    FileId(types::FileId),
 }
 
 use InnerFile::*;
@@ -78,8 +78,8 @@ impl InputFile {
     ///   valid file_ids even for the same bot.
     ///
     /// [sizes]: crate::types::PhotoSize
-    pub fn file_id(file_id: impl Into<String>) -> Self {
-        Self::new(FileId(file_id.into()))
+    pub fn file_id(file_id: types::FileId) -> Self {
+        Self::new(FileId(file_id))
     }
 
     /// Creates an `InputFile` from a file path.
@@ -131,7 +131,7 @@ impl InputFile {
     /// **Note**: this replaces `self` with a dummy value, this function should
     /// only be used when the file is about to get dropped.
     pub(crate) fn take(&mut self) -> Self {
-        mem::replace(self, InputFile::file_id(String::new()))
+        mem::replace(self, InputFile::file_id(types::FileId(String::new())))
     }
 
     /// Returns an attach string for `multipart/form-data` in the form of
@@ -141,7 +141,7 @@ impl InputFile {
     fn attach_or_value(&self) -> String {
         match &self.inner {
             Url(url) => url.as_str().to_owned(),
-            FileId(file_id) => file_id.clone(),
+            FileId(file_id) => file_id.clone().to_string(),
             _ => {
                 const PREFIX: &str = "attach://";
 

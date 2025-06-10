@@ -1,11 +1,24 @@
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::ChatBoostSource;
 
 /// Unique identifier of the boost
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct BoostId(pub String);
 
 /// This object contains information about a chat boost.

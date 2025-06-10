@@ -605,7 +605,7 @@ mod tests {
     fn photo_serialize() {
         let expected_json = r#"{"type":"photo","media":"123456"}"#;
         let photo = InputMedia::Photo(InputMediaPhoto {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             caption: None,
             parse_mode: None,
             caption_entities: None,
@@ -621,7 +621,7 @@ mod tests {
     fn video_serialize() {
         let expected_json = r#"{"type":"video","media":"123456"}"#;
         let video = InputMedia::Video(InputMediaVideo {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,
@@ -642,7 +642,7 @@ mod tests {
     fn animation_serialize() {
         let expected_json = r#"{"type":"animation","media":"123456"}"#;
         let video = InputMedia::Animation(InputMediaAnimation {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,
@@ -662,7 +662,7 @@ mod tests {
     fn audio_serialize() {
         let expected_json = r#"{"type":"audio","media":"123456"}"#;
         let video = InputMedia::Audio(InputMediaAudio {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,
@@ -680,7 +680,7 @@ mod tests {
     fn document_serialize() {
         let expected_json = r#"{"type":"document","media":"123456"}"#;
         let video = InputMedia::Document(InputMediaDocument {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,

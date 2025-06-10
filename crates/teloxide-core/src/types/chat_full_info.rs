@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
@@ -7,8 +8,20 @@ use crate::types::{
 };
 
 /// Custom emoji identifier.
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct CustomEmojiId(pub String);
 
 /// This object contains full information about a chat.

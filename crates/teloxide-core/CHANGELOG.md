@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New id types ([#1153](pr1153))
   - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
   - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
-  - Changed `id` field to `FileId` in `File` and in `get_file` method
+  - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
   - Changed `unique_id` field to `FileUniqueId` in `File`
   - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
   - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method

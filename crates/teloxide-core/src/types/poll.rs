@@ -1,11 +1,24 @@
 use crate::types::{MessageEntity, PollType, Seconds, User};
 
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 /// Unique poll identifier.
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct PollId(pub String);
 
 /// This object contains information about a poll.

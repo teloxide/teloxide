@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 /// This object represents a file ready to be downloaded.
@@ -30,15 +31,39 @@ pub struct File {
 }
 
 /// Identifier for a file
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct FileId(pub String);
 
 /// Unique identifier for a file, which is supposed to be the same over
 /// time and for different bots. Can't be used to download or reuse the
 /// file.
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct FileUniqueId(pub String);
 
 /// Metadata of a [`File`].
