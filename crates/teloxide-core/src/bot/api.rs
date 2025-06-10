@@ -6,9 +6,9 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, FileId,
-        InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker, LabeledPrice,
-        MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId, StickerFormat, ThreadId,
-        UserId,
+        InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker,
+        LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId,
+        StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
@@ -971,9 +971,12 @@ impl Requester for Bot {
 
     type AnswerInlineQuery = JsonRequest<payloads::AnswerInlineQuery>;
 
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>,
     {
         Self::AnswerInlineQuery::new(

@@ -907,9 +907,12 @@ pub trait Requester {
     type AnswerInlineQuery: Request<Payload = AnswerInlineQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerInlineQuery`].
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>;
 
     type AnswerWebAppQuery: Request<Payload = AnswerWebAppQuery, Err = Self::Err>;

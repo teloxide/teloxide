@@ -789,7 +789,7 @@ trait ErasableRequester<'a> {
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err>;
 
@@ -1683,7 +1683,7 @@ where
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err> {
         Requester::answer_inline_query(self, inline_query_id, results).erase()

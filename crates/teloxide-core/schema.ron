@@ -3429,7 +3429,7 @@ Schema(
             params: [
                 Param(
                     name: "inline_query_id",
-                    ty: String,
+                    ty: RawTy("InlineQueryId"),
                     descr: Doc(md: "Unique identifier for the answered query")
                 ),
                 Param(

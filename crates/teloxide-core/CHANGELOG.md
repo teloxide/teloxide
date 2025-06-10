@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `FileId` and `FileUniqueId` structs
   - Add `PreCheckoutQueryId` struct
   - Add `ShippingQueryId` struct
+  - Add `InlineQueryId` struct
 
 ### Changed
 
@@ -25,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `unique_id` field to `FileUniqueId` in `File`
   - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
   - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
+  - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
 
 ## 0.11.2 - 2025-04-04
 

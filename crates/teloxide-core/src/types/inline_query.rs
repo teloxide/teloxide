@@ -2,6 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{ChatType, Location, User};
 
+/// Unique query identifier.
+#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct InlineQueryId(pub String);
+
 /// This object represents an incoming inline query.
 ///
 /// When the user sends an empty query, your bot could return some default or
@@ -12,7 +17,7 @@ use crate::types::{ChatType, Location, User};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQuery {
     /// Unique identifier for this query.
-    pub id: String,
+    pub id: InlineQueryId,
 
     /// Sender.
     pub from: User,

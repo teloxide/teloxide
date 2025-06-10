@@ -1177,10 +1177,9 @@ macro_rules! requester_forward {
     (@method answer_inline_query $body:ident $ty:ident) => {
         type AnswerInlineQuery = $ty![AnswerInlineQuery];
 
-        fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery where I: Into<String>,
-        R: IntoIterator<Item = InlineQueryResult> {
+        fn answer_inline_query<R>(&self, inline_query_id: InlineQueryId, results: R) -> Self::AnswerInlineQuery where R: IntoIterator<Item = InlineQueryResult> {
             let this = self;
-            $body!(answer_inline_query this (inline_query_id: I, results: R))
+            $body!(answer_inline_query this (inline_query_id: InlineQueryId, results: R))
         }
     };
     (@method answer_web_app_query $body:ident $ty:ident) => {
