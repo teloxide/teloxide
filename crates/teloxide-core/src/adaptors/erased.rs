@@ -674,7 +674,7 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         name: String,
         icon_color: Rgb,
-        icon_custom_emoji_id: String,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
 
     fn edit_forum_topic(
@@ -875,7 +875,7 @@ trait ErasableRequester<'a> {
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err>;
 
     fn upload_sticker_file(
@@ -1512,7 +1512,7 @@ where
         chat_id: Recipient,
         name: String,
         icon_color: Rgb,
-        icon_custom_emoji_id: String,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
         Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
     }
@@ -1799,7 +1799,7 @@ where
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err> {
         Requester::get_custom_emoji_stickers(self, custom_emoji_ids).erase()
     }

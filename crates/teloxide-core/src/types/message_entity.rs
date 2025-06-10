@@ -2,7 +2,7 @@ use std::{cmp, ops::Range};
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{User, UserId};
+use crate::types::{CustomEmojiId, User, UserId};
 
 /// This object represents one special entity in a text message.
 ///
@@ -117,7 +117,11 @@ impl MessageEntity {
 
     /// Create a message entity representing a custom emoji.
     #[must_use]
-    pub const fn custom_emoji(custom_emoji_id: String, offset: usize, length: usize) -> Self {
+    pub const fn custom_emoji(
+        custom_emoji_id: CustomEmojiId,
+        offset: usize,
+        length: usize,
+    ) -> Self {
         Self { kind: MessageEntityKind::CustomEmoji { custom_emoji_id }, offset, length }
     }
 
@@ -259,7 +263,7 @@ pub enum MessageEntityKind {
     Pre { language: Option<String> },
     TextLink { url: reqwest::Url },
     TextMention { user: User },
-    CustomEmoji { custom_emoji_id: String }, // FIXME(waffle): newtype this
+    CustomEmoji { custom_emoji_id: CustomEmojiId },
 }
 
 #[cfg(test)]

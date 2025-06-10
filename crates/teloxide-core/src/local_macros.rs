@@ -950,11 +950,10 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String> {
+        fn create_forum_topic<C, N>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId) -> Self::CreateForumTopic where C: Into<Recipient>,
+        N: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I))
+            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
@@ -1300,7 +1299,7 @@ macro_rules! requester_forward {
     (@method get_custom_emoji_stickers $body:ident $ty:ident) => {
         type GetCustomEmojiStickers = $ty![GetCustomEmojiStickers];
 
-        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = String> {
+        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = CustomEmojiId> {
             let this = self;
             $body!(get_custom_emoji_stickers this (custom_emoji_ids: C))
         }

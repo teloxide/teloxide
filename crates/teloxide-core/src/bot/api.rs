@@ -5,9 +5,9 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, FileId,
-        InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPollOption, InputSticker,
-        LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId,
+        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
+        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPollOption,
+        InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId,
         StickerFormat, ThreadId, UserId,
     },
     Bot,
@@ -680,17 +680,16 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
-    fn create_forum_topic<C, N, I>(
+    fn create_forum_topic<C, N>(
         &self,
         chat_id: C,
         name: N,
         icon_color: Rgb,
-        icon_custom_emoji_id: I,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>,
-        I: Into<String>,
     {
         Self::CreateForumTopic::new(
             self.clone(),
@@ -1173,7 +1172,7 @@ impl Requester for Bot {
 
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>,
+        C: IntoIterator<Item = CustomEmojiId>,
     {
         Self::GetCustomEmojiStickers::new(
             self.clone(),

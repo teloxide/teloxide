@@ -6,6 +6,11 @@ use crate::types::{
     ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
 };
 
+/// Custom emoji identifier.
+#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct CustomEmojiId(pub String);
+
 /// This object contains full information about a chat.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -45,8 +50,7 @@ pub struct ChatFullInfo {
 
     /// Custom emoji identifier of the emoji chosen by the chat for the reply
     /// header and link preview background
-    // FIXME: CustomEmojiId
-    pub background_custom_emoji_id: Option<String>,
+    pub background_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Identifier of the accent color for the chat's profile background. See
     /// [profile accent colors] for more details.
@@ -56,13 +60,11 @@ pub struct ChatFullInfo {
 
     /// Custom emoji identifier of the emoji chosen by the chat for its profile
     /// background
-    // FIXME: CustomEmojiId
-    pub profile_background_custom_emoji_id: Option<String>,
+    pub profile_background_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Custom emoji identifier of emoji status of the other party in a private
     /// chat.
-    // FIXME: CustomEmojiId
-    pub emoji_status_custom_emoji_id: Option<String>,
+    pub emoji_status_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Expiration date of the emoji status of the chat or the other party in a
     /// private chat, in Unix time, if any

@@ -696,17 +696,16 @@ pub trait Requester {
     type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateForumTopic`].
-    fn create_forum_topic<C, N, I>(
+    fn create_forum_topic<C, N>(
         &self,
         chat_id: C,
         name: N,
         icon_color: Rgb,
-        icon_custom_emoji_id: I,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String>;
+        N: Into<String>;
 
     type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
 
@@ -1060,7 +1059,7 @@ pub trait Requester {
     /// For Telegram documentation see [`GetCustomEmojiStickers`].
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>;
+        C: IntoIterator<Item = CustomEmojiId>;
 
     type UploadStickerFile: Request<Payload = UploadStickerFile, Err = Self::Err>;
 

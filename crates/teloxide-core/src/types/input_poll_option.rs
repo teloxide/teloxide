@@ -63,7 +63,7 @@ impl From<&str> for InputPollOption {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::MessageEntityKind;
+    use crate::types::{CustomEmojiId, MessageEntityKind};
 
     use super::*;
 
@@ -84,7 +84,7 @@ mod tests {
         let actual = serde_json::to_string(&InputPollOption::new("Yay🐧").text_entities(vec![
             MessageEntity::new(
                 MessageEntityKind::CustomEmoji {
-                    custom_emoji_id: "5852631516261125005".to_owned(),
+                    custom_emoji_id: CustomEmojiId("5852631516261125005".to_owned()),
                 },
                 3,
                 2,

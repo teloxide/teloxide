@@ -2896,7 +2896,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: String,
+                    ty: RawTy("CustomEmojiId"),
                     descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
                 ),
             ],
@@ -2925,7 +2925,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers. Pass an empty string to remove the icon. If not specified, the current icon will be kept")
                 ),
             ],
@@ -3999,7 +3999,7 @@ Schema(
             params: [
                 Param(
                     name: "custom_emoji_ids",
-                    ty: ArrayOf(String),
+                    ty: ArrayOf(RawTy("CustomEmojiId")),
                     descr: Doc(md: "List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified."),
                 ),
             ],
@@ -4222,7 +4222,7 @@ Schema(
                 ),
                 Param(
                     name: "custom_emoji_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail."),
                 )
             ]

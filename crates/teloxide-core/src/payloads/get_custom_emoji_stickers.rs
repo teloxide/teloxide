@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::Sticker;
+use crate::types::{CustomEmojiId, Sticker};
 
 impl_payload! {
     /// Use this method to get information about custom emoji stickers by their identifiers. Returns an Array of Sticker objects.
@@ -10,7 +10,7 @@ impl_payload! {
     pub GetCustomEmojiStickers (GetCustomEmojiStickersSetters) => Vec<Sticker> {
         required {
             /// List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified.
-            pub custom_emoji_ids: Vec<String> [collect],
+            pub custom_emoji_ids: Vec<CustomEmojiId> [collect],
         }
     }
 }

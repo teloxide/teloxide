@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `ShippingQueryId` struct
   - Add `InlineQueryId` struct
   - Add `BoostId` struct
+  - Add `CustomEmojiId` struct
 
 ### Changed
 
@@ -29,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
   - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
   - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
+  - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
+  - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
+  - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
+  - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
+  - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
+  - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
 
 ## 0.11.2 - 2025-04-04
 
