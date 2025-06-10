@@ -21,7 +21,7 @@ use crate::types::{
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct CustomEmojiId(pub String);
 
 /// This object contains full information about a chat.

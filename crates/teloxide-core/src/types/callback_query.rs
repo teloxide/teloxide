@@ -17,7 +17,7 @@ use crate::types::{MaybeInaccessibleMessage, Message, User};
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct CallbackQueryId(pub String);
 
 /// This object represents an incoming callback query from a callback button in

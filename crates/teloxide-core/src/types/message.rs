@@ -127,7 +127,7 @@ pub enum MessageKind {
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct EffectId(pub String);
 
 #[serde_with::skip_serializing_none]
@@ -426,7 +426,7 @@ pub struct MediaAnimation {
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct MediaGroupId(pub String);
 
 #[serde_with::skip_serializing_none]

@@ -63,7 +63,7 @@ pub struct FileId(pub String);
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct FileUniqueId(pub String);
 
 /// Metadata of a [`File`].

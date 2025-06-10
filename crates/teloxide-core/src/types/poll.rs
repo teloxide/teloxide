@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct PollId(pub String);
 
 /// This object contains information about a poll.

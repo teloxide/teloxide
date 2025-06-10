@@ -18,7 +18,7 @@ use crate::types::ChatBoostSource;
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct BoostId(pub String);
 
 /// This object contains information about a chat boost.

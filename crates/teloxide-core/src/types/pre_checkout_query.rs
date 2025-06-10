@@ -17,7 +17,7 @@ use crate::types::{OrderInfo, User};
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct PreCheckoutQueryId(pub String);
 
 /// This object contains information about an incoming pre-checkout query.

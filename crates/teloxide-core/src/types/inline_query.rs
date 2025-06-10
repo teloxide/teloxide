@@ -17,7 +17,7 @@ use crate::types::{ChatType, Location, User};
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct InlineQueryId(pub String);
 
 /// This object represents an incoming inline query.

@@ -17,7 +17,7 @@ use crate::types::{ShippingAddress, User};
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct ShippingQueryId(pub String);
 
 /// This object contains information about an incoming shipping query.
