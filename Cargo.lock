@@ -2519,6 +2519,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-util",
+ "tracing",
  "url",
  "uuid",
  "vecrem",

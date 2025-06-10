@@ -86,6 +86,7 @@ pub trait Download {
 /// Note: if you don't need to use a different (from you're bot) client and
 /// don't need to get *all* performance (and you don't, c'mon it's very io-bound
 /// job), then it's recommended to use [`Download::download_file`].
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
 pub fn download_file<'o, D>(
     client: &Client,
     api_url: Url,
@@ -112,6 +113,7 @@ where
 /// Note: if you don't need to use a different (from you're bot) client and
 /// don't need to get *all* performance (and you don't, c'mon it's very io-bound
 /// job), then it's recommended to use [`Download::download_file_stream`].
+#[cfg_attr(feature = "tracing", tracing::instrument(skip_all))]
 pub fn download_file_stream(
     client: &Client,
     api_url: Url,
