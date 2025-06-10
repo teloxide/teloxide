@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent};
 
 /// Represents a link to a sticker stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedSticker {
     pub id: String,
 
     /// A valid file identifier of the sticker.
-    pub sticker_file_id: String,
+    pub sticker_file_id: FileId,
 
     /// [Inline keyboard] attached to the message.
     ///
@@ -28,17 +28,11 @@ pub struct InlineQueryResultCachedSticker {
 }
 
 impl InlineQueryResultCachedSticker {
-    pub fn new<S1, S2>(id: S1, sticker_file_id: S2) -> Self
+    pub fn new<S1>(id: S1, sticker_file_id: FileId) -> Self
     where
         S1: Into<String>,
-        S2: Into<String>,
     {
-        Self {
-            id: id.into(),
-            sticker_file_id: sticker_file_id.into(),
-            reply_markup: None,
-            input_message_content: None,
-        }
+        Self { id: id.into(), sticker_file_id, reply_markup: None, input_message_content: None }
     }
 
     pub fn id<S>(mut self, val: S) -> Self
@@ -49,11 +43,8 @@ impl InlineQueryResultCachedSticker {
         self
     }
 
-    pub fn sticker_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.sticker_file_id = val.into();
+    pub fn sticker_file_id(mut self, val: FileId) -> Self {
+        self.sticker_file_id = val;
         self
     }
 

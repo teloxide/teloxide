@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a voice message stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedVoice {
     pub id: String,
 
     /// A valid file identifier for the voice message.
-    pub voice_file_id: String,
+    pub voice_file_id: FileId,
 
     /// Voice message title.
     pub title: String,
@@ -46,15 +46,14 @@ pub struct InlineQueryResultCachedVoice {
 }
 
 impl InlineQueryResultCachedVoice {
-    pub fn new<S1, S2, S3>(id: S1, voice_file_id: S2, title: S3) -> Self
+    pub fn new<S1, S2>(id: S1, voice_file_id: FileId, title: S2) -> Self
     where
         S1: Into<String>,
         S2: Into<String>,
-        S3: Into<String>,
     {
         Self {
             id: id.into(),
-            voice_file_id: voice_file_id.into(),
+            voice_file_id,
             title: title.into(),
             caption: None,
             parse_mode: None,
@@ -72,11 +71,8 @@ impl InlineQueryResultCachedVoice {
         self
     }
 
-    pub fn voice_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.voice_file_id = val.into();
+    pub fn voice_file_id(mut self, val: FileId) -> Self {
+        self.voice_file_id = val;
         self
     }
 

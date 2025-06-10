@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a photo stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedPhoto {
     pub id: String,
 
     /// A valid file identifier of the photo.
-    pub photo_file_id: String,
+    pub photo_file_id: FileId,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -53,14 +53,13 @@ pub struct InlineQueryResultCachedPhoto {
 }
 
 impl InlineQueryResultCachedPhoto {
-    pub fn new<S1, S2>(id: S1, photo_file_id: S2) -> Self
+    pub fn new<S1>(id: S1, photo_file_id: FileId) -> Self
     where
         S1: Into<String>,
-        S2: Into<String>,
     {
         Self {
             id: id.into(),
-            photo_file_id: photo_file_id.into(),
+            photo_file_id,
             title: None,
             description: None,
             caption: None,
@@ -80,11 +79,8 @@ impl InlineQueryResultCachedPhoto {
         self
     }
 
-    pub fn photo_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.photo_file_id = val.into();
+    pub fn photo_file_id(mut self, val: FileId) -> Self {
+        self.photo_file_id = val;
         self
     }
 

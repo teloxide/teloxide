@@ -1,10 +1,23 @@
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{MaybeInaccessibleMessage, Message, User};
 
 /// A unique identifier for this query.
-#[derive(Default, Clone, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
 #[serde(transparent)]
+#[from(&'static str)]
 pub struct CallbackQueryId(pub String);
 
 /// This object represents an incoming callback query from a callback button in

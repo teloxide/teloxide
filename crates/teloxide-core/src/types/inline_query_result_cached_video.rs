@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a video file stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedVideo {
     pub id: String,
 
     /// A valid file identifier for the video file.
-    pub video_file_id: String,
+    pub video_file_id: FileId,
 
     /// Title for each result.
     pub title: String,
@@ -53,15 +53,14 @@ pub struct InlineQueryResultCachedVideo {
 }
 
 impl InlineQueryResultCachedVideo {
-    pub fn new<S1, S2, S3>(id: S1, video_file_id: S2, title: S3) -> Self
+    pub fn new<S1, S2>(id: S1, video_file_id: FileId, title: S2) -> Self
     where
         S1: Into<String>,
         S2: Into<String>,
-        S3: Into<String>,
     {
         Self {
             id: id.into(),
-            video_file_id: video_file_id.into(),
+            video_file_id,
             title: title.into(),
             description: None,
             caption: None,
@@ -81,11 +80,8 @@ impl InlineQueryResultCachedVideo {
         self
     }
 
-    pub fn video_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.video_file_id = val.into();
+    pub fn video_file_id(mut self, val: FileId) -> Self {
+        self.video_file_id = val;
         self
     }
 

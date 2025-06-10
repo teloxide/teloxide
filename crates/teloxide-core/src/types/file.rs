@@ -44,7 +44,7 @@ pub struct File {
     From
 )]
 #[serde(transparent)]
-#[from(&'static str)]
+#[from(&'static str, String)]
 pub struct FileId(pub String);
 
 /// Unique identifier for a file, which is supposed to be the same over
