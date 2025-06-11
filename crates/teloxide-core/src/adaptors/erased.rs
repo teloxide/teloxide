@@ -497,7 +497,7 @@ trait ErasableRequester<'a> {
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err>;
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err>;
 
     fn ban_chat_member(
         &self,
@@ -674,7 +674,7 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         name: String,
         icon_color: Rgb,
-        icon_custom_emoji_id: String,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
 
     fn edit_forum_topic(
@@ -740,7 +740,7 @@ trait ErasableRequester<'a> {
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err>;
 
     fn get_user_chat_boosts(
@@ -789,7 +789,7 @@ trait ErasableRequester<'a> {
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err>;
 
@@ -875,7 +875,7 @@ trait ErasableRequester<'a> {
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err>;
 
     fn upload_sticker_file(
@@ -976,13 +976,13 @@ trait ErasableRequester<'a> {
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err>;
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
 
@@ -1271,7 +1271,7 @@ where
         Requester::get_user_profile_photos(self, user_id).erase()
     }
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err> {
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err> {
         Requester::get_file(self, file_id).erase()
     }
 
@@ -1512,7 +1512,7 @@ where
         chat_id: Recipient,
         name: String,
         icon_color: Rgb,
-        icon_custom_emoji_id: String,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
         Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
     }
@@ -1602,7 +1602,7 @@ where
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err> {
         Requester::answer_callback_query(self, callback_query_id).erase()
     }
@@ -1683,7 +1683,7 @@ where
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err> {
         Requester::answer_inline_query(self, inline_query_id, results).erase()
@@ -1799,7 +1799,7 @@ where
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err> {
         Requester::get_custom_emoji_stickers(self, custom_emoji_ids).erase()
     }
@@ -1933,7 +1933,7 @@ where
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err> {
         Requester::answer_shipping_query(self, shipping_query_id, ok).erase()
@@ -1941,7 +1941,7 @@ where
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()

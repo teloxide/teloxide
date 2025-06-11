@@ -98,9 +98,9 @@ mod tests {
     #[tokio::test]
     async fn issue_473() {
         to_form_ref(
-            &payloads::SendPhoto::new(ChatId(0), InputFile::file_id("0")).caption_entities([
-                MessageEntity { kind: MessageEntityKind::Url, offset: 0, length: 0 },
-            ]),
+            &payloads::SendPhoto::new(ChatId(0), InputFile::file_id("0".into())).caption_entities(
+                [MessageEntity { kind: MessageEntityKind::Url, offset: 0, length: 0 }],
+            ),
         )
         .unwrap()
         .await;
@@ -120,7 +120,7 @@ mod tests {
                         .caption_entities(entities()),
                 ),
                 InputMedia::Video(
-                    InputMediaVideo::new(InputFile::file_id("17")).supports_streaming(true),
+                    InputMediaVideo::new(InputFile::file_id("17".into())).supports_streaming(true),
                 ),
                 InputMedia::Animation(
                     InputMediaAnimation::new(InputFile::read(

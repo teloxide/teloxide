@@ -3,7 +3,7 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, InputMedia, Message, Recipient, ReplyParameters, ThreadId,
+    BusinessConnectionId, EffectId, InputMedia, Message, Recipient, ReplyParameters, ThreadId,
 };
 
 impl_payload! {
@@ -39,7 +39,7 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
-            pub message_effect_id: String [into],
+            pub message_effect_id: EffectId,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
         }

@@ -22,6 +22,8 @@ pub struct PhotoSize {
 
 #[cfg(test)]
 mod tests {
+    use crate::types::{FileId, FileUniqueId};
+
     use super::*;
 
     #[test]
@@ -29,7 +31,11 @@ mod tests {
         let json = r#"{"file_id":"id","file_unique_id":"","width":320,"height":320,
                              "file_size":3452}"#;
         let expected = PhotoSize {
-            file: FileMeta { id: "id".to_owned(), unique_id: "".to_owned(), size: 3452 },
+            file: FileMeta {
+                id: FileId("id".to_owned()),
+                unique_id: FileUniqueId("".to_owned()),
+                size: 3452,
+            },
             width: 320,
             height: 320,
         };

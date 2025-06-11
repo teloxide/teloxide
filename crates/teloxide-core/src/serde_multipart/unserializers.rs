@@ -93,9 +93,9 @@ fn test() {
         matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::Url(v)) if v == url)
     );
 
-    let value = InputFile::FileId(String::from("file_id"));
+    let value = InputFile::FileId("file_id".into());
     assert!(
-        matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::FileId(v)) if v == "file_id")
+        matches!(value.serialize(InputFileUnserializer::NotMem), Ok(InputFile::FileId(v.into())) if v == "file_id")
     );
 
     let value = InputFile::Memory {

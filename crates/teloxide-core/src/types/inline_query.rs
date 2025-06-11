@@ -1,6 +1,24 @@
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{ChatType, Location, User};
+
+/// Unique query identifier.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct InlineQueryId(pub String);
 
 /// This object represents an incoming inline query.
 ///
@@ -12,7 +30,7 @@ use crate::types::{ChatType, Location, User};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InlineQuery {
     /// Unique identifier for this query.
-    pub id: String,
+    pub id: InlineQueryId,
 
     /// Sender.
     pub from: User,

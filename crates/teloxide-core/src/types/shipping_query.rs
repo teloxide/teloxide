@@ -1,6 +1,24 @@
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{ShippingAddress, User};
+
+/// Unique query identifier.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct ShippingQueryId(pub String);
 
 /// This object contains information about an incoming shipping query.
 ///
@@ -9,7 +27,7 @@ use crate::types::{ShippingAddress, User};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct ShippingQuery {
     /// Unique query identifier.
-    pub id: String,
+    pub id: ShippingQueryId,
 
     /// User who sent the query.
     pub from: User,

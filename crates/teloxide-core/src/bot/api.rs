@@ -5,8 +5,9 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, InputPollOption, InputSticker, LabeledPrice, MessageId, Recipient, Rgb,
+        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
+        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPollOption,
+        InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId,
         StickerFormat, ThreadId, UserId,
     },
     Bot,
@@ -330,10 +331,7 @@ impl Requester for Bot {
 
     type GetFile = JsonRequest<payloads::GetFile>;
 
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>,
-    {
+    fn get_file(&self, file_id: FileId) -> Self::GetFile {
         Self::GetFile::new(self.clone(), payloads::GetFile::new(file_id))
     }
 
@@ -682,17 +680,16 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
-    fn create_forum_topic<C, N, I>(
+    fn create_forum_topic<C, N>(
         &self,
         chat_id: C,
         name: N,
         icon_color: Rgb,
-        icon_custom_emoji_id: I,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>,
-        I: Into<String>,
     {
         Self::CreateForumTopic::new(
             self.clone(),
@@ -851,10 +848,10 @@ impl Requester for Bot {
 
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
-    fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
-    where
-        C: Into<String>,
-    {
+    fn answer_callback_query(
+        &self,
+        callback_query_id: CallbackQueryId,
+    ) -> Self::AnswerCallbackQuery {
         Self::AnswerCallbackQuery::new(
             self.clone(),
             payloads::AnswerCallbackQuery::new(callback_query_id),
@@ -973,9 +970,12 @@ impl Requester for Bot {
 
     type AnswerInlineQuery = JsonRequest<payloads::AnswerInlineQuery>;
 
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>,
     {
         Self::AnswerInlineQuery::new(
@@ -1172,7 +1172,7 @@ impl Requester for Bot {
 
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>,
+        C: IntoIterator<Item = CustomEmojiId>,
     {
         Self::GetCustomEmojiStickers::new(
             self.clone(),
@@ -1416,10 +1416,11 @@ impl Requester for Bot {
 
     type AnswerShippingQuery = JsonRequest<payloads::AnswerShippingQuery>;
 
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>,
-    {
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery {
         Self::AnswerShippingQuery::new(
             self.clone(),
             payloads::AnswerShippingQuery::new(shipping_query_id, ok),
@@ -1428,14 +1429,11 @@ impl Requester for Bot {
 
     type AnswerPreCheckoutQuery = JsonRequest<payloads::AnswerPreCheckoutQuery>;
 
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>,
-    {
+    ) -> Self::AnswerPreCheckoutQuery {
         Self::AnswerPreCheckoutQuery::new(
             self.clone(),
             payloads::AnswerPreCheckoutQuery::new(pre_checkout_query_id, ok),

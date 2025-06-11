@@ -524,7 +524,7 @@ fn empty_error() -> UpdateKind {
 #[cfg(test)]
 mod test {
     use crate::types::{
-        Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourcePremium,
+        BoostId, Chat, ChatBoost, ChatBoostRemoved, ChatBoostSource, ChatBoostSourcePremium,
         ChatBoostUpdated, ChatId, ChatKind, ChatPrivate, ChatPublic, LinkPreviewOptions,
         MaybeAnonymousUser, MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind,
         MessageReactionCountUpdated, MessageReactionUpdated, PublicChatChannel, PublicChatKind,
@@ -1098,7 +1098,7 @@ mod test {
                     }),
                 },
                 boost: ChatBoost {
-                    boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
+                    boost_id: BoostId("4506e1b7e866e33fcbde78fe1746ec3a".to_owned()),
                     add_date: DateTime::from_timestamp(1721399621, 0).unwrap(),
                     expiration_date: DateTime::from_timestamp(1745088963, 0).unwrap(),
                     source: ChatBoostSource::Premium(ChatBoostSourcePremium {
@@ -1159,7 +1159,7 @@ mod test {
                         kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
                     }),
                 },
-                boost_id: "4506e1b7e866e33fcbde78fe1746ec3a".to_owned(),
+                boost_id: BoostId("4506e1b7e866e33fcbde78fe1746ec3a".to_owned()),
                 remove_date: DateTime::from_timestamp(1721999621, 0).unwrap(),
                 source: ChatBoostSource::Premium(ChatBoostSourcePremium {
                     user: User {

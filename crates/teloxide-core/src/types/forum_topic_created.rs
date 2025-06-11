@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::Rgb;
+use crate::types::{CustomEmojiId, Rgb};
 
 /// This object represents a service message about a new forum topic created in
 /// the chat.
@@ -16,8 +16,7 @@ pub struct ForumTopicCreated {
     pub icon_color: Rgb,
 
     /// Unique identifier of the custom emoji shown as the topic icon.
-    // FIXME: CustomEmojiId
-    pub icon_custom_emoji_id: Option<String>,
+    pub icon_custom_emoji_id: Option<CustomEmojiId>,
 }
 
 #[cfg(test)]
@@ -33,6 +32,9 @@ mod tests {
 
         assert_eq!(event.name, "???");
         assert_eq!(event.icon_color, Rgb { r: 0x8E, g: 0xEE, b: 0x98 });
-        assert_eq!(event.icon_custom_emoji_id.as_deref(), Some("5312536423851630001"));
+        assert_eq!(
+            event.icon_custom_emoji_id,
+            Some(CustomEmojiId("5312536423851630001".to_owned()))
+        );
     }
 }

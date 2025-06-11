@@ -3,7 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, InputFile, Message, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    BusinessConnectionId, EffectId, InputFile, Message, Recipient, ReplyMarkup, ReplyParameters,
+    ThreadId,
 };
 
 impl_payload! {
@@ -16,7 +17,7 @@ impl_payload! {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
             pub chat_id: Recipient [into],
-            /// Sticker to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]
+            /// Sticker to send. Pass a file_id as FileId to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
             pub sticker: InputFile,
@@ -35,7 +36,7 @@ impl_payload! {
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
-            pub message_effect_id: String [into],
+            pub message_effect_id: EffectId,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

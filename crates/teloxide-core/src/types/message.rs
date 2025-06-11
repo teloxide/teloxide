@@ -1,6 +1,7 @@
 #![allow(clippy::large_enum_variant)]
 
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -112,6 +113,23 @@ pub enum MessageKind {
     Empty {},
 }
 
+/// Unique identifier of the message effect added to the message
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct EffectId(pub String);
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageCommon {
@@ -120,7 +138,7 @@ pub struct MessageCommon {
     pub author_signature: Option<String>,
 
     /// Unique identifier of the message effect added to the message
-    pub effect_id: Option<String>,
+    pub effect_id: Option<EffectId>,
 
     /// Information about the original message for forwarded messages
     pub forward_origin: Option<MessageOrigin>,
@@ -394,6 +412,23 @@ pub struct MediaAnimation {
     // Note: for backward compatibility telegram also sends `document` field, but we ignore it
 }
 
+/// The unique identifier of a media message group the message belongs to.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct MediaGroupId(pub String);
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MediaAudio {
@@ -410,7 +445,7 @@ pub struct MediaAudio {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -436,7 +471,7 @@ pub struct MediaDocument {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -480,7 +515,7 @@ pub struct MediaPhoto {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -545,7 +580,7 @@ pub struct MediaVideo {
 
     /// The unique identifier of a media message group this message belongs
     /// to.
-    pub media_group_id: Option<String>,
+    pub media_group_id: Option<MediaGroupId>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -738,7 +773,7 @@ mod getters {
     use std::ops::Deref;
 
     use crate::types::{
-        self, message::MessageKind::*, Chat, ChatId, ChatMigration, LinkPreviewOptions,
+        self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
         MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory,
         MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
@@ -751,7 +786,7 @@ mod getters {
     };
 
     use super::{
-        MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
+        MediaGroupId, MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
         MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
         MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
         MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
@@ -780,9 +815,9 @@ mod getters {
         }
 
         #[must_use]
-        pub fn effect_id(&self) -> Option<&str> {
+        pub fn effect_id(&self) -> Option<&EffectId> {
             match &self.kind {
-                Common(MessageCommon { effect_id, .. }) => effect_id.as_deref(),
+                Common(MessageCommon { effect_id, .. }) => effect_id.as_ref(),
                 _ => None,
             }
         }
@@ -891,7 +926,7 @@ mod getters {
         }
 
         #[must_use]
-        pub fn media_group_id(&self) -> Option<&str> {
+        pub fn media_group_id(&self) -> Option<&MediaGroupId> {
             match &self.kind {
                 Common(MessageCommon {
                     media_kind: MediaKind::Video(MediaVideo { media_group_id, .. }),
@@ -908,7 +943,7 @@ mod getters {
                 | Common(MessageCommon {
                     media_kind: MediaKind::Audio(MediaAudio { media_group_id, .. }),
                     ..
-                }) => media_group_id.as_ref().map(Deref::deref),
+                }) => media_group_id.as_ref(),
                 _ => None,
             }
         }
@@ -2785,7 +2820,7 @@ mod tests {
             "effect_id": "5123233223429587601"
         }"#;
         let message: Message = from_str(json).unwrap();
-        assert_eq!(message.effect_id().unwrap(), "5123233223429587601")
+        assert_eq!(message.effect_id().unwrap().to_string(), "5123233223429587601")
     }
 
     #[test]

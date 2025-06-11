@@ -432,9 +432,7 @@ pub trait Requester {
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetFile`].
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>;
+    fn get_file(&self, file_id: FileId) -> Self::GetFile;
 
     type BanChatMember: Request<Payload = BanChatMember, Err = Self::Err>;
 
@@ -698,17 +696,16 @@ pub trait Requester {
     type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateForumTopic`].
-    fn create_forum_topic<C, N, I>(
+    fn create_forum_topic<C, N>(
         &self,
         chat_id: C,
         name: N,
         icon_color: Rgb,
-        icon_custom_emoji_id: I,
+        icon_custom_emoji_id: CustomEmojiId,
     ) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String>;
+        N: Into<String>;
 
     type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
 
@@ -813,9 +810,10 @@ pub trait Requester {
     type AnswerCallbackQuery: Request<Payload = AnswerCallbackQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerCallbackQuery`].
-    fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
-    where
-        C: Into<String>;
+    fn answer_callback_query(
+        &self,
+        callback_query_id: CallbackQueryId,
+    ) -> Self::AnswerCallbackQuery;
 
     type GetUserChatBoosts: Request<Payload = GetUserChatBoosts, Err = Self::Err>;
 
@@ -908,9 +906,12 @@ pub trait Requester {
     type AnswerInlineQuery: Request<Payload = AnswerInlineQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerInlineQuery`].
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>;
 
     type AnswerWebAppQuery: Request<Payload = AnswerWebAppQuery, Err = Self::Err>;
@@ -1058,7 +1059,7 @@ pub trait Requester {
     /// For Telegram documentation see [`GetCustomEmojiStickers`].
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>;
+        C: IntoIterator<Item = CustomEmojiId>;
 
     type UploadStickerFile: Request<Payload = UploadStickerFile, Err = Self::Err>;
 
@@ -1232,20 +1233,20 @@ pub trait Requester {
     type AnswerShippingQuery: Request<Payload = AnswerShippingQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerShippingQuery`].
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>;
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery;
 
     type AnswerPreCheckoutQuery: Request<Payload = AnswerPreCheckoutQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerPreCheckoutQuery`].
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>;
+    ) -> Self::AnswerPreCheckoutQuery;
 
     type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
 

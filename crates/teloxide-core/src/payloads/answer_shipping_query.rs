@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{ShippingOption, True};
+use crate::types::{ShippingOption, ShippingQueryId, True};
 
 impl_payload! {
     /// If you sent an invoice requesting a shipping address and the parameter _is\_flexible_ was specified, the Bot API will send an [`Update`] with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
@@ -12,7 +12,7 @@ impl_payload! {
     pub AnswerShippingQuery (AnswerShippingQuerySetters) => True {
         required {
             /// Unique identifier for the query to be answered
-            pub shipping_query_id: String [into],
+            pub shipping_query_id: ShippingQueryId,
             /// Specify True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
             pub ok: bool,
         }

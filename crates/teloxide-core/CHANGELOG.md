@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
+  - Add `PollId` struct
+  - Add `CallbackQueryId` struct
+  - Add `FileId` and `FileUniqueId` structs
+  - Add `PreCheckoutQueryId` struct
+  - Add `ShippingQueryId` struct
+  - Add `InlineQueryId` struct
+  - Add `BoostId` struct
+  - Add `CustomEmojiId` struct
+  - Add `MediaGroupId` struct
+  - Add `EffectId` struct
+
+### Changed
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
+  - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
+  - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
+  - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
+  - Changed `unique_id` field to `FileUniqueId` in `File`
+  - Changed `small_file_id` and `big_file_id` to `FileId` in `ChatPhoto`
+  - Changed `small_file_unique_id` and `big_file_unique_id` to `FileUniqueId` in `ChatPhoto`
+  - Changed `inline_query_result_cached_...` structs to use `FileId`
+  - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
+  - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
+  - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
+  - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
+  - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
+  - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
+  - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
+  - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
+  - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
+  - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
+  - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
+  - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
+  - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
+  - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
+  - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed

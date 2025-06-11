@@ -687,9 +687,9 @@ macro_rules! requester_forward {
     (@method get_file $body:ident $ty:ident) => {
         type GetFile = $ty![GetFile];
 
-        fn get_file<F>(&self, file_id: F) -> Self::GetFile where F: Into<String> {
+        fn get_file(&self, file_id: FileId) -> Self::GetFile {
             let this = self;
-            $body!(get_file this (file_id: F))
+            $body!(get_file this (file_id: FileId))
         }
     };
     (@method ban_chat_member $body:ident $ty:ident) => {
@@ -950,11 +950,10 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String> {
+        fn create_forum_topic<C, N>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId) -> Self::CreateForumTopic where C: Into<Recipient>,
+        N: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I))
+            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
@@ -1049,9 +1048,9 @@ macro_rules! requester_forward {
     (@method answer_callback_query $body:ident $ty:ident) => {
         type AnswerCallbackQuery = $ty![AnswerCallbackQuery];
 
-        fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery where C: Into<String> {
+        fn answer_callback_query(&self, callback_query_id: CallbackQueryId) -> Self::AnswerCallbackQuery {
             let this = self;
-            $body!(answer_callback_query this (callback_query_id: C))
+            $body!(answer_callback_query this (callback_query_id: CallbackQueryId))
         }
     };
     (@method get_user_chat_boosts $body:ident $ty:ident) => {
@@ -1177,10 +1176,9 @@ macro_rules! requester_forward {
     (@method answer_inline_query $body:ident $ty:ident) => {
         type AnswerInlineQuery = $ty![AnswerInlineQuery];
 
-        fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery where I: Into<String>,
-        R: IntoIterator<Item = InlineQueryResult> {
+        fn answer_inline_query<R>(&self, inline_query_id: InlineQueryId, results: R) -> Self::AnswerInlineQuery where R: IntoIterator<Item = InlineQueryResult> {
             let this = self;
-            $body!(answer_inline_query this (inline_query_id: I, results: R))
+            $body!(answer_inline_query this (inline_query_id: InlineQueryId, results: R))
         }
     };
     (@method answer_web_app_query $body:ident $ty:ident) => {
@@ -1301,7 +1299,7 @@ macro_rules! requester_forward {
     (@method get_custom_emoji_stickers $body:ident $ty:ident) => {
         type GetCustomEmojiStickers = $ty![GetCustomEmojiStickers];
 
-        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = String> {
+        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = CustomEmojiId> {
             let this = self;
             $body!(get_custom_emoji_stickers this (custom_emoji_ids: C))
         }
@@ -1443,17 +1441,17 @@ macro_rules! requester_forward {
     (@method answer_shipping_query $body:ident $ty:ident) => {
         type AnswerShippingQuery = $ty![AnswerShippingQuery];
 
-        fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery where S: Into<String> {
+        fn answer_shipping_query(&self, shipping_query_id: ShippingQueryId, ok: bool) -> Self::AnswerShippingQuery {
             let this = self;
-            $body!(answer_shipping_query this (shipping_query_id: S, ok: bool))
+            $body!(answer_shipping_query this (shipping_query_id: ShippingQueryId, ok: bool))
         }
     };
     (@method answer_pre_checkout_query $body:ident $ty:ident) => {
         type AnswerPreCheckoutQuery = $ty![AnswerPreCheckoutQuery];
 
-        fn answer_pre_checkout_query<P>(&self, pre_checkout_query_id: P, ok: bool) -> Self::AnswerPreCheckoutQuery where P: Into<String> {
+        fn answer_pre_checkout_query(&self, pre_checkout_query_id: PreCheckoutQueryId, ok: bool) -> Self::AnswerPreCheckoutQuery {
             let this = self;
-            $body!(answer_pre_checkout_query this (pre_checkout_query_id: P, ok: bool))
+            $body!(answer_pre_checkout_query this (pre_checkout_query_id: PreCheckoutQueryId, ok: bool))
         }
     };
     (@method get_star_transactions $body:ident $ty:ident) => {
