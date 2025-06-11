@@ -6,9 +6,9 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
-        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPollOption,
-        InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb, ShippingQueryId,
-        StickerFormat, ThreadId, UserId,
+        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
+        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
+        ShippingQueryId, StickerFormat, ThreadId, UserId,
     },
     Bot,
 };
@@ -153,6 +153,19 @@ impl Requester for Bot {
         C: Into<Recipient>,
     {
         Self::SendVideoNote::new(self.clone(), payloads::SendVideoNote::new(chat_id, video_note))
+    }
+
+    type SendPaidMedia = MultipartRequest<payloads::SendPaidMedia>;
+
+    fn send_paid_media<C, M>(&self, chat_id: C, star_count: u32, media: M) -> Self::SendPaidMedia
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia>,
+    {
+        Self::SendPaidMedia::new(
+            self.clone(),
+            payloads::SendPaidMedia::new(chat_id, star_count, media),
+        )
     }
 
     type SendMediaGroup = MultipartRequest<payloads::SendMediaGroup>;

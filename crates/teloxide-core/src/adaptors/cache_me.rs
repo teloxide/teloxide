@@ -105,6 +105,7 @@ where
         send_animation,
         send_voice,
         send_video_note,
+        send_paid_media,
         send_media_group,
         send_location,
         edit_message_live_location,

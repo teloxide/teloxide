@@ -61,7 +61,8 @@ fn codegen_payloads() {
         let derive = if !multipart.is_empty()
             || matches!(
                 &*method.names.1,
-                "SendMediaGroup"
+                "SendPaidMedia"
+                    | "SendMediaGroup"
                     | "EditMessageMedia"
                     | "EditMessageMediaInline"
                     | "CreateNewStickerSet"

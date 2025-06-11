@@ -1273,6 +1273,85 @@ Schema(
             ],
         ),
         Method(
+            names: ("sendPaidMedia", "SendPaidMedia", "send_paid_media"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send paid media to channel chats. On success, the sent [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendpaidmedia",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "The number of Telegram Stars that must be paid to buy access to the media")
+                ),
+                Param(
+                    name: "media",
+                    ty: ArrayOf(RawTy("InputPaidMedia")),
+                    descr: Doc(md: "A JSON-serialized array describing the media to be sent; up to 10 items")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Media caption, 0-1024 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the media caption. See [formatting options] for more details.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode"),
+                ),
+                Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the caption must be shown above the message media")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user",
+                        md_links: {
+                            "inline keyboard": "https://core.telegram.org/bots/features#inline-keyboards",
+                            "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
+                        }
+                    ),
+                ),
+            ],
+        ),
+        Method(
             names: ("sendMediaGroup", "SendMediaGroup", "send_media_group"),
             return_ty: ArrayOf(RawTy("Message")),
             doc: Doc(
