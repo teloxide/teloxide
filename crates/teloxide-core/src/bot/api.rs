@@ -1584,4 +1584,38 @@ impl Requester for Bot {
     {
         Self::UnpinAllChatMessages::new(self.clone(), payloads::UnpinAllChatMessages::new(chat_id))
     }
+
+    type GetAvailableGifts = JsonRequest<payloads::GetAvailableGifts>;
+
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts {
+        Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
+
+    type SendGift = JsonRequest<payloads::SendGift>;
+
+    fn send_gift<G>(&self, gift_id: G) -> Self::SendGift
+    where
+        G: Into<String>,
+    {
+        Self::SendGift::new(self.clone(), payloads::SendGift::new(gift_id))
+    }
+
+    type SetUserEmojiStatus = JsonRequest<payloads::SetUserEmojiStatus>;
+
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+        Self::SetUserEmojiStatus::new(self.clone(), payloads::SetUserEmojiStatus::new(user_id))
+    }
+
+    type SavePreparedInlineMessage = JsonRequest<payloads::SavePreparedInlineMessage>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage {
+        Self::SavePreparedInlineMessage::new(
+            self.clone(),
+            payloads::SavePreparedInlineMessage::new(user_id, result),
+        )
+    }
 }

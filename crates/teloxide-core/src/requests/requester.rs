@@ -1312,6 +1312,32 @@ pub trait Requester {
     fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores
     where
         T: Into<TargetMessage>;
+
+    type GetAvailableGifts: Request<Payload = GetAvailableGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetAvailableGifts`].
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts;
+
+    type SendGift: Request<Payload = SendGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGift`].
+    fn send_gift<G>(&self, gift_id: G) -> Self::SendGift
+    where
+        G: Into<String>;
+
+    type SetUserEmojiStatus: Request<Payload = SetUserEmojiStatus, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetUserEmojiStatus`].
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
+
+    type SavePreparedInlineMessage: Request<Payload = SavePreparedInlineMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SavePreparedInlineMessage`].
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage;
     // END BLOCK requester_methods
 }
 
@@ -1461,7 +1487,11 @@ macro_rules! forward_all {
             set_game_score_inline,
             get_game_high_scores,
             approve_chat_join_request,
-            decline_chat_join_request
+            decline_chat_join_request,
+            get_available_gifts,
+            send_gift,
+            set_user_emoji_status,
+            save_prepared_inline_message
             => $body, $ty
         }
     };
