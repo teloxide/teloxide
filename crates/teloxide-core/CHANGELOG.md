@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `MediaGroupId` struct
   - Add `EffectId` struct
 
+- Support for TBA 7.6 ([#1356](pr1356))
+  - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
@@ -46,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
   - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
   - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+
+[pr1356]: https://github.com/teloxide/teloxide/pull/1356
 
 ## 0.11.2 - 2025-04-04
 
