@@ -3,6 +3,29 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+### teloxide
+
+A lot of previously `String` type ids got their own types. To easily convert into them you can just add `.into()`
+
+```diff
+-InputFile::file_id("123456")
++InputFile::file_id("123456".into())
+```
+
+Or you could also:
+
+```diff
+-InputFile::file_id("123456")
++InputFile::file_id(FileId("123456".to_string()))
+```
+
+And borrowed id types will have to be cloned now:
+
+```diff
+-bot.answer_callback_query(&q.id).await?;
++bot.answer_callback_query(q.id.clone()).await?;
+```
+
 ## 0.14.1 -> 0.15.0
 
 ### teloxide

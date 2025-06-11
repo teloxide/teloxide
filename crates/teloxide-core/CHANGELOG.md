@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- New id types ([#1153](pr1153))
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
   - Add `PollId` struct
   - Add `CallbackQueryId` struct
   - Add `FileId` and `FileUniqueId` structs
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- New id types ([#1153](pr1153))
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
   - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
   - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
   - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
