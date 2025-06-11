@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
   - Add `TelegramAds` variant to `TransactionPartner` enum
   - Add `invoice_payload` field to `TransactionPartnerUser` struct
+  - Update documentation of the `MenuButton::WebApp` enum variant
 
 ### Changed
 
