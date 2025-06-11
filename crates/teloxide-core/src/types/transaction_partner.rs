@@ -12,6 +12,7 @@ use crate::types::{RevenueWithdrawalState, User};
 pub enum TransactionPartner {
     Fragment(TransactionPartnerFragment),
     User(TransactionPartnerUser),
+    TelegramAds,
     Other,
 }
 
