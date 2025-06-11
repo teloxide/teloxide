@@ -25,12 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
   - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
   - Add `sendPaidMedia` TBA method
-  - Update documentation of the `copyMessage` and `copyMessages` methods
   - Add `can_send_paid_media` field to `ChatFullInfoPublicChannel` struct
   - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
   - Add `TelegramAds` variant to `TransactionPartner` enum
   - Add `invoice_payload` field to `TransactionPartnerUser` struct
-  - Update documentation of the `MenuButton::WebApp` enum variant
 
 ### Changed
 
@@ -57,6 +55,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
   - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
   - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+
+- Support for TBA 7.6 ([#1356](pr1356))
+  - Update documentation of the `copyMessage` and `copyMessages` methods
+  - Update documentation of the `MenuButton::WebApp` enum variant
 
 [pr1356]: https://github.com/teloxide/teloxide/pull/1356
 
