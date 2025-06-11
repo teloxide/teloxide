@@ -12,8 +12,8 @@ use crate::types::{
     GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
     InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story, SuccessfulPayment,
-    TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
+    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story,
+    SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
     VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
     WebAppData, WriteAccessAllowed,
 };
@@ -372,6 +372,7 @@ pub enum MediaKind {
     Audio(MediaAudio),
     Contact(MediaContact),
     Document(MediaDocument),
+    PaidMedia(MediaPaid),
     Game(MediaGame),
     Venue(MediaVenue),
     Location(MediaLocation),
@@ -472,6 +473,12 @@ pub struct MediaDocument {
     /// The unique identifier of a media message group this message belongs
     /// to.
     pub media_group_id: Option<MediaGroupId>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MediaPaid {
+    /// Message contains paid media; information about the paid media.
+    pub paid_media: PaidMediaInfo,
 }
 
 #[serde_with::skip_serializing_none]
@@ -775,8 +782,8 @@ mod getters {
     use crate::types::{
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
-        MediaGame, MediaKind, MediaLocation, MediaPhoto, MediaPoll, MediaSticker, MediaStory,
-        MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
+        MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll, MediaSticker,
+        MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
         MessageChannelChatCreated, MessageChatShared, MessageCommon, MessageConnectedWebsite,
         MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated, MessageId,
         MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
@@ -1053,6 +1060,7 @@ mod getters {
                     MediaKind::Audio(_)
                     | MediaKind::Contact(_)
                     | MediaKind::Document(_)
+                    | MediaKind::PaidMedia(_)
                     | MediaKind::Game(_)
                     | MediaKind::Venue(_)
                     | MediaKind::Location(_)
@@ -1083,6 +1091,7 @@ mod getters {
                     MediaKind::Audio(_)
                     | MediaKind::Contact(_)
                     | MediaKind::Document(_)
+                    | MediaKind::PaidMedia(_)
                     | MediaKind::Game(_)
                     | MediaKind::Venue(_)
                     | MediaKind::Location(_)
@@ -1115,6 +1124,17 @@ mod getters {
                     media_kind: MediaKind::Document(MediaDocument { document, .. }),
                     ..
                 }) => Some(document),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn paid_media(&self) -> Option<&types::PaidMediaInfo> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::PaidMedia(MediaPaid { paid_media, .. }),
+                    ..
+                }) => Some(paid_media),
                 _ => None,
             }
         }

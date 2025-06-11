@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `sendPaidMedia` TBA method
   - Update documentation of the `copyMessage` and `copyMessages` methods
   - Add `can_send_paid_media` field to `ChatFullInfoPublicChannel` struct
+  - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
 
 ### Changed
 

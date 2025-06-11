@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `MediaGroupId` struct
   - Add `EffectId` struct
 
+- Support for TBA 7.6 ([#1356](https://github.com/teloxide/teloxide/pull/1356))
+  - Add `filter_paid_media` to `MessageFilterExt` trait
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153)) [**BC**]
