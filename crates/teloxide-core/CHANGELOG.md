@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 7.6 ([#1356](pr1356))
   - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
+  - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
 
 ### Changed
 
