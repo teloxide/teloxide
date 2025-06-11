@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
   - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
   - Add `sendPaidMedia` TBA method
+  - Update documentation of the `copyMessage` and `copyMessages` methods
 
 ### Changed
 
