@@ -85,7 +85,7 @@ impl Default for Settings {
         Self {
             limits: <_>::default(),
             on_queue_full: Box::new(|pending| {
-                log::warn!("Throttle queue is full ({} pending requests)", pending);
+                log::warn!("Throttle queue is full ({pending} pending requests)");
                 Box::pin(ready(()))
             }),
             retry: true,
