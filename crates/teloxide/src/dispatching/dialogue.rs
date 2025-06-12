@@ -245,7 +245,7 @@ where
                     Some(default)
                 }
                 Ok("panic") | Err(_) => {
-                    log::error!("dialogue.get_or_default() failed: {:?}", err);
+                    log::error!("dialogue.get_or_default() failed: {err:?}");
                     None
                 }
                 Ok(_) => {

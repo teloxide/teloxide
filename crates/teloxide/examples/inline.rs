@@ -53,7 +53,7 @@ async fn main() {
             // we're responding to.
             let response = bot.answer_inline_query(q.id.clone(), results).send().await;
             if let Err(err) = response {
-                log::error!("Error in handler: {:?}", err);
+                log::error!("Error in handler: {err:?}");
             }
             respond(())
         },

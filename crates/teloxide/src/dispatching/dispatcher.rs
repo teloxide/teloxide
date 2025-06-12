@@ -324,7 +324,7 @@ where
             dependencies: DependencyMap::new(),
             handler: Arc::new(handler),
             default_handler: Arc::new(|upd| {
-                log::warn!("Unhandled update: {:?}", upd);
+                log::warn!("Unhandled update: {upd:?}");
                 Box::pin(async {})
             }),
             error_handler: LoggingErrorHandler::new(),
@@ -409,7 +409,7 @@ where
 
         let description = self.handler.description();
         let allowed_updates = description.allowed_updates();
-        log::debug!("hinting allowed updates: {:?}", allowed_updates);
+        log::debug!("hinting allowed updates: {allowed_updates:?}");
         update_listener.hint_allowed_updates(&mut allowed_updates.into_iter());
 
         let stop_token = Some(update_listener.stop_token());
@@ -481,10 +481,9 @@ where
             Ok(upd) => {
                 if let UpdateKind::Error(err) = upd.kind {
                     log::error!(
-                        "Cannot parse an update.\nError: {:?}\n\
+                        "Cannot parse an update.\nError: {err:?}\n\
                             This is a bug in teloxide-core, please open an issue here: \
                             https://github.com/teloxide/teloxide/issues.",
-                        err,
                     );
                     return;
                 }

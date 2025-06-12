@@ -123,7 +123,7 @@ async fn callback_handler(bot: Bot, q: CallbackQuery) -> Result<(), Box<dyn Erro
             bot.edit_message_text_inline(id, text).await?;
         }
 
-        log::info!("You chose: {}", version);
+        log::info!("You chose: {version}");
     }
 
     Ok(())
