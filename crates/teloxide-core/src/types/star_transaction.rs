@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::TransactionPartner;
+use crate::types::{TelegramTransactionId, TransactionPartner};
 
 /// Contains a list of Telegram Star transactions.
 #[derive(Clone, Debug)]
@@ -24,7 +24,7 @@ pub struct StarTransaction {
     /// incoming payments from users.
     ///
     /// [`SuccessfulPayment::telegram_payment_charge_id`]: crate::types::SuccessfulPayment::telegram_payment_charge_id
-    pub id: String,
+    pub id: TelegramTransactionId,
 
     /// Number of Telegram Stars transferred by the transaction.
     pub amount: u32,

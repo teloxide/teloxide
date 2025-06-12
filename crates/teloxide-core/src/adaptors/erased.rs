@@ -1002,7 +1002,7 @@ trait ErasableRequester<'a> {
     fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: String,
+        telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err>;
 
     fn set_passport_data_errors(
@@ -1974,7 +1974,7 @@ where
     fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: String,
+        telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err> {
         Requester::refund_star_payment(self, user_id, telegram_payment_charge_id).erase()
     }
