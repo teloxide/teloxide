@@ -63,7 +63,7 @@ fn impl_descriptions(infos: &[Command], global: &CommandEnum) -> proc_macro2::To
         .filter(|command| command.description_is_enabled())
         .map(|command @ Command { prefix, name, aliases, ..}| {
             let description = command.description().unwrap_or_default();
-            let aliases = (!command.hidden_aliases).then(|| aliases.clone().map(|(aliases, _)| aliases).unwrap_or_default()).unwrap_or_default();
+            let aliases = if !command.hidden_aliases { aliases.clone().map(|(aliases, _)| aliases).unwrap_or_default() } else { Default::default() };
             quote! { CommandDescription { prefix: #prefix, command: #name, description: #description, aliases: &[#(#aliases),*]} }
         });
 
