@@ -95,7 +95,7 @@ async fn main() {
         .dependencies(dptree::deps![parameters])
         // If no handler succeeded to handle an update, this closure will be called.
         .default_handler(|upd| async move {
-            log::warn!("Unhandled update: {:?}", upd);
+            log::warn!("Unhandled update: {upd:?}");
         })
         // If the dispatcher fails for some reason, execute this handler.
         .error_handler(LoggingErrorHandler::with_custom_text(
