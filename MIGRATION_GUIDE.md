@@ -26,6 +26,13 @@ And borrowed id types will have to be cloned now:
 +bot.answer_callback_query(q.id.clone()).await?;
 ```
 
+Also `refund_star_payment`, `SuccessfulPayment` and `StarTransaction` switched from `String` to `TelegramTransactionId` in `telegram_payment_charge_id`/`id`:
+
+```diff
+-bot.refund_star_payment(user_id, "txn").await?;
++bot.refund_star_payment(user_id, "txn".into()).await?;
+```
+
 ## 0.14.1 -> 0.15.0
 
 ### teloxide

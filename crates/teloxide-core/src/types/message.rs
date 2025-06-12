@@ -12,10 +12,10 @@ use crate::types::{
     GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
     InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, Sticker, Story,
-    SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
+    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, RefundedPayment,
+    Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
+    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
+    Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -86,6 +86,7 @@ pub enum MessageKind {
     UsersShared(MessageUsersShared),
     Invoice(MessageInvoice),
     SuccessfulPayment(MessageSuccessfulPayment),
+    RefundedPayment(MessageRefundedPayment),
     ConnectedWebsite(MessageConnectedWebsite),
     WriteAccessAllowed(MessageWriteAccessAllowed),
     PassportData(MessagePassportData),
@@ -328,6 +329,16 @@ pub struct MessageInvoice {
     /// [payment]: https://core.telegram.org/bots/api#payments
     /// [More about payments »]: https://core.telegram.org/bots/api#payments
     pub invoice: Invoice,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageRefundedPayment {
+    /// Message is a service message about a successful payment, information
+    /// about the payment. [More about payments »].
+    ///
+    /// [More about payments »]: https://core.telegram.org/bots/api#payments
+    pub refunded_payment: RefundedPayment,
 }
 
 #[serde_with::skip_serializing_none]

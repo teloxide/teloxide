@@ -4796,7 +4796,7 @@ Schema(
                 ),
                 Param(
                     name: "telegram_payment_charge_id",
-                    ty: String,
+                    ty: RawTy("TelegramTransactionId"),
                     descr: Doc(md: "Telegram payment identifier"),
                 ),
             ],

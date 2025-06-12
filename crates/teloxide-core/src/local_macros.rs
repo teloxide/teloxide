@@ -1474,9 +1474,9 @@ macro_rules! requester_forward {
     (@method refund_star_payment $body:ident $ty:ident) => {
         type RefundStarPayment = $ty![RefundStarPayment];
 
-        fn refund_star_payment<T>(&self, user_id: UserId, telegram_payment_charge_id: T) -> Self::RefundStarPayment where T: Into<String> {
+        fn refund_star_payment(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId) -> Self::RefundStarPayment {
             let this = self;
-            $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: T))
+            $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId))
         }
     };
     (@method set_passport_data_errors $body:ident $ty:ident) => {

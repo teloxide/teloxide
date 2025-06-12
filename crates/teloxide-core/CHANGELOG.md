@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `TelegramAds` variant to `TransactionPartner` enum
   - Add `invoice_payload` field to `TransactionPartnerUser` struct
 
+- Support for TBA 7.7 ([#1357](https://github.com/teloxide/teloxide/pull/1357))
+  - Add `TelegramTransactionId` struct
+  - Add `RefundedPayment` struct and relevant `Message` variant
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
