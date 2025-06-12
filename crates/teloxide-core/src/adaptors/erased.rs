@@ -143,6 +143,9 @@ macro_rules! fwd_erased {
         $this.inner.$m($( fwd_erased!(@convert $m, $arg, $arg : $T) ),*)
     };
 
+    (@convert send_paid_media, $arg:ident, media : $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert send_media_group, $arg:ident, media : $T:ty) => {
         $arg.into_iter().collect()
     };
@@ -204,6 +207,7 @@ where
         send_animation,
         send_voice,
         send_video_note,
+        send_paid_media,
         send_media_group,
         send_location,
         edit_message_live_location,
@@ -415,6 +419,13 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         video_note: InputFile,
     ) -> ErasedRequest<'a, SendVideoNote, Self::Err>;
+
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u32,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err>;
 
     fn send_media_group(
         &self,
@@ -1160,6 +1171,15 @@ where
         video_note: InputFile,
     ) -> ErasedRequest<'a, SendVideoNote, Self::Err> {
         Requester::send_video_note(self, chat_id, video_note).erase()
+    }
+
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u32,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err> {
+        Requester::send_paid_media(self, chat_id, star_count, media).erase()
     }
 
     fn send_media_group(

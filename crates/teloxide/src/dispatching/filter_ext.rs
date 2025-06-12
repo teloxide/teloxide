@@ -80,6 +80,7 @@ define_message_ext! {
     (filter_audio, Message::audio),
     (filter_contact, Message::contact),
     (filter_document, Message::document),
+    (filter_paid_media, Message::paid_media),
     (filter_game, Message::game),
     (filter_venue, Message::venue),
     (filter_location, Message::location),

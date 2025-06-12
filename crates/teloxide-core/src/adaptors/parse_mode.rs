@@ -7,7 +7,7 @@ use crate::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
         EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
-        SendPhoto, SendPoll, SendVideo, SendVoice,
+        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -150,6 +150,7 @@ where
     B::AnswerWebAppQuery: Clone,
     B::EditMessageMedia: Clone,
     B::EditMessageMediaInline: Clone,
+    B::SendPaidMedia: Clone,
     B::SendMediaGroup: Clone,
 {
     type Err = B::Err;
@@ -170,6 +171,7 @@ where
         copy_message,
         answer_inline_query,
         answer_web_app_query,
+        send_paid_media,
         send_media_group,
         edit_message_media,
         edit_message_media_inline,
@@ -340,6 +342,7 @@ impl_visit_parse_modes! {
     EditMessageTextInline => [parse_mode],
     EditMessageCaption => [parse_mode],
     EditMessageCaptionInline => [parse_mode],
+    SendPaidMedia => [parse_mode],
     // FIXME: check if `parse_mode` changes anything if `.caption` is not set
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],

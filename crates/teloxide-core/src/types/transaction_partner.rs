@@ -12,6 +12,7 @@ use crate::types::{RevenueWithdrawalState, User};
 pub enum TransactionPartner {
     Fragment(TransactionPartnerFragment),
     User(TransactionPartnerUser),
+    TelegramAds,
     Other,
 }
 
@@ -31,4 +32,7 @@ pub struct TransactionPartnerFragment {
 pub struct TransactionPartnerUser {
     /// Information about the user.
     pub user: User,
+
+    /// Bot-specified invoice payload.
+    pub invoice_payload: Option<String>,
 }
