@@ -59,7 +59,7 @@ $ set TELOXIDE_TOKEN=<Your token here>
 $ $env:TELOXIDE_TOKEN=<Your token here>
 ```
 
- 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.80):
+ 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.82):
 ```bash
 # If you're using stable
 $ rustup update stable

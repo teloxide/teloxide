@@ -83,7 +83,7 @@ fn method_url(base: reqwest::Url, token: &str, method_name: &str) -> reqwest::Ur
     let mut url = base;
     {
         let mut segments = url.path_segments_mut().expect("base URL cannot be a cannot-be-a-base");
-        segments.push(&format!("bot{}", token));
+        segments.push(&format!("bot{token}"));
         segments.push(method_name);
     }
     url
@@ -97,7 +97,7 @@ fn file_url(base: reqwest::Url, token: &str, file_path: &str) -> reqwest::Url {
     {
         let mut segments = url.path_segments_mut().expect("base URL cannot be a cannot-be-a-base");
         segments.push("file");
-        segments.push(&format!("bot{}", token));
+        segments.push(&format!("bot{token}"));
         segments.push(file_path);
     }
     url

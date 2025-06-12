@@ -6,4 +6,4 @@ RUN dnf install -y gcc git sudo chezmoi gpg just zsh starship which openssl-deve
 RUN useradd -u 1000 -G wheel user && passwd -d user
 
 USER user
-RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain nightly-2025-03-30 -y
+RUN curl --proto '=https' --tlsv1.3 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain nightly-2025-06-12 -y
