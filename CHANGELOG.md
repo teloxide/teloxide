@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
   - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
 
+- MSRV (Minimal Supported Rust Version) was bumped from `1.80` to `1.82` ([#1358](https://github.com/teloxide/teloxide/pull/1358))
+
 ## 0.15.0 - 2025-04-04
 
 ### Added
