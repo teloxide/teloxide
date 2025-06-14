@@ -2587,7 +2587,7 @@ Schema(
         ),
         Method(
             names: ("editChatInviteLink", "EditChatInviteLink", "edit_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to edit a non-primary invite link created by the bot. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the edited invite link as a [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
@@ -2629,7 +2629,7 @@ Schema(
         ),
         Method(
             names: ("revokeChatInviteLink", "RevokeChatInviteLink", "revoke_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to revoke an invite link created by the bot. If the primary link is revoked, a new link is automatically generated. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the revoked invite link as [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
