@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `TelegramTransactionId` struct
   - Add `RefundedPayment` struct and relevant `Message` variant
 
-- Support for TBA 7.8 ([#1359](https://github.com/teloxide/teloxide/pull/1359))
+- Support for TBA 7.8 ([#1360](https://github.com/teloxide/teloxide/pull/1360))
   - Add `has_main_web_app` field to `Me` struct
   - Add `business_connection_id` to `pin_chat_message` and `unpin_chat_message` methods
 
