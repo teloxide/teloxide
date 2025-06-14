@@ -3,7 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    InputPaidMedia, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup, ReplyParameters,
+    BusinessConnectionId, InputPaidMedia, Message, MessageEntity, ParseMode, Recipient,
+    ReplyMarkup, ReplyParameters,
 };
 
 impl_payload! {
@@ -21,6 +22,8 @@ impl_payload! {
             pub media: Vec<InputPaidMedia> [collect],
         }
         optional {
+            /// Unique identifier of the business connection on behalf of which the message will be sent
+            pub business_connection_id: BusinessConnectionId,
             /// Media caption, 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the media caption. See [formatting options] for more details.
