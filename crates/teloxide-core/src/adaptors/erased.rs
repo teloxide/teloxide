@@ -234,6 +234,7 @@ where
         export_chat_invite_link,
         create_chat_invite_link,
         edit_chat_invite_link,
+        create_chat_subscription_invite_link,
         revoke_chat_invite_link,
         set_chat_photo,
         delete_chat_photo,
@@ -587,6 +588,13 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err>;
+
+    fn create_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        subscription_period: u32,
+        subscription_price: u16,
+    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err>;
 
     /// For Telegram documentation see [`ApproveChatJoinRequest`].
     fn approve_chat_join_request(
@@ -1389,6 +1397,21 @@ where
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err> {
         Requester::edit_chat_invite_link(self, chat_id, invite_link).erase()
+    }
+
+    fn create_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        subscription_period: u32,
+        subscription_price: u16,
+    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err> {
+        Requester::create_chat_subscription_invite_link(
+            self,
+            chat_id,
+            subscription_period,
+            subscription_price,
+        )
+        .erase()
     }
 
     fn revoke_chat_invite_link(

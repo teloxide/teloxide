@@ -162,6 +162,7 @@ where
         export_chat_invite_link,
         create_chat_invite_link,
         edit_chat_invite_link,
+        create_chat_subscription_invite_link,
         revoke_chat_invite_link,
         set_chat_photo,
         delete_chat_photo,

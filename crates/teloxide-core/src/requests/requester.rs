@@ -551,6 +551,21 @@ pub trait Requester {
         C: Into<Recipient>,
         I: Into<String>;
 
+    type CreateChatSubscriptionInviteLink: Request<
+        Payload = CreateChatSubscriptionInviteLink,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`CreateChatSubscriptionInviteLink`].
+    fn create_chat_subscription_invite_link<C>(
+        &self,
+        chat_id: C,
+        subscription_period: u32,
+        subscription_price: u16,
+    ) -> Self::CreateChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>;
+
     type RevokeChatInviteLink: Request<Payload = RevokeChatInviteLink, Err = Self::Err>;
 
     /// For Telegram documentation see [`RevokeChatInviteLink`].
@@ -1382,6 +1397,7 @@ macro_rules! forward_all {
             export_chat_invite_link,
             create_chat_invite_link,
             edit_chat_invite_link,
+            create_chat_subscription_invite_link,
             revoke_chat_invite_link,
             set_chat_photo,
             delete_chat_photo,

@@ -499,6 +499,27 @@ impl Requester for Bot {
         )
     }
 
+    type CreateChatSubscriptionInviteLink = JsonRequest<payloads::CreateChatSubscriptionInviteLink>;
+
+    fn create_chat_subscription_invite_link<C>(
+        &self,
+        chat_id: C,
+        subscription_period: u32,
+        subscription_price: u16,
+    ) -> Self::CreateChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>,
+    {
+        Self::CreateChatSubscriptionInviteLink::new(
+            self.clone(),
+            payloads::CreateChatSubscriptionInviteLink::new(
+                chat_id,
+                subscription_period,
+                subscription_price,
+            ),
+        )
+    }
+
     type RevokeChatInviteLink = JsonRequest<payloads::RevokeChatInviteLink>;
 
     fn revoke_chat_invite_link<C, I>(

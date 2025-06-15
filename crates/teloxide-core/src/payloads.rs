@@ -30,6 +30,7 @@ mod close_general_forum_topic;
 mod copy_message;
 mod copy_messages;
 mod create_chat_invite_link;
+mod create_chat_subscription_invite_link;
 mod create_forum_topic;
 mod create_invoice_link;
 mod create_new_sticker_set;
@@ -164,6 +165,9 @@ pub use close_general_forum_topic::{CloseGeneralForumTopic, CloseGeneralForumTop
 pub use copy_message::{CopyMessage, CopyMessageSetters};
 pub use copy_messages::{CopyMessages, CopyMessagesSetters};
 pub use create_chat_invite_link::{CreateChatInviteLink, CreateChatInviteLinkSetters};
+pub use create_chat_subscription_invite_link::{
+    CreateChatSubscriptionInviteLink, CreateChatSubscriptionInviteLinkSetters,
+};
 pub use create_forum_topic::{CreateForumTopic, CreateForumTopicSetters};
 pub use create_invoice_link::{CreateInvoiceLink, CreateInvoiceLinkSetters};
 pub use create_new_sticker_set::{CreateNewStickerSet, CreateNewStickerSetSetters};
