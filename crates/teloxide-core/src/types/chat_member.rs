@@ -25,7 +25,7 @@ pub enum ChatMemberKind {
     #[serde(rename = "creator")]
     Owner(Owner),
     Administrator(Administrator),
-    Member,
+    Member(Member),
     Restricted(Restricted),
     Left,
     #[serde(rename = "kicked")]
@@ -115,6 +115,15 @@ pub struct Administrator {
     /// directly or indirectly (promoted by administrators that were appointed
     /// by the user).
     pub can_promote_members: bool,
+}
+
+/// Represents a chat member that has no additional privileges or restrictions.
+/// This struct is part of the [`ChatMemberKind`] enum.
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct Member {
+    /// Date when the user's subscription will expire
+    pub until_date: Option<UntilDate>,
 }
 
 /// User, restricted in the group. This struct is part of the [`ChatMemberKind`]
@@ -211,7 +220,7 @@ impl ChatMemberKind {
         match self {
             ChatMemberKind::Owner(_) => ChatMemberStatus::Owner,
             ChatMemberKind::Administrator(_) => ChatMemberStatus::Administrator,
-            ChatMemberKind::Member => ChatMemberStatus::Member,
+            ChatMemberKind::Member(_) => ChatMemberStatus::Member,
             ChatMemberKind::Restricted(_) => ChatMemberStatus::Restricted,
             ChatMemberKind::Left => ChatMemberStatus::Left,
             ChatMemberKind::Banned(_) => ChatMemberStatus::Banned,
@@ -318,7 +327,7 @@ impl ChatMemberKind {
         match &self {
             Self::Administrator(Administrator { custom_title, .. })
             | Self::Owner(Owner { custom_title, .. }) => custom_title.as_deref(),
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => None,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => None,
         }
     }
 
@@ -334,16 +343,21 @@ impl ChatMemberKind {
         match self {
             Self::Owner(Owner { is_anonymous, .. })
             | Self::Administrator(Administrator { is_anonymous, .. }) => *is_anonymous,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
-    /// Getter for [`Restricted::until_date`] and [`Banned::until_date`] fields.
+    /// Getter for [`Restricted::until_date`], [`Banned::until_date`] and
+    /// [`Member::until_date`] fields.
     #[must_use]
     pub fn until_date(&self) -> Option<UntilDate> {
         match &self {
-            Self::Owner(_) | Self::Administrator(_) | Self::Member | Self::Left => None,
+            Self::Owner(_)
+            | Self::Administrator(_)
+            | Self::Member(Member { until_date: None, .. })
+            | Self::Left => None,
             Self::Restricted(Restricted { until_date, .. })
+            | Self::Member(Member { until_date: Some(until_date), .. })
             | Self::Banned(Banned { until_date, .. }) => Some(*until_date),
         }
     }
@@ -358,9 +372,11 @@ impl ChatMemberKind {
         match self {
             Self::Administrator(Administrator { can_be_edited, .. }) => *can_be_edited,
             // Owner can't ever be edited by any bot.
-            Self::Owner(_) | Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => {
-                false
-            }
+            Self::Owner(_)
+            | Self::Member(_)
+            | Self::Restricted(_)
+            | Self::Left
+            | Self::Banned(_) => false,
         }
     }
 
@@ -382,7 +398,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_manage_chat, .. }) => *can_manage_chat,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -401,7 +417,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_post_messages, .. }) => *can_post_messages,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -421,7 +437,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_edit_messages, .. }) => *can_edit_messages,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -440,7 +456,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_delete_messages, .. }) => *can_delete_messages,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -459,7 +475,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_post_stories, .. }) => *can_post_stories,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -479,7 +495,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_edit_stories, .. }) => *can_edit_stories,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -499,7 +515,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_delete_stories, .. }) => *can_delete_stories,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -520,7 +536,7 @@ impl ChatMemberKind {
             Self::Administrator(Administrator { can_manage_video_chats, .. }) => {
                 *can_manage_video_chats
             }
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -541,7 +557,7 @@ impl ChatMemberKind {
             Self::Administrator(Administrator { can_restrict_members, .. }) => {
                 *can_restrict_members
             }
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 
@@ -563,7 +579,7 @@ impl ChatMemberKind {
         match self {
             Self::Owner(_) => true,
             Self::Administrator(Administrator { can_promote_members, .. }) => *can_promote_members,
-            Self::Member | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
+            Self::Member(_) | Self::Restricted(_) | Self::Left | Self::Banned(_) => false,
         }
     }
 }

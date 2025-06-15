@@ -30,6 +30,7 @@ mod close_general_forum_topic;
 mod copy_message;
 mod copy_messages;
 mod create_chat_invite_link;
+mod create_chat_subscription_invite_link;
 mod create_forum_topic;
 mod create_invoice_link;
 mod create_new_sticker_set;
@@ -44,6 +45,7 @@ mod delete_sticker_from_set;
 mod delete_sticker_set;
 mod delete_webhook;
 mod edit_chat_invite_link;
+mod edit_chat_subscription_invite_link;
 mod edit_forum_topic;
 mod edit_general_forum_topic;
 mod edit_message_caption;
@@ -164,6 +166,9 @@ pub use close_general_forum_topic::{CloseGeneralForumTopic, CloseGeneralForumTop
 pub use copy_message::{CopyMessage, CopyMessageSetters};
 pub use copy_messages::{CopyMessages, CopyMessagesSetters};
 pub use create_chat_invite_link::{CreateChatInviteLink, CreateChatInviteLinkSetters};
+pub use create_chat_subscription_invite_link::{
+    CreateChatSubscriptionInviteLink, CreateChatSubscriptionInviteLinkSetters,
+};
 pub use create_forum_topic::{CreateForumTopic, CreateForumTopicSetters};
 pub use create_invoice_link::{CreateInvoiceLink, CreateInvoiceLinkSetters};
 pub use create_new_sticker_set::{CreateNewStickerSet, CreateNewStickerSetSetters};
@@ -178,6 +183,9 @@ pub use delete_sticker_from_set::{DeleteStickerFromSet, DeleteStickerFromSetSett
 pub use delete_sticker_set::{DeleteStickerSet, DeleteStickerSetSetters};
 pub use delete_webhook::{DeleteWebhook, DeleteWebhookSetters};
 pub use edit_chat_invite_link::{EditChatInviteLink, EditChatInviteLinkSetters};
+pub use edit_chat_subscription_invite_link::{
+    EditChatSubscriptionInviteLink, EditChatSubscriptionInviteLinkSetters,
+};
 pub use edit_forum_topic::{EditForumTopic, EditForumTopicSetters};
 pub use edit_general_forum_topic::{EditGeneralForumTopic, EditGeneralForumTopicSetters};
 pub use edit_message_caption::{EditMessageCaption, EditMessageCaptionSetters};

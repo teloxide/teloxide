@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.7", date: "July 7, 2024"),
+    api_version: ApiVersion(ver: "7.9", date: "August 14, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -1281,12 +1281,17 @@ Schema(
             names: ("sendPaidMedia", "SendPaidMedia", "send_paid_media"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send paid media to channel chats. On success, the sent [Message] is returned.",
+                md: "Use this method to send paid media. On success, the sent [Message] is returned.",
                 md_links: {"Message": "https://core.telegram.org/bots/api#message"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendpaidmedia",
             tg_category: "Available methods",
             params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
                 Param(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
@@ -2582,7 +2587,7 @@ Schema(
         ),
         Method(
             names: ("editChatInviteLink", "EditChatInviteLink", "edit_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to edit a non-primary invite link created by the bot. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the edited invite link as a [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
@@ -2623,8 +2628,73 @@ Schema(
             ],
         ),
         Method(
+            names: ("createChatSubscriptionInviteLink", "CreateChatSubscriptionInviteLink", "create_chat_subscription_invite_link"),
+            return_ty: RawTy("ChatInviteLink"),
+            doc: Doc(
+                md: "Use this method to create a subscription invite link for a channel chat. The bot must have the can_invite_users administrator rights. The link can be edited using the method [editChatSubscriptionInviteLink] or revoked using the method [revokeChatInviteLink]. Returns the new invite link as a [ChatInviteLink] object.",
+                md_links: {
+                    "editChatSubscriptionInviteLink": "https://core.telegram.org/bots/api#editchatsubscriptioninvitelink",
+                    "revokeChatInviteLink": "https://core.telegram.org/bots/api#revokechatinvitelink",
+                    "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#createchatsubscriptioninvitelink",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "Invite link name; 0-32 characters")
+                ),
+                Param(
+                    name: "subscription_period",
+                    ty: RawTy("Seconds"),
+                    descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. Currently, it must always be 2592000 (30 days).")
+                ),
+                Param(
+                    name: "subscription_price",
+                    ty: u32,
+                    descr: Doc(md: "The amount of Telegram Stars a user must pay initially and after each subsequent subscription period to be a member of the chat; 1-10000")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editChatSubscriptionInviteLink", "EditChatSubscriptionInviteLink", "edit_chat_subscription_invite_link"),
+            return_ty: RawTy("ChatInviteLink"),
+            doc: Doc(
+                md: "Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights. Returns the edited invite link as a [ChatInviteLink] object.",
+                md_links: {
+                    "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editchatsubscriptioninvitelink",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "invite_link",
+                    ty: String,
+                    descr: Doc(md: "The invite link to edit")
+                ),
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "Invite link name; 0-32 characters")
+                ),
+            ]
+        ),
+        Method(
             names: ("revokeChatInviteLink", "RevokeChatInviteLink", "revoke_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to revoke an invite link created by the bot. If the primary link is revoked, a new link is automatically generated. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the revoked invite link as [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
