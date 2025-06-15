@@ -522,7 +522,11 @@ impl Requester for Bot {
 
     type EditChatSubscriptionInviteLink = JsonRequest<payloads::EditChatSubscriptionInviteLink>;
 
-    fn edit_chat_subscription_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatSubscriptionInviteLink
+    fn edit_chat_subscription_invite_link<C, I>(
+        &self,
+        chat_id: C,
+        invite_link: I,
+    ) -> Self::EditChatSubscriptionInviteLink
     where
         C: Into<Recipient>,
         I: Into<String>,

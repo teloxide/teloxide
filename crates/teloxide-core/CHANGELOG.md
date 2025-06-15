@@ -38,6 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `has_main_web_app` field to `Me` struct
   - Add `business_connection_id` to `pin_chat_message` and `unpin_chat_message` methods
 
+- Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
+  - Add `business_connection_id` field to `send_paid_media` method
+  - Add `paid_media` field to `TransactionPartnerUser` class
+  - Add `subscription_period` and `subscription_price` fields to `ChatInviteLink` class
+  - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
+  - Add `until_date` field to `ChatMemberKind::Member`
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
