@@ -235,6 +235,7 @@ where
         create_chat_invite_link,
         edit_chat_invite_link,
         create_chat_subscription_invite_link,
+        edit_chat_subscription_invite_link,
         revoke_chat_invite_link,
         set_chat_photo,
         delete_chat_photo,
@@ -583,18 +584,24 @@ trait ErasableRequester<'a> {
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err>;
 
+    fn create_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        subscription_period: u32,
+        subscription_price: u32,
+    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err>;
+
+    fn edit_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        invite_link: String,
+    ) -> ErasedRequest<'a, EditChatSubscriptionInviteLink, Self::Err>;
+
     fn revoke_chat_invite_link(
         &self,
         chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, RevokeChatInviteLink, Self::Err>;
-
-    fn create_chat_subscription_invite_link(
-        &self,
-        chat_id: Recipient,
-        subscription_period: u32,
-        subscription_price: u16,
-    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err>;
 
     /// For Telegram documentation see [`ApproveChatJoinRequest`].
     fn approve_chat_join_request(
@@ -1403,7 +1410,7 @@ where
         &self,
         chat_id: Recipient,
         subscription_period: u32,
-        subscription_price: u16,
+        subscription_price: u32,
     ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err> {
         Requester::create_chat_subscription_invite_link(
             self,
@@ -1412,6 +1419,14 @@ where
             subscription_price,
         )
         .erase()
+    }
+
+    fn edit_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        invite_link: String,
+    ) -> ErasedRequest<'a, EditChatSubscriptionInviteLink, Self::Err> {
+        Requester::edit_chat_subscription_invite_link(self, chat_id, invite_link).erase()
     }
 
     fn revoke_chat_invite_link(

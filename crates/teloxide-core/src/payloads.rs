@@ -45,6 +45,7 @@ mod delete_sticker_from_set;
 mod delete_sticker_set;
 mod delete_webhook;
 mod edit_chat_invite_link;
+mod edit_chat_subscription_invite_link;
 mod edit_forum_topic;
 mod edit_general_forum_topic;
 mod edit_message_caption;
@@ -182,6 +183,9 @@ pub use delete_sticker_from_set::{DeleteStickerFromSet, DeleteStickerFromSetSett
 pub use delete_sticker_set::{DeleteStickerSet, DeleteStickerSetSetters};
 pub use delete_webhook::{DeleteWebhook, DeleteWebhookSetters};
 pub use edit_chat_invite_link::{EditChatInviteLink, EditChatInviteLinkSetters};
+pub use edit_chat_subscription_invite_link::{
+    EditChatSubscriptionInviteLink, EditChatSubscriptionInviteLinkSetters,
+};
 pub use edit_forum_topic::{EditForumTopic, EditForumTopicSetters};
 pub use edit_general_forum_topic::{EditGeneralForumTopic, EditGeneralForumTopicSetters};
 pub use edit_message_caption::{EditMessageCaption, EditMessageCaptionSetters};

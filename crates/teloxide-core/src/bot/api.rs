@@ -505,7 +505,7 @@ impl Requester for Bot {
         &self,
         chat_id: C,
         subscription_period: u32,
-        subscription_price: u16,
+        subscription_price: u32,
     ) -> Self::CreateChatSubscriptionInviteLink
     where
         C: Into<Recipient>,
@@ -517,6 +517,19 @@ impl Requester for Bot {
                 subscription_period,
                 subscription_price,
             ),
+        )
+    }
+
+    type EditChatSubscriptionInviteLink = JsonRequest<payloads::EditChatSubscriptionInviteLink>;
+
+    fn edit_chat_subscription_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>,
+        I: Into<String>,
+    {
+        Self::EditChatSubscriptionInviteLink::new(
+            self.clone(),
+            payloads::EditChatSubscriptionInviteLink::new(chat_id, invite_link),
         )
     }
 

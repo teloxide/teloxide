@@ -2658,8 +2658,37 @@ Schema(
                 ),
                 Param(
                     name: "subscription_price",
-                    ty: u16,
+                    ty: u32,
                     descr: Doc(md: "The amount of Telegram Stars a user must pay initially and after each subsequent subscription period to be a member of the chat; 1-10000")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editChatSubscriptionInviteLink", "EditChatSubscriptionInviteLink", "edit_chat_subscription_invite_link"),
+            return_ty: RawTy("ChatInviteLink"),
+            doc: Doc(
+                md: "Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights. Returns the edited invite link as a [ChatInviteLink] object.",
+                md_links: {
+                    "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editchatsubscriptioninvitelink",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "invite_link",
+                    ty: String,
+                    descr: Doc(md: "The invite link to edit")
+                ),
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "Invite link name; 0-32 characters")
                 ),
             ]
         ),

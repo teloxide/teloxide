@@ -18,7 +18,7 @@ impl_payload! {
             /// The number of seconds the subscription will be active for before the next payment. Currently, it must always be 2592000 (30 days).
             pub subscription_period: u32,
             /// The amount of Telegram Stars a user must pay initially and after each subsequent subscription period to be a member of the chat; 1-10000
-            pub subscription_price: u16,
+            pub subscription_price: u32,
         }
         optional {
             /// Invite link name; 0-32 characters

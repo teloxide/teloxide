@@ -804,9 +804,18 @@ macro_rules! requester_forward {
     (@method create_chat_subscription_invite_link $body:ident $ty:ident) => {
         type CreateChatSubscriptionInviteLink = $ty![CreateChatSubscriptionInviteLink];
 
-        fn create_chat_subscription_invite_link<C>(&self, chat_id: C, subscription_period: u32, subscription_price: u16) -> Self::CreateChatSubscriptionInviteLink where C: Into<Recipient> {
+        fn create_chat_subscription_invite_link<C>(&self, chat_id: C, subscription_period: u32, subscription_price: u32) -> Self::CreateChatSubscriptionInviteLink where C: Into<Recipient> {
             let this = self;
-            $body!(create_chat_subscription_invite_link this (chat_id: C, subscription_period: u32, subscription_price: u16))
+            $body!(create_chat_subscription_invite_link this (chat_id: C, subscription_period: u32, subscription_price: u32))
+        }
+    };
+    (@method edit_chat_subscription_invite_link $body:ident $ty:ident) => {
+        type EditChatSubscriptionInviteLink = $ty![EditChatSubscriptionInviteLink];
+
+        fn edit_chat_subscription_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatSubscriptionInviteLink where C: Into<Recipient>,
+        I: Into<String> {
+            let this = self;
+            $body!(edit_chat_subscription_invite_link this (chat_id: C, invite_link: I))
         }
     };
     (@method revoke_chat_invite_link $body:ident $ty:ident) => {
