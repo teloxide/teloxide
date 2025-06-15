@@ -7,13 +7,15 @@
 >
 > If you find inaccuracies/missing things, please expand this or contact us.
 
-## Reporting bugs, questions, feature requests
+## Reporting bugs, questions, feature requests and adding new features
 
 To report a bug or suggest new functionality, go to the [issues](https://github.com/teloxide/teloxide/issues). Try to make MRE (**M**inimal **R**eproducible **E**xample) and specify your `teloxide` version to let others help you.
 
 If you want to ask a question, you can either
 - open a new [GitHub discussion](https://github.com/teloxide/teloxide/discussions), or
 - write to our Telegram group ([ENG](https://t.me/teloxide), [RU](https://t.me/teloxide_ru)).
+
+If you want to contribute a new feature or a TBA update, you should contact other developers in the [teloxide_dev](https://t.me/teloxide_dev) chat, or in the github issues. What you want to do may already be in the works, or we may not want to support your feature in the future. 
 
 ## Code
 
@@ -127,13 +129,11 @@ When you introduce changes that bump suppported Telegram Bot API version (e.g. 6
 
 ### Adding a new method
 
-It should be noted first that TBA updates that contain new methods are usually divided between developers in the [teloxide_dev](https://t.me/teloxide_dev) chat, or in the github issues for new TBA versions. If you want to contribute a TBA update, contact other developers first, the work that you want to do may already be done. 
-
 #### Step 1:
 
 Add the method and its info to `crates/teloxide-core/src/schema.ron` file.
 
-For example, lets add a `createChatInviteLink`. Look at the [TBA documentation](https://core.telegram.org/bots/api#createchatinvitelink).
+For example, lets add a `createChatInviteLink` from TBA 5.1. Look at the [TBA documentation](https://web.archive.org/web/20210331031440/https://core.telegram.org/bots/api#createchatinvitelink) in the web archive (`teloxide` can lag behind a few versions of TBA, you should look at the past versions to not implement something that isn't in the version you are doing).
 After that, you need to start adding the method. First of all, look at where that method is relative to other methods. 
 `createChatInviteLink` is between `exportChatInviteLink` and `editChatInviteLink`. Find that spot in the `schema.ron` file and add the method as such:
 
@@ -152,8 +152,7 @@ Method(
     ),
     tg_doc: "https://core.telegram.org/bots/api#createchatinvitelink",
     tg_category: "Available methods",
-    // Copy parameters to here. Be careful! If teloxide is lagging behind the TBA some fields may be added later than the current version, 
-    // please check that all fields existed with the TBA version you are adding!
+    // Copy parameters to here. 
     params: [
         Param(
             name: "chat_id",
@@ -187,10 +186,9 @@ Method(
 
 That's the basics, for more info about .ron file look at the other methods or ask others!
 
-
 #### Step 2:
 
-Run `cargo test --features "full nightly"`. This will trigger the codegen scripts, and .ron will be converted to code!
+Run `cargo test --features "full nightly"` or `just test`. This will trigger the codegen scripts, and .ron will be converted to code!
 
 #### Step 3:
 

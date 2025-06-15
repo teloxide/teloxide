@@ -1281,7 +1281,7 @@ Schema(
             names: ("sendPaidMedia", "SendPaidMedia", "send_paid_media"),
             return_ty: RawTy("Message"),
             doc: Doc(
-                md: "Use this method to send paid media to channel chats. On success, the sent [Message] is returned.",
+                md: "Use this method to send paid media. On success, the sent [Message] is returned.",
                 md_links: {"Message": "https://core.telegram.org/bots/api#message"},
             ),
             tg_doc: "https://core.telegram.org/bots/api#sendpaidmedia",
@@ -2653,7 +2653,7 @@ Schema(
                 ),
                 Param(
                     name: "subscription_period",
-                    ty: u32,
+                    ty: RawTy("Seconds"),
                     descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. Currently, it must always be 2592000 (30 days).")
                 ),
                 Param(

@@ -8,7 +8,7 @@ use crate::types::{
 };
 
 impl_payload! {
-    /// Use this method to send paid media to channel chats. On success, the sent [`Message`] is returned.
+    /// Use this method to send paid media. On success, the sent [`Message`] is returned.
     ///
     /// [`Message`]: crate::types::Message
     #[derive(Debug, Clone, Serialize)]

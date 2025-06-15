@@ -8,7 +8,7 @@ use crate::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
         FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
         InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
-        ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
+        Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -504,7 +504,7 @@ impl Requester for Bot {
     fn create_chat_subscription_invite_link<C>(
         &self,
         chat_id: C,
-        subscription_period: u32,
+        subscription_period: Seconds,
         subscription_price: u32,
     ) -> Self::CreateChatSubscriptionInviteLink
     where

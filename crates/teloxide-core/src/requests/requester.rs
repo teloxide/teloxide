@@ -560,7 +560,7 @@ pub trait Requester {
     fn create_chat_subscription_invite_link<C>(
         &self,
         chat_id: C,
-        subscription_period: u32,
+        subscription_period: Seconds,
         subscription_price: u32,
     ) -> Self::CreateChatSubscriptionInviteLink
     where

@@ -79,6 +79,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [pr1356]: https://github.com/teloxide/teloxide/pull/1356
 
+- Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
+    - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink`
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed

@@ -587,7 +587,7 @@ trait ErasableRequester<'a> {
     fn create_chat_subscription_invite_link(
         &self,
         chat_id: Recipient,
-        subscription_period: u32,
+        subscription_period: Seconds,
         subscription_price: u32,
     ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err>;
 
@@ -1409,7 +1409,7 @@ where
     fn create_chat_subscription_invite_link(
         &self,
         chat_id: Recipient,
-        subscription_period: u32,
+        subscription_period: Seconds,
         subscription_price: u32,
     ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err> {
         Requester::create_chat_subscription_invite_link(
