@@ -5,16 +5,20 @@ use serde::Serialize;
 use crate::types::{ChatInviteLink, Recipient};
 
 impl_payload! {
-    /// Use this method to revoke an invite link created by the bot. If the primary link is revoked, a new link is automatically generated. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the revoked invite link as [`ChatInviteLink`] object.
+    /// Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights. Returns the edited invite link as a [`ChatInviteLink`] object.
     ///
     /// [`ChatInviteLink`]: crate::types::ChatInviteLink
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub RevokeChatInviteLink (RevokeChatInviteLinkSetters) => ChatInviteLink {
+    pub EditChatSubscriptionInviteLink (EditChatSubscriptionInviteLinkSetters) => ChatInviteLink {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
-            /// The invite link to revoke
+            /// The invite link to edit
             pub invite_link: String [into],
+        }
+        optional {
+            /// Invite link name; 0-32 characters
+            pub name: String [into],
         }
     }
 }

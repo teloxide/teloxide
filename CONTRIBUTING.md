@@ -125,6 +125,130 @@ When you introduce changes that bump suppported Telegram Bot API version (e.g. 6
 - Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [crates/teloxide-core/README.md](crates/teloxide-core/README.md) file
 - Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [README.md](README.md) file
 
+### Adding a new method
+
+It should be noted first that TBA updates that contain new methods are usually divided between developers in the [teloxide_dev](https://t.me/teloxide_dev) chat, or in the github issues for new TBA versions. If you want to contribute a TBA update, contact other developers first, the work that you want to do may already be done. 
+
+#### Step 1:
+
+Add the method and its info to `crates/teloxide-core/src/schema.ron` file.
+
+For example, lets add a `createChatInviteLink`. Look at the [TBA documentation](https://core.telegram.org/bots/api#createchatinvitelink).
+After that, you need to start adding the method. First of all, look at where that method is relative to other methods. 
+`createChatInviteLink` is between `exportChatInviteLink` and `editChatInviteLink`. Find that spot in the `schema.ron` file and add the method as such:
+
+```ron
+Method(
+    names: ("createChatInviteLink", "CreateChatInviteLink", "create_chat_invite_link"), // one camelCase, one PascalCase and one snake_case
+    return_ty: RawTy("ChatInviteLink"), // The return type. TBA docs usually specify it. 
+    // If the type is not one of the basic ones (e.g. String, u32, True, bool), you need to add RawTy("...")
+    doc: Doc(
+        md: "Use this method to create an additional invite link for a chat. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. The link can be revoked using the method [revokeChatInviteLink]. Returns the new invite link as [ChatInviteLink] object.",
+        // Copied from the TBA. If the docs contain links, they should be added in the md_links
+        md_links: {
+            "revokeChatInviteLink": "https://core.telegram.org/bots/api#revokechatinvitelink",
+            "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+        }
+    ),
+    tg_doc: "https://core.telegram.org/bots/api#createchatinvitelink",
+    tg_category: "Available methods",
+    // Copy parameters to here. Be careful! If teloxide is lagging behind the TBA some fields may be added later than the current version, 
+    // please check that all fields existed with the TBA version you are adding!
+    params: [
+        Param(
+            name: "chat_id",
+            // Types work the same way as the return_ty
+            ty: RawTy("Recipient"),
+            descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+        ),
+        Param(
+            name: "name",
+            ty: Option(String),
+            descr: Doc(md: "Invite link name; 0-32 characters")
+        ),
+        Param(
+            name: "expire_date",
+            ty: Option(i64),
+            descr: Doc(md: "Point in time (Unix timestamp) when the link will expire")
+        ),
+        Param(
+            name: "member_limit",
+            ty: Option(u32),
+            descr: Doc(md: "Maximum number of users that can be members of the chat simultaneously after joining the chat via this invite link; 1-99999")
+        ),
+        Param(
+            name: "creates_join_request",
+            ty: Option(bool),
+            descr: Doc(md: "True, if users joining the chat via the link need to be approved by chat administrators. If True, member_limit can't be specified")
+        ),
+    ],
+),
+```
+
+That's the basics, for more info about .ron file look at the other methods or ask others!
+
+
+#### Step 2:
+
+Run `cargo test --features "full nightly"`. This will trigger the codegen scripts, and .ron will be converted to code!
+
+#### Step 3:
+
+Rerun the tests, and look at the compiler errors. Most likely there will be errors from `crates/teloxide-core/src/adaptors`, `crates/teloxide-core/src/requests/requester.rs` and `crates/teloxide-core/src/bot/api.rs`.
+
+1. To fix some of the errors in the adaptors, just add the snake_case of the new method to the `requester_forward!` macro in `throttle/requester_impl.rs`, `cache_me.rs`, `erased.rs`, `parse_mode.rs` and `trace.rs`. You also need to add it to the end of `requests/requester.rs` to `forward_all!` macro:
+```diff
+requester_forward! {
+    ...
+    export_chat_invite_link,
++   create_chat_invite_link,
+    edit_chat_invite_link,
+    ...
+}
+```
+
+2. Then you have to add the function definition to `bot/api.rs` like that:
+```rust
+type CreateChatInviteLink = JsonRequest<payloads::CreateChatInviteLink>;
+
+fn create_chat_invite_link<C>(&self, chat_id: C) -> Self::CreateChatInviteLink
+where
+    C: Into<Recipient>,
+{
+    Self::CreateChatInviteLink::new(self.clone(), payloads::CreateChatInviteLink::new(chat_id))
+}
+```
+
+3. To fix `erased.rs` adaptor you need to add a new function to `ErasedRequester`. First, add the definition:
+
+```rust
+fn create_chat_invite_link(
+    &self,
+    chat_id: Recipient,
+) -> ErasedRequest<'a, CreateChatInviteLink, Self::Err>;
+```
+
+Then add the function, similarly to `bot/api.rs`:
+```rust
+fn create_chat_invite_link(
+    &self,
+    chat_id: Recipient,
+) -> ErasedRequest<'a, CreateChatInviteLink, Self::Err> {
+    Requester::create_chat_invite_link(self, chat_id).erase()
+}
+```
+
+After that run the tests again, it should be all done!
+
+#### Other notes
+
+1. If you mess up the .ron and run the codegen, it is better to reset the files, rather than to try and fix it all by hand:
+`git restore crates/teloxide-core/src/local_macros.rs crates/teloxide-core/src/payloads.rs crates/teloxide-core/src/payloads/ crates/teloxide-core/src/requests/requester.rs && git clean -fd crates/teloxide-core/src/payloads/`
+
+This command will restore the listed files to your current git branch and delete all the new files in the `payloads/` dict.
+
+2. Some methods require special attention, if you find that, please make sure to add it to this guide as an exception!
+
 ## @teloxidebot
 
 `teloxide` uses @teloxidebot as a helper to manage PRs and issues. It is based on triagebot used by rustc developers, which docs can be found [here](https://forge.rust-lang.org/triagebot/index.html).
