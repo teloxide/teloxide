@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::Message;
+use crate::types::{Message, True};
 
 /// This object represents a service message about the completion of a giveaway
 /// without public winners.
@@ -15,6 +15,10 @@ pub struct GiveawayCompleted {
 
     /// Message with the giveaway that was completed, if it wasn't deleted
     pub giveaway_message: Option<Box<Message>>,
+
+    /// `True`, if the giveaway is a Telegram Star giveaway. Otherwise,
+    /// currently, the giveaway is a Telegram Premium giveaway.
+    pub is_star_giveaway: Option<True>,
 }
 
 #[cfg(test)]

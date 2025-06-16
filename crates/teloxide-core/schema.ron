@@ -1308,6 +1308,11 @@ Schema(
                     descr: Doc(md: "A JSON-serialized array describing the media to be sent; up to 10 items")
                 ),
                 Param(
+                    name: "payload",
+                    ty: Option(String),
+                    descr: Doc(md: "Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.")
+                ),
+                Param(
                     name: "caption",
                     ty: Option(String),
                     descr: Doc(md: "Media caption, 0-1024 characters after entities parsing")
