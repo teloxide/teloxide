@@ -5,7 +5,7 @@ users_on_vacation = ["@syrtcevvi"]
 
 [assign.adhoc_groups]
 # This is a special group that will be used if none of the `owners` entries matches.
-fallback = ["@hirrolot", "@shdwchn10", "@syrtcevvi", "@LasterAlex"]
+fallback = ["@hirrolot", "@shdwchn10", "@LasterAlex"]
 
 [assign.owners]
 "crates/teloxide" = ["@hirrolot", "@LasterAlex", "@shdwchn10"]
