@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
   - Add `until_date` field to `ChatMemberKind::Member`
 
-- Support for TBA 8.0 ()
+- Support for TBA 8.0 ([#1365](https://github.com/teloxide/teloxide/pull/1365))
   - Add `Gift`, `Gifts` and `PreparedInlineMessage`  structs
   - Add `get_available_gifts`, `send_gift`, `set_user_emoji_status` and `save_prepared_inline_message` TBA methods
   - Add `Gift` field to `TransactionPartnerUser`.
