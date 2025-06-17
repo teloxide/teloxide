@@ -212,6 +212,7 @@ where
         delete_my_commands,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,

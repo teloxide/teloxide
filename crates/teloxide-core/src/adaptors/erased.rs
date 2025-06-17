@@ -284,6 +284,7 @@ where
         delete_my_commands,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
@@ -831,6 +832,12 @@ trait ErasableRequester<'a> {
         web_app_query_id: String,
         result: InlineQueryResult,
     ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err>;
 
     fn edit_message_text(
         &self,
@@ -1774,6 +1781,14 @@ where
         result: InlineQueryResult,
     ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err> {
         Requester::answer_web_app_query(self, web_app_query_id, result).erase()
+    }
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err> {
+        Requester::save_prepared_inline_message(self, user_id, result).erase()
     }
 
     fn edit_message_text(

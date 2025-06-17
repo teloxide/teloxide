@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `subscription_period` field to the `TransactionPartnerUser` struct
   - Add `setUserEmojiStatus` TBA method
   - Add `PreparedInlineMessage` struct
+  - Add `savePreparedInlineMessage` TBA method
 
 ### Changed
 

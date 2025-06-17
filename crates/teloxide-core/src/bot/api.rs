@@ -1057,6 +1057,19 @@ impl Requester for Bot {
         )
     }
 
+    type SavePreparedInlineMessage = JsonRequest<payloads::SavePreparedInlineMessage>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage {
+        Self::SavePreparedInlineMessage::new(
+            self.clone(),
+            payloads::SavePreparedInlineMessage::new(user_id, result),
+        )
+    }
+
     type EditMessageText = JsonRequest<payloads::EditMessageText>;
 
     fn edit_message_text<C, T>(

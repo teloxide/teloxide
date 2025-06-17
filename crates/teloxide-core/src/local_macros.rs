@@ -1223,6 +1223,14 @@ macro_rules! requester_forward {
             $body!(answer_web_app_query this (web_app_query_id: W, result: InlineQueryResult))
         }
     };
+    (@method save_prepared_inline_message $body:ident $ty:ident) => {
+        type SavePreparedInlineMessage = $ty![SavePreparedInlineMessage];
+
+        fn save_prepared_inline_message(&self, user_id: UserId, result: InlineQueryResult) -> Self::SavePreparedInlineMessage {
+            let this = self;
+            $body!(save_prepared_inline_message this (user_id: UserId, result: InlineQueryResult))
+        }
+    };
     (@method edit_message_text $body:ident $ty:ident) => {
         type EditMessageText = $ty![EditMessageText];
 

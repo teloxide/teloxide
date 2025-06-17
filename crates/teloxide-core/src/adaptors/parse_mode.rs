@@ -6,8 +6,8 @@ use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
-        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageTextInline, SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument,
+        SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -148,6 +148,7 @@ where
     B::CopyMessage: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
+    B::SavePreparedInlineMessage: Clone,
     B::EditMessageMedia: Clone,
     B::EditMessageMediaInline: Clone,
     B::SendPaidMedia: Clone,
@@ -171,6 +172,7 @@ where
         copy_message,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         send_paid_media,
         send_media_group,
         edit_message_media,
@@ -362,6 +364,12 @@ impl VisitParseModes for AnswerInlineQuery {
 }
 
 impl VisitParseModes for AnswerWebAppQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
+    }
+}
+
+impl VisitParseModes for SavePreparedInlineMessage {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
     }
