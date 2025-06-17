@@ -6,7 +6,9 @@ use crate::types::Sticker;
 /// This object represent a list of gifts.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#gifts).
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 pub struct Gifts {
     /// The list of gifts
     pub gifts: Vec<Gift>,
@@ -24,7 +26,9 @@ pub struct GiftId(pub String);
 ///
 /// [The official docs](https://core.telegram.org/bots/api#gift).
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 pub struct Gift {
     /// Unique identifier of the gift
     pub id: GiftId,

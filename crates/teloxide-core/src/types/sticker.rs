@@ -8,7 +8,9 @@ use crate::types::{CustomEmojiId, FileMeta, MaskPosition, PhotoSize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sticker).
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 pub struct Sticker {
     /// Metadata of the sticker file.
     #[serde(flatten)]
@@ -65,7 +67,9 @@ pub struct Sticker {
 /// Kind of a [`Sticker`] - regular, mask or custom emoji.
 ///
 /// Dataful version of [`StickerType`].
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum StickerKind {

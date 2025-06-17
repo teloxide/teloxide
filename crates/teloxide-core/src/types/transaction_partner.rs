@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PaidMedia, RevenueWithdrawalState, Seconds, User};
+use crate::types::{Gift, PaidMedia, RevenueWithdrawalState, Seconds, User};
 
 /// This object describes the source of a transaction, or its recipient for
 /// outgoing transactions.
@@ -11,7 +11,7 @@ use crate::types::{PaidMedia, RevenueWithdrawalState, Seconds, User};
 #[serde(tag = "type")]
 pub enum TransactionPartner {
     Fragment(TransactionPartnerFragment),
-    User(TransactionPartnerUser),
+    User(Box<TransactionPartnerUser>),
     TelegramAds,
     TelegramApi(TransactionPartnerTelegramApi),
     Other,
@@ -45,6 +45,9 @@ pub struct TransactionPartnerUser {
 
     /// Bot-specified paid media payload
     pub paid_media_payload: Option<String>,
+
+    /// The gift sent to the user by the bot
+    pub gift: Option<Gift>,
 }
 
 /// Describes a transaction with payment for paid broadcasting.

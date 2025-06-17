@@ -70,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `savePreparedInlineMessage` TBA method
   - Add `GiftId`, `Gift` and `Gifts` structs
   - Add `getAvailableGifts` and `sendGift` TBA methods
+  - Add `gift` field to `TransactionPartnerUser` struct
 
 ### Changed
 
@@ -103,10 +104,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - MSRV (Minimal Supported Rust Version) was bumped from `1.80` to `1.82` ([#1358](https://github.com/teloxide/teloxide/pull/1358))
 
-[pr1356]: https://github.com/teloxide/teloxide/pull/1356
-
 - Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
     - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink`
+
+- Support for TBA 8.0
+  - `StickerKind`, `Sticker`, `MaskPoint` and `MaskPosition` now implement `Eq` and `Hash` traits
+  - Put `TransactionPartnerUser` in `TransactionPartner` behind the `Box`
+
+[pr1356]: https://github.com/teloxide/teloxide/pull/1356
 
 ## 0.11.2 - 2025-04-04
 
