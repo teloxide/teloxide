@@ -692,6 +692,7 @@ impl_api_error! {
         /// 1. You are running multiple bot instances
         /// 2. You are running multiple update consumers (like `Dispatcher` or `repl`)
         /// 3. You are calling [`GetUpdates`] yourself and the second call is done before the first one finishes
+        /// 4. You have the same bot token being used by services running on different servers or hosting platforms
         ///
         /// May happen in methods:
         /// 1. [`GetUpdates`]
