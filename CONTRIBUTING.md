@@ -43,6 +43,8 @@ If your pull request suggests new functionality or new changes, please explain y
 
 In general, try to make PR title/description as clear as possible, as they are the primary ways of communicating your intent to the reviewer.
 
+If your PR introduces breaking changes, mark them with `[**BC**]` in the changelog and update [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
+
 [GitHub issue]: https://github.com/teloxide/teloxide/issues
 [using keywords in issues and pull requests]: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/using-keywords-in-issues-and-pull-requests
 
@@ -121,13 +123,15 @@ cargo docs
 When you introduce changes that bump suppported Telegram Bot API version (e.g. 6.9 → 7.0), you must:
 
 - Specify your changes in [crates/teloxide-core/CHANGELOG.md](crates/teloxide-core/CHANGELOG.md) file
+- Mark all breaking changes with `[**BC**]` in the CHANGELOG
+- Specify your PR without detailed list of changes in [CHANGELOG.md](CHANGELOG.md) file and mention breaking changes with `[**BC**]` mark if there're any
 - Change TBA version and it's announce date in `api_version: ApiVersion(ver: "7.0", date: "December 29, 2023"),` line in head of [crates/teloxide-core/schema.ron](crates/teloxide-core/schema.ron) file
 - Change TBA version in `(Currently, version … is supported)` line in head of [crates/teloxide-core/src/lib.rs](crates/teloxide-core/src/lib.rs) file
 - Change TBA version in `Currently, version … of` line in head of [crates/teloxide/src/lib.rs](crates/teloxide/src/lib.rs) file
 - Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [crates/teloxide-core/README.md](crates/teloxide-core/README.md) file
 - Change TBA version in `…https://img.shields.io/badge/API%20coverage…` line in [README.md](README.md) file
 
-### Adding a new method
+### Adding a new TBA method
 
 #### Step 1:
 
@@ -194,7 +198,7 @@ Run `cargo test --features "full nightly"` or `just test`. This will trigger the
 
 Rerun the tests, and look at the compiler errors. Most likely there will be errors from `crates/teloxide-core/src/adaptors`, `crates/teloxide-core/src/requests/requester.rs` and `crates/teloxide-core/src/bot/api.rs`.
 
-1. To fix some of the errors in the adaptors, just add the snake_case of the new method to the `requester_forward!` macro in `throttle/requester_impl.rs`, `cache_me.rs`, `erased.rs`, `parse_mode.rs` and `trace.rs`. You also need to add it to the end of `requests/requester.rs` to `forward_all!` macro:
+1. To fix some of the errors in the adaptors, just add the snake_case of the new method to the `requester_forward!` macro in `throttle/requester_impl.rs`, `cache_me.rs`, `erased.rs` and `trace.rs`. You also need to add it to the end of `requests/requester.rs` to `forward_all!` macro:
 ```diff
 requester_forward! {
     ...
@@ -205,7 +209,47 @@ requester_forward! {
 }
 ```
 
-2. Then you have to add the function definition to `bot/api.rs` like that:
+2. To fix `parse_mode.rs` adaptor, most of the time you will need to add the snake_case of the new method to the **second** `requester_forward!` macro:
+```diff
+requester_forward! {
+    ...
+    => f, fty
+}
+
+requester_forward! {
+    ...
+    export_chat_invite_link,
++   create_chat_invite_link,
+    edit_chat_invite_link,
+    ...
+}
+```
+
+But if new method contains `ParseMode`, `InlineQueryResult`, `InputMedia` or maybe some other type containing `ParseMode` inside, you will need to add `Clone` where clause to the `DefaultParseMode` impl and the snake_case of the new method to the **first** `requester_forward!` macro:
+```diff
+impl<B> Requester for DefaultParseMode<B>
+where
+...
+    B::AnswerInlineQuery: Clone,
+    B::AnswerWebAppQuery: Clone,
++   B::SavePreparedInlineMessage: Clone,
+...
+requester_forward! {
+    ...
+    answer_inline_query,
+    answer_web_app_query,
++   save_prepared_inline_message,
+    ...
+    => f, fty
+}
+
+requester_forward! {
+    ...
+```
+
+Also if your method contains `ParseMode` in any form, you will need to implement `VisitParseModes` trait, see `parse_mode.rs` for examples.
+
+3. Then you have to add the function definition to `bot/api.rs` like that:
 ```rust
 type CreateChatInviteLink = JsonRequest<payloads::CreateChatInviteLink>;
 
@@ -217,7 +261,7 @@ where
 }
 ```
 
-3. To fix `erased.rs` adaptor you need to add a new function to `ErasedRequester`. First, add the definition:
+4. To fix `erased.rs` adaptor you need to add a new function to `ErasedRequester`. First, add the definition:
 
 ```rust
 fn create_chat_invite_link(
@@ -240,7 +284,9 @@ After that run the tests again, it should be all done!
 
 #### Special cases
 
-1. Telegram has `editMessageText`, `editMessageCaption` and other edit methods. Usually they work two ways, one for regular messages and one for inline ones. But that is very confusing and complicates a lot of interactions, so `teloxide` works differently. All edit methods are split in two, one for regular messages and one for inline ones. To look at an example, look at `editMessageText` and `editMessageTextInline` in `schema.ron`. The process is similar to adding a regular method, but you will have to add two, as well as adding a `sibling` field to both of the new methods. Also, return types differ (refer to telegram documentation for what these types are) 
+1. Telegram has `editMessageText`, `editMessageCaption` and other edit methods. Usually they work two ways, one for regular messages and one for inline ones. But that is very confusing and complicates a lot of interactions, so `teloxide` works differently. All edit methods are split in two, one for regular messages and one for inline ones. To look at an example, look at `editMessageText` and `editMessageTextInline` in `schema.ron`. The process is similar to adding a regular method, but you will have to add two, as well as adding a `sibling` field to both of the new methods. Also, return types differ (refer to telegram documentation for what these types are)
+
+2. Sometimes you will encounter situation when it's impossible to write something in `schema.ron`. It may be some doc comment that renders incorrectly or some type (like `Option<DateTime<Utc>>`) impossible to write. In such cases you can workaround it with `crates/teloxide-core/src/codegen/patch.rs` file
 
 #### Other notes
 
