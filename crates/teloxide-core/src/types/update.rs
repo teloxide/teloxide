@@ -5,8 +5,8 @@ use serde_json::Value;
 use crate::types::{
     BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
     ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
-    MessageReactionCountUpdated, MessageReactionUpdated, Poll, PollAnswer, PreCheckoutQuery,
-    ShippingQuery, User,
+    MessageReactionCountUpdated, MessageReactionUpdated, PaidMediaPurchased, Poll, PollAnswer,
+    PreCheckoutQuery, ShippingQuery, User,
 };
 
 /// This [object] represents an incoming update.
@@ -115,6 +115,10 @@ pub enum UpdateKind {
     /// checkout.
     PreCheckoutQuery(PreCheckoutQuery),
 
+    /// A user purchased paid media with a non-empty payload sent by the bot in
+    /// a non-channel chat
+    PurchasedPaidMedia(PaidMediaPurchased),
+
     /// New poll state. Bots receive only updates about stopped polls and
     /// polls, which are sent by the bot.
     Poll(Poll),
@@ -185,6 +189,7 @@ impl Update {
             InlineQuery(query) => &query.from,
             ShippingQuery(query) => &query.from,
             PreCheckoutQuery(query) => &query.from,
+            PurchasedPaidMedia(media) => &media.from,
             PollAnswer(answer) => return answer.voter.user(),
 
             MyChatMember(m) | ChatMember(m) => &m.from,
@@ -256,6 +261,7 @@ impl Update {
             UpdateKind::CallbackQuery(query) => i2(query.mentioned_users()),
             UpdateKind::ShippingQuery(query) => i1(once(&query.from)),
             UpdateKind::PreCheckoutQuery(query) => i1(once(&query.from)),
+            UpdateKind::PurchasedPaidMedia(media) => i1(once(&media.from)),
             UpdateKind::Poll(poll) => i3(poll.mentioned_users()),
 
             UpdateKind::PollAnswer(answer) => {
@@ -317,6 +323,7 @@ impl Update {
             | ChosenInlineResult(_)
             | ShippingQuery(_)
             | PreCheckoutQuery(_)
+            | PurchasedPaidMedia(_)
             | Poll(_)
             | PollAnswer(_)
             | Error(_) => return None,
@@ -420,6 +427,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<PreCheckoutQuery>()
                             .ok()
                             .map(UpdateKind::PreCheckoutQuery),
+                        "purchased_paid_media" => map
+                            .next_value::<PaidMediaPurchased>()
+                            .ok()
+                            .map(UpdateKind::PurchasedPaidMedia),
                         "poll" => map.next_value::<Poll>().ok().map(UpdateKind::Poll),
                         "poll_answer" => {
                             map.next_value::<PollAnswer>().ok().map(UpdateKind::PollAnswer)
@@ -499,18 +510,21 @@ impl Serialize for UpdateKind {
             UpdateKind::PreCheckoutQuery(v) => {
                 s.serialize_newtype_variant(name, 14, "pre_checkout_query", v)
             }
-            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 15, "poll", v),
-            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 16, "poll_answer", v),
+            UpdateKind::PurchasedPaidMedia(v) => {
+                s.serialize_newtype_variant(name, 15, "purchased_paid_media", v)
+            }
+            UpdateKind::Poll(v) => s.serialize_newtype_variant(name, 16, "poll", v),
+            UpdateKind::PollAnswer(v) => s.serialize_newtype_variant(name, 17, "poll_answer", v),
             UpdateKind::MyChatMember(v) => {
-                s.serialize_newtype_variant(name, 17, "my_chat_member", v)
+                s.serialize_newtype_variant(name, 18, "my_chat_member", v)
             }
-            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 18, "chat_member", v),
+            UpdateKind::ChatMember(v) => s.serialize_newtype_variant(name, 19, "chat_member", v),
             UpdateKind::ChatJoinRequest(v) => {
-                s.serialize_newtype_variant(name, 19, "chat_join_request", v)
+                s.serialize_newtype_variant(name, 20, "chat_join_request", v)
             }
-            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 20, "chat_boost", v),
+            UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 21, "chat_boost", v),
             UpdateKind::RemovedChatBoost(v) => {
-                s.serialize_newtype_variant(name, 21, "removed_chat_boost", v)
+                s.serialize_newtype_variant(name, 22, "removed_chat_boost", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }
@@ -1178,5 +1192,33 @@ mod test {
 
         let actual = serde_json::from_str::<Update>(json).unwrap();
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn paid_media_purchased_de() {
+        let json = r#"
+        {
+    "purchased_paid_media": {
+        "from": {
+            "first_name": "Hirrolot",
+            "id": 408258968,
+            "is_bot": false,
+            "language_code": "en",
+            "username": "hirrolot"
+        },
+        "paid_media_payload": "test_payload"
+    },
+    "update_id": 573255267
+}
+        "#;
+
+        let Update { kind, .. } = serde_json::from_str(json).unwrap();
+        match kind {
+            UpdateKind::PurchasedPaidMedia(media) => {
+                assert_eq!(media.paid_media_payload, "test_payload");
+                assert_eq!(media.from.first_name, "Hirrolot");
+            }
+            _ => panic!("Expected `PurchasedPaidMedia`"),
+        }
     }
 }

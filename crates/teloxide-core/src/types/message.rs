@@ -2579,6 +2579,7 @@ mod tests {
                 has_public_winners: true,
                 prize_description: None,
                 country_codes: None,
+                prize_star_count: None,
                 premium_subscription_month_count: Some(6)
             }
         )
@@ -2602,7 +2603,7 @@ mod tests {
             "giveaway_created": {}
         }"#;
         let message: Message = from_str(json).unwrap();
-        assert_eq!(message.giveaway_created().unwrap(), &GiveawayCreated {})
+        assert_eq!(message.giveaway_created().unwrap(), &GiveawayCreated { prize_star_count: None })
     }
 
     #[test]
@@ -2698,10 +2699,12 @@ mod tests {
                             has_public_winners: true,
                             prize_description: None,
                             country_codes: None,
+                            prize_star_count: None,
                             premium_subscription_month_count: Some(6)
                         }
                     })
-                }))
+                })),
+                is_star_giveaway: false,
             }
         )
     }
@@ -2797,6 +2800,7 @@ mod tests {
                 unclaimed_prize_count: None,
                 only_new_members: false,
                 was_refunded: false,
+                prize_star_count: None,
                 prize_description: None
             }
         )

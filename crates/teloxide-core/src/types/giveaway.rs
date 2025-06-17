@@ -39,6 +39,9 @@ pub struct Giveaway {
     /// giveaways.
     pub country_codes: Option<Vec<CountryCode>>,
 
+    /// The number of Telegram Stars to be split between giveaway winners
+    pub prize_star_count: Option<u32>,
+
     /// The number of months the Telegram Premium subscription won from the
     /// giveaway will be active for
     pub premium_subscription_month_count: Option<u8>,

@@ -46,6 +46,9 @@ pub struct ChatBoostSourceGiveaway {
     /// User that won the prize in the giveaway if any.
     pub user: Option<User>,
 
+    /// The number of Telegram Stars to be split between giveaway winners
+    pub prize_star_count: Option<u32>,
+
     /// `true`, if the giveaway was completed, but there was no user to win the
     /// prize.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]

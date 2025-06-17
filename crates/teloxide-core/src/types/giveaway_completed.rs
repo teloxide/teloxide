@@ -15,6 +15,11 @@ pub struct GiveawayCompleted {
 
     /// Message with the giveaway that was completed, if it wasn't deleted
     pub giveaway_message: Option<Box<Message>>,
+
+    /// `true`, if the giveaway is a Telegram Star giveaway. Otherwise,
+    /// currently, the giveaway is a Telegram Premium giveaway.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_star_giveaway: bool,
 }
 
 #[cfg(test)]

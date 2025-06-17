@@ -24,6 +24,8 @@ impl_payload! {
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
             pub business_connection_id: BusinessConnectionId,
+            /// Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.
+            pub payload: String [into],
             /// Media caption, 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the media caption. See [formatting options] for more details.

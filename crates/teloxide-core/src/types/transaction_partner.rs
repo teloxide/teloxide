@@ -38,4 +38,7 @@ pub struct TransactionPartnerUser {
 
     /// Information about the paid media bought by the user.
     pub paid_media: Option<Vec<PaidMedia>>,
+
+    /// Bot-specified paid media payload
+    pub paid_media_payload: Option<String>,
 }

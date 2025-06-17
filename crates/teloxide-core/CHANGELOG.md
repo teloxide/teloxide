@@ -45,6 +45,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
   - Add `until_date` field to `ChatMemberKind::Member`
 
+- Support for TBA 7.10 ([#1366](https://github.com/teloxide/teloxide/pull/1366))
+  - Add `purchased_paid_media` field to `Update` struct
+  - Add `PurchasedPaidMedia` variant to `AllowedUpdate` enum
+  - Add `PaidMediaPurchased` struct for `purchased_paid_media` field
+  - Add `prize_star_count` field to `GiveawayCreated`, `Giveaway`, `GiveawayWinners` and `ChatBoostSourceGiveaway` structs
+  - Add `is_star_giveaway` field to `GiveawayCompleted` struct
+  - Add `payload` field to `send_paid_media` method
+  - Add `paid_media_payload` field to `TransactionPartnerUser` struct
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))

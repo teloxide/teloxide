@@ -30,6 +30,9 @@ pub struct GiveawayWinners {
     /// for the giveaway
     pub additional_chat_count: Option<u16>,
 
+    /// The number of Telegram Stars that were split between giveaway winners
+    pub prize_star_count: Option<u32>,
+
     /// The number of months the Telegram Premium subscription won from the
     /// giveaway will be active for
     pub premium_subscription_month_count: Option<u8>,

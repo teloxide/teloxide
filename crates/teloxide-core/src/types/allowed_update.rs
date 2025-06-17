@@ -18,6 +18,7 @@ pub enum AllowedUpdate {
     CallbackQuery,
     ShippingQuery,
     PreCheckoutQuery,
+    PurchasedPaidMedia,
     Poll,
     PollAnswer,
     MyChatMember,
