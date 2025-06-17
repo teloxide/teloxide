@@ -37,7 +37,7 @@ pub use crate::payloads::{
     RestrictChatMemberSetters as _, RevokeChatInviteLinkSetters as _,
     SavePreparedInlineMessageSetters as _, SendAnimationSetters as _, SendAudioSetters as _,
     SendChatActionSetters as _, SendContactSetters as _, SendDiceSetters as _,
-    SendDocumentSetters as _, SendGameSetters as _, SendInvoiceSetters as _,
+    SendDocumentSetters as _, SendGameSetters as _, SendGiftSetters as _, SendInvoiceSetters as _,
     SendLocationSetters as _, SendMediaGroupSetters as _, SendMessageSetters as _,
     SendPaidMediaSetters as _, SendPhotoSetters as _, SendPollSetters as _,
     SendStickerSetters as _, SendVenueSetters as _, SendVideoNoteSetters as _,

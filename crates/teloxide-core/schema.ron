@@ -4652,6 +4652,43 @@ Schema(
             params: [],
         ),
         Method(
+            names: ("sendGift", "SendGift", "send_gift"),
+            return_ty: True,
+            doc: Doc(md: "Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#sendgift",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that will receive the gift"),
+                ),
+                Param(
+                    name: "gift_id",
+                    ty: RawTy("GiftId"),
+                    descr: Doc(md: "Identifier of the gift"),
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

@@ -1463,6 +1463,14 @@ macro_rules! requester_forward {
             $body!(get_available_gifts this ())
         }
     };
+    (@method send_gift $body:ident $ty:ident) => {
+        type SendGift = $ty![SendGift];
+
+        fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+            let this = self;
+            $body!(send_gift this (user_id: UserId, gift_id: GiftId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 

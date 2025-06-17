@@ -241,6 +241,7 @@ where
         set_sticker_keywords,
         set_sticker_mask_position,
         get_available_gifts,
+        send_gift,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,

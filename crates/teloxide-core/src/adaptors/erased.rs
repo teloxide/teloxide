@@ -313,6 +313,7 @@ where
         set_sticker_keywords,
         set_sticker_mask_position,
         get_available_gifts,
+        send_gift,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -997,6 +998,9 @@ trait ErasableRequester<'a> {
     ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err>;
 
     fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId)
+        -> ErasedRequest<'a, SendGift, Self::Err>;
 
     fn send_invoice(
         &self,
@@ -2006,6 +2010,14 @@ where
 
     fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
         Requester::get_available_gifts(self).erase()
+    }
+
+    fn send_gift(
+        &self,
+        user_id: UserId,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGift, Self::Err> {
+        Requester::send_gift(self, user_id, gift_id).erase()
     }
 
     fn send_invoice(

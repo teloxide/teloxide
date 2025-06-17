@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
-        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
+        FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
         InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
         Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
@@ -1440,6 +1440,12 @@ impl Requester for Bot {
 
     fn get_available_gifts(&self) -> Self::GetAvailableGifts {
         Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
+
+    type SendGift = JsonRequest<payloads::SendGift>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+        Self::SendGift::new(self.clone(), payloads::SendGift::new(user_id, gift_id))
     }
 
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
