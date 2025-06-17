@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.10", date: "September 6, 2024"),
+    api_version: ApiVersion(ver: "7.11", date: "October 31, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -277,6 +277,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -460,6 +465,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -606,6 +616,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -719,6 +734,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -817,6 +837,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -947,6 +972,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -1068,6 +1098,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -1164,6 +1199,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent message from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -1252,6 +1292,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -1349,6 +1394,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1408,6 +1458,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -1491,6 +1546,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -1801,6 +1861,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -1883,6 +1948,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -2022,6 +2092,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -2086,6 +2161,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -3869,7 +3949,7 @@ Schema(
         Method(
             names: ("editMessageMedia", "EditMessageMedia", "edit_message_media"),
             return_ty: RawTy("Message"),
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemedia",
             tg_category: "Updating messages",
             sibling: Some("editMessageMediaInline"),
@@ -3907,7 +3987,7 @@ Schema(
         Method(
             names: ("editMessageMediaInline", "EditMessageMediaInline", "edit_message_media_inline"),
             return_ty: True,
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemediainline",
             tg_category: "Updating messages",
             sibling: Some("editMessageMedia"),
@@ -4121,6 +4201,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
@@ -4640,6 +4725,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
@@ -4947,6 +5037,11 @@ Schema(
                     name: "protect_content",
                     ty: Option(bool),
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
                     name: "message_effect_id",
