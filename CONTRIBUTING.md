@@ -238,6 +238,10 @@ fn create_chat_invite_link(
 
 After that run the tests again, it should be all done!
 
+#### Special cases
+
+1. Telegram has `editMessageText`, `editMessageCaption` and other edit methods. Usually they work two ways, one for regular messages and one for inline ones. But that is very confusing and complicates a lot of interactions, so `teloxide` works differently. All edit methods are split in two, one for regular messages and one for inline ones. To look at an example, look at `editMessageText` and `editMessageTextInline` in `schema.ron`. The process is similar to adding a regular method, but you will have to add two, as well as adding a `sibling` field to both of the new methods. Also, return types differ (refer to telegram documentation for what these types are) 
+
 #### Other notes
 
 1. If you mess up the .ron and run the codegen, it is better to reset the files, rather than to try and fix it all by hand:
