@@ -68,6 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `setUserEmojiStatus` TBA method
   - Add `PreparedInlineMessage` struct
   - Add `savePreparedInlineMessage` TBA method
+  - Add `GiftId`, `Gift` and `Gifts` structs
 
 ### Changed
 
