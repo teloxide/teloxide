@@ -1436,6 +1436,12 @@ impl Requester for Bot {
         )
     }
 
+    type GetAvailableGifts = JsonRequest<payloads::GetAvailableGifts>;
+
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts {
+        Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
+
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
     fn send_invoice<Ch, T, D, Pa, C, Pri>(

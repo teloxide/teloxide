@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `PreparedInlineMessage` struct
   - Add `savePreparedInlineMessage` TBA method
   - Add `GiftId`, `Gift` and `Gifts` structs
+  - Add `getAvailableGifts` TBA method
 
 ### Changed
 

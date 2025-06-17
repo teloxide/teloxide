@@ -1455,6 +1455,14 @@ macro_rules! requester_forward {
             $body!(set_sticker_mask_position this (sticker: S))
         }
     };
+    (@method get_available_gifts $body:ident $ty:ident) => {
+        type GetAvailableGifts = $ty![GetAvailableGifts];
+
+        fn get_available_gifts(&self, ) -> Self::GetAvailableGifts {
+            let this = self;
+            $body!(get_available_gifts this ())
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
