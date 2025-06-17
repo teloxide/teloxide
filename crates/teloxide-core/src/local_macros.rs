@@ -693,6 +693,14 @@ macro_rules! requester_forward {
             $body!(get_user_profile_photos this (user_id: UserId))
         }
     };
+    (@method set_user_emoji_status $body:ident $ty:ident) => {
+        type SetUserEmojiStatus = $ty![SetUserEmojiStatus];
+
+        fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+            let this = self;
+            $body!(set_user_emoji_status this (user_id: UserId))
+        }
+    };
     (@method get_file $body:ident $ty:ident) => {
         type GetFile = $ty![GetFile];
 

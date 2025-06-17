@@ -2293,6 +2293,33 @@ Schema(
             ],
         ),
         Method(
+            names: ("setUserEmojiStatus", "SetUserEmojiStatus", "set_user_emoji_status"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method [requestEmojiStatusAccess]. Returns True on success.",
+                md_links: {"requestEmojiStatusAccess": "https://core.telegram.org/bots/webapps#initializing-mini-apps"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setuseremojistatus",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user")
+                ),
+                Param(
+                    name: "emoji_status_custom_emoji_id",
+                    ty: Option(RawTy("CustomEmojiId")),
+                    descr: Doc(md: "Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status")
+                ),
+                Param(
+                    name: "emoji_status_expiration_date",
+                    ty: Option(i64),
+                    descr: Doc(md: "Expiration date of the emoji status, if any")
+                ),
+            ],
+        ),
+        Method(
             names: ("getFile", "GetFile", "get_file"),
             return_ty: RawTy("File"),
             doc: Doc(

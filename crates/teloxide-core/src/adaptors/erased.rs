@@ -221,6 +221,7 @@ where
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,
@@ -510,6 +511,11 @@ trait ErasableRequester<'a> {
         &self,
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
 
     fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err>;
 
@@ -1312,6 +1318,13 @@ where
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err> {
         Requester::get_user_profile_photos(self, user_id).erase()
+    }
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, user_id).erase()
     }
 
     fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err> {

@@ -107,6 +107,7 @@ where
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,

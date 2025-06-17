@@ -437,6 +437,11 @@ pub trait Requester {
     /// For Telegram documentation see [`GetUserProfilePhotos`].
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos;
 
+    type SetUserEmojiStatus: Request<Payload = SetUserEmojiStatus, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetUserEmojiStatus`].
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
+
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetFile`].
@@ -1409,6 +1414,7 @@ macro_rules! forward_all {
             send_chat_action,
             set_message_reaction,
             get_user_profile_photos,
+            set_user_emoji_status,
             get_file,
             kick_chat_member,
             ban_chat_member,
