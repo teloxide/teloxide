@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `allow_paid_broadcast` field to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_poll`, `send_dice`, `send_invoice`, `send_game`, `send_media_group` and `copy_message` methods
   - Add `TransactionPartnerTelegramApi` struct and `TelegramApi` variant to `TransactionPartner` enum
 
-- Support for TBA 8.0
+- Support for TBA 8.0 ([#1369](pr1369))
   - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
   - Add `subscription_expiration_date`, `is_recurring` and `is_first_recurring` fields to the `SuccessfulPayment` struct
   - Add `editUserStarSubscription` TBA method
@@ -107,11 +107,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
     - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink`
 
-- Support for TBA 8.0
+- Support for TBA 8.0 ([#1369](pr1369))
   - `StickerKind`, `Sticker`, `MaskPoint` and `MaskPosition` now implement `Eq` and `Hash` traits
   - Put `TransactionPartnerUser` in `TransactionPartner` behind the `Box`
 
 [pr1356]: https://github.com/teloxide/teloxide/pull/1356
+[pr1369]: https://github.com/teloxide/teloxide/pull/1369
 
 ## 0.11.2 - 2025-04-04
 

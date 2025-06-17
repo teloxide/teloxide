@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 7.11 ([#1367](https://github.com/teloxide/teloxide/pull/1367))
 
+- Support for TBA 8.0 ([#1369](pr1369))
+
+[pr1369]: https://github.com/teloxide/teloxide/pull/1369
+
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153)) [**BC**]
