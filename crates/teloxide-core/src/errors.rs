@@ -689,7 +689,7 @@ impl_api_error! {
         /// Occurs when multiple [`GetUpdates`] calls happen at the same time.
         ///
         /// This can happen if
-        /// 1. You are running multiple bot instances
+        /// 1. You are running multiple bot instances (including on different servers/hosting platforms)
         /// 2. You are running multiple update consumers (like `Dispatcher` or `repl`)
         /// 3. You are calling [`GetUpdates`] yourself and the second call is done before the first one finishes
         ///
