@@ -168,6 +168,7 @@ define_update_ext! {
     (filter_callback_query, UpdateKind::CallbackQuery, CallbackQuery),
     (filter_shipping_query, UpdateKind::ShippingQuery, ShippingQuery),
     (filter_pre_checkout_query, UpdateKind::PreCheckoutQuery, PreCheckoutQuery),
+    (filter_purchased_paid_media, UpdateKind::PurchasedPaidMedia, PurchasedPaidMedia),
     (filter_poll, UpdateKind::Poll, Poll),
     (filter_poll_answer, UpdateKind::PollAnswer, PollAnswer),
     (filter_my_chat_member, UpdateKind::MyChatMember, MyChatMember),

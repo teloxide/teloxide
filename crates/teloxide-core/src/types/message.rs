@@ -2704,7 +2704,7 @@ mod tests {
                         }
                     })
                 })),
-                is_star_giveaway: None,
+                is_star_giveaway: false,
             }
         )
     }
