@@ -129,7 +129,7 @@ pub fn code_inline(s: &str) -> String {
 /// Escapes the string to be shown "as is" within the Telegram [Markdown
 /// v2][spec] message style.
 ///
-/// [spec]: https://core.telegram.org/bots/api#html-style
+/// [spec]: https://core.telegram.org/bots/api#markdownv2-style
 #[must_use = "This function returns a new string, rather than mutating the argument, so calling it \
               without using its output does nothing useful"]
 pub fn escape(s: &str) -> String {
