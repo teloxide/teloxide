@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::LabeledPrice;
+use crate::types::{BusinessConnectionId, LabeledPrice, Seconds};
 
 impl_payload! {
     /// Use this method to create a link for an invoice. Returns the created invoice link as String on success.
@@ -29,6 +29,12 @@ impl_payload! {
             /// [Botfather]: https://t.me/botfather
             /// [Telegram Stars]: https://t.me/BotNews/90
             pub provider_token: String [into],
+            /// Unique identifier of the business connection on behalf of which the link will be created. For payments in [Telegram Stars] only.
+            ///
+            /// [Telegram Stars]: https://t.me/BotNews/90
+            pub business_connection_id: BusinessConnectionId,
+            /// The number of seconds the subscription will be active for before the next payment. The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always be 2592000 (30 days) if specified. Any number of subscriptions can be active for a given bot at the same time, including multiple concurrent subscriptions from the same user.
+            pub subscription_period: Seconds,
             /// The maximum accepted amount for tips in the smallest units of the currency (integer, **not** float/double). For example, for a maximum tip of `US$ 1.45` pass `max_tip_amount = 145`. See the exp parameter in [`currencies.json`], it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
             ///
             /// [`currencies.json`]: https://core.telegram.org/bots/payments/currencies.json

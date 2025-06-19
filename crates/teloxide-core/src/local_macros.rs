@@ -693,6 +693,14 @@ macro_rules! requester_forward {
             $body!(get_user_profile_photos this (user_id: UserId))
         }
     };
+    (@method set_user_emoji_status $body:ident $ty:ident) => {
+        type SetUserEmojiStatus = $ty![SetUserEmojiStatus];
+
+        fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+            let this = self;
+            $body!(set_user_emoji_status this (user_id: UserId))
+        }
+    };
     (@method get_file $body:ident $ty:ident) => {
         type GetFile = $ty![GetFile];
 
@@ -1215,6 +1223,14 @@ macro_rules! requester_forward {
             $body!(answer_web_app_query this (web_app_query_id: W, result: InlineQueryResult))
         }
     };
+    (@method save_prepared_inline_message $body:ident $ty:ident) => {
+        type SavePreparedInlineMessage = $ty![SavePreparedInlineMessage];
+
+        fn save_prepared_inline_message(&self, user_id: UserId, result: InlineQueryResult) -> Self::SavePreparedInlineMessage {
+            let this = self;
+            $body!(save_prepared_inline_message this (user_id: UserId, result: InlineQueryResult))
+        }
+    };
     (@method edit_message_text $body:ident $ty:ident) => {
         type EditMessageText = $ty![EditMessageText];
 
@@ -1439,6 +1455,22 @@ macro_rules! requester_forward {
             $body!(set_sticker_mask_position this (sticker: S))
         }
     };
+    (@method get_available_gifts $body:ident $ty:ident) => {
+        type GetAvailableGifts = $ty![GetAvailableGifts];
+
+        fn get_available_gifts(&self, ) -> Self::GetAvailableGifts {
+            let this = self;
+            $body!(get_available_gifts this ())
+        }
+    };
+    (@method send_gift $body:ident $ty:ident) => {
+        type SendGift = $ty![SendGift];
+
+        fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+            let this = self;
+            $body!(send_gift this (user_id: UserId, gift_id: GiftId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
@@ -1494,6 +1526,14 @@ macro_rules! requester_forward {
         fn refund_star_payment(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId) -> Self::RefundStarPayment {
             let this = self;
             $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId))
+        }
+    };
+    (@method edit_user_star_subscription $body:ident $ty:ident) => {
+        type EditUserStarSubscription = $ty![EditUserStarSubscription];
+
+        fn edit_user_star_subscription(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool) -> Self::EditUserStarSubscription {
+            let this = self;
+            $body!(edit_user_star_subscription this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool))
         }
     };
     (@method set_passport_data_errors $body:ident $ty:ident) => {

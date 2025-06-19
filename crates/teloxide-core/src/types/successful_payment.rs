@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
@@ -35,6 +36,19 @@ pub struct SuccessfulPayment {
 
     /// Bot specified invoice payload.
     pub invoice_payload: String,
+
+    /// Expiration date of the subscription, in Unix time; for recurring
+    /// payments only.
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    pub subscription_expiration_date: Option<DateTime<Utc>>,
+
+    /// True, if the payment is a recurring payment for a subscription.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_recurring: bool,
+
+    /// True, if the payment is the first payment for a subscription.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_first_recurring: bool,
 
     /// Identifier of the shipping option chosen by the user.
     pub shipping_option_id: Option<String>,

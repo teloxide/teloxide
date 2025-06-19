@@ -437,6 +437,11 @@ pub trait Requester {
     /// For Telegram documentation see [`GetUserProfilePhotos`].
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos;
 
+    type SetUserEmojiStatus: Request<Payload = SetUserEmojiStatus, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetUserEmojiStatus`].
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
+
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetFile`].
@@ -963,6 +968,15 @@ pub trait Requester {
     where
         W: Into<String>;
 
+    type SavePreparedInlineMessage: Request<Payload = SavePreparedInlineMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SavePreparedInlineMessage`].
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage;
+
     type EditMessageText: Request<Payload = EditMessageText, Err = Self::Err>;
 
     /// For Telegram documentation see [`EditMessageText`].
@@ -1230,6 +1244,16 @@ pub trait Requester {
     where
         S: Into<String>;
 
+    type GetAvailableGifts: Request<Payload = GetAvailableGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetAvailableGifts`].
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts;
+
+    type SendGift: Request<Payload = SendGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGift`].
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1299,6 +1323,16 @@ pub trait Requester {
         user_id: UserId,
         telegram_payment_charge_id: TelegramTransactionId,
     ) -> Self::RefundStarPayment;
+
+    type EditUserStarSubscription: Request<Payload = EditUserStarSubscription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditUserStarSubscription`].
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> Self::EditUserStarSubscription;
 
     type SetPassportDataErrors: Request<Payload = SetPassportDataErrors, Err = Self::Err>;
 
@@ -1399,6 +1433,7 @@ macro_rules! forward_all {
             send_chat_action,
             set_message_reaction,
             get_user_profile_photos,
+            set_user_emoji_status,
             get_file,
             kick_chat_member,
             ban_chat_member,
@@ -1461,6 +1496,7 @@ macro_rules! forward_all {
             delete_my_commands,
             answer_inline_query,
             answer_web_app_query,
+            save_prepared_inline_message,
             edit_message_text,
             edit_message_text_inline,
             edit_message_caption,
@@ -1488,12 +1524,15 @@ macro_rules! forward_all {
             set_sticker_emoji_list,
             set_sticker_keywords,
             set_sticker_mask_position,
+            get_available_gifts,
+            send_gift,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
             get_star_transactions,
             refund_star_payment,
+            edit_user_star_subscription,
             set_passport_data_errors,
             send_game,
             set_game_score,

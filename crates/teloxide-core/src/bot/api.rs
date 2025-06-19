@@ -6,7 +6,7 @@ use crate::{
     requests::{JsonRequest, MultipartRequest},
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
-        FileId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
+        FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
         InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
         Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
@@ -340,6 +340,12 @@ impl Requester for Bot {
 
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos {
         Self::GetUserProfilePhotos::new(self.clone(), payloads::GetUserProfilePhotos::new(user_id))
+    }
+
+    type SetUserEmojiStatus = JsonRequest<payloads::SetUserEmojiStatus>;
+
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+        Self::SetUserEmojiStatus::new(self.clone(), payloads::SetUserEmojiStatus::new(user_id))
     }
 
     type GetFile = JsonRequest<payloads::GetFile>;
@@ -1051,6 +1057,19 @@ impl Requester for Bot {
         )
     }
 
+    type SavePreparedInlineMessage = JsonRequest<payloads::SavePreparedInlineMessage>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage {
+        Self::SavePreparedInlineMessage::new(
+            self.clone(),
+            payloads::SavePreparedInlineMessage::new(user_id, result),
+        )
+    }
+
     type EditMessageText = JsonRequest<payloads::EditMessageText>;
 
     fn edit_message_text<C, T>(
@@ -1417,6 +1436,18 @@ impl Requester for Bot {
         )
     }
 
+    type GetAvailableGifts = JsonRequest<payloads::GetAvailableGifts>;
+
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts {
+        Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
+
+    type SendGift = JsonRequest<payloads::SendGift>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+        Self::SendGift::new(self.clone(), payloads::SendGift::new(user_id, gift_id))
+    }
+
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
     fn send_invoice<Ch, T, D, Pa, C, Pri>(
@@ -1507,6 +1538,24 @@ impl Requester for Bot {
         Self::RefundStarPayment::new(
             self.clone(),
             payloads::RefundStarPayment::new(user_id, telegram_payment_charge_id),
+        )
+    }
+
+    type EditUserStarSubscription = JsonRequest<payloads::EditUserStarSubscription>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> Self::EditUserStarSubscription {
+        Self::EditUserStarSubscription::new(
+            self.clone(),
+            payloads::EditUserStarSubscription::new(
+                user_id,
+                telegram_payment_charge_id,
+                is_canceled,
+            ),
         )
     }
 

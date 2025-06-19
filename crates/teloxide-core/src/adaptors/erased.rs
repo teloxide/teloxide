@@ -221,6 +221,7 @@ where
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,
@@ -283,6 +284,7 @@ where
         delete_my_commands,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
@@ -310,12 +312,15 @@ where
         set_sticker_emoji_list,
         set_sticker_keywords,
         set_sticker_mask_position,
+        get_available_gifts,
+        send_gift,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
@@ -509,6 +514,11 @@ trait ErasableRequester<'a> {
         &self,
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
 
     fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err>;
 
@@ -825,6 +835,12 @@ trait ErasableRequester<'a> {
         result: InlineQueryResult,
     ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err>;
 
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err>;
+
     fn edit_message_text(
         &self,
         chat_id: Recipient,
@@ -981,6 +997,11 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err>;
 
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId)
+        -> ErasedRequest<'a, SendGift, Self::Err>;
+
     fn send_invoice(
         &self,
         chat_id: Recipient,
@@ -1019,6 +1040,13 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err>;
 
     fn set_passport_data_errors(
         &self,
@@ -1304,6 +1332,13 @@ where
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err> {
         Requester::get_user_profile_photos(self, user_id).erase()
+    }
+
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, user_id).erase()
     }
 
     fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err> {
@@ -1755,6 +1790,14 @@ where
         Requester::answer_web_app_query(self, web_app_query_id, result).erase()
     }
 
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err> {
+        Requester::save_prepared_inline_message(self, user_id, result).erase()
+    }
+
     fn edit_message_text(
         &self,
         chat_id: Recipient,
@@ -1965,6 +2008,18 @@ where
         Requester::set_sticker_mask_position(self, sticker).erase()
     }
 
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
+        Requester::get_available_gifts(self).erase()
+    }
+
+    fn send_gift(
+        &self,
+        user_id: UserId,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGift, Self::Err> {
+        Requester::send_gift(self, user_id, gift_id).erase()
+    }
+
     fn send_invoice(
         &self,
         chat_id: Recipient,
@@ -2015,6 +2070,21 @@ where
         telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err> {
         Requester::refund_star_payment(self, user_id, telegram_payment_charge_id).erase()
+    }
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err> {
+        Requester::edit_user_star_subscription(
+            self,
+            user_id,
+            telegram_payment_charge_id,
+            is_canceled,
+        )
+        .erase()
     }
 
     fn set_passport_data_errors(

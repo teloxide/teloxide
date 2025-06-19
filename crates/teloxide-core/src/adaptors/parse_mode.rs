@@ -6,8 +6,8 @@ use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
-        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageTextInline, SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument,
+        SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -148,6 +148,7 @@ where
     B::CopyMessage: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
+    B::SavePreparedInlineMessage: Clone,
     B::EditMessageMedia: Clone,
     B::EditMessageMediaInline: Clone,
     B::SendPaidMedia: Clone,
@@ -171,6 +172,7 @@ where
         copy_message,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         send_paid_media,
         send_media_group,
         edit_message_media,
@@ -201,6 +203,7 @@ where
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,
@@ -282,12 +285,15 @@ where
         set_sticker_emoji_list,
         set_sticker_keywords,
         set_sticker_mask_position,
+        get_available_gifts,
+        send_gift,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
@@ -360,6 +366,12 @@ impl VisitParseModes for AnswerInlineQuery {
 }
 
 impl VisitParseModes for AnswerWebAppQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
+    }
+}
+
+impl VisitParseModes for SavePreparedInlineMessage {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
     }

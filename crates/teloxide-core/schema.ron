@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.11", date: "October 31, 2024"),
+    api_version: ApiVersion(ver: "8.0", date: "November 17, 2024"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -2293,6 +2293,33 @@ Schema(
             ],
         ),
         Method(
+            names: ("setUserEmojiStatus", "SetUserEmojiStatus", "set_user_emoji_status"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method [requestEmojiStatusAccess]. Returns True on success.",
+                md_links: {"requestEmojiStatusAccess": "https://core.telegram.org/bots/webapps#initializing-mini-apps"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setuseremojistatus",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user")
+                ),
+                Param(
+                    name: "emoji_status_custom_emoji_id",
+                    ty: Option(RawTy("CustomEmojiId")),
+                    descr: Doc(md: "Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status")
+                ),
+                Param(
+                    name: "emoji_status_expiration_date",
+                    ty: Option(i64),
+                    descr: Doc(md: "Expiration date of the emoji status, if any")
+                ),
+            ],
+        ),
+        Method(
             names: ("getFile", "GetFile", "get_file"),
             return_ty: RawTy("File"),
             doc: Doc(
@@ -3724,9 +3751,51 @@ Schema(
                     descr: Doc(md: "Unique identifier for the query to be answered")
                 ),
                 Param(
-                    name :"result",
+                    name: "result",
                     ty: RawTy("InlineQueryResult"),
                     descr: Doc(md: "A JSON-serialized object describing the message to be sent"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("savePreparedInlineMessage", "SavePreparedInlineMessage", "save_prepared_inline_message"),
+            return_ty: RawTy("PreparedInlineMessage"),
+            doc: Doc(
+                md: "Stores a message that can be sent by a user of a Mini App. Returns a [PreparedInlineMessage] object.",
+                md_links: {"PreparedInlineMessage": "https://core.telegram.org/bots/api#preparedinlinemessage"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#savepreparedinlinemessage",
+            tg_category: "Inline Mode",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that can use the prepared message")
+                ),
+                Param(
+                    name: "result",
+                    ty: RawTy("InlineQueryResult"),
+                    descr: Doc(md: "An object describing the message to be sent"),
+                ),
+                Param(
+                    name: "allow_user_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to private chats with users"),
+                ),
+                Param(
+                    name: "allow_bot_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to private chats with bots"),
+                ),
+                Param(
+                    name: "allow_group_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to group and supergroup chats"),
+                ),
+                Param(
+                    name: "allow_channel_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to channel chats"),
                 ),
             ]
         ),
@@ -4572,6 +4641,54 @@ Schema(
             ]
         ),
         Method(
+            names: ("getAvailableGifts", "GetAvailableGifts", "get_available_gifts"),
+            return_ty: RawTy("Gifts"),
+            doc: Doc(
+                md: "Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a [Gifts] object.",
+                md_links: {"Gifts": "https://core.telegram.org/bots/api#gifts"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getavailablegifts",
+            tg_category: "Stickers",
+            params: [],
+        ),
+        Method(
+            names: ("sendGift", "SendGift", "send_gift"),
+            return_ty: True,
+            doc: Doc(md: "Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#sendgift",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that will receive the gift"),
+                ),
+                Param(
+                    name: "gift_id",
+                    ty: RawTy("GiftId"),
+                    descr: Doc(md: "Identifier of the gift"),
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(
@@ -4799,6 +4916,19 @@ Schema(
                     descr: Doc(md: "Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)"),
                 ),
                 Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(
+                        md: "Unique identifier of the business connection on behalf of which the link will be created. For payments in [Telegram Stars] only.",
+                        md_links: {"Telegram Stars":"https://t.me/BotNews/90"}
+                    ),
+                ),
+                Param(
+                    name: "subscription_period",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always be 2592000 (30 days) if specified. Any number of subscriptions can be active for a given bot at the same time, including multiple concurrent subscriptions from the same user."),
+                ),
+                Param(
                     name: "max_tip_amount",
                     ty: Option(u32),
                     descr: Doc(
@@ -4973,6 +5103,30 @@ Schema(
                     name: "telegram_payment_charge_id",
                     ty: RawTy("TelegramTransactionId"),
                     descr: Doc(md: "Telegram payment identifier"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("editUserStarSubscription", "EditUserStarSubscription", "edit_user_star_subscription"),
+            return_ty: True,
+            doc: Doc(md: "Allows the bot to cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#edituserstarsubscription",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Identifier of the user whose subscription will be edited"),
+                ),
+                Param(
+                    name: "telegram_payment_charge_id",
+                    ty: RawTy("TelegramTransactionId"),
+                    descr: Doc(md: "Telegram payment identifier for the subscription"),
+                ),
+                Param(
+                    name: "is_canceled",
+                    ty: bool,
+                    descr: Doc(md: "Pass `true` to cancel extension of the user subscription; the subscription must be active up to the end of the current subscription period. Pass `false` to allow the user to re-enable a subscription that was previously canceled by the bot."),
                 ),
             ],
         ),

@@ -288,7 +288,11 @@ pub(crate) fn patch_ty(mut schema: Schema) -> Schema {
         &mut schema,
         Type::Option(Box::new(Type::i64)),
         Type::Option(Box::new(Type::DateTime)),
-        &[("create_chat_invite_link", "expire_date"), ("edit_chat_invite_link", "expire_date")],
+        &[
+            ("create_chat_invite_link", "expire_date"),
+            ("edit_chat_invite_link", "expire_date"),
+            ("set_user_emoji_status", "emoji_status_expiration_date"),
+        ],
     );
 
     schema
