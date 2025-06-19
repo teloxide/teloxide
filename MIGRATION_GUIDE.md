@@ -3,6 +3,8 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.15 -> 0.16
+
 ### teloxide
 
 A lot of previously `String` type ids got their own types. To easily convert into them you can just add `.into()`
@@ -31,6 +33,17 @@ Also `refund_star_payment`, `SuccessfulPayment` and `StarTransaction` switched f
 ```diff
 -bot.refund_star_payment(user_id, "txn").await?;
 +bot.refund_star_payment(user_id, "txn".into()).await?;
+```
+
+dptree's handler signature has changed:
+
+```diff
+type UpdHandler = Handler<
+    'static,
+-    DependencyMap,
+    core::result::Result<(), Box<dyn std::error::Error + Send + Sync + 'static>>,
+    teloxide::dispatching::DpHandlerDescription,
+>;
 ```
 
 ## 0.14.1 -> 0.15.0
