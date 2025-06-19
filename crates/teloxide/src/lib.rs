@@ -96,6 +96,8 @@
 //! }
 //! ```
 //!
+//! For more info about dptree, please check out [_this guide_] on it!
+//!
 //! [update kinds]: crate::types::UpdateKind
 //! [message kinds]: crate::types::MessageKind
 //! [`Update`]: crate::types::Update
@@ -105,6 +107,7 @@
 //! [`MessageFilterExt`]: crate::dispatching::MessageFilterExt
 //! [`Update::filter_message`]: crate::dispatching::UpdateFilterExt::filter_message
 //! [`filter_map`]: crate::prelude::Handler::filter_map
+//! [_this guide_]: https://github.com/teloxide/teloxide/blob/master/DPTREE_GUIDE.md
 
 // This hack is used to cancel formatting for a Markdown table. See [1], [2], and [3].
 //

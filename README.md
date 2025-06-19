@@ -301,6 +301,7 @@ The community has made a crate called [`teloxide_tests`](https://github.com/Last
 
 ## Tutorials
 
+ - [_`dptree` starter guide with teloxide_](https://github.com/teloxide/teloxide/blob/master/DPTREE_GUIDE.md)
  - [_"Migrating my family finance bot from Python to Rust (teloxide) because I am tired of exceptions (part 1)"_](https://web.archive.org/web/20230130112018/https://trkohler.com/posts/i-migrated-my-family-finance-bot-from-python-to-rust-because-i-am-tired-of-exceptions/) by Troy Köhler.
  - [_"Migrating my family finance bot from Python to Rust (teloxide) [part 2]"_](https://web.archive.org/web/20240529200929/https://trkohler.com/posts/migrating-my-family-finance-bot-from-python-to-rust-teloxide-part-2/) by Troy Köhler.
 
