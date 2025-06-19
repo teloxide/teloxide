@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.12.0 - 2025-06-19
+
 ### Added
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
