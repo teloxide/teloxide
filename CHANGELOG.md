@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `dptree` type checking and dead code checking [**BC**].
+
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153)) [**BC**]
   - Add `PollId` struct
   - Add `CallbackQueryId` struct

@@ -45,6 +45,7 @@ impl<E: 'static> UpdateHandlerTracingExt<E> for UpdateHandler<E> {
                 obligations: F::obligations(),
                 guaranteed_outcomes: BTreeSet::new(),
                 conditional_outcomes: BTreeSet::new(),
+                continues: true,
             },
         )
     }
