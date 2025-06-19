@@ -33,6 +33,17 @@ Also `refund_star_payment`, `SuccessfulPayment` and `StarTransaction` switched f
 +bot.refund_star_payment(user_id, "txn".into()).await?;
 ```
 
+dptree's handler signature has changed:
+
+```diff
+type UpdHandler = Handler<
+    'static,
+-    DependencyMap,
+    core::result::Result<(), Box<dyn std::error::Error + Send + Sync + 'static>>,
+    teloxide::dispatching::DpHandlerDescription,
+>;
+```
+
 ## 0.14.1 -> 0.15.0
 
 ### teloxide
