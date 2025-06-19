@@ -3,6 +3,8 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.15 -> 0.16
+
 ### teloxide
 
 A lot of previously `String` type ids got their own types. To easily convert into them you can just add `.into()`
