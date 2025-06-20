@@ -128,10 +128,10 @@ You start at the [official TBA release notes](https://core.telegram.org/bots/api
 
 There are a few most common lines:
 
-1. A new type (e.g: "Added the class UniqueGift describing a gift that was upgraded to a unique one.")
-2. A new method (e.g: "Added the method giftPremiumSubscription, allowing bots to gift a user a Telegram Premium subscription paid in Telegram Stars.")
-3. A new parameter to a method (e.g: "Added the parameter pay_for_upgrade to the method sendGift.")
-4. A new field to a type (e.g: "Added the field upgrade_star_count to the class Gift.")
+1. A new type (e.g: "Added the class `UniqueGift` describing a gift that was upgraded to a unique one.")
+2. A new method (e.g: "Added the method `giftPremiumSubscription`, allowing bots to gift a user a Telegram Premium subscription paid in Telegram Stars.")
+3. A new parameter to a method (e.g: "Added the parameter `pay_for_upgrade` to the method `sendGift`.")
+4. A new field to a type (e.g: "Added the field `upgrade_star_count` to the class `Gift`.")
 5. A documentation change (e.g: "Documented that .MP3 and .M4A files can be used as voice messages.". But it can be more convoluted, and it does NOT say the classes where the docs were changed!)
 
 There are more obscure things, like renaming or replacing something, but these five are the most common.
@@ -142,7 +142,8 @@ You should start with adding a new type. New methods and fields may depend on th
 
 1. You look at the web archive for the type documentation and just... Write it into a struct! For example, lets implement [`PollOption`](https://core.telegram.org/bots/api#polloption) (you should be using web archive)
 
-The docs say this: [INSERT GITHUB IMAGE HERE]
+The docs say this:
+![image](https://github.com/user-attachments/assets/c907e173-afe3-4c68-9c31-5990b2875462)
 
 So, writing that out into a struct:
 
@@ -298,21 +299,17 @@ Finally, update all of the docs! Beware: TBA can be a little secretive about wha
 
 Bump the supported TBA version where needed. For how to do that look at [Bumping supported TBA version](#bumping-supported-tba-version) section.
 
+If there were breaking changes, you should also write them in `MIGRATION_GUIDE.md`!
+
 #### Step 7:
 
 If there was a release lately, you should probably change the `teloxide/Cargo.toml` to use the path for `teloxide-core` and `teloxide-macros`, so they reference the latest code
 
 #### Step 8:
 
-Update the changelogs and migration guide! Firstly update `teloxide-core/src/CHANGELOG.md`, and secondly reference it in `/CHANGELOG.md`. You should say all the breaking changes in the root changelog, and all of the changes made to `crates/teloxide`.
-
-If there were breaking changes, you should also write them in `MIGRATION_GUIDE.md`!
-
-#### Step 9:
-
 If there was something that wasn't documented in `CONTRIBUTING.md`, you should update it with your experience!
 
-#### Step 10:
+#### Step 9:
 
 Make a PR and wait for review, you should be all set.
 
