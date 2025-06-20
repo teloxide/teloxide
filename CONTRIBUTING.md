@@ -118,6 +118,204 @@ cargo test --features "full nightly"
 cargo docs
 ```
 
+### Making a TBA update
+
+Once again, if you want to make a major update, like a TBA update, you need to contact other developers to not waste your and other developers time!
+
+#### Step 1:
+
+You start at the [official TBA release notes](https://core.telegram.org/bots/api-changelog), BUT you should use [web archive](https://web.archive.org/) if `teloxide` is lagging behind a few updates. If you use the latest docs you might add something that is not yet supported in the rest of the codebase!
+
+There are a few most common lines:
+
+1. A new type (e.g: "Added the class UniqueGift describing a gift that was upgraded to a unique one.")
+2. A new method (e.g: "Added the method giftPremiumSubscription, allowing bots to gift a user a Telegram Premium subscription paid in Telegram Stars.")
+3. A new parameter to a method (e.g: "Added the parameter pay_for_upgrade to the method sendGift.")
+4. A new field to a type (e.g: "Added the field upgrade_star_count to the class Gift.")
+5. A documentation change (e.g: "Documented that .MP3 and .M4A files can be used as voice messages.". But it can be more convoluted, and it does NOT say the classes where the docs were changed!)
+
+There are more obscure things, like renaming or replacing something, but these five are the most common.
+
+#### Step 2:
+
+You should start with adding a new type. New methods and fields may depend on the new types, and adding them is pretty easy. The hardest part is figuring out `serde`.
+
+1. You look at the web archive for the type documentation and just... Write it into a struct! For example, lets implement [`PollOption`](https://core.telegram.org/bots/api#polloption) (you should be using web archive)
+
+The docs say this: [INSERT GITHUB IMAGE HERE]
+
+So, writing that out into a struct:
+
+```rust
+/// This object contains information about one answer option in a poll.
+///
+/// [The official docs](https://core.telegram.org/bots/api#polloption).
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub struct PollOption {
+    /// Option text, 1-100 characters.
+    pub text: String,
+
+    /// Special entities that appear in the option text. Currently, only custom
+    /// emoji entities are allowed in poll option texts
+    pub text_entities: Option<Vec<MessageEntity>>,
+
+    /// Number of users that voted for this option.
+    pub voter_count: u32,
+}
+```
+
+All types should implement `Clone`, `Debug`, `PartialEq`, `Serialize` and `Deserialize`. If the fields allow it, you should also implement `Eq` and `Hash` (if some field contains `f32` there traits are not possible to implement)
+
+And all new types should be added to `teloxide-core/src/types/` as a new file, if needed.
+
+2. Teloxide has more types than the official TBA docs. For example, all ids should be their own type:
+
+```rust
+/// Identifier of a story.
+#[derive(Clone, Copy)]
+#[derive(Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct StoryId(pub u64);
+```
+
+for numbered ids, and
+
+```rust
+/// A unique identifier of the Telegram transaction.
+#[derive(Clone, Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, From)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct TelegramTransactionId(pub String);
+```
+
+for `String` ids
+
+3. If a type has more than one variant, you need to make that type an enum:
+
+```rust
+/// This object describes the source of a transaction, or its recipient for
+/// outgoing transactions.
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+#[serde(tag = "type")]
+pub enum TransactionPartner {
+    Fragment(TransactionPartnerFragment),
+    User(Box<TransactionPartnerUser>),
+    TelegramAds,
+    TelegramApi(TransactionPartnerTelegramApi),
+    Other,
+}
+```
+
+Or, if a type has variants, but all variants share some common variables, you should make a `TypeKind`. For example:
+
+```rust
+/// This object represents a sticker.
+///
+/// [The official docs](https://core.telegram.org/bots/api#sticker).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct Sticker {
+    /// Metadata of the sticker file.
+    #[serde(flatten)]
+    pub file: FileMeta,
+
+    /// Sticker width, in pixels.
+    ///
+    /// You can assume that `max(width, height) = 512`, `min(width, height) <=
+    /// 512`. In other words one dimension is exactly 512 pixels and the other
+    /// is at most 512 pixels.
+    pub width: u16,
+
+    /// Sticker height, in pixels.
+    ///
+    /// You can assume that `max(width, height) = 512`, `min(width, height) <=
+    /// 512`. In other words one dimension is exactly 512 pixels and the other
+    /// is at most 512 pixels.
+    pub height: u16,
+
+    /// Kind of this sticker - regular, mask or custom emoji.
+    ///
+    /// In other words this represent how the sticker is presented, as a big
+    /// picture/video, as a mask while editing pictures or as a custom emoji in
+    /// messages.
+    #[serde(flatten)]
+    pub kind: StickerKind,
+
+    /* Other common fields... */
+}
+
+/// Kind of a [`Sticker`] - regular, mask or custom emoji.
+///
+/// Dataful version of [`StickerType`].
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type")]
+#[serde(rename_all = "snake_case")]
+pub enum StickerKind {
+    /// "Normal", raster, animated or video sticker.
+    Regular {
+        /// Premium animation for the sticker, if the sticker is premium.
+        premium_animation: Option<FileMeta>,
+    },
+    /// Mask sticker.
+    Mask {
+        /// For mask stickers, the position where the mask should be placed.
+        mask_position: MaskPosition,
+    },
+    /// Custom emoji sticker.
+    CustomEmoji {
+        /// A unique identifier of the custom emoji.
+        custom_emoji_id: CustomEmojiId,
+    },
+}
+```
+
+4. You should write out all of the `serde` stuff. For `TypeKind` you need to add `#[serde(flatten)]`. For almost all structs you need to add `#[serde_with::skip_serializing_none]`. For fields that don't have a default (like `bool`) you need to add `#[serde(default)]`. There are more `serde` stuff, mostly try to look at the existing types and copy them.
+
+#### Step 3:
+
+Add new fields to types and new parameters to methods. For how to add a new parameter to a method, look at the [Adding a new TBA method](#adding-a-new-tba-method) section.
+
+#### Step 4:
+
+Add new methods. For that also look at [Adding a new TBA method](#adding-a-new-tba-method).
+
+#### Step 5:
+
+Finally, update all of the docs! Beware: TBA can be a little secretive about what it updated in the docs.
+
+#### Step 6:
+
+Bump the supported TBA version where needed. For how to do that look at [Bumping supported TBA version](#bumping-supported-tba-version) section.
+
+#### Step 7:
+
+If there was a release lately, you should probably change the `teloxide/Cargo.toml` to use the path for `teloxide-core` and `teloxide-macros`, so they reference the latest code
+
+#### Step 8:
+
+Update the changelogs and migration guide! Firstly update `teloxide-core/src/CHANGELOG.md`, and secondly reference it in `/CHANGELOG.md`. You should say all the breaking changes in the root changelog, and all of the changes made to `crates/teloxide`.
+
+If there were breaking changes, you should also write them in `MIGRATION_GUIDE.md`!
+
+#### Step 9:
+
+If there was something that wasn't documented in `CONTRIBUTING.md`, you should update it with your experience!
+
+#### Step 10:
+
+Make a PR and wait for review, you should be all set.
+
 ### Bumping supported TBA version
 
 When you introduce changes that bump suppported Telegram Bot API version (e.g. 6.9 → 7.0), you must:
