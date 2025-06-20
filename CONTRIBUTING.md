@@ -293,23 +293,27 @@ Add new methods. For that also look at [Adding a new TBA method](#adding-a-new-t
 
 #### Step 5:
 
-Finally, update all of the docs! Beware: TBA can be a little secretive about what it updated in the docs.
+If some new things broke too much, or are complex in general, they should be tested! Add tests as neeeded, the code needs to be robust!
 
 #### Step 6:
+
+Finally, update all of the docs! Beware: TBA can be a little secretive about what it updated in the docs.
+
+#### Step 7:
 
 Bump the supported TBA version where needed. For how to do that look at [Bumping supported TBA version](#bumping-supported-tba-version) section.
 
 If there were breaking changes, you should also write them in `MIGRATION_GUIDE.md`!
 
-#### Step 7:
+#### Step 8:
 
 If there was a release lately, you should probably change the `teloxide/Cargo.toml` to use the path for `teloxide-core` and `teloxide-macros`, so they reference the latest code
 
-#### Step 8:
+#### Step 9:
 
 If there was something that wasn't documented in `CONTRIBUTING.md`, you should update it with your experience!
 
-#### Step 9:
+#### Step 10:
 
 Make a PR and wait for review, you should be all set.
 
