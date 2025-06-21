@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
+  - Add `nanostar_amount` field to `StarTransaction` struct
+  - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
+  - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
+
 ## 0.12.0 - 2025-06-19
 
 ### Added

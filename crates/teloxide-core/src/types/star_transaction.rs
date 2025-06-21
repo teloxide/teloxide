@@ -29,6 +29,10 @@ pub struct StarTransaction {
     /// Number of Telegram Stars transferred by the transaction.
     pub amount: u32,
 
+    /// The number of 1/1000000000 shares of Telegram Stars transferred by the
+    /// transaction
+    pub nanostar_amount: Option<u32>,
+
     /// Date the transaction was created in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
