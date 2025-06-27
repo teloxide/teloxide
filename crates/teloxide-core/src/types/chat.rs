@@ -6,7 +6,7 @@ use crate::types::ChatId;
 ///
 /// [The official docs](https://core.telegram.org/bots/api#chat).
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 pub struct Chat {
     /// A unique identifier for this chat.
     pub id: ChatId,
@@ -16,7 +16,7 @@ pub struct Chat {
 }
 
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 #[serde(untagged)]
 pub enum ChatKind {
     Public(ChatPublic),
@@ -24,7 +24,7 @@ pub enum ChatKind {
 }
 
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 pub struct ChatPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
@@ -34,7 +34,7 @@ pub struct ChatPublic {
 }
 
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 #[serde(from = "serde_helper::ChatPrivate", into = "serde_helper::ChatPrivate")]
 pub struct ChatPrivate {
     /// A username, for private chats, supergroups and channels if
@@ -49,7 +49,7 @@ pub struct ChatPrivate {
 }
 
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum PublicChatKind {
@@ -66,7 +66,7 @@ pub struct PublicChatChannel {
 }
 
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Eq, Hash)]
 pub struct PublicChatSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
