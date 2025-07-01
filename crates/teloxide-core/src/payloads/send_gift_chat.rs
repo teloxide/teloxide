@@ -2,17 +2,17 @@
 
 use serde::Serialize;
 
-use crate::types::{GiftId, MessageEntity, ParseMode, True, UserId};
+use crate::types::{GiftId, MessageEntity, ParseMode, Recipient, True};
 
 impl_payload! {
-    /// Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success.
+    /// Sends a gift to the given channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success.
     ///
-    /// See also: [`SendGiftChat`](crate::payloads::SendGiftChat)
+    /// See also: [`SendGift`](crate::payloads::SendGift)
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub SendGift (SendGiftSetters) => True {
+    pub SendGiftChat (SendGiftChatSetters) => True {
         required {
-            /// Unique identifier of the target user that will receive the gift
-            pub user_id: UserId,
+            /// Unique identifier for the chat or username of the channel that will receive the gift
+            pub chat_id: Recipient [into],
             /// Identifier of the gift
             pub gift_id: GiftId,
         }

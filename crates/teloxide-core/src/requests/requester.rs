@@ -1254,6 +1254,13 @@ pub trait Requester {
     /// For Telegram documentation see [`SendGift`].
     fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift;
 
+    type SendGiftChat: Request<Payload = SendGiftChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGiftChat`].
+    fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat
+    where
+        C: Into<Recipient>;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1526,6 +1533,7 @@ macro_rules! forward_all {
             set_sticker_mask_position,
             get_available_gifts,
             send_gift,
+            send_gift_chat,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,
