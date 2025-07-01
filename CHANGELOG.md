@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
 
+- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1181))
+  - Removed `hide_url` field from `InlineQueryResultArticle` struct [**BC**]
+
 ## 0.16.0 - 2025-06-19
 
 ### Added
