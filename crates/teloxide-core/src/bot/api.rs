@@ -7,7 +7,7 @@ use crate::{
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
         FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
-        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
+        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient,
         Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
@@ -737,21 +737,12 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
-    fn create_forum_topic<C, N>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>,
     {
-        Self::CreateForumTopic::new(
-            self.clone(),
-            payloads::CreateForumTopic::new(chat_id, name, icon_color, icon_custom_emoji_id),
-        )
+        Self::CreateForumTopic::new(self.clone(), payloads::CreateForumTopic::new(chat_id, name))
     }
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;

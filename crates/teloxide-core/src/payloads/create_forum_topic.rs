@@ -13,6 +13,8 @@ impl_payload! {
             pub chat_id: Recipient [into],
             /// Topic name, 1-128 characters
             pub name: String [into],
+        }
+        optional {
             /// Color of the topic icon in RGB format. Currently, must be one of 7322096 (`0x6FB9F0`), 16766590 (`0xFFD67E`), 13338331 (`0xCB86DB`), 9367192 (`0x8EEE98`), 16749490 (`0xFF93B2`), or 16478047 (`0xFB6F5F`). To construct color from these values use [`Rgb::from_u32`]
             ///
             /// [`Rgb::from_u32`]: crate::types::Rgb::from_u32

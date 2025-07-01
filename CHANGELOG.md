@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
   - Removed `hide_url` field from `InlineQueryResultArticle` struct [**BC**]
 
+### Fixed
+
+- Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382)) [**BC**]
+
 ## 0.16.0 - 2025-06-19
 
 ### Added

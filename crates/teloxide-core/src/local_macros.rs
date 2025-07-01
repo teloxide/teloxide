@@ -984,10 +984,10 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId) -> Self::CreateForumTopic where C: Into<Recipient>,
+        fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic where C: Into<Recipient>,
         N: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId))
+            $body!(create_forum_topic this (chat_id: C, name: N))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
