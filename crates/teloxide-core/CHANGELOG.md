@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
   - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
 
-- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1181))
+- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
   - Add `upgrade_star_count` field to `Gift` struct
   - Add `pay_for_upgrade` parameter to `send_gift` method
   - Removed `hide_url` field from `InlineQueryResultArticle` struct
