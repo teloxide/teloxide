@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
   - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
 
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - Add `send_gift_chat` method
+  - Add `can_send_gift` field to `ChatFullInfo` struct
+  - Add `TransactionPartner::Chat` enum variant and `TransactionPartnerChat` struct
+  - Add `cover` and `start_timestamp` fields to `Video`, `InputMediaVideo` and `InputPaidMediaVideo` structs
+  - Add `cover` and `start_timestamp` parameters to `send_video` method
+  - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
+
+### Changed
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - `PaidMedia::Video` is now wrapped in a `Box`
+  - `InputPaidMedia::Video` is now wrapped in a `Box`
+
 ## 0.12.0 - 2025-06-19
 
 ### Added

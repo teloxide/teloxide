@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
 
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+
+### Changed
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - `PaidMedia::Video` is now wrapped in a `Box` [**BC**]
+  - `InputPaidMedia::Video` is now wrapped in a `Box` [**BC**]
+
 ## 0.16.0 - 2025-06-19
 
 ### Added
