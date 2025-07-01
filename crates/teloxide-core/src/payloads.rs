@@ -93,6 +93,8 @@ mod log_out;
 mod pin_chat_message;
 mod promote_chat_member;
 mod refund_star_payment;
+mod remove_chat_verification;
+mod remove_user_verification;
 mod reopen_forum_topic;
 mod reopen_general_forum_topic;
 mod replace_sticker_in_set;
@@ -155,6 +157,8 @@ mod unpin_all_forum_topic_messages;
 mod unpin_all_general_forum_topic_messages;
 mod unpin_chat_message;
 mod upload_sticker_file;
+mod verify_chat;
+mod verify_user;
 
 pub use add_sticker_to_set::{AddStickerToSet, AddStickerToSetSetters};
 pub use answer_callback_query::{AnswerCallbackQuery, AnswerCallbackQuerySetters};
@@ -246,6 +250,8 @@ pub use log_out::{LogOut, LogOutSetters};
 pub use pin_chat_message::{PinChatMessage, PinChatMessageSetters};
 pub use promote_chat_member::{PromoteChatMember, PromoteChatMemberSetters};
 pub use refund_star_payment::{RefundStarPayment, RefundStarPaymentSetters};
+pub use remove_chat_verification::{RemoveChatVerification, RemoveChatVerificationSetters};
+pub use remove_user_verification::{RemoveUserVerification, RemoveUserVerificationSetters};
 pub use reopen_forum_topic::{ReopenForumTopic, ReopenForumTopicSetters};
 pub use reopen_general_forum_topic::{ReopenGeneralForumTopic, ReopenGeneralForumTopicSetters};
 pub use replace_sticker_in_set::{ReplaceStickerInSet, ReplaceStickerInSetSetters};
@@ -322,6 +328,8 @@ pub use unpin_all_general_forum_topic_messages::{
 };
 pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};
+pub use verify_chat::{VerifyChat, VerifyChatSetters};
+pub use verify_user::{VerifyUser, VerifyUserSetters};
 // END BLOCK payload_modules
 
 /// Generates `mod`s and `pub use`s above.

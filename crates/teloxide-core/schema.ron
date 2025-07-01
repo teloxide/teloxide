@@ -4694,6 +4694,84 @@ Schema(
             ]
         ),
         Method(
+            names: ("verifyUser", "VerifyUser", "verify_user"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a user [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifyuser",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("verifyChat", "VerifyChat", "verify_chat"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a chat [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifychat",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeUserVerification", "RemoveUserVerification", "remove_user_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a user who is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removeuserverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeChatVerification", "RemoveChatVerification", "remove_chat_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a chat that is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removechatverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

@@ -1254,6 +1254,30 @@ pub trait Requester {
     /// For Telegram documentation see [`SendGift`].
     fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift;
 
+    type VerifyUser: Request<Payload = VerifyUser, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyUser`].
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser;
+
+    type VerifyChat: Request<Payload = VerifyChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyChat`].
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>;
+
+    type RemoveUserVerification: Request<Payload = RemoveUserVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveUserVerification`].
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification;
+
+    type RemoveChatVerification: Request<Payload = RemoveChatVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveChatVerification`].
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1526,6 +1550,10 @@ macro_rules! forward_all {
             set_sticker_mask_position,
             get_available_gifts,
             send_gift,
+            verify_user,
+            verify_chat,
+            remove_user_verification,
+            remove_chat_verification,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

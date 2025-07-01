@@ -1471,6 +1471,38 @@ macro_rules! requester_forward {
             $body!(send_gift this (user_id: UserId, gift_id: GiftId))
         }
     };
+    (@method verify_user $body:ident $ty:ident) => {
+        type VerifyUser = $ty![VerifyUser];
+
+        fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+            let this = self;
+            $body!(verify_user this (user_id: UserId))
+        }
+    };
+    (@method verify_chat $body:ident $ty:ident) => {
+        type VerifyChat = $ty![VerifyChat];
+
+        fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat where C: Into<Recipient> {
+            let this = self;
+            $body!(verify_chat this (chat_id: C))
+        }
+    };
+    (@method remove_user_verification $body:ident $ty:ident) => {
+        type RemoveUserVerification = $ty![RemoveUserVerification];
+
+        fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+            let this = self;
+            $body!(remove_user_verification this (user_id: UserId))
+        }
+    };
+    (@method remove_chat_verification $body:ident $ty:ident) => {
+        type RemoveChatVerification = $ty![RemoveChatVerification];
+
+        fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification where C: Into<Recipient> {
+            let this = self;
+            $body!(remove_chat_verification this (chat_id: C))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
