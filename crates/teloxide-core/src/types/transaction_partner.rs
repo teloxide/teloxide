@@ -12,6 +12,7 @@ use crate::types::{Chat, Gift, PaidMedia, RevenueWithdrawalState, Seconds, User}
 pub enum TransactionPartner {
     Fragment(TransactionPartnerFragment),
     User(Box<TransactionPartnerUser>),
+    Chat(Box<TransactionPartnerChat>),
     AffiliateProgram(TransactionPartnerAffiliateProgram),
     TelegramAds,
     TelegramApi(TransactionPartnerTelegramApi),
@@ -52,6 +53,18 @@ pub struct TransactionPartnerUser {
     pub paid_media_payload: Option<String>,
 
     /// The gift sent to the user by the bot
+    pub gift: Option<Gift>,
+}
+
+/// Describes a transaction with a chat.
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct TransactionPartnerChat {
+    /// Information about the chat
+    pub chat: Chat,
+
+    /// The gift sent to the chat by the bot
     pub gift: Option<Gift>,
 }
 
