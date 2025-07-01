@@ -3,7 +3,7 @@
 use serde::Serialize;
 
 use crate::types::{
-    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, Seconds, ThreadId,
 };
 
 impl_payload! {
@@ -26,6 +26,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// New start timestamp for the copied video in the message
+            pub video_start_timestamp: Seconds,
             /// New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
             pub caption: String [into],
             /// Mode for parsing entities in the photo caption. See [formatting options] for more details.

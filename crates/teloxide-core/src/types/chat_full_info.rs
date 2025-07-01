@@ -54,6 +54,10 @@ pub struct ChatFullInfo {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_aggressive_anti_spam_enabled: bool,
 
+    /// `true`, if gifts can be sent to the chat
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub can_send_gift: bool,
+
     /// Identifier of the accent color for the chat name and backgrounds of the
     /// chat photo, reply header, and link preview. See [accent colors] for more
     /// details.
@@ -714,6 +718,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            can_send_gift: false,
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -764,6 +769,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            can_send_gift: false,
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -812,6 +818,7 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            can_send_gift: false,
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
