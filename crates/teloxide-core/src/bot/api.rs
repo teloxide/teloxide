@@ -1448,6 +1448,42 @@ impl Requester for Bot {
         Self::SendGift::new(self.clone(), payloads::SendGift::new(user_id, gift_id))
     }
 
+    type VerifyUser = JsonRequest<payloads::VerifyUser>;
+
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+        Self::VerifyUser::new(self.clone(), payloads::VerifyUser::new(user_id))
+    }
+
+    type VerifyChat = JsonRequest<payloads::VerifyChat>;
+
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>,
+    {
+        Self::VerifyChat::new(self.clone(), payloads::VerifyChat::new(chat_id))
+    }
+
+    type RemoveUserVerification = JsonRequest<payloads::RemoveUserVerification>;
+
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+        Self::RemoveUserVerification::new(
+            self.clone(),
+            payloads::RemoveUserVerification::new(user_id),
+        )
+    }
+
+    type RemoveChatVerification = JsonRequest<payloads::RemoveChatVerification>;
+
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>,
+    {
+        Self::RemoveChatVerification::new(
+            self.clone(),
+            payloads::RemoveChatVerification::new(chat_id),
+        )
+    }
+
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
     fn send_invoice<Ch, T, D, Pa, C, Pri>(
