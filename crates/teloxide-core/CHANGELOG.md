@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed `hide_url` field from `InlineQueryResultArticle` struct
   - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
 
+### Fixed
+
+- Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
+
 ## 0.12.0 - 2025-06-19
 
 ### Added

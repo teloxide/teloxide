@@ -739,13 +739,7 @@ pub trait Requester {
     type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateForumTopic`].
-    fn create_forum_topic<C, N>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>;

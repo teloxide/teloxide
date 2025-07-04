@@ -20,6 +20,16 @@ InlineQueryResultArticle::new(
 -.hide_url(true)
 ```
 
+`create_forum_topic` was fixed to only require `chat_id` and `name`, making `icon_color` and `icon_custom_emoji_id` optional
+
+```diff
+-bot.create_forum_topic(chat_id, name, icon_color, icon_custom_emoji_id).await
++bot.create_forum_topic(chat_id, name)
++.icon_color(icon_color)
++.icon_custom_emoji_id(icon_custom_emoji_id)
++.await
+```
+
 ## 0.15 -> 0.16
 
 ### teloxide

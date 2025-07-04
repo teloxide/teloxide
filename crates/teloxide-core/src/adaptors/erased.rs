@@ -713,8 +713,6 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
 
     fn edit_forum_topic(
@@ -1622,10 +1620,8 @@ where
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
-        Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
+        Requester::create_forum_topic(self, chat_id, name).erase()
     }
 
     fn edit_forum_topic(
