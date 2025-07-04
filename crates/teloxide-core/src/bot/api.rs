@@ -1439,6 +1439,15 @@ impl Requester for Bot {
         Self::SendGift::new(self.clone(), payloads::SendGift::new(user_id, gift_id))
     }
 
+    type SendGiftChat = JsonRequest<payloads::SendGiftChat>;
+
+    fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat
+    where
+        C: Into<Recipient>,
+    {
+        Self::SendGiftChat::new(self.clone(), payloads::SendGiftChat::new(chat_id, gift_id))
+    }
+
     type VerifyUser = JsonRequest<payloads::VerifyUser>;
 
     fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {

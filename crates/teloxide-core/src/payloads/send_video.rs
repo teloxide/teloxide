@@ -4,11 +4,11 @@ use serde::Serialize;
 
 use crate::types::{
     BusinessConnectionId, EffectId, InputFile, Message, MessageEntity, ParseMode, Recipient,
-    ReplyMarkup, ReplyParameters, ThreadId,
+    ReplyMarkup, ReplyParameters, Seconds, ThreadId,
 };
 
 impl_payload! {
-    @[multipart = video, thumbnail]
+    @[multipart = video, thumbnail, cover]
     /// Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// [`Document`]: crate::types::Document
@@ -38,6 +38,12 @@ impl_payload! {
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
             pub thumbnail: InputFile,
+            /// Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. [More information on Sending Files »]
+            ///
+            /// [More information on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+            pub cover: InputFile,
+            /// Start timestamp for the video in the message
+            pub start_timestamp: Seconds,
             /// Video caption (may also be used when resending videos by _file\_id_), 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the video caption. See [formatting options] for more details.

@@ -485,7 +485,9 @@ After that run the tests again, it should be all done!
 
 1. Telegram has `editMessageText`, `editMessageCaption` and other edit methods. Usually they work two ways, one for regular messages and one for inline ones. But that is very confusing and complicates a lot of interactions, so `teloxide` works differently. All edit methods are split in two, one for regular messages and one for inline ones. To look at an example, look at `editMessageText` and `editMessageTextInline` in `schema.ron`. The process is similar to adding a regular method, but you will have to add two, as well as adding a `sibling` field to both of the new methods. Also, return types differ (refer to telegram documentation for what these types are)
 
-2. Sometimes you will encounter situation when it's impossible to write something in `schema.ron`. It may be some doc comment that renders incorrectly or some type (like `Option<DateTime<Utc>>`) impossible to write. In such cases you can workaround it with `crates/teloxide-core/src/codegen/patch.rs` file
+2. Same as the 1st point, if the method requires "this or that", you probably should make two methods. The example is `sendGift` and `sendGiftChat`.
+
+3. Sometimes you will encounter situation when it's impossible to write something in `schema.ron`. It may be some doc comment that renders incorrectly or some type (like `Option<DateTime<Utc>>`) impossible to write. In such cases you can workaround it with `crates/teloxide-core/src/codegen/patch.rs` file
 
 #### Other notes
 

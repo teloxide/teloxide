@@ -1471,6 +1471,14 @@ macro_rules! requester_forward {
             $body!(send_gift this (user_id: UserId, gift_id: GiftId))
         }
     };
+    (@method send_gift_chat $body:ident $ty:ident) => {
+        type SendGiftChat = $ty![SendGiftChat];
+
+        fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat where C: Into<Recipient> {
+            let this = self;
+            $body!(send_gift_chat this (chat_id: C, gift_id: GiftId))
+        }
+    };
     (@method verify_user $body:ident $ty:ident) => {
         type VerifyUser = $ty![VerifyUser];
 

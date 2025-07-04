@@ -314,6 +314,7 @@ where
         set_sticker_mask_position,
         get_available_gifts,
         send_gift,
+        send_gift_chat,
         verify_user,
         verify_chat,
         remove_user_verification,
@@ -1003,6 +1004,12 @@ trait ErasableRequester<'a> {
 
     fn send_gift(&self, user_id: UserId, gift_id: GiftId)
         -> ErasedRequest<'a, SendGift, Self::Err>;
+
+    fn send_gift_chat(
+        &self,
+        chat_id: Recipient,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGiftChat, Self::Err>;
 
     fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err>;
 
@@ -2032,6 +2039,14 @@ where
         gift_id: GiftId,
     ) -> ErasedRequest<'a, SendGift, Self::Err> {
         Requester::send_gift(self, user_id, gift_id).erase()
+    }
+
+    fn send_gift_chat(
+        &self,
+        chat_id: Recipient,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGiftChat, Self::Err> {
+        Requester::send_gift_chat(self, chat_id, gift_id).erase()
     }
 
     fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err> {

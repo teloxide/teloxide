@@ -199,6 +199,7 @@ where
         set_sticker_mask_position,
         get_available_gifts,
         send_gift,
+        send_gift_chat,
         verify_user,
         verify_chat,
         remove_user_verification,

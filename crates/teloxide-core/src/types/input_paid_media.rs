@@ -12,14 +12,14 @@ use crate::types::{InputFile, Seconds};
 #[serde(rename_all = "snake_case")]
 pub enum InputPaidMedia {
     Photo(InputPaidMediaPhoto),
-    Video(InputPaidMediaVideo),
+    Video(Box<InputPaidMediaVideo>),
 }
 
 impl From<InputPaidMedia> for InputFile {
     fn from(media: InputPaidMedia) -> InputFile {
         match media {
-            InputPaidMedia::Photo(InputPaidMediaPhoto { media, .. })
-            | InputPaidMedia::Video(InputPaidMediaVideo { media, .. }) => media,
+            InputPaidMedia::Photo(InputPaidMediaPhoto { media, .. }) => media,
+            InputPaidMedia::Video(input_paid_media_video) => input_paid_media_video.media,
         }
     }
 }
@@ -31,7 +31,9 @@ impl InputPaidMedia {
 
         let (media, thumbnail) = match self {
             Photo(InputPaidMediaPhoto { media, .. }) => (media, None),
-            Video(InputPaidMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_ref()),
+            Video(input_paid_media_video) => {
+                (&input_paid_media_video.media, input_paid_media_video.thumbnail.as_ref())
+            }
         };
 
         iter::once(media).chain(thumbnail)
@@ -43,7 +45,9 @@ impl InputPaidMedia {
 
         let (media, thumbnail) = match self {
             Photo(InputPaidMediaPhoto { media, .. }) => (media, None),
-            Video(InputPaidMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_mut()),
+            Video(input_paid_media_video) => {
+                (&mut input_paid_media_video.media, input_paid_media_video.thumbnail.as_mut())
+            }
         };
 
         iter::once(media).chain(thumbnail)
@@ -103,6 +107,16 @@ pub struct InputPaidMediaVideo {
     /// [More information on Sending Files »]: https://core.telegram.org/bots/api#sending-files
     pub thumbnail: Option<InputFile>,
 
+    /// Cover for the video in the message. Pass a file_id to send a file that
+    /// exists on the Telegram servers (recommended), pass an HTTP URL for
+    /// Telegram to get a file from the Internet, or pass
+    /// “attach://<file_attach_name>” to upload a new one using
+    /// multipart/form-data under <file_attach_name> name
+    pub cover: Option<InputFile>,
+
+    /// Start timestamp for the video in the message
+    pub start_timestamp: Option<Seconds>,
+
     /// Video width.
     pub width: Option<u16>,
 
@@ -121,6 +135,8 @@ impl InputPaidMediaVideo {
         Self {
             media,
             thumbnail: None,
+            cover: None,
+            start_timestamp: None,
             width: None,
             height: None,
             duration: None,
@@ -135,6 +151,16 @@ impl InputPaidMediaVideo {
 
     pub fn thumbnail(mut self, val: InputFile) -> Self {
         self.thumbnail = Some(val);
+        self
+    }
+
+    pub fn cover(mut self, val: InputFile) -> Self {
+        self.cover = Some(val);
+        self
+    }
+
+    pub fn start_timestamp(mut self, val: Seconds) -> Self {
+        self.start_timestamp = Some(val);
         self
     }
 
@@ -177,14 +203,39 @@ mod tests {
     #[test]
     fn video_serialize() {
         let expected_json = r#"{"type":"video","media":"123456"}"#;
-        let video = InputPaidMedia::Video(InputPaidMediaVideo {
+        let video = InputPaidMedia::Video(Box::new(InputPaidMediaVideo {
             media: InputFile::file_id("123456".into()),
             thumbnail: None,
+            cover: None,
+            start_timestamp: None,
             width: None,
             height: None,
             duration: None,
             supports_streaming: None,
-        });
+        }));
+
+        let actual_json = serde_json::to_string(&video).unwrap();
+        assert_eq!(expected_json, actual_json);
+    }
+
+    #[test]
+    fn test_mutability() {
+        let expected_json = r#"{"type":"video","media":"7890","thumbnail":"7890"}"#;
+
+        let mut video = InputPaidMedia::Video(Box::new(InputPaidMediaVideo {
+            media: InputFile::file_id("123456".into()),
+            thumbnail: Some(InputFile::file_id("123456".into())),
+            cover: None,
+            start_timestamp: None,
+            width: None,
+            height: None,
+            duration: None,
+            supports_streaming: None,
+        }));
+
+        for file in video.files_mut() {
+            *file = InputFile::file_id("7890".into());
+        }
 
         let actual_json = serde_json::to_string(&video).unwrap();
         assert_eq!(expected_json, actual_json);

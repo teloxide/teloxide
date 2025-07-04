@@ -20,6 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed `hide_url` field from `InlineQueryResultArticle` struct
   - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
 
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - Add `send_gift_chat` method
+  - Add `can_send_gift` field to `ChatFullInfo` struct
+  - Add `TransactionPartner::Chat` enum variant and `TransactionPartnerChat` struct
+  - Add `cover` and `start_timestamp` fields to `Video`, `InputMediaVideo` and `InputPaidMediaVideo` structs
+  - Add `cover` and `start_timestamp` parameters to `send_video` method
+  - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
+
+### Changed
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - `PaidMedia::Video` is now wrapped in a `Box`
+  - `InputPaidMedia::Video` is now wrapped in a `Box`
+
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))

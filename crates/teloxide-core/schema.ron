@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "8.2", date: "January 1, 2025"),
+    api_version: ApiVersion(ver: "8.3", date: "February 12, 2025"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -330,6 +330,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
                 ),
                 Param(
+                    name: "video_start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "New start timestamp for the forwarded video in the message"),
+                ),
+                Param(
                     name: "disable_notification",
                     ty: Option(bool),
                     descr: Doc(
@@ -427,6 +432,11 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
+                ),
+                Param(
+                    name: "video_start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "New start timestamp for the copied video in the message"),
                 ),
                 Param(
                     name: "caption",
@@ -924,6 +934,19 @@ Schema(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
+                ),
+                Param(
+                    name: "cover",
+                    ty: Option(RawTy("InputFile")),
+                    descr: Doc(
+                        md: "Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. [More information on Sending Files »]",
+                        md_links: {"More information on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
+                    ),
+                ),
+                Param(
+                    name: "start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "Start timestamp for the video in the message"),
                 ),
                 Param(
                     name: "caption",
@@ -4655,6 +4678,7 @@ Schema(
             names: ("sendGift", "SendGift", "send_gift"),
             return_ty: True,
             doc: Doc(md: "Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success."),
+            sibling: Some("sendGiftChat"),
             tg_doc: "https://core.telegram.org/bots/api#sendgift",
             tg_category: "Stickers",
             params: [
@@ -4662,6 +4686,49 @@ Schema(
                     name: "user_id",
                     ty: RawTy("UserId"),
                     descr: Doc(md: "Unique identifier of the target user that will receive the gift"),
+                ),
+                Param(
+                    name: "gift_id",
+                    ty: RawTy("GiftId"),
+                    descr: Doc(md: "Identifier of the gift"),
+                ),
+                Param(
+                    name: "pay_for_upgrade",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver"),
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
+            names: ("sendGiftChat", "SendGiftChat", "send_gift_chat"),
+            return_ty: True,
+            doc: Doc(md: "Sends a gift to the given channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success."),
+            sibling: Some("sendGift"),
+            tg_doc: "https://core.telegram.org/bots/api#sendgift",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat or username of the channel that will receive the gift"),
                 ),
                 Param(
                     name: "gift_id",
