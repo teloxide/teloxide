@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
   - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
 
+- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
+  - Add `upgrade_star_count` field to `Gift` struct
+  - Add `pay_for_upgrade` parameter to `send_gift` method
+  - Removed `hide_url` field from `InlineQueryResultArticle` struct
+  - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
+
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
   - Add `send_gift_chat` method
   - Add `can_send_gift` field to `ChatFullInfo` struct
@@ -27,6 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
   - `PaidMedia::Video` is now wrapped in a `Box`
   - `InputPaidMedia::Video` is now wrapped in a `Box`
+
+### Fixed
+
+- Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
 
 ## 0.12.0 - 2025-06-19
 

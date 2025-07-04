@@ -315,6 +315,10 @@ where
         get_available_gifts,
         send_gift,
         send_gift_chat,
+        verify_user,
+        verify_chat,
+        remove_user_verification,
+        remove_chat_verification,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -710,8 +714,6 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
 
     fn edit_forum_topic(
@@ -1008,6 +1010,20 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         gift_id: GiftId,
     ) -> ErasedRequest<'a, SendGiftChat, Self::Err>;
+
+    fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err>;
+
+    fn verify_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, VerifyChat, Self::Err>;
+
+    fn remove_user_verification(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, RemoveUserVerification, Self::Err>;
+
+    fn remove_chat_verification(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err>;
 
     fn send_invoice(
         &self,
@@ -1611,10 +1627,8 @@ where
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
-        Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
+        Requester::create_forum_topic(self, chat_id, name).erase()
     }
 
     fn edit_forum_topic(
@@ -2033,6 +2047,28 @@ where
         gift_id: GiftId,
     ) -> ErasedRequest<'a, SendGiftChat, Self::Err> {
         Requester::send_gift_chat(self, chat_id, gift_id).erase()
+    }
+
+    fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err> {
+        Requester::verify_user(self, user_id).erase()
+    }
+
+    fn verify_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, VerifyChat, Self::Err> {
+        Requester::verify_chat(self, chat_id).erase()
+    }
+
+    fn remove_user_verification(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, RemoveUserVerification, Self::Err> {
+        Requester::remove_user_verification(self, user_id).erase()
+    }
+
+    fn remove_chat_verification(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err> {
+        Requester::remove_chat_verification(self, chat_id).erase()
     }
 
     fn send_invoice(

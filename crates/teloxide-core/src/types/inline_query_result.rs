@@ -1121,7 +1121,6 @@ mod tests {
             }),
             reply_markup: None,
             url: None,
-            hide_url: None,
             description: None,
             thumbnail_url: None,
             thumbnail_width: None,
@@ -1154,14 +1153,13 @@ mod tests {
             }),
             reply_markup: Some(InlineKeyboardMarkup::default()),
             url: Some(Url::parse("http://url/").unwrap()),
-            hide_url: Some(true),
             description: Some(String::from("description")),
             thumbnail_url: Some(Url::parse("http://thumb_url/").unwrap()),
             thumbnail_width: Some(1),
             thumbnail_height: Some(1),
         });
 
-        let expected_json = r#"{"type":"article","id":"id","title":"title","input_message_content":{"message_text":"message_text","link_preview_options":{"is_disabled":true}},"reply_markup":{"inline_keyboard":[]},"url":"http://url/","hide_url":true,"description":"description","thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
+        let expected_json = r#"{"type":"article","id":"id","title":"title","input_message_content":{"message_text":"message_text","link_preview_options":{"is_disabled":true}},"reply_markup":{"inline_keyboard":[]},"url":"http://url/","description":"description","thumbnail_url":"http://thumb_url/","thumbnail_width":1,"thumbnail_height":1}"#;
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);

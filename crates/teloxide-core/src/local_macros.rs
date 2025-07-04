@@ -984,10 +984,10 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId) -> Self::CreateForumTopic where C: Into<Recipient>,
+        fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic where C: Into<Recipient>,
         N: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: CustomEmojiId))
+            $body!(create_forum_topic this (chat_id: C, name: N))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
@@ -1477,6 +1477,38 @@ macro_rules! requester_forward {
         fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat where C: Into<Recipient> {
             let this = self;
             $body!(send_gift_chat this (chat_id: C, gift_id: GiftId))
+        }
+    };
+    (@method verify_user $body:ident $ty:ident) => {
+        type VerifyUser = $ty![VerifyUser];
+
+        fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+            let this = self;
+            $body!(verify_user this (user_id: UserId))
+        }
+    };
+    (@method verify_chat $body:ident $ty:ident) => {
+        type VerifyChat = $ty![VerifyChat];
+
+        fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat where C: Into<Recipient> {
+            let this = self;
+            $body!(verify_chat this (chat_id: C))
+        }
+    };
+    (@method remove_user_verification $body:ident $ty:ident) => {
+        type RemoveUserVerification = $ty![RemoveUserVerification];
+
+        fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+            let this = self;
+            $body!(remove_user_verification this (user_id: UserId))
+        }
+    };
+    (@method remove_chat_verification $body:ident $ty:ident) => {
+        type RemoveChatVerification = $ty![RemoveChatVerification];
+
+        fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification where C: Into<Recipient> {
+            let this = self;
+            $body!(remove_chat_verification this (chat_id: C))
         }
     };
     (@method send_invoice $body:ident $ty:ident) => {

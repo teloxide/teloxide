@@ -32,7 +32,8 @@ pub use crate::payloads::{
     GetUserProfilePhotosSetters as _, GetWebhookInfoSetters as _,
     HideGeneralForumTopicSetters as _, KickChatMemberSetters as _, LeaveChatSetters as _,
     LogOutSetters as _, PinChatMessageSetters as _, PromoteChatMemberSetters as _,
-    RefundStarPaymentSetters as _, ReopenForumTopicSetters as _,
+    RefundStarPaymentSetters as _, RemoveChatVerificationSetters as _,
+    RemoveUserVerificationSetters as _, ReopenForumTopicSetters as _,
     ReopenGeneralForumTopicSetters as _, ReplaceStickerInSetSetters as _,
     RestrictChatMemberSetters as _, RevokeChatInviteLinkSetters as _,
     SavePreparedInlineMessageSetters as _, SendAnimationSetters as _, SendAudioSetters as _,
@@ -57,5 +58,6 @@ pub use crate::payloads::{
     StopPollSetters as _, UnbanChatMemberSetters as _, UnbanChatSenderChatSetters as _,
     UnhideGeneralForumTopicSetters as _, UnpinAllChatMessagesSetters as _,
     UnpinAllForumTopicMessagesSetters as _, UnpinAllGeneralForumTopicMessagesSetters as _,
-    UnpinChatMessageSetters as _, UploadStickerFileSetters as _,
+    UnpinChatMessageSetters as _, UploadStickerFileSetters as _, VerifyChatSetters as _,
+    VerifyUserSetters as _,
 };

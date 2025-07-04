@@ -3,6 +3,33 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+### teloxide
+
+TBA removed `hide_url` field from `InlineQueryResultArticle`. Just don't pass the url instead:
+
+```diff
+InlineQueryResultArticle::new(
+    "01".to_string(),
+    "DuckDuckGo Search".to_string(),
+    InputMessageContent::Text(InputMessageContentText::new(format!(
+        "https://duckduckgo.com/?q={}",
+        q.query
+    ))),
+)
+-.url("https://duckduckgo.com/about".parse().unwrap())
+-.hide_url(true)
+```
+
+`create_forum_topic` was fixed to only require `chat_id` and `name`, making `icon_color` and `icon_custom_emoji_id` optional
+
+```diff
+-bot.create_forum_topic(chat_id, name, icon_color, icon_custom_emoji_id).await
++bot.create_forum_topic(chat_id, name)
++.icon_color(icon_color)
++.icon_custom_emoji_id(icon_custom_emoji_id)
++.await
+```
+
 ## 0.15 -> 0.16
 
 ### teloxide

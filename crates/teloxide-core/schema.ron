@@ -3187,7 +3187,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_color",
-                    ty: RawTy("Rgb"),
+                    ty: Option(RawTy("Rgb")),
                     descr: Doc(
                         md: "Color of the topic icon in RGB format. Currently, must be one of 7322096 (`0x6FB9F0`), 16766590 (`0xFFD67E`), 13338331 (`0xCB86DB`), 9367192 (`0x8EEE98`), 16749490 (`0xFF93B2`), or 16478047 (`0xFB6F5F`). To construct color from these values use [`Rgb::from_u32`]",
                         md_links: {"`Rgb::from_u32`": "crate::types::Rgb::from_u32"}
@@ -3195,7 +3195,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: RawTy("CustomEmojiId"),
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
                 ),
             ],
@@ -4693,6 +4693,11 @@ Schema(
                     descr: Doc(md: "Identifier of the gift"),
                 ),
                 Param(
+                    name: "pay_for_upgrade",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver"),
+                ),
+                Param(
                     name: "text",
                     ty: Option(String),
                     descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
@@ -4747,6 +4752,84 @@ Schema(
                     name: "text_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
+            names: ("verifyUser", "VerifyUser", "verify_user"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a user [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifyuser",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("verifyChat", "VerifyChat", "verify_chat"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a chat [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifychat",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeUserVerification", "RemoveUserVerification", "remove_user_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a user who is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removeuserverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeChatVerification", "RemoveChatVerification", "remove_chat_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a chat that is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removechatverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
                 ),
             ]
         ),

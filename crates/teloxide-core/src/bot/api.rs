@@ -7,7 +7,7 @@ use crate::{
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
         FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
-        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Rgb,
+        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient,
         Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
@@ -737,21 +737,12 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
-    fn create_forum_topic<C, N>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>,
     {
-        Self::CreateForumTopic::new(
-            self.clone(),
-            payloads::CreateForumTopic::new(chat_id, name, icon_color, icon_custom_emoji_id),
-        )
+        Self::CreateForumTopic::new(self.clone(), payloads::CreateForumTopic::new(chat_id, name))
     }
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
@@ -1455,6 +1446,42 @@ impl Requester for Bot {
         C: Into<Recipient>,
     {
         Self::SendGiftChat::new(self.clone(), payloads::SendGiftChat::new(chat_id, gift_id))
+    }
+
+    type VerifyUser = JsonRequest<payloads::VerifyUser>;
+
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+        Self::VerifyUser::new(self.clone(), payloads::VerifyUser::new(user_id))
+    }
+
+    type VerifyChat = JsonRequest<payloads::VerifyChat>;
+
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>,
+    {
+        Self::VerifyChat::new(self.clone(), payloads::VerifyChat::new(chat_id))
+    }
+
+    type RemoveUserVerification = JsonRequest<payloads::RemoveUserVerification>;
+
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+        Self::RemoveUserVerification::new(
+            self.clone(),
+            payloads::RemoveUserVerification::new(user_id),
+        )
+    }
+
+    type RemoveChatVerification = JsonRequest<payloads::RemoveChatVerification>;
+
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>,
+    {
+        Self::RemoveChatVerification::new(
+            self.clone(),
+            payloads::RemoveChatVerification::new(chat_id),
+        )
     }
 
     type SendInvoice = JsonRequest<payloads::SendInvoice>;

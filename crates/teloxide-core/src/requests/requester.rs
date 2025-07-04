@@ -739,13 +739,7 @@ pub trait Requester {
     type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateForumTopic`].
-    fn create_forum_topic<C, N>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: CustomEmojiId,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>;
@@ -1261,6 +1255,30 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type VerifyUser: Request<Payload = VerifyUser, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyUser`].
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser;
+
+    type VerifyChat: Request<Payload = VerifyChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyChat`].
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>;
+
+    type RemoveUserVerification: Request<Payload = RemoveUserVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveUserVerification`].
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification;
+
+    type RemoveChatVerification: Request<Payload = RemoveChatVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveChatVerification`].
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1534,6 +1552,10 @@ macro_rules! forward_all {
             get_available_gifts,
             send_gift,
             send_gift_chat,
+            verify_user,
+            verify_chat,
+            remove_user_verification,
+            remove_chat_verification,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,
