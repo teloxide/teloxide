@@ -12,10 +12,10 @@ use crate::types::{
     GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
     InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
     MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, RefundedPayment,
-    Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
-    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData, WriteAccessAllowed,
+    PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
+    RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User,
+    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -104,6 +104,7 @@ pub enum MessageKind {
     GiveawayCompleted(MessageGiveawayCompleted),
     GiveawayCreated(MessageGiveawayCreated),
     GiveawayWinners(MessageGiveawayWinners),
+    PaidMessagePriceChanged(MessagePaidMessagePriceChanged),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -137,6 +138,10 @@ pub struct MessageCommon {
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
+
+    /// The number of Telegram Stars that were paid by the sender of the message
+    /// to send it
+    pub paid_star_count: Option<u32>,
 
     /// Unique identifier of the message effect added to the message
     pub effect_id: Option<EffectId>,
@@ -753,6 +758,13 @@ pub struct MessageGiveawayWinners {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessagePaidMessagePriceChanged {
+    /// Service message: the price for paid messages has changed in the chat
+    pub paid_message_price_changed: PaidMessagePriceChanged,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatScheduled {
     /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
@@ -808,8 +820,9 @@ mod getters {
         MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
         MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
         MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
-        MessageMessageAutoDeleteTimerChanged, MessageVideoChatEnded, MessageVideoChatScheduled,
-        MessageVideoChatStarted, MessageWebAppData, MessageWriteAccessAllowed,
+        MessageMessageAutoDeleteTimerChanged, MessagePaidMessagePriceChanged,
+        MessageVideoChatEnded, MessageVideoChatScheduled, MessageVideoChatStarted,
+        MessageWebAppData, MessageWriteAccessAllowed,
     };
 
     /// Getters for [Message] fields from [telegram docs].
@@ -1655,6 +1668,16 @@ mod getters {
                 GiveawayWinners(MessageGiveawayWinners { giveaway_winners }) => {
                     Some(giveaway_winners)
                 }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn paid_message_price_changed(&self) -> Option<&types::PaidMessagePriceChanged> {
+            match &self.kind {
+                PaidMessagePriceChanged(MessagePaidMessagePriceChanged {
+                    paid_message_price_changed,
+                }) => Some(paid_message_price_changed),
                 _ => None,
             }
         }
@@ -2803,6 +2826,30 @@ mod tests {
                 prize_star_count: None,
                 prize_description: None
             }
+        )
+    }
+
+    #[test]
+    fn paid_message_price_changed() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "paid_message_price_changed": {"paid_message_star_count": 1234}
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.paid_message_price_changed().unwrap(),
+            &PaidMessagePriceChanged { paid_message_star_count: 1234 }
         )
     }
 
