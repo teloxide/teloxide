@@ -1,5 +1,6 @@
 //! Telegram API types.
 
+pub use accepted_gift_types::*;
 pub use allowed_update::*;
 pub use animation::*;
 pub use audio::*;
@@ -183,6 +184,7 @@ pub use web_app_info::*;
 pub use webhook_info::*;
 pub use write_access_allowed::*;
 
+mod accepted_gift_types;
 mod allowed_update;
 mod animation;
 mod audio;

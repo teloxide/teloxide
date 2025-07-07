@@ -3,8 +3,8 @@ use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat, ChatId, ChatLocation,
-    ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
+    AcceptedGiftTypes, Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat,
+    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
 };
 
 /// Custom emoji identifier.
@@ -54,9 +54,9 @@ pub struct ChatFullInfo {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_aggressive_anti_spam_enabled: bool,
 
-    /// `true`, if gifts can be sent to the chat
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
-    pub can_send_gift: bool,
+    /// Information about types of gifts that are accepted by the chat or by the
+    /// corresponding user for private chats
+    pub accepted_gift_types: AcceptedGiftTypes,
 
     /// Identifier of the accent color for the chat name and backgrounds of the
     /// chat photo, reply header, and link preview. See [accent colors] for more
@@ -718,7 +718,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            can_send_gift: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -740,7 +745,13 @@ mod tests {
                     }
                 ],
                 "emoji_status_expiration_date": 1720708004,
-                "max_reaction_count": 0
+                "max_reaction_count": 0,
+                "accepted_gift_types": {
+                    "unlimited_gifts": true,
+                    "limited_gifts": true,
+                    "unique_gifts": true,
+                    "premium_subscription": true
+                }
             }"#,
         )
         .unwrap();
@@ -769,7 +780,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            can_send_gift: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -789,7 +805,13 @@ mod tests {
                     "username": "username",
                     "first_name": "Anon",
                     "emoji_status_expiration_date": 1720708004,
-                    "max_reaction_count": 0
+                    "max_reaction_count": 0,
+                    "accepted_gift_types": {
+                        "unlimited_gifts": true,
+                        "limited_gifts": true,
+                        "unique_gifts": true,
+                        "premium_subscription": true
+                    }
                 }"#
             )
             .unwrap()
@@ -818,7 +840,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
-            can_send_gift: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
