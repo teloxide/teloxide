@@ -4761,6 +4761,53 @@ Schema(
             ]
         ),
         Method(
+            names: ("giftPremiumSubscription", "GiftPremiumSubscription", "gift_premium_subscription"),
+            return_ty: True,
+            doc: Doc(
+                md: "Gifts a Telegram Premium subscription to the given user. Returns True on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#giftpremiumsubscription",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "month_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to pay for the Telegram Premium subscription; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months")
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the service message about the subscription; 0-128 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(
+                        md: "A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                )
+            ]
+        ),
+        Method(
             names: ("verifyUser", "VerifyUser", "verify_user"),
             return_ty: True,
             doc: Doc(

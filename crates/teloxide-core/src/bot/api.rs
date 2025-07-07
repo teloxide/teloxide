@@ -1448,6 +1448,20 @@ impl Requester for Bot {
         Self::SendGiftChat::new(self.clone(), payloads::SendGiftChat::new(chat_id, gift_id))
     }
 
+    type GiftPremiumSubscription = JsonRequest<payloads::GiftPremiumSubscription>;
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u32,
+        star_count: u32,
+    ) -> Self::GiftPremiumSubscription {
+        Self::GiftPremiumSubscription::new(
+            self.clone(),
+            payloads::GiftPremiumSubscription::new(user_id, month_count, star_count),
+        )
+    }
+
     type VerifyUser = JsonRequest<payloads::VerifyUser>;
 
     fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {

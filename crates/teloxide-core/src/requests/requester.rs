@@ -1255,6 +1255,16 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type GiftPremiumSubscription: Request<Payload = GiftPremiumSubscription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GiftPremiumSubscription`].
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u32,
+        star_count: u32,
+    ) -> Self::GiftPremiumSubscription;
+
     type VerifyUser: Request<Payload = VerifyUser, Err = Self::Err>;
 
     /// For Telegram documentation see [`VerifyUser`].
@@ -1552,6 +1562,7 @@ macro_rules! forward_all {
             get_available_gifts,
             send_gift,
             send_gift_chat,
+            gift_premium_subscription,
             verify_user,
             verify_chat,
             remove_user_verification,

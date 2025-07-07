@@ -315,6 +315,7 @@ where
         get_available_gifts,
         send_gift,
         send_gift_chat,
+        gift_premium_subscription,
         verify_user,
         verify_chat,
         remove_user_verification,
@@ -1010,6 +1011,13 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         gift_id: GiftId,
     ) -> ErasedRequest<'a, SendGiftChat, Self::Err>;
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u32,
+        star_count: u32,
+    ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err>;
 
     fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err>;
 
@@ -2047,6 +2055,15 @@ where
         gift_id: GiftId,
     ) -> ErasedRequest<'a, SendGiftChat, Self::Err> {
         Requester::send_gift_chat(self, chat_id, gift_id).erase()
+    }
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u32,
+        star_count: u32,
+    ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err> {
+        Requester::gift_premium_subscription(self, user_id, month_count, star_count).erase()
     }
 
     fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err> {

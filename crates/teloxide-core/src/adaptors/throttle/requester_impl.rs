@@ -200,6 +200,7 @@ where
         get_available_gifts,
         send_gift,
         send_gift_chat,
+        gift_premium_subscription,
         verify_user,
         verify_chat,
         remove_user_verification,
