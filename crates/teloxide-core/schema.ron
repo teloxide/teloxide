@@ -4801,7 +4801,7 @@ Schema(
                     name: "text_entities",
                     ty: Option(ArrayOf(RawTy("MessageEntity"))),
                     descr: Doc(
-                        md: "A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md: "List of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
                         md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
                     )
                 )
