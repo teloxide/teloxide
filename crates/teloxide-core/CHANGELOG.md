@@ -28,15 +28,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `cover` and `start_timestamp` parameters to `send_video` method
   - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
 
+- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+  - Add `paid_star_count` field to `MessageCommon` struct
+  - Add `PaidMessagePriceChanged` service message
+  - Add `premium_subscription_duration` field to `TransactionPartnerUser`
+  - Add `gift_premium_subscription` method
+  - Add `GiftInfo` and `UniqueGiftInfo` service messages
+  - Add `AcceptedGiftTypes` struct
+  - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
+
 ### Changed
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
   - `PaidMedia::Video` is now wrapped in a `Box`
   - `InputPaidMedia::Video` is now wrapped in a `Box`
 
+- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
+
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
+- Fixed `send_gift` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
 
 ## 0.12.0 - 2025-06-19
 

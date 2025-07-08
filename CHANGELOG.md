@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
 
+- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+
 ### Changed
 
 - Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
@@ -21,9 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PaidMedia::Video` is now wrapped in a `Box` [**BC**]
   - `InputPaidMedia::Video` is now wrapped in a `Box` [**BC**]
 
+- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters [**BC**]
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types` [**BC**]
+
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382)) [**BC**]
+- Fixed `send_gift` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
 
 ## 0.16.0 - 2025-06-19
 
