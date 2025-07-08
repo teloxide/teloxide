@@ -1,4 +1,4 @@
-use crate::types::{Sticker, Rgb};
+use crate::types::{Rgb, Sticker};
 use serde::{Deserialize, Serialize};
 
 /// This object describes a unique gift that was upgraded from a regular gift.
