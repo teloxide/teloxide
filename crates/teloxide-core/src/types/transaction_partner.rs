@@ -121,7 +121,7 @@ pub struct TransactionPartnerUserGiftPurchase {
 pub struct TransactionPartnerUserPremiumPurchase {
     /// Number of months the gifted Telegram Premium subscription will be active
     /// for
-    pub premium_subscription_duration: Option<u32>,
+    pub premium_subscription_duration: Option<u8>,
 }
 
 /// This allows calling [`TransactionPartnerUserKind`]'s methods directly on
