@@ -4776,7 +4776,7 @@ Schema(
                 ),
                 Param(
                     name: "month_count",
-                    ty: u32,
+                    ty: u8,
                     descr: Doc(md: "Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12")
                 ),
                 Param(
