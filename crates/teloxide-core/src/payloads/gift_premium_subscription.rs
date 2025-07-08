@@ -12,7 +12,7 @@ impl_payload! {
             /// Unique identifier of the target user
             pub user_id: UserId,
             /// Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12
-            pub month_count: u32,
+            pub month_count: u8,
             /// Number of Telegram Stars to pay for the Telegram Premium subscription; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months
             pub star_count: u32,
         }
@@ -23,7 +23,7 @@ impl_payload! {
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub text_parse_mode: ParseMode,
-            /// A JSON-serialized list of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
+            /// List of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options
             pub text_entities: Vec<MessageEntity> [collect],

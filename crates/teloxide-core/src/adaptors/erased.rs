@@ -1015,7 +1015,7 @@ trait ErasableRequester<'a> {
     fn gift_premium_subscription(
         &self,
         user_id: UserId,
-        month_count: u32,
+        month_count: u8,
         star_count: u32,
     ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err>;
 
@@ -2060,7 +2060,7 @@ where
     fn gift_premium_subscription(
         &self,
         user_id: UserId,
-        month_count: u32,
+        month_count: u8,
         star_count: u32,
     ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err> {
         Requester::gift_premium_subscription(self, user_id, month_count, star_count).erase()

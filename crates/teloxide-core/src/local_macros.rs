@@ -1482,9 +1482,9 @@ macro_rules! requester_forward {
     (@method gift_premium_subscription $body:ident $ty:ident) => {
         type GiftPremiumSubscription = $ty![GiftPremiumSubscription];
 
-        fn gift_premium_subscription(&self, user_id: UserId, month_count: u32, star_count: u32) -> Self::GiftPremiumSubscription {
+        fn gift_premium_subscription(&self, user_id: UserId, month_count: u8, star_count: u32) -> Self::GiftPremiumSubscription {
             let this = self;
-            $body!(gift_premium_subscription this (user_id: UserId, month_count: u32, star_count: u32))
+            $body!(gift_premium_subscription this (user_id: UserId, month_count: u8, star_count: u32))
         }
     };
     (@method verify_user $body:ident $ty:ident) => {

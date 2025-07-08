@@ -1,4 +1,4 @@
-use crate::types::Sticker;
+use crate::types::{Sticker, Rgb};
 use serde::{Deserialize, Serialize};
 
 /// This object describes a unique gift that was upgraded from a regular gift.
@@ -16,7 +16,7 @@ pub struct UniqueGift {
 
     /// Unique number of the upgraded gift among gifts upgraded from the same
     /// regular gift
-    pub number: u32,
+    pub number: u64,
 
     /// Model of the gift
     pub model: UniqueGiftModel,
@@ -86,16 +86,16 @@ pub struct UniqueGiftBackdrop {
 #[derive(Serialize, Deserialize)]
 pub struct UniqueGiftBackdropColors {
     /// The color in the center of the backdrop in RGB format
-    pub center_color: u8,
+    pub center_color: Rgb,
 
     /// The color on the edges of the backdrop in RGB format
-    pub edge_color: u8,
+    pub edge_color: Rgb,
 
     /// The color to be applied to the symbol in RGB format
-    pub symbol_color: u8,
+    pub symbol_color: Rgb,
 
     /// The color for the text on the backdrop in RGB format
-    pub text_color: u8,
+    pub text_color: Rgb,
 }
 
 #[cfg(test)]
@@ -139,10 +139,10 @@ mod tests {
             backdrop: UniqueGiftBackdrop {
                 name: "name".to_owned(),
                 colors: UniqueGiftBackdropColors {
-                    center_color: 0,
-                    edge_color: 0,
-                    symbol_color: 0,
-                    text_color: 0,
+                    center_color: Rgb { r: 255, g: 255, b: 0 },
+                    edge_color: Rgb { r: 255, g: 255, b: 0 },
+                    symbol_color: Rgb { r: 255, g: 255, b: 0 },
+                    text_color: Rgb { r: 255, g: 255, b: 0 },
                 },
                 rarity_per_mille: 123,
             },
@@ -187,10 +187,10 @@ mod tests {
             "backdrop": {
                 "name": "name",
                 "colors": {
-                    "center_color": 0,
-                    "edge_color": 0,
-                    "symbol_color": 0,
-                    "text_color": 0
+                    "center_color": 16776960,
+                    "edge_color": 16776960,
+                    "symbol_color": 16776960,
+                    "text_color": 16776960
                 },
                 "rarity_per_mille": 123
             }
