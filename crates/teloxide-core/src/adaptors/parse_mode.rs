@@ -7,8 +7,8 @@ use crate::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
         EditMessageTextInline, GiftPremiumSubscription, SavePreparedInlineMessage, SendAnimation,
-        SendAudio, SendDocument, SendGift, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto,
-        SendPoll, SendVideo, SendVoice,
+        SendAudio, SendDocument, SendGift, SendGiftChat, SendMediaGroup, SendMessage,
+        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -156,6 +156,7 @@ where
     B::SendMediaGroup: Clone,
     B::GiftPremiumSubscription: Clone,
     B::SendGift: Clone,
+    B::SendGiftChat: Clone,
 {
     type Err = B::Err;
 
@@ -182,6 +183,7 @@ where
         edit_message_media_inline,
         gift_premium_subscription,
         send_gift,
+        send_gift_chat,
         => f, fty
     }
 
@@ -291,7 +293,6 @@ where
         set_sticker_keywords,
         set_sticker_mask_position,
         get_available_gifts,
-        send_gift_chat,
         verify_user,
         verify_chat,
         remove_user_verification,
@@ -362,6 +363,7 @@ impl_visit_parse_modes! {
     SendPaidMedia => [parse_mode],
     GiftPremiumSubscription => [text_parse_mode],
     SendGift => [text_parse_mode],
+    SendGiftChat => [text_parse_mode],
     // FIXME: check if `parse_mode` changes anything if `.caption` is not set
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],

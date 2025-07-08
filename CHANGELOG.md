@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382)) [**BC**]
-- Fixed `send_gift` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
 
 ## 0.16.0 - 2025-06-19
 
