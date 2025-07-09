@@ -27,6 +27,7 @@ mod ban_chat_sender_chat;
 mod close;
 mod close_forum_topic;
 mod close_general_forum_topic;
+mod convert_gift_to_stars;
 mod copy_message;
 mod copy_messages;
 mod create_chat_invite_link;
@@ -64,6 +65,7 @@ mod export_chat_invite_link;
 mod forward_message;
 mod forward_messages;
 mod get_available_gifts;
+mod get_business_account_gifts;
 mod get_business_account_star_balance;
 mod get_business_connection;
 mod get_chat;
@@ -161,6 +163,7 @@ mod stop_message_live_location;
 mod stop_message_live_location_inline;
 mod stop_poll;
 mod transfer_business_account_stars;
+mod transfer_gift;
 mod unban_chat_member;
 mod unban_chat_sender_chat;
 mod unhide_general_forum_topic;
@@ -168,6 +171,7 @@ mod unpin_all_chat_messages;
 mod unpin_all_forum_topic_messages;
 mod unpin_all_general_forum_topic_messages;
 mod unpin_chat_message;
+mod upgrade_gift;
 mod upload_sticker_file;
 mod verify_chat;
 mod verify_user;
@@ -184,6 +188,7 @@ pub use ban_chat_sender_chat::{BanChatSenderChat, BanChatSenderChatSetters};
 pub use close::{Close, CloseSetters};
 pub use close_forum_topic::{CloseForumTopic, CloseForumTopicSetters};
 pub use close_general_forum_topic::{CloseGeneralForumTopic, CloseGeneralForumTopicSetters};
+pub use convert_gift_to_stars::{ConvertGiftToStars, ConvertGiftToStarsSetters};
 pub use copy_message::{CopyMessage, CopyMessageSetters};
 pub use copy_messages::{CopyMessages, CopyMessagesSetters};
 pub use create_chat_invite_link::{CreateChatInviteLink, CreateChatInviteLinkSetters};
@@ -229,6 +234,7 @@ pub use export_chat_invite_link::{ExportChatInviteLink, ExportChatInviteLinkSett
 pub use forward_message::{ForwardMessage, ForwardMessageSetters};
 pub use forward_messages::{ForwardMessages, ForwardMessagesSetters};
 pub use get_available_gifts::{GetAvailableGifts, GetAvailableGiftsSetters};
+pub use get_business_account_gifts::{GetBusinessAccountGifts, GetBusinessAccountGiftsSetters};
 pub use get_business_account_star_balance::{
     GetBusinessAccountStarBalance, GetBusinessAccountStarBalanceSetters,
 };
@@ -352,6 +358,7 @@ pub use stop_poll::{StopPoll, StopPollSetters};
 pub use transfer_business_account_stars::{
     TransferBusinessAccountStars, TransferBusinessAccountStarsSetters,
 };
+pub use transfer_gift::{TransferGift, TransferGiftSetters};
 pub use unban_chat_member::{UnbanChatMember, UnbanChatMemberSetters};
 pub use unban_chat_sender_chat::{UnbanChatSenderChat, UnbanChatSenderChatSetters};
 pub use unhide_general_forum_topic::{UnhideGeneralForumTopic, UnhideGeneralForumTopicSetters};
@@ -363,6 +370,7 @@ pub use unpin_all_general_forum_topic_messages::{
     UnpinAllGeneralForumTopicMessages, UnpinAllGeneralForumTopicMessagesSetters,
 };
 pub use unpin_chat_message::{UnpinChatMessage, UnpinChatMessageSetters};
+pub use upgrade_gift::{UpgradeGift, UpgradeGiftSetters};
 pub use upload_sticker_file::{UploadStickerFile, UploadStickerFileSetters};
 pub use verify_chat::{VerifyChat, VerifyChatSetters};
 pub use verify_user::{VerifyUser, VerifyUserSetters};

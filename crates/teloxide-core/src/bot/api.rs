@@ -8,8 +8,8 @@ use crate::{
         AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
         ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
         InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto, InputSticker,
-        LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId,
-        StickerFormat, TelegramTransactionId, ThreadId, UserId,
+        LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId, Recipient, Seconds,
+        ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1638,6 +1638,61 @@ impl Requester for Bot {
         Self::TransferBusinessAccountStars::new(
             self.clone(),
             payloads::TransferBusinessAccountStars::new(business_connection_id, star_count),
+        )
+    }
+
+    type GetBusinessAccountGifts = JsonRequest<payloads::GetBusinessAccountGifts>;
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts {
+        Self::GetBusinessAccountGifts::new(
+            self.clone(),
+            payloads::GetBusinessAccountGifts::new(business_connection_id),
+        )
+    }
+
+    type ConvertGiftToStars = JsonRequest<payloads::ConvertGiftToStars>;
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars {
+        Self::ConvertGiftToStars::new(
+            self.clone(),
+            payloads::ConvertGiftToStars::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type UpgradeGift = JsonRequest<payloads::UpgradeGift>;
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift {
+        Self::UpgradeGift::new(
+            self.clone(),
+            payloads::UpgradeGift::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type TransferGift = JsonRequest<payloads::TransferGift>;
+
+    fn transfer_gift<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: C,
+    ) -> Self::TransferGift
+    where
+        C: Into<ChatId>,
+    {
+        Self::TransferGift::new(
+            self.clone(),
+            payloads::TransferGift::new(business_connection_id, owned_gift_id, new_owner_chat_id),
         )
     }
 

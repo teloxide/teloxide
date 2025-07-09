@@ -1398,6 +1398,44 @@ pub trait Requester {
         star_count: u32,
     ) -> Self::TransferBusinessAccountStars;
 
+    type GetBusinessAccountGifts: Request<Payload = GetBusinessAccountGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetBusinessAccountGifts`].
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts;
+
+    type ConvertGiftToStars: Request<Payload = ConvertGiftToStars, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ConvertGiftToStars`].
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars;
+
+    type UpgradeGift: Request<Payload = UpgradeGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UpgradeGift`].
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift;
+
+    type TransferGift: Request<Payload = TransferGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`TransferGift`].
+    fn transfer_gift<N>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: N,
+    ) -> Self::TransferGift
+    where
+        N: Into<ChatId>;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1686,6 +1724,10 @@ macro_rules! forward_all {
             set_business_account_gift_settings,
             get_business_account_star_balance,
             transfer_business_account_stars,
+            get_business_account_gifts,
+            convert_gift_to_stars,
+            upgrade_gift,
+            transfer_gift,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

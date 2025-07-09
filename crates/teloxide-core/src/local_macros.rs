@@ -1599,6 +1599,38 @@ macro_rules! requester_forward {
             $body!(transfer_business_account_stars this (business_connection_id: BusinessConnectionId, star_count: u32))
         }
     };
+    (@method get_business_account_gifts $body:ident $ty:ident) => {
+        type GetBusinessAccountGifts = $ty![GetBusinessAccountGifts];
+
+        fn get_business_account_gifts(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountGifts {
+            let this = self;
+            $body!(get_business_account_gifts this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method convert_gift_to_stars $body:ident $ty:ident) => {
+        type ConvertGiftToStars = $ty![ConvertGiftToStars];
+
+        fn convert_gift_to_stars(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::ConvertGiftToStars {
+            let this = self;
+            $body!(convert_gift_to_stars this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method upgrade_gift $body:ident $ty:ident) => {
+        type UpgradeGift = $ty![UpgradeGift];
+
+        fn upgrade_gift(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::UpgradeGift {
+            let this = self;
+            $body!(upgrade_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method transfer_gift $body:ident $ty:ident) => {
+        type TransferGift = $ty![TransferGift];
+
+        fn transfer_gift<N>(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N) -> Self::TransferGift where N: Into<ChatId> {
+            let this = self;
+            $body!(transfer_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 

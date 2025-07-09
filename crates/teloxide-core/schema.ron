@@ -5115,6 +5115,146 @@ Schema(
             ]
         ),
         Method(
+            names: ("getBusinessAccountGifts", "GetBusinessAccountGifts", "get_business_account_gifts"),
+            return_ty: RawTy("OwnedGifts"),
+            doc: Doc(
+                md: "Returns the gifts received and owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [OwnedGifts] on success.",
+                md_links: {"OwnedGifts": "https://core.telegram.org/bots/api#ownedgifts"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountgifts",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "exclude_unsaved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that aren't saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_saved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that are saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_unlimited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased an unlimited number of times")
+                ),
+                Param(
+                    name: "exclude_limited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased a limited number of times")
+                ),
+                Param(
+                    name: "exclude_unique",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude unique gifts")
+                ),
+                Param(
+                    name: "sort_by_price",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to sort results by gift price instead of send date. Sorting is applied before pagination")
+                ),
+                Param(
+                    name: "offset",
+                    ty: Option(String),
+                    descr: Doc(md: "Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results")
+                ),
+                Param(
+                    name: "limit",
+                    ty: Option(u8),
+                    descr: Doc(md: "The maximum number of gifts to be returned; 1-100. Defaults to 100")
+                ),
+            ]
+        ),
+        Method(
+            names: ("convertGiftToStars", "ConvertGiftToStars", "convert_gift_to_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Converts a given regular gift to Telegram Stars. Requires the _can_convert_gifts_to_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#convertgifttostars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+            ]
+        ),
+        Method(
+            names: ("upgradeGift", "UpgradeGift", "upgrade_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Upgrades a given regular gift to a unique gift. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Additionally requires the _can_transfer_stars_ business bot right if the upgrade is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#upgradegift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "keep_original_details",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the original gift text, sender and receiver in the upgraded gift")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the upgrade from the business account balance. If `gift.prepaid_upgrade_star_count > 0`, then pass 0, otherwise, the _can_transfer_stars_ business bot right is required and `gift.upgrade_star_count` must be passed.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferGift", "TransferGift", "transfer_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers an owned unique gift to another user. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Requires _can_transfer_stars_ business bot right if the transfer is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transfergift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "new_owner_chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat which will own the gift. The chat must be active in the last 24 hours")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the transfer from the business account balance. If positive, then the _can_transfer_stars_ business bot right is required")
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

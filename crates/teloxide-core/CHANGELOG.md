@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `StarAmount` struct
   - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
   - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
+  - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
 
 ### Changed
 

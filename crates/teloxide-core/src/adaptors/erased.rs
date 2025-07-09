@@ -330,6 +330,10 @@ where
         set_business_account_gift_settings,
         get_business_account_star_balance,
         transfer_business_account_stars,
+        get_business_account_gifts,
+        convert_gift_to_stars,
+        upgrade_gift,
+        transfer_gift,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1095,6 +1099,30 @@ trait ErasableRequester<'a> {
         business_connection_id: BusinessConnectionId,
         star_count: u32,
     ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err>;
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountGifts, Self::Err>;
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, ConvertGiftToStars, Self::Err>;
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, UpgradeGift, Self::Err>;
+
+    fn transfer_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: ChatId,
+    ) -> ErasedRequest<'a, TransferGift, Self::Err>;
 
     fn set_business_account_bio(
         &self,
@@ -2238,6 +2266,39 @@ where
         star_count: u32,
     ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err> {
         Requester::transfer_business_account_stars(self, business_connection_id, star_count).erase()
+    }
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountGifts, Self::Err> {
+        Requester::get_business_account_gifts(self, business_connection_id).erase()
+    }
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, ConvertGiftToStars, Self::Err> {
+        Requester::convert_gift_to_stars(self, business_connection_id, owned_gift_id).erase()
+    }
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, UpgradeGift, Self::Err> {
+        Requester::upgrade_gift(self, business_connection_id, owned_gift_id).erase()
+    }
+
+    fn transfer_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: ChatId,
+    ) -> ErasedRequest<'a, TransferGift, Self::Err> {
+        Requester::transfer_gift(self, business_connection_id, owned_gift_id, new_owner_chat_id)
+            .erase()
     }
 
     fn send_invoice(
