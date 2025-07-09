@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `GiftInfo` and `UniqueGiftInfo` service messages
   - Add `AcceptedGiftTypes` struct
   - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
+  - Add `BusinessBotRights` struct
 
 ### Changed
 
@@ -46,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
   - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
   - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
+  - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
 
 ### Fixed
 
