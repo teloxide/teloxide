@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
   - Add `BusinessBotRights` struct
   - Add `read_business_message`, `delete_business_messages`, `set_business_account_name`, `set_business_account_username` and `set_business_account_bio` methods
+  - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
 
 ### Changed
 
