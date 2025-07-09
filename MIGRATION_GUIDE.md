@@ -40,8 +40,6 @@ InlineQueryResultArticle::new(
 +let gift = transaction_partner_user.gift_purchase().unwrap().gift;
 ```
 
-To get the type of the transaction call `transaction_partner_user.transaction_type()`
-
 ## 0.15 -> 0.16
 
 ### teloxide

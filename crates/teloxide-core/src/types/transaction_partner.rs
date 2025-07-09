@@ -43,23 +43,6 @@ pub struct TransactionPartnerUser {
     pub kind: TransactionPartnerUserKind,
 }
 
-/// Type of the transaction. `InvoicePayment` for payments via invoices,
-/// `PaidMediaPayment` for payments for paid media, `GiftPurchase` for gifts
-/// sent by the bot, `PremiumPurchase` for Telegram Premium subscriptions gifted
-/// by the bot, `BusinessAccountTransfer` for direct transfers from managed
-/// business accounts
-#[derive(Clone, Debug)]
-#[derive(PartialEq, Eq, Hash)]
-#[derive(Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum TransactionPartnerUserType {
-    InvoicePayment,
-    PaidMediaPayment,
-    GiftPurchase,
-    PremiumPurchase,
-    BusinessAccountTransfer,
-}
-
 /// Kind of the transaction. `InvoicePayment` for payments via invoices,
 /// `PaidMediaPayment` for payments for paid media, `GiftPurchase` for gifts
 /// sent by the bot, `PremiumPurchase` for Telegram Premium subscriptions gifted
@@ -134,9 +117,6 @@ pub struct TransactionPartnerUserPremiumPurchase {
 ///
 /// let _ = transaction.gift_purchase();
 /// let _ = transaction.kind.gift_purchase();
-///
-/// let _ = transaction.transaction_type();
-/// let _ = transaction.kind.transaction_type();
 /// ```
 impl Deref for TransactionPartnerUser {
     type Target = TransactionPartnerUserKind;
@@ -147,27 +127,6 @@ impl Deref for TransactionPartnerUser {
 }
 
 impl TransactionPartnerUserKind {
-    /// Converts [`TransactionPartnerUserKind`] to
-    /// [`TransactionPartnerUserType`]
-    #[must_use]
-    pub fn transaction_type(&self) -> TransactionPartnerUserType {
-        match self {
-            TransactionPartnerUserKind::GiftPurchase(_) => TransactionPartnerUserType::GiftPurchase,
-            TransactionPartnerUserKind::InvoicePayment(_) => {
-                TransactionPartnerUserType::InvoicePayment
-            }
-            TransactionPartnerUserKind::PaidMediaPayment(_) => {
-                TransactionPartnerUserType::PaidMediaPayment
-            }
-            TransactionPartnerUserKind::PremiumPurchase(_) => {
-                TransactionPartnerUserType::PremiumPurchase
-            }
-            TransactionPartnerUserKind::BusinessAccountTransfer => {
-                TransactionPartnerUserType::BusinessAccountTransfer
-            }
-        }
-    }
-
     /// Getter for [`TransactionPartnerUserGiftPurchase`]
     pub fn gift_purchase(&self) -> Option<TransactionPartnerUserGiftPurchase> {
         match self {
