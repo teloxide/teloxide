@@ -1575,6 +1575,30 @@ macro_rules! requester_forward {
             $body!(remove_business_account_profile_photo this (business_connection_id: BusinessConnectionId))
         }
     };
+    (@method set_business_account_gift_settings $body:ident $ty:ident) => {
+        type SetBusinessAccountGiftSettings = $ty![SetBusinessAccountGiftSettings];
+
+        fn set_business_account_gift_settings(&self, business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes) -> Self::SetBusinessAccountGiftSettings {
+            let this = self;
+            $body!(set_business_account_gift_settings this (business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes))
+        }
+    };
+    (@method get_business_account_star_balance $body:ident $ty:ident) => {
+        type GetBusinessAccountStarBalance = $ty![GetBusinessAccountStarBalance];
+
+        fn get_business_account_star_balance(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountStarBalance {
+            let this = self;
+            $body!(get_business_account_star_balance this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method transfer_business_account_stars $body:ident $ty:ident) => {
+        type TransferBusinessAccountStars = $ty![TransferBusinessAccountStars];
+
+        fn transfer_business_account_stars(&self, business_connection_id: BusinessConnectionId, star_count: u32) -> Self::TransferBusinessAccountStars {
+            let this = self;
+            $body!(transfer_business_account_stars this (business_connection_id: BusinessConnectionId, star_count: u32))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 

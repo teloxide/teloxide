@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
   - Add `set_business_account_profile_photo` and `remove_business_account_profile_photo` methods
   - Add `StarAmount` struct
+  - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
 
 ### Changed
 

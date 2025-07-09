@@ -5051,6 +5051,70 @@ Schema(
             ]
         ),
         Method(
+            names: ("setBusinessAccountGiftSettings", "SetBusinessAccountGiftSettings", "set_business_account_gift_settings"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the privacy settings pertaining to incoming gifts in a managed business account. Requires the _can_change_gift_settings_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountgiftsettings",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "show_gift_button",
+                    ty: bool,
+                    descr: Doc(md: "Pass _true_, if a button for sending a gift to the user or by the business account must always be shown in the input field"),
+                ),
+                Param(
+                    name: "accepted_gift_types",
+                    ty: RawTy("AcceptedGiftTypes"),
+                    descr: Doc(md: "Types of gifts accepted by the business account"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("getBusinessAccountStarBalance", "GetBusinessAccountStarBalance", "get_business_account_star_balance"),
+            return_ty: RawTy("StarAmount"),
+            doc: Doc(
+                md: "Returns the amount of Telegram Stars owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [StarAmount] on success.",
+                md_links: {"StarAmount": "https://core.telegram.org/bots/api#staramount"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountstarbalance",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferBusinessAccountStars", "TransferBusinessAccountStars", "transfer_business_account_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers Telegram Stars from the business account balance to the bot's balance. Requires the _can_transfer_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transferbusinessaccountstars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to transfer; 1-10000")
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

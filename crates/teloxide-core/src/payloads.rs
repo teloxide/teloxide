@@ -64,6 +64,7 @@ mod export_chat_invite_link;
 mod forward_message;
 mod forward_messages;
 mod get_available_gifts;
+mod get_business_account_star_balance;
 mod get_business_connection;
 mod get_chat;
 mod get_chat_administrators;
@@ -127,6 +128,7 @@ mod send_video;
 mod send_video_note;
 mod send_voice;
 mod set_business_account_bio;
+mod set_business_account_gift_settings;
 mod set_business_account_name;
 mod set_business_account_profile_photo;
 mod set_business_account_username;
@@ -158,6 +160,7 @@ mod set_webhook;
 mod stop_message_live_location;
 mod stop_message_live_location_inline;
 mod stop_poll;
+mod transfer_business_account_stars;
 mod unban_chat_member;
 mod unban_chat_sender_chat;
 mod unhide_general_forum_topic;
@@ -226,6 +229,9 @@ pub use export_chat_invite_link::{ExportChatInviteLink, ExportChatInviteLinkSett
 pub use forward_message::{ForwardMessage, ForwardMessageSetters};
 pub use forward_messages::{ForwardMessages, ForwardMessagesSetters};
 pub use get_available_gifts::{GetAvailableGifts, GetAvailableGiftsSetters};
+pub use get_business_account_star_balance::{
+    GetBusinessAccountStarBalance, GetBusinessAccountStarBalanceSetters,
+};
 pub use get_business_connection::{GetBusinessConnection, GetBusinessConnectionSetters};
 pub use get_chat::{GetChat, GetChatSetters};
 pub use get_chat_administrators::{GetChatAdministrators, GetChatAdministratorsSetters};
@@ -297,6 +303,9 @@ pub use send_video::{SendVideo, SendVideoSetters};
 pub use send_video_note::{SendVideoNote, SendVideoNoteSetters};
 pub use send_voice::{SendVoice, SendVoiceSetters};
 pub use set_business_account_bio::{SetBusinessAccountBio, SetBusinessAccountBioSetters};
+pub use set_business_account_gift_settings::{
+    SetBusinessAccountGiftSettings, SetBusinessAccountGiftSettingsSetters,
+};
 pub use set_business_account_name::{SetBusinessAccountName, SetBusinessAccountNameSetters};
 pub use set_business_account_profile_photo::{
     SetBusinessAccountProfilePhoto, SetBusinessAccountProfilePhotoSetters,
@@ -340,6 +349,9 @@ pub use stop_message_live_location_inline::{
     StopMessageLiveLocationInline, StopMessageLiveLocationInlineSetters,
 };
 pub use stop_poll::{StopPoll, StopPollSetters};
+pub use transfer_business_account_stars::{
+    TransferBusinessAccountStars, TransferBusinessAccountStarsSetters,
+};
 pub use unban_chat_member::{UnbanChatMember, UnbanChatMemberSetters};
 pub use unban_chat_sender_chat::{UnbanChatSenderChat, UnbanChatSenderChatSetters};
 pub use unhide_general_forum_topic::{UnhideGeneralForumTopic, UnhideGeneralForumTopicSetters};

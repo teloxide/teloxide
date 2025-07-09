@@ -5,11 +5,11 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
-        FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
-        InputPollOption, InputProfilePhoto, InputSticker, LabeledPrice, MessageId,
-        PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId, StickerFormat,
-        TelegramTransactionId, ThreadId, UserId,
+        AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
+        ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
+        InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto, InputSticker,
+        LabeledPrice, MessageId, PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId,
+        StickerFormat, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1595,6 +1595,49 @@ impl Requester for Bot {
         Self::RemoveBusinessAccountProfilePhoto::new(
             self.clone(),
             payloads::RemoveBusinessAccountProfilePhoto::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountGiftSettings = JsonRequest<payloads::SetBusinessAccountGiftSettings>;
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings {
+        Self::SetBusinessAccountGiftSettings::new(
+            self.clone(),
+            payloads::SetBusinessAccountGiftSettings::new(
+                business_connection_id,
+                show_gift_button,
+                accepted_gift_types,
+            ),
+        )
+    }
+
+    type GetBusinessAccountStarBalance = JsonRequest<payloads::GetBusinessAccountStarBalance>;
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance {
+        Self::GetBusinessAccountStarBalance::new(
+            self.clone(),
+            payloads::GetBusinessAccountStarBalance::new(business_connection_id),
+        )
+    }
+
+    type TransferBusinessAccountStars = JsonRequest<payloads::TransferBusinessAccountStars>;
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars {
+        Self::TransferBusinessAccountStars::new(
+            self.clone(),
+            payloads::TransferBusinessAccountStars::new(business_connection_id, star_count),
         )
     }
 

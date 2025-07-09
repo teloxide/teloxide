@@ -1362,6 +1362,42 @@ pub trait Requester {
         business_connection_id: BusinessConnectionId,
     ) -> Self::RemoveBusinessAccountProfilePhoto;
 
+    type SetBusinessAccountGiftSettings: Request<
+        Payload = SetBusinessAccountGiftSettings,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountGiftSettings`].
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings;
+
+    type GetBusinessAccountStarBalance: Request<
+        Payload = GetBusinessAccountStarBalance,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`GetBusinessAccountStarBalance`].
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance;
+
+    type TransferBusinessAccountStars: Request<
+        Payload = TransferBusinessAccountStars,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`TransferBusinessAccountStars`].
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1647,6 +1683,9 @@ macro_rules! forward_all {
             set_business_account_bio,
             set_business_account_profile_photo,
             remove_business_account_profile_photo,
+            set_business_account_gift_settings,
+            get_business_account_star_balance,
+            transfer_business_account_stars,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

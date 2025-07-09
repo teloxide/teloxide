@@ -327,6 +327,9 @@ where
         set_business_account_bio,
         set_business_account_profile_photo,
         remove_business_account_profile_photo,
+        set_business_account_gift_settings,
+        get_business_account_star_balance,
+        transfer_business_account_stars,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1074,6 +1077,24 @@ trait ErasableRequester<'a> {
         &self,
         business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err>;
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> ErasedRequest<'a, SetBusinessAccountGiftSettings, Self::Err>;
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountStarBalance, Self::Err>;
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err>;
 
     fn set_business_account_bio(
         &self,
@@ -2187,6 +2208,36 @@ where
         business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err> {
         Requester::remove_business_account_profile_photo(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> ErasedRequest<'a, SetBusinessAccountGiftSettings, Self::Err> {
+        Requester::set_business_account_gift_settings(
+            self,
+            business_connection_id,
+            show_gift_button,
+            accepted_gift_types,
+        )
+        .erase()
+    }
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountStarBalance, Self::Err> {
+        Requester::get_business_account_star_balance(self, business_connection_id).erase()
+    }
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err> {
+        Requester::transfer_business_account_stars(self, business_connection_id, star_count).erase()
     }
 
     fn send_invoice(
