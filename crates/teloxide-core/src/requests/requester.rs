@@ -1339,6 +1339,29 @@ pub trait Requester {
         business_connection_id: BusinessConnectionId,
     ) -> Self::SetBusinessAccountBio;
 
+    type SetBusinessAccountProfilePhoto: Request<
+        Payload = SetBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountProfilePhoto`].
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto;
+
+    type RemoveBusinessAccountProfilePhoto: Request<
+        Payload = RemoveBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`RemoveBusinessAccountProfilePhoto`].
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1622,6 +1645,8 @@ macro_rules! forward_all {
             set_business_account_name,
             set_business_account_username,
             set_business_account_bio,
+            set_business_account_profile_photo,
+            remove_business_account_profile_photo,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

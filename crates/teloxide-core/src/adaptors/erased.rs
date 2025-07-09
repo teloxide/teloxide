@@ -325,6 +325,8 @@ where
         set_business_account_name,
         set_business_account_username,
         set_business_account_bio,
+        set_business_account_profile_photo,
+        remove_business_account_profile_photo,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1061,6 +1063,17 @@ trait ErasableRequester<'a> {
         &self,
         business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, SetBusinessAccountUsername, Self::Err>;
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetBusinessAccountProfilePhoto, Self::Err>;
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err>;
 
     fn set_business_account_bio(
         &self,
@@ -2159,6 +2172,21 @@ where
         business_connection_id: BusinessConnectionId,
     ) -> ErasedRequest<'a, SetBusinessAccountBio, Self::Err> {
         Requester::set_business_account_bio(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetBusinessAccountProfilePhoto, Self::Err> {
+        Requester::set_business_account_profile_photo(self, business_connection_id, photo).erase()
+    }
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err> {
+        Requester::remove_business_account_profile_photo(self, business_connection_id).erase()
     }
 
     fn send_invoice(

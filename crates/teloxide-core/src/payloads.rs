@@ -96,6 +96,7 @@ mod pin_chat_message;
 mod promote_chat_member;
 mod read_business_message;
 mod refund_star_payment;
+mod remove_business_account_profile_photo;
 mod remove_chat_verification;
 mod remove_user_verification;
 mod reopen_forum_topic;
@@ -127,6 +128,7 @@ mod send_video_note;
 mod send_voice;
 mod set_business_account_bio;
 mod set_business_account_name;
+mod set_business_account_profile_photo;
 mod set_business_account_username;
 mod set_chat_administrator_custom_title;
 mod set_chat_description;
@@ -260,6 +262,9 @@ pub use pin_chat_message::{PinChatMessage, PinChatMessageSetters};
 pub use promote_chat_member::{PromoteChatMember, PromoteChatMemberSetters};
 pub use read_business_message::{ReadBusinessMessage, ReadBusinessMessageSetters};
 pub use refund_star_payment::{RefundStarPayment, RefundStarPaymentSetters};
+pub use remove_business_account_profile_photo::{
+    RemoveBusinessAccountProfilePhoto, RemoveBusinessAccountProfilePhotoSetters,
+};
 pub use remove_chat_verification::{RemoveChatVerification, RemoveChatVerificationSetters};
 pub use remove_user_verification::{RemoveUserVerification, RemoveUserVerificationSetters};
 pub use reopen_forum_topic::{ReopenForumTopic, ReopenForumTopicSetters};
@@ -293,6 +298,9 @@ pub use send_video_note::{SendVideoNote, SendVideoNoteSetters};
 pub use send_voice::{SendVoice, SendVoiceSetters};
 pub use set_business_account_bio::{SetBusinessAccountBio, SetBusinessAccountBioSetters};
 pub use set_business_account_name::{SetBusinessAccountName, SetBusinessAccountNameSetters};
+pub use set_business_account_profile_photo::{
+    SetBusinessAccountProfilePhoto, SetBusinessAccountProfilePhotoSetters,
+};
 pub use set_business_account_username::{
     SetBusinessAccountUsername, SetBusinessAccountUsernameSetters,
 };

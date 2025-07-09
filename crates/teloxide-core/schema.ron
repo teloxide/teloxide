@@ -5004,6 +5004,53 @@ Schema(
             ]
         ),
         Method(
+            names: ("setBusinessAccountProfilePhoto", "SetBusinessAccountProfilePhoto", "set_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "photo",
+                    ty: RawTy("InputProfilePhoto"),
+                    descr: Doc(md: "The new profile photo to set"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to set the public photo, which will be visible even if the main photo is hidden by the business account's privacy settings. An account can have only one public photo.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeBusinessAccountProfilePhoto", "RemoveBusinessAccountProfilePhoto", "remove_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes the current profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removebusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to remove the public photo, which is visible even if the main photo is hidden by the business account's privacy settings. After the main photo is removed, the previous profile photo (if present) becomes the main photo.")
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

@@ -210,6 +210,8 @@ where
         set_business_account_name,
         set_business_account_username,
         set_business_account_bio,
+        set_business_account_profile_photo,
+        remove_business_account_profile_photo,
         answer_shipping_query,
         create_invoice_link,
         answer_pre_checkout_query,

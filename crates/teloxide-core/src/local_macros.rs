@@ -1559,6 +1559,22 @@ macro_rules! requester_forward {
             $body!(set_business_account_bio this (business_connection_id: BusinessConnectionId))
         }
     };
+    (@method set_business_account_profile_photo $body:ident $ty:ident) => {
+        type SetBusinessAccountProfilePhoto = $ty![SetBusinessAccountProfilePhoto];
+
+        fn set_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId, photo: InputProfilePhoto) -> Self::SetBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(set_business_account_profile_photo this (business_connection_id: BusinessConnectionId, photo: InputProfilePhoto))
+        }
+    };
+    (@method remove_business_account_profile_photo $body:ident $ty:ident) => {
+        type RemoveBusinessAccountProfilePhoto = $ty![RemoveBusinessAccountProfilePhoto];
+
+        fn remove_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId) -> Self::RemoveBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(remove_business_account_profile_photo this (business_connection_id: BusinessConnectionId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 

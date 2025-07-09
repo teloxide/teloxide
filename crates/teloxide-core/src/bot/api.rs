@@ -7,8 +7,9 @@ use crate::{
     types::{
         BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
         FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
-        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient,
-        Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
+        InputPollOption, InputProfilePhoto, InputSticker, LabeledPrice, MessageId,
+        PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId, StickerFormat,
+        TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1568,6 +1569,32 @@ impl Requester for Bot {
         Self::SetBusinessAccountBio::new(
             self.clone(),
             payloads::SetBusinessAccountBio::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountProfilePhoto = JsonRequest<payloads::SetBusinessAccountProfilePhoto>;
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto {
+        Self::SetBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::SetBusinessAccountProfilePhoto::new(business_connection_id, photo),
+        )
+    }
+
+    type RemoveBusinessAccountProfilePhoto =
+        JsonRequest<payloads::RemoveBusinessAccountProfilePhoto>;
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto {
+        Self::RemoveBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::RemoveBusinessAccountProfilePhoto::new(business_connection_id),
         )
     }
 
