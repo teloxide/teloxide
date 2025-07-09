@@ -1289,6 +1289,56 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type ReadBusinessMessage: Request<Payload = ReadBusinessMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReadBusinessMessage`].
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>;
+
+    type DeleteBusinessMessages: Request<Payload = DeleteBusinessMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteBusinessMessages`].
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>;
+
+    type SetBusinessAccountName: Request<Payload = SetBusinessAccountName, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountName`].
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>;
+
+    type SetBusinessAccountUsername: Request<Payload = SetBusinessAccountUsername, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountUsername`].
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername;
+
+    type SetBusinessAccountBio: Request<Payload = SetBusinessAccountBio, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountBio`].
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1567,6 +1617,11 @@ macro_rules! forward_all {
             verify_chat,
             remove_user_verification,
             remove_chat_verification,
+            read_business_message,
+            delete_business_messages,
+            set_business_account_name,
+            set_business_account_username,
+            set_business_account_bio,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

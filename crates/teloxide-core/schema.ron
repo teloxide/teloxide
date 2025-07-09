@@ -4886,6 +4886,124 @@ Schema(
             ]
         ),
         Method(
+            names: ("readBusinessMessage", "ReadBusinessMessage", "read_business_message"),
+            return_ty: True,
+            doc: Doc(
+                md: "Marks incoming message as read on behalf of a business account. Requires the _can_read_messages_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#readbusinessmessage",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to read the message"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat in which the message was received. The chat must have been active in the last 24 hours"),
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Unique identifier of the message to mark as read")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteBusinessMessages", "DeleteBusinessMessages", "delete_business_messages"),
+            return_ty: True,
+            doc: Doc(
+                md: "Delete messages on behalf of a business account. Requires the _can_delete_sent_messages_ business bot right to delete messages sent by the bot itself, or the _can_delete_all_messages_ business bot right to delete any message. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletebusinessmessages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to delete the messages"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "List of 1-100 identifiers of messages to delete. All messages must be from the same chat. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountName", "SetBusinessAccountName", "set_business_account_name"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the first and last name of a managed business account. Requires the _can_change_name_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountname",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "first_name",
+                    ty: String,
+                    descr: Doc(md: "The new value of the first name for the business account; 1-64 characters"),
+                ),
+                Param(
+                    name: "last_name",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the last name for the business account; 0-64 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountUsername", "SetBusinessAccountUsername", "set_business_account_username"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the username of a managed business account. Requires the _can_change_username_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountusername",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "username",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the username for the business account; 0-32 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountBio", "SetBusinessAccountBio", "set_business_account_bio"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the bio of a managed business account. Requires the _can_change_bio_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountbio",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "bio",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the bio for the business account; 0-140 characters")
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

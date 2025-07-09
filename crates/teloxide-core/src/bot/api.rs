@@ -1498,6 +1498,79 @@ impl Requester for Bot {
         )
     }
 
+    type ReadBusinessMessage = JsonRequest<payloads::ReadBusinessMessage>;
+
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>,
+    {
+        Self::ReadBusinessMessage::new(
+            self.clone(),
+            payloads::ReadBusinessMessage::new(business_connection_id, chat_id, message_id),
+        )
+    }
+
+    type DeleteBusinessMessages = JsonRequest<payloads::DeleteBusinessMessages>;
+
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::DeleteBusinessMessages::new(
+            self.clone(),
+            payloads::DeleteBusinessMessages::new(business_connection_id, message_ids),
+        )
+    }
+
+    type SetBusinessAccountName = JsonRequest<payloads::SetBusinessAccountName>;
+
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>,
+    {
+        Self::SetBusinessAccountName::new(
+            self.clone(),
+            payloads::SetBusinessAccountName::new(business_connection_id, first_name),
+        )
+    }
+
+    type SetBusinessAccountUsername = JsonRequest<payloads::SetBusinessAccountUsername>;
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername {
+        Self::SetBusinessAccountUsername::new(
+            self.clone(),
+            payloads::SetBusinessAccountUsername::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountBio = JsonRequest<payloads::SetBusinessAccountBio>;
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio {
+        Self::SetBusinessAccountBio::new(
+            self.clone(),
+            payloads::SetBusinessAccountBio::new(business_connection_id),
+        )
+    }
+
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
     fn send_invoice<Ch, T, D, Pa, C, Pri>(

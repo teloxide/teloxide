@@ -1519,6 +1519,46 @@ macro_rules! requester_forward {
             $body!(remove_chat_verification this (chat_id: C))
         }
     };
+    (@method read_business_message $body:ident $ty:ident) => {
+        type ReadBusinessMessage = $ty![ReadBusinessMessage];
+
+        fn read_business_message<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId) -> Self::ReadBusinessMessage where C: Into<ChatId> {
+            let this = self;
+            $body!(read_business_message this (business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_business_messages $body:ident $ty:ident) => {
+        type DeleteBusinessMessages = $ty![DeleteBusinessMessages];
+
+        fn delete_business_messages<M>(&self, business_connection_id: BusinessConnectionId, message_ids: M) -> Self::DeleteBusinessMessages where M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(delete_business_messages this (business_connection_id: BusinessConnectionId, message_ids: M))
+        }
+    };
+    (@method set_business_account_name $body:ident $ty:ident) => {
+        type SetBusinessAccountName = $ty![SetBusinessAccountName];
+
+        fn set_business_account_name<F>(&self, business_connection_id: BusinessConnectionId, first_name: F) -> Self::SetBusinessAccountName where F: Into<String> {
+            let this = self;
+            $body!(set_business_account_name this (business_connection_id: BusinessConnectionId, first_name: F))
+        }
+    };
+    (@method set_business_account_username $body:ident $ty:ident) => {
+        type SetBusinessAccountUsername = $ty![SetBusinessAccountUsername];
+
+        fn set_business_account_username(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountUsername {
+            let this = self;
+            $body!(set_business_account_username this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_bio $body:ident $ty:ident) => {
+        type SetBusinessAccountBio = $ty![SetBusinessAccountBio];
+
+        fn set_business_account_bio(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountBio {
+            let this = self;
+            $body!(set_business_account_bio this (business_connection_id: BusinessConnectionId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 

@@ -320,6 +320,11 @@ where
         verify_chat,
         remove_user_verification,
         remove_chat_verification,
+        read_business_message,
+        delete_business_messages,
+        set_business_account_name,
+        set_business_account_username,
+        set_business_account_bio,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1032,6 +1037,35 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
     ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err>;
+
+    fn read_business_message(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ReadBusinessMessage, Self::Err>;
+
+    fn delete_business_messages(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteBusinessMessages, Self::Err>;
+
+    fn set_business_account_name(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: String,
+    ) -> ErasedRequest<'a, SetBusinessAccountName, Self::Err>;
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountUsername, Self::Err>;
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountBio, Self::Err>;
 
     fn send_invoice(
         &self,
@@ -2086,6 +2120,45 @@ where
         chat_id: Recipient,
     ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err> {
         Requester::remove_chat_verification(self, chat_id).erase()
+    }
+
+    fn read_business_message(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ReadBusinessMessage, Self::Err> {
+        Requester::read_business_message(self, business_connection_id, chat_id, message_id).erase()
+    }
+
+    fn delete_business_messages(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteBusinessMessages, Self::Err> {
+        Requester::delete_business_messages(self, business_connection_id, message_ids).erase()
+    }
+
+    fn set_business_account_name(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: String,
+    ) -> ErasedRequest<'a, SetBusinessAccountName, Self::Err> {
+        Requester::set_business_account_name(self, business_connection_id, first_name).erase()
+    }
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountUsername, Self::Err> {
+        Requester::set_business_account_username(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountBio, Self::Err> {
+        Requester::set_business_account_bio(self, business_connection_id).erase()
     }
 
     fn send_invoice(
