@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
   - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
   - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
+  - Add `Argb` struct
 
 ### Changed
 
