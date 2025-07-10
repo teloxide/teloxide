@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
 
 - Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+  - Add `filter_paid_message_price_changed`, `filter_gift_info` and `filter_unique_gift_info` filters
 
 ### Changed
 
