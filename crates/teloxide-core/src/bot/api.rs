@@ -5,10 +5,11 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, CallbackQueryId, ChatId, ChatPermissions, CustomEmojiId,
-        FileId, GiftId, InlineQueryId, InlineQueryResult, InputFile, InputMedia, InputPaidMedia,
-        InputPollOption, InputSticker, LabeledPrice, MessageId, PreCheckoutQueryId, Recipient,
-        Seconds, ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
+        AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
+        ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
+        InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto, InputSticker,
+        InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId, Recipient,
+        Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1495,6 +1496,244 @@ impl Requester for Bot {
         Self::RemoveChatVerification::new(
             self.clone(),
             payloads::RemoveChatVerification::new(chat_id),
+        )
+    }
+
+    type ReadBusinessMessage = JsonRequest<payloads::ReadBusinessMessage>;
+
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>,
+    {
+        Self::ReadBusinessMessage::new(
+            self.clone(),
+            payloads::ReadBusinessMessage::new(business_connection_id, chat_id, message_id),
+        )
+    }
+
+    type DeleteBusinessMessages = JsonRequest<payloads::DeleteBusinessMessages>;
+
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::DeleteBusinessMessages::new(
+            self.clone(),
+            payloads::DeleteBusinessMessages::new(business_connection_id, message_ids),
+        )
+    }
+
+    type SetBusinessAccountName = JsonRequest<payloads::SetBusinessAccountName>;
+
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>,
+    {
+        Self::SetBusinessAccountName::new(
+            self.clone(),
+            payloads::SetBusinessAccountName::new(business_connection_id, first_name),
+        )
+    }
+
+    type SetBusinessAccountUsername = JsonRequest<payloads::SetBusinessAccountUsername>;
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername {
+        Self::SetBusinessAccountUsername::new(
+            self.clone(),
+            payloads::SetBusinessAccountUsername::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountBio = JsonRequest<payloads::SetBusinessAccountBio>;
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio {
+        Self::SetBusinessAccountBio::new(
+            self.clone(),
+            payloads::SetBusinessAccountBio::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountProfilePhoto = JsonRequest<payloads::SetBusinessAccountProfilePhoto>;
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto {
+        Self::SetBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::SetBusinessAccountProfilePhoto::new(business_connection_id, photo),
+        )
+    }
+
+    type RemoveBusinessAccountProfilePhoto =
+        JsonRequest<payloads::RemoveBusinessAccountProfilePhoto>;
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto {
+        Self::RemoveBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::RemoveBusinessAccountProfilePhoto::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountGiftSettings = JsonRequest<payloads::SetBusinessAccountGiftSettings>;
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings {
+        Self::SetBusinessAccountGiftSettings::new(
+            self.clone(),
+            payloads::SetBusinessAccountGiftSettings::new(
+                business_connection_id,
+                show_gift_button,
+                accepted_gift_types,
+            ),
+        )
+    }
+
+    type GetBusinessAccountStarBalance = JsonRequest<payloads::GetBusinessAccountStarBalance>;
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance {
+        Self::GetBusinessAccountStarBalance::new(
+            self.clone(),
+            payloads::GetBusinessAccountStarBalance::new(business_connection_id),
+        )
+    }
+
+    type TransferBusinessAccountStars = JsonRequest<payloads::TransferBusinessAccountStars>;
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars {
+        Self::TransferBusinessAccountStars::new(
+            self.clone(),
+            payloads::TransferBusinessAccountStars::new(business_connection_id, star_count),
+        )
+    }
+
+    type GetBusinessAccountGifts = JsonRequest<payloads::GetBusinessAccountGifts>;
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts {
+        Self::GetBusinessAccountGifts::new(
+            self.clone(),
+            payloads::GetBusinessAccountGifts::new(business_connection_id),
+        )
+    }
+
+    type ConvertGiftToStars = JsonRequest<payloads::ConvertGiftToStars>;
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars {
+        Self::ConvertGiftToStars::new(
+            self.clone(),
+            payloads::ConvertGiftToStars::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type UpgradeGift = JsonRequest<payloads::UpgradeGift>;
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift {
+        Self::UpgradeGift::new(
+            self.clone(),
+            payloads::UpgradeGift::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type TransferGift = JsonRequest<payloads::TransferGift>;
+
+    fn transfer_gift<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: C,
+    ) -> Self::TransferGift
+    where
+        C: Into<ChatId>,
+    {
+        Self::TransferGift::new(
+            self.clone(),
+            payloads::TransferGift::new(business_connection_id, owned_gift_id, new_owner_chat_id),
+        )
+    }
+
+    type PostStory = JsonRequest<payloads::PostStory>;
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory {
+        Self::PostStory::new(
+            self.clone(),
+            payloads::PostStory::new(business_connection_id, content, active_period),
+        )
+    }
+
+    type EditStory = JsonRequest<payloads::EditStory>;
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory {
+        Self::EditStory::new(
+            self.clone(),
+            payloads::EditStory::new(business_connection_id, story_id, content),
+        )
+    }
+
+    type DeleteStory = JsonRequest<payloads::DeleteStory>;
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory {
+        Self::DeleteStory::new(
+            self.clone(),
+            payloads::DeleteStory::new(business_connection_id, story_id),
         )
     }
 

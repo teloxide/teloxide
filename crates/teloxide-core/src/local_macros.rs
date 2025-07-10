@@ -1519,6 +1519,142 @@ macro_rules! requester_forward {
             $body!(remove_chat_verification this (chat_id: C))
         }
     };
+    (@method read_business_message $body:ident $ty:ident) => {
+        type ReadBusinessMessage = $ty![ReadBusinessMessage];
+
+        fn read_business_message<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId) -> Self::ReadBusinessMessage where C: Into<ChatId> {
+            let this = self;
+            $body!(read_business_message this (business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_business_messages $body:ident $ty:ident) => {
+        type DeleteBusinessMessages = $ty![DeleteBusinessMessages];
+
+        fn delete_business_messages<M>(&self, business_connection_id: BusinessConnectionId, message_ids: M) -> Self::DeleteBusinessMessages where M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(delete_business_messages this (business_connection_id: BusinessConnectionId, message_ids: M))
+        }
+    };
+    (@method set_business_account_name $body:ident $ty:ident) => {
+        type SetBusinessAccountName = $ty![SetBusinessAccountName];
+
+        fn set_business_account_name<F>(&self, business_connection_id: BusinessConnectionId, first_name: F) -> Self::SetBusinessAccountName where F: Into<String> {
+            let this = self;
+            $body!(set_business_account_name this (business_connection_id: BusinessConnectionId, first_name: F))
+        }
+    };
+    (@method set_business_account_username $body:ident $ty:ident) => {
+        type SetBusinessAccountUsername = $ty![SetBusinessAccountUsername];
+
+        fn set_business_account_username(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountUsername {
+            let this = self;
+            $body!(set_business_account_username this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_bio $body:ident $ty:ident) => {
+        type SetBusinessAccountBio = $ty![SetBusinessAccountBio];
+
+        fn set_business_account_bio(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountBio {
+            let this = self;
+            $body!(set_business_account_bio this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_profile_photo $body:ident $ty:ident) => {
+        type SetBusinessAccountProfilePhoto = $ty![SetBusinessAccountProfilePhoto];
+
+        fn set_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId, photo: InputProfilePhoto) -> Self::SetBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(set_business_account_profile_photo this (business_connection_id: BusinessConnectionId, photo: InputProfilePhoto))
+        }
+    };
+    (@method remove_business_account_profile_photo $body:ident $ty:ident) => {
+        type RemoveBusinessAccountProfilePhoto = $ty![RemoveBusinessAccountProfilePhoto];
+
+        fn remove_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId) -> Self::RemoveBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(remove_business_account_profile_photo this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_gift_settings $body:ident $ty:ident) => {
+        type SetBusinessAccountGiftSettings = $ty![SetBusinessAccountGiftSettings];
+
+        fn set_business_account_gift_settings(&self, business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes) -> Self::SetBusinessAccountGiftSettings {
+            let this = self;
+            $body!(set_business_account_gift_settings this (business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes))
+        }
+    };
+    (@method get_business_account_star_balance $body:ident $ty:ident) => {
+        type GetBusinessAccountStarBalance = $ty![GetBusinessAccountStarBalance];
+
+        fn get_business_account_star_balance(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountStarBalance {
+            let this = self;
+            $body!(get_business_account_star_balance this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method transfer_business_account_stars $body:ident $ty:ident) => {
+        type TransferBusinessAccountStars = $ty![TransferBusinessAccountStars];
+
+        fn transfer_business_account_stars(&self, business_connection_id: BusinessConnectionId, star_count: u32) -> Self::TransferBusinessAccountStars {
+            let this = self;
+            $body!(transfer_business_account_stars this (business_connection_id: BusinessConnectionId, star_count: u32))
+        }
+    };
+    (@method get_business_account_gifts $body:ident $ty:ident) => {
+        type GetBusinessAccountGifts = $ty![GetBusinessAccountGifts];
+
+        fn get_business_account_gifts(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountGifts {
+            let this = self;
+            $body!(get_business_account_gifts this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method convert_gift_to_stars $body:ident $ty:ident) => {
+        type ConvertGiftToStars = $ty![ConvertGiftToStars];
+
+        fn convert_gift_to_stars(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::ConvertGiftToStars {
+            let this = self;
+            $body!(convert_gift_to_stars this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method upgrade_gift $body:ident $ty:ident) => {
+        type UpgradeGift = $ty![UpgradeGift];
+
+        fn upgrade_gift(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::UpgradeGift {
+            let this = self;
+            $body!(upgrade_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method transfer_gift $body:ident $ty:ident) => {
+        type TransferGift = $ty![TransferGift];
+
+        fn transfer_gift<N>(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N) -> Self::TransferGift where N: Into<ChatId> {
+            let this = self;
+            $body!(transfer_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N))
+        }
+    };
+    (@method post_story $body:ident $ty:ident) => {
+        type PostStory = $ty![PostStory];
+
+        fn post_story(&self, business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds) -> Self::PostStory {
+            let this = self;
+            $body!(post_story this (business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds))
+        }
+    };
+    (@method edit_story $body:ident $ty:ident) => {
+        type EditStory = $ty![EditStory];
+
+        fn edit_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent) -> Self::EditStory {
+            let this = self;
+            $body!(edit_story this (business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent))
+        }
+    };
+    (@method delete_story $body:ident $ty:ident) => {
+        type DeleteStory = $ty![DeleteStory];
+
+        fn delete_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId) -> Self::DeleteStory {
+            let this = self;
+            $body!(delete_story this (business_connection_id: BusinessConnectionId, story_id: StoryId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
