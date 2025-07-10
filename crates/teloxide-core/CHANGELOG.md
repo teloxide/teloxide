@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `cover` and `start_timestamp` parameters to `send_video` method
   - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
 
-- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
   - Add `paid_star_count` field to `MessageCommon` struct
   - Add `PaidMessagePriceChanged` service message
   - Add `premium_subscription_duration` field to `TransactionPartnerUser`
@@ -55,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PaidMedia::Video` is now wrapped in a `Box`
   - `InputPaidMedia::Video` is now wrapped in a `Box`
 
-- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
   - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
   - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
   - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
@@ -63,7 +63,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
-- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))
+
+[pr1385]: https://github.com/teloxide/teloxide/pull/1385
+[pr1387]: https://github.com/teloxide/teloxide/pull/1387
 
 ## 0.12.0 - 2025-06-19
 

@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
 
-- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
   - Add `filter_paid_message_price_changed`, `filter_gift_info` and `filter_unique_gift_info` filters
 
 ### Changed
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `PaidMedia::Video` is now wrapped in a `Box` [**BC**]
   - `InputPaidMedia::Video` is now wrapped in a `Box` [**BC**]
 
-- Support for TBA 9.0 ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
   - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters [**BC**]
   - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types` [**BC**]
   - `can_reply` field in `BusinessConnection` struct was replaced by `rights` [**BC**]
@@ -32,7 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382)) [**BC**]
-- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](https://github.com/teloxide/teloxide/pull/1385))
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))
+
+[pr1385]: https://github.com/teloxide/teloxide/pull/1385
+[pr1387]: https://github.com/teloxide/teloxide/pull/1387
 
 ## 0.16.0 - 2025-06-19
 
