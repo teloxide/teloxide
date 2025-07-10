@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "8.3", date: "February 12, 2025"),
+    api_version: ApiVersion(ver: "9.0", date: "April 11, 2025"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
