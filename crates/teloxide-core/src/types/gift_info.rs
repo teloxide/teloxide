@@ -1,5 +1,14 @@
-use crate::types::{Gift, GiftId, MessageEntity};
+use crate::types::{Gift, MessageEntity};
+use derive_more::From;
 use serde::{Deserialize, Serialize};
+
+/// A unique incremental identifier of the owned gift provided by TBA.
+#[derive(Clone, Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, From)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct OwnedGiftId(pub String);
 
 /// Describes a service message about a regular gift that was sent or received.
 #[serde_with::skip_serializing_none]
@@ -10,7 +19,7 @@ pub struct GiftInfo {
 
     /// Unique identifier of the received gift for the bot; only present for
     /// gifts received on behalf of business accounts
-    pub owned_gift_id: Option<GiftId>,
+    pub owned_gift_id: Option<OwnedGiftId>,
 
     /// Number of Telegram Stars that can be claimed by the receiver by
     /// converting the gift; omitted if conversion to Telegram Stars is

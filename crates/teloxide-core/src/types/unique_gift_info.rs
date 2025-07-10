@@ -1,4 +1,4 @@
-use crate::types::{GiftId, UniqueGift};
+use crate::types::{OwnedGiftId, UniqueGift};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +19,7 @@ pub struct UniqueGiftInfo {
 
     /// Unique identifier of the received gift for the bot; only present for
     /// gifts received on behalf of business accounts
-    pub owned_gift_id: Option<GiftId>,
+    pub owned_gift_id: Option<OwnedGiftId>,
 
     /// Number of Telegram Stars that must be paid to transfer the gift; omitted
     /// if the bot cannot transfer the gift
