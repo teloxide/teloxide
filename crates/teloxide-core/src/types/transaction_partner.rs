@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 
 use crate::types::{Chat, Gift, PaidMedia, RevenueWithdrawalState, Seconds, User};
@@ -36,6 +38,32 @@ pub struct TransactionPartnerUser {
     /// Information about the user.
     pub user: User,
 
+    /// Kind of transaction partner user
+    #[serde(flatten)]
+    pub kind: TransactionPartnerUserKind,
+}
+
+/// Kind of the transaction. `InvoicePayment` for payments via invoices,
+/// `PaidMediaPayment` for payments for paid media, `GiftPurchase` for gifts
+/// sent by the bot, `PremiumPurchase` for Telegram Premium subscriptions gifted
+/// by the bot, `BusinessAccountTransfer` for direct transfers from managed
+/// business accounts
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "transaction_type", rename_all = "snake_case")]
+pub enum TransactionPartnerUserKind {
+    InvoicePayment(TransactionPartnerUserInvoicePayment),
+    PaidMediaPayment(TransactionPartnerUserPaidMediaPayment),
+    GiftPurchase(TransactionPartnerUserGiftPurchase),
+    PremiumPurchase(TransactionPartnerUserPremiumPurchase),
+    BusinessAccountTransfer,
+}
+
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct TransactionPartnerUserInvoicePayment {
     /// Information about the affiliate that received a commission via this
     /// transaction
     pub affiliate: Option<AffiliateInfo>,
@@ -45,15 +73,91 @@ pub struct TransactionPartnerUser {
 
     /// The duration of the paid subscription.
     pub subscription_period: Option<Seconds>,
+}
+
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct TransactionPartnerUserPaidMediaPayment {
+    /// Information about the affiliate that received a commission via this
+    /// transaction
+    pub affiliate: Option<AffiliateInfo>,
 
     /// Information about the paid media bought by the user.
     pub paid_media: Option<Vec<PaidMedia>>,
 
     /// Bot-specified paid media payload
     pub paid_media_payload: Option<String>,
+}
 
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct TransactionPartnerUserGiftPurchase {
     /// The gift sent to the user by the bot
     pub gift: Option<Gift>,
+}
+
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+pub struct TransactionPartnerUserPremiumPurchase {
+    /// Number of months the gifted Telegram Premium subscription will be active
+    /// for
+    pub premium_subscription_duration: Option<u8>,
+}
+
+/// This allows calling [`TransactionPartnerUserKind`]'s methods directly on
+/// [`TransactionPartnerUser`].
+///
+/// ```no_run
+/// use teloxide_core::types::TransactionPartnerUser;
+///
+/// let transaction: TransactionPartnerUser = todo!();
+///
+/// let _ = transaction.gift_purchase();
+/// let _ = transaction.kind.gift_purchase();
+/// ```
+impl Deref for TransactionPartnerUser {
+    type Target = TransactionPartnerUserKind;
+
+    fn deref(&self) -> &Self::Target {
+        &self.kind
+    }
+}
+
+impl TransactionPartnerUserKind {
+    /// Getter for [`TransactionPartnerUserGiftPurchase`]
+    pub fn gift_purchase(&self) -> Option<TransactionPartnerUserGiftPurchase> {
+        match self {
+            TransactionPartnerUserKind::GiftPurchase(t) => Some(t.clone()),
+            _ => None,
+        }
+    }
+
+    /// Getter for [`TransactionPartnerUserInvoicePayment`]
+    pub fn invoice_payment(&self) -> Option<TransactionPartnerUserInvoicePayment> {
+        match self {
+            TransactionPartnerUserKind::InvoicePayment(t) => Some(t.clone()),
+            _ => None,
+        }
+    }
+
+    /// Getter for [`TransactionPartnerUserPaidMediaPayment`]
+    pub fn paid_media_payment(&self) -> Option<TransactionPartnerUserPaidMediaPayment> {
+        match self {
+            TransactionPartnerUserKind::PaidMediaPayment(t) => Some(t.clone()),
+            _ => None,
+        }
+    }
+
+    /// Getter for [`TransactionPartnerUserPremiumPurchase`]
+    pub fn premium_purchase(&self) -> Option<TransactionPartnerUserPremiumPurchase> {
+        match self {
+            TransactionPartnerUserKind::PremiumPurchase(t) => Some(t.clone()),
+            _ => None,
+        }
+    }
 }
 
 /// Describes a transaction with a chat.
@@ -117,4 +221,47 @@ pub struct TransactionPartnerTelegramApi {
     /// The number of successful requests that exceeded regular limits and were
     /// therefore billed
     pub request_count: u32,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::types::{
+        TransactionPartnerUser, TransactionPartnerUserKind, TransactionPartnerUserPremiumPurchase,
+        User, UserId,
+    };
+
+    #[test]
+    fn test_transaction_partner_user() {
+        let transaction = TransactionPartnerUser {
+            user: User {
+                id: UserId(109_998_024),
+                is_bot: false,
+                first_name: String::from("Laster"),
+                last_name: None,
+                username: Some(String::from("laster_alex")),
+                language_code: Some(String::from("en")),
+                is_premium: false,
+                added_to_attachment_menu: false,
+            },
+            kind: TransactionPartnerUserKind::PremiumPurchase(
+                TransactionPartnerUserPremiumPurchase { premium_subscription_duration: Some(1) },
+            ),
+        };
+
+        let json = r#"{
+            "user": {
+                "id": 109998024,
+                "is_bot": false,
+                "first_name": "Laster",
+                "username": "laster_alex",
+                "language_code": "en"
+            },
+            "transaction_type": "premium_purchase",
+            "premium_subscription_duration": 1
+        }"#;
+
+        let json_transaction: TransactionPartnerUser = serde_json::from_str(json).unwrap();
+
+        assert_eq!(json_transaction, transaction);
+    }
 }

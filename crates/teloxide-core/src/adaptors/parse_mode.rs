@@ -6,7 +6,8 @@ use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument,
+        EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
+        SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument, SendGift, SendGiftChat,
         SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
@@ -146,6 +147,8 @@ where
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
     B::CopyMessage: Clone,
+    B::PostStory: Clone,
+    B::EditStory: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
     B::SavePreparedInlineMessage: Clone,
@@ -153,6 +156,9 @@ where
     B::EditMessageMediaInline: Clone,
     B::SendPaidMedia: Clone,
     B::SendMediaGroup: Clone,
+    B::GiftPremiumSubscription: Clone,
+    B::SendGift: Clone,
+    B::SendGiftChat: Clone,
 {
     type Err = B::Err;
 
@@ -170,6 +176,8 @@ where
         edit_message_caption,
         edit_message_caption_inline,
         copy_message,
+        post_story,
+        edit_story,
         answer_inline_query,
         answer_web_app_query,
         save_prepared_inline_message,
@@ -177,6 +185,9 @@ where
         send_media_group,
         edit_message_media,
         edit_message_media_inline,
+        gift_premium_subscription,
+        send_gift,
+        send_gift_chat,
         => f, fty
     }
 
@@ -286,12 +297,25 @@ where
         set_sticker_keywords,
         set_sticker_mask_position,
         get_available_gifts,
-        send_gift,
-        send_gift_chat,
         verify_user,
         verify_chat,
         remove_user_verification,
         remove_chat_verification,
+        read_business_message,
+        delete_business_messages,
+        set_business_account_name,
+        set_business_account_username,
+        set_business_account_bio,
+        set_business_account_profile_photo,
+        remove_business_account_profile_photo,
+        set_business_account_gift_settings,
+        get_business_account_star_balance,
+        transfer_business_account_stars,
+        get_business_account_gifts,
+        convert_gift_to_stars,
+        upgrade_gift,
+        transfer_gift,
+        delete_story,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -356,9 +380,14 @@ impl_visit_parse_modes! {
     EditMessageCaption => [parse_mode],
     EditMessageCaptionInline => [parse_mode],
     SendPaidMedia => [parse_mode],
+    GiftPremiumSubscription => [text_parse_mode],
+    SendGift => [text_parse_mode],
+    SendGiftChat => [text_parse_mode],
     // FIXME: check if `parse_mode` changes anything if `.caption` is not set
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],
+    PostStory => [parse_mode],
+    EditStory => [parse_mode],
     SendPoll => [explanation_parse_mode],
 }
 

@@ -28,15 +28,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `cover` and `start_timestamp` parameters to `send_video` method
   - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
 
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - Add `paid_star_count` field to `MessageCommon` struct
+  - Add `PaidMessagePriceChanged` service message
+  - Add `premium_subscription_duration` field to `TransactionPartnerUser`
+  - Add `gift_premium_subscription` method
+  - Add `GiftInfo` and `UniqueGiftInfo` service messages
+  - Add `AcceptedGiftTypes` struct
+  - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
+  - Add `BusinessBotRights` struct
+  - Add `read_business_message`, `delete_business_messages`, `set_business_account_name`, `set_business_account_username` and `set_business_account_bio` methods
+  - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
+  - Add `set_business_account_profile_photo` and `remove_business_account_profile_photo` methods
+  - Add `StarAmount` struct
+  - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
+  - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
+  - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
+  - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
+  - Add `Argb` struct
+  - Add `LocationAddress` and all `StoryArea*` structs
+  - Add `post_story`, `edit_story` and `delete_story` methods
+
 ### Changed
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
   - `PaidMedia::Video` is now wrapped in a `Box`
   - `InputPaidMedia::Video` is now wrapped in a `Box`
 
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
+  - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
+
 ### Fixed
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))
+
+[pr1385]: https://github.com/teloxide/teloxide/pull/1385
+[pr1387]: https://github.com/teloxide/teloxide/pull/1387
 
 ## 0.12.0 - 2025-06-19
 

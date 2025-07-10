@@ -627,6 +627,7 @@ mod test {
                     }),
                     reply_markup: None,
                     author_signature: None,
+                    paid_star_count: None,
                     effect_id: None,
                     is_automatic_forward: false,
                     has_protected_content: false,

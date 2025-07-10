@@ -1255,6 +1255,16 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type GiftPremiumSubscription: Request<Payload = GiftPremiumSubscription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GiftPremiumSubscription`].
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u8,
+        star_count: u32,
+    ) -> Self::GiftPremiumSubscription;
+
     type VerifyUser: Request<Payload = VerifyUser, Err = Self::Err>;
 
     /// For Telegram documentation see [`VerifyUser`].
@@ -1278,6 +1288,182 @@ pub trait Requester {
     fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
     where
         C: Into<Recipient>;
+
+    type ReadBusinessMessage: Request<Payload = ReadBusinessMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReadBusinessMessage`].
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>;
+
+    type DeleteBusinessMessages: Request<Payload = DeleteBusinessMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteBusinessMessages`].
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>;
+
+    type SetBusinessAccountName: Request<Payload = SetBusinessAccountName, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountName`].
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>;
+
+    type SetBusinessAccountUsername: Request<Payload = SetBusinessAccountUsername, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountUsername`].
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername;
+
+    type SetBusinessAccountBio: Request<Payload = SetBusinessAccountBio, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountBio`].
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio;
+
+    type SetBusinessAccountProfilePhoto: Request<
+        Payload = SetBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountProfilePhoto`].
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto;
+
+    type RemoveBusinessAccountProfilePhoto: Request<
+        Payload = RemoveBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`RemoveBusinessAccountProfilePhoto`].
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto;
+
+    type SetBusinessAccountGiftSettings: Request<
+        Payload = SetBusinessAccountGiftSettings,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountGiftSettings`].
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings;
+
+    type GetBusinessAccountStarBalance: Request<
+        Payload = GetBusinessAccountStarBalance,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`GetBusinessAccountStarBalance`].
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance;
+
+    type TransferBusinessAccountStars: Request<
+        Payload = TransferBusinessAccountStars,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`TransferBusinessAccountStars`].
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars;
+
+    type GetBusinessAccountGifts: Request<Payload = GetBusinessAccountGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetBusinessAccountGifts`].
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts;
+
+    type ConvertGiftToStars: Request<Payload = ConvertGiftToStars, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ConvertGiftToStars`].
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars;
+
+    type UpgradeGift: Request<Payload = UpgradeGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UpgradeGift`].
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift;
+
+    type TransferGift: Request<Payload = TransferGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`TransferGift`].
+    fn transfer_gift<N>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: N,
+    ) -> Self::TransferGift
+    where
+        N: Into<ChatId>;
+
+    type PostStory: Request<Payload = PostStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`PostStory`].
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory;
+
+    type EditStory: Request<Payload = EditStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditStory`].
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory;
+
+    type DeleteStory: Request<Payload = DeleteStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteStory`].
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory;
 
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
@@ -1552,10 +1738,28 @@ macro_rules! forward_all {
             get_available_gifts,
             send_gift,
             send_gift_chat,
+            gift_premium_subscription,
             verify_user,
             verify_chat,
             remove_user_verification,
             remove_chat_verification,
+            read_business_message,
+            delete_business_messages,
+            set_business_account_name,
+            set_business_account_username,
+            set_business_account_bio,
+            set_business_account_profile_photo,
+            remove_business_account_profile_photo,
+            set_business_account_gift_settings,
+            get_business_account_star_balance,
+            transfer_business_account_stars,
+            get_business_account_gifts,
+            convert_gift_to_stars,
+            upgrade_gift,
+            transfer_gift,
+            post_story,
+            edit_story,
+            delete_story,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

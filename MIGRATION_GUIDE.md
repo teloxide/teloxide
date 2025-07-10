@@ -30,6 +30,16 @@ InlineQueryResultArticle::new(
 +.await
 ```
 
+`TransactionPartnerUser` was reworked to have a `kind` field. To access the fields you had you need to call an appropriate getter
+
+```diff
+-let invoice_payload = transaction_partner_user.invoice_payload;
++let invoice_payload = transaction_partner_user.invoice_payment().unwrap().invoice_payload;
+
+-let gift = transaction_partner_user.gift;
++let gift = transaction_partner_user.gift_purchase().unwrap().gift;
+```
+
 ## 0.15 -> 0.16
 
 ### teloxide

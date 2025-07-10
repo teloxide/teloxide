@@ -40,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "8.3", date: "February 12, 2025"),
+    api_version: ApiVersion(ver: "9.0", date: "April 11, 2025"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -4761,6 +4761,53 @@ Schema(
             ]
         ),
         Method(
+            names: ("giftPremiumSubscription", "GiftPremiumSubscription", "gift_premium_subscription"),
+            return_ty: True,
+            doc: Doc(
+                md: "Gifts a Telegram Premium subscription to the given user. Returns True on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#giftpremiumsubscription",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "month_count",
+                    ty: u8,
+                    descr: Doc(md: "Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to pay for the Telegram Premium subscription; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months")
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the service message about the subscription; 0-128 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(
+                        md: "List of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                )
+            ]
+        ),
+        Method(
             names: ("verifyUser", "VerifyUser", "verify_user"),
             return_ty: True,
             doc: Doc(
@@ -4835,6 +4882,506 @@ Schema(
                     name: "chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("readBusinessMessage", "ReadBusinessMessage", "read_business_message"),
+            return_ty: True,
+            doc: Doc(
+                md: "Marks incoming message as read on behalf of a business account. Requires the _can_read_messages_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#readbusinessmessage",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to read the message"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat in which the message was received. The chat must have been active in the last 24 hours"),
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Unique identifier of the message to mark as read")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteBusinessMessages", "DeleteBusinessMessages", "delete_business_messages"),
+            return_ty: True,
+            doc: Doc(
+                md: "Delete messages on behalf of a business account. Requires the _can_delete_sent_messages_ business bot right to delete messages sent by the bot itself, or the _can_delete_all_messages_ business bot right to delete any message. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletebusinessmessages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to delete the messages"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "List of 1-100 identifiers of messages to delete. All messages must be from the same chat. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountName", "SetBusinessAccountName", "set_business_account_name"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the first and last name of a managed business account. Requires the _can_change_name_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountname",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "first_name",
+                    ty: String,
+                    descr: Doc(md: "The new value of the first name for the business account; 1-64 characters"),
+                ),
+                Param(
+                    name: "last_name",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the last name for the business account; 0-64 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountUsername", "SetBusinessAccountUsername", "set_business_account_username"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the username of a managed business account. Requires the _can_change_username_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountusername",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "username",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the username for the business account; 0-32 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountBio", "SetBusinessAccountBio", "set_business_account_bio"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the bio of a managed business account. Requires the _can_change_bio_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountbio",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "bio",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the bio for the business account; 0-140 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountProfilePhoto", "SetBusinessAccountProfilePhoto", "set_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "photo",
+                    ty: RawTy("InputProfilePhoto"),
+                    descr: Doc(md: "The new profile photo to set"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to set the public photo, which will be visible even if the main photo is hidden by the business account's privacy settings. An account can have only one public photo.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeBusinessAccountProfilePhoto", "RemoveBusinessAccountProfilePhoto", "remove_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes the current profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removebusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to remove the public photo, which is visible even if the main photo is hidden by the business account's privacy settings. After the main photo is removed, the previous profile photo (if present) becomes the main photo.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountGiftSettings", "SetBusinessAccountGiftSettings", "set_business_account_gift_settings"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the privacy settings pertaining to incoming gifts in a managed business account. Requires the _can_change_gift_settings_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountgiftsettings",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "show_gift_button",
+                    ty: bool,
+                    descr: Doc(md: "Pass _true_, if a button for sending a gift to the user or by the business account must always be shown in the input field"),
+                ),
+                Param(
+                    name: "accepted_gift_types",
+                    ty: RawTy("AcceptedGiftTypes"),
+                    descr: Doc(md: "Types of gifts accepted by the business account"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("getBusinessAccountStarBalance", "GetBusinessAccountStarBalance", "get_business_account_star_balance"),
+            return_ty: RawTy("StarAmount"),
+            doc: Doc(
+                md: "Returns the amount of Telegram Stars owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [StarAmount] on success.",
+                md_links: {"StarAmount": "https://core.telegram.org/bots/api#staramount"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountstarbalance",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferBusinessAccountStars", "TransferBusinessAccountStars", "transfer_business_account_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers Telegram Stars from the business account balance to the bot's balance. Requires the _can_transfer_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transferbusinessaccountstars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to transfer; 1-10000")
+                ),
+            ]
+        ),
+        Method(
+            names: ("getBusinessAccountGifts", "GetBusinessAccountGifts", "get_business_account_gifts"),
+            return_ty: RawTy("OwnedGifts"),
+            doc: Doc(
+                md: "Returns the gifts received and owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [OwnedGifts] on success.",
+                md_links: {"OwnedGifts": "https://core.telegram.org/bots/api#ownedgifts"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountgifts",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "exclude_unsaved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that aren't saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_saved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that are saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_unlimited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased an unlimited number of times")
+                ),
+                Param(
+                    name: "exclude_limited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased a limited number of times")
+                ),
+                Param(
+                    name: "exclude_unique",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude unique gifts")
+                ),
+                Param(
+                    name: "sort_by_price",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to sort results by gift price instead of send date. Sorting is applied before pagination")
+                ),
+                Param(
+                    name: "offset",
+                    ty: Option(String),
+                    descr: Doc(md: "Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results")
+                ),
+                Param(
+                    name: "limit",
+                    ty: Option(u8),
+                    descr: Doc(md: "The maximum number of gifts to be returned; 1-100. Defaults to 100")
+                ),
+            ]
+        ),
+        Method(
+            names: ("convertGiftToStars", "ConvertGiftToStars", "convert_gift_to_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Converts a given regular gift to Telegram Stars. Requires the _can_convert_gifts_to_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#convertgifttostars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+            ]
+        ),
+        Method(
+            names: ("upgradeGift", "UpgradeGift", "upgrade_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Upgrades a given regular gift to a unique gift. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Additionally requires the _can_transfer_stars_ business bot right if the upgrade is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#upgradegift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "keep_original_details",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the original gift text, sender and receiver in the upgraded gift")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the upgrade from the business account balance. If `gift.prepaid_upgrade_star_count > 0`, then pass 0, otherwise, the _can_transfer_stars_ business bot right is required and `gift.upgrade_star_count` must be passed.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferGift", "TransferGift", "transfer_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers an owned unique gift to another user. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Requires _can_transfer_stars_ business bot right if the transfer is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transfergift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "new_owner_chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat which will own the gift. The chat must be active in the last 24 hours")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the transfer from the business account balance. If positive, then the _can_transfer_stars_ business bot right is required")
+                ),
+            ]
+        ),
+        Method(
+            names: ("postStory", "PostStory", "post_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Posts a story on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#poststory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "active_period",
+                    ty: RawTy("Seconds"),
+                    descr: Doc(md: "Period after which the story is moved to the archive, in seconds; must be one of `6 * 3600`, `12 * 3600`, `86400`, or `2 * 86400`")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+                Param(
+                    name: "post_to_chat_page",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the story accessible after it expires")
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ if the content of the story must be protected from forwarding and screenshotting")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editStory", "EditStory", "edit_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Edits a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editstory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to edit")
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteStory", "DeleteStory", "delete_story"),
+            return_ty: True,
+            doc: Doc(
+                md: "Deletes a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletestory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to delete")
                 ),
             ]
         ),

@@ -9,13 +9,14 @@ use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
     ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
     ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
-    GeneralForumTopicUnhidden, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners,
-    InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage,
-    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
-    PaidMediaInfo, PassportData, PhotoSize, Poll, ProximityAlertTriggered, RefundedPayment,
-    Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, User, UsersShared, Venue, Video,
-    VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote,
-    Voice, WebAppData, WriteAccessAllowed,
+    GeneralForumTopicUnhidden, GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated,
+    GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
+    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
+    MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
+    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote,
+    ThreadId, True, UniqueGiftInfo, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -104,6 +105,9 @@ pub enum MessageKind {
     GiveawayCompleted(MessageGiveawayCompleted),
     GiveawayCreated(MessageGiveawayCreated),
     GiveawayWinners(MessageGiveawayWinners),
+    PaidMessagePriceChanged(MessagePaidMessagePriceChanged),
+    GiftInfo(MessageGiftInfo),
+    UniqueGiftInfo(MessageUniqueGiftInfo),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
@@ -137,6 +141,10 @@ pub struct MessageCommon {
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
     pub author_signature: Option<String>,
+
+    /// The number of Telegram Stars that were paid by the sender of the message
+    /// to send it
+    pub paid_star_count: Option<u32>,
 
     /// Unique identifier of the message effect added to the message
     pub effect_id: Option<EffectId>,
@@ -753,6 +761,27 @@ pub struct MessageGiveawayWinners {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessagePaidMessagePriceChanged {
+    /// Service message: the price for paid messages has changed in the chat
+    pub paid_message_price_changed: PaidMessagePriceChanged,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageGiftInfo {
+    /// Service message: a regular gift was sent or received
+    pub gift: GiftInfo,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageUniqueGiftInfo {
+    /// Service message: a unique gift was sent or received
+    pub unique_gift: UniqueGiftInfo,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageVideoChatScheduled {
     /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
@@ -806,9 +835,10 @@ mod getters {
     use super::{
         MediaGroupId, MessageChatBackground, MessageChatBoostAdded, MessageForumTopicClosed,
         MessageForumTopicCreated, MessageForumTopicEdited, MessageForumTopicReopened,
-        MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiveaway,
-        MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
-        MessageMessageAutoDeleteTimerChanged, MessageVideoChatEnded, MessageVideoChatScheduled,
+        MessageGeneralForumTopicHidden, MessageGeneralForumTopicUnhidden, MessageGiftInfo,
+        MessageGiveaway, MessageGiveawayCompleted, MessageGiveawayCreated, MessageGiveawayWinners,
+        MessageMessageAutoDeleteTimerChanged, MessagePaidMessagePriceChanged,
+        MessageUniqueGiftInfo, MessageVideoChatEnded, MessageVideoChatScheduled,
         MessageVideoChatStarted, MessageWebAppData, MessageWriteAccessAllowed,
     };
 
@@ -1655,6 +1685,32 @@ mod getters {
                 GiveawayWinners(MessageGiveawayWinners { giveaway_winners }) => {
                     Some(giveaway_winners)
                 }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn paid_message_price_changed(&self) -> Option<&types::PaidMessagePriceChanged> {
+            match &self.kind {
+                PaidMessagePriceChanged(MessagePaidMessagePriceChanged {
+                    paid_message_price_changed,
+                }) => Some(paid_message_price_changed),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn gift_info(&self) -> Option<&types::GiftInfo> {
+            match &self.kind {
+                GiftInfo(MessageGiftInfo { gift }) => Some(gift),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn unique_gift_info(&self) -> Option<&types::UniqueGiftInfo> {
+            match &self.kind {
+                UniqueGiftInfo(MessageUniqueGiftInfo { unique_gift }) => Some(unique_gift),
                 _ => None,
             }
         }
@@ -2804,6 +2860,147 @@ mod tests {
                 prize_description: None
             }
         )
+    }
+
+    #[test]
+    fn paid_message_price_changed() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "paid_message_price_changed": {"paid_message_star_count": 1234}
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.paid_message_price_changed().unwrap(),
+            &PaidMessagePriceChanged { paid_message_star_count: 1234 }
+        )
+    }
+
+    #[test]
+    fn gift_info() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "gift": {
+                "gift": {
+                    "id": "1234",
+                    "sticker": {
+                        "width": 512,
+                        "height": 512,
+                        "emoji": "😡",
+                        "set_name": "AdvenTimeAnim",
+                        "is_animated": true,
+                        "is_video": false,
+                        "type": "regular",
+                        "thumbnail": {
+                            "file_id": "AAMCAgADGQEAARIt0GMwiZ6n4nRbxdpM3pL8vPX6PVAhAAIjAAOw0PgMaabKAcaXKCABAAdtAAMpBA",
+                            "file_unique_id": "AQADIwADsND4DHI",
+                            "file_size": 4118,
+                            "width": 128,
+                            "height": 128
+                        },
+                        "file_id": "CAACAgIAAxkBAAESLdBjMImep-J0W8XaTN6S_Lz1-j1QIQACIwADsND4DGmmygHGlyggKQQ",
+                        "file_unique_id": "AgADIwADsND4DA",
+                        "file_size": 16639
+                    },
+                    "star_count": 10
+                }
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.gift_info().unwrap().gift.id, "1234".into())
+    }
+
+    #[test]
+    fn unique_gift_info() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "unique_gift": {
+                "gift": {
+                    "base_name": "name",
+                    "name": "name",
+                    "number": 123,
+                    "model": {
+                        "name": "name",
+                        "sticker": {
+                            "file_id": "CAACAgIAAxUAAWMwcTidRlq7bai-xUkcHQLa6vgJAALZBwACwRieC1FFIeQlHsPdKQQ",
+                            "file_unique_id": "AgAD2QcAAsEYngs",
+                            "file_size": 25734,
+                            "width": 463,
+                            "height": 512,
+                            "type": "regular",
+                            "premium_animation": null,
+                            "is_animated": false,
+                            "is_video": false,
+                            "needs_repainting": false
+                        },
+                        "rarity_per_mille": 123
+                    },
+                    "symbol": {
+                        "name": "name",
+                        "sticker": {
+                            "file_id": "CAACAgIAAxUAAWMwcTidRlq7bai-xUkcHQLa6vgJAALZBwACwRieC1FFIeQlHsPdKQQ",
+                            "file_unique_id": "AgAD2QcAAsEYngs",
+                            "file_size": 25734,
+                            "width": 463,
+                            "height": 512,
+                            "type": "regular",
+                            "premium_animation": null,
+                            "is_animated": false,
+                            "is_video": false,
+                            "needs_repainting": false
+                        },
+                        "rarity_per_mille": 123
+                    },
+                    "backdrop": {
+                        "name": "name",
+                        "colors": {
+                            "center_color": 0,
+                            "edge_color": 0,
+                            "symbol_color": 0,
+                            "text_color": 0
+                        },
+                        "rarity_per_mille": 123
+                    }
+                },
+                "origin": "resale"
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(message.unique_gift_info().unwrap().origin, UniqueGiftOrigin::Resale);
+        assert_eq!(message.unique_gift_info().unwrap().gift.name, "name");
+        assert_eq!(message.unique_gift_info().unwrap().gift.backdrop.rarity_per_mille, 123);
     }
 
     #[test]
