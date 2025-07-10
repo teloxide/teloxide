@@ -334,6 +334,9 @@ where
         convert_gift_to_stars,
         upgrade_gift,
         transfer_gift,
+        post_story,
+        edit_story,
+        delete_story,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1123,6 +1126,26 @@ trait ErasableRequester<'a> {
         owned_gift_id: OwnedGiftId,
         new_owner_chat_id: ChatId,
     ) -> ErasedRequest<'a, TransferGift, Self::Err>;
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, PostStory, Self::Err>;
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> ErasedRequest<'a, EditStory, Self::Err>;
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> ErasedRequest<'a, DeleteStory, Self::Err>;
 
     fn set_business_account_bio(
         &self,
@@ -2299,6 +2322,32 @@ where
     ) -> ErasedRequest<'a, TransferGift, Self::Err> {
         Requester::transfer_gift(self, business_connection_id, owned_gift_id, new_owner_chat_id)
             .erase()
+    }
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, PostStory, Self::Err> {
+        Requester::post_story(self, business_connection_id, content, active_period).erase()
+    }
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> ErasedRequest<'a, EditStory, Self::Err> {
+        Requester::edit_story(self, business_connection_id, story_id, content).erase()
+    }
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> ErasedRequest<'a, DeleteStory, Self::Err> {
+        Requester::delete_story(self, business_connection_id, story_id).erase()
     }
 
     fn send_invoice(

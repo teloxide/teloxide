@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
   - Add `Argb` struct
   - Add `LocationAddress` and all `StoryArea*` structs
+  - Add `post_story`, `edit_story` and `delete_story` methods
 
 ### Changed
 

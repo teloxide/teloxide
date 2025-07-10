@@ -6,9 +6,9 @@ use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
         EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, GiftPremiumSubscription, SavePreparedInlineMessage, SendAnimation,
-        SendAudio, SendDocument, SendGift, SendGiftChat, SendMediaGroup, SendMessage,
-        SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
+        SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument, SendGift, SendGiftChat,
+        SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -147,6 +147,8 @@ where
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
     B::CopyMessage: Clone,
+    B::PostStory: Clone,
+    B::EditStory: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
     B::SavePreparedInlineMessage: Clone,
@@ -174,6 +176,8 @@ where
         edit_message_caption,
         edit_message_caption_inline,
         copy_message,
+        post_story,
+        edit_story,
         answer_inline_query,
         answer_web_app_query,
         save_prepared_inline_message,
@@ -311,6 +315,7 @@ where
         convert_gift_to_stars,
         upgrade_gift,
         transfer_gift,
+        delete_story,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -381,6 +386,8 @@ impl_visit_parse_modes! {
     // FIXME: check if `parse_mode` changes anything if `.caption` is not set
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],
+    PostStory => [parse_mode],
+    EditStory => [parse_mode],
     SendPoll => [explanation_parse_mode],
 }
 

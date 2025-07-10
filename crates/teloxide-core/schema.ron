@@ -5255,6 +5255,137 @@ Schema(
             ]
         ),
         Method(
+            names: ("postStory", "PostStory", "post_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Posts a story on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#poststory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "active_period",
+                    ty: RawTy("Seconds"),
+                    descr: Doc(md: "Period after which the story is moved to the archive, in seconds; must be one of `6 * 3600`, `12 * 3600`, `86400`, or `2 * 86400`")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+                Param(
+                    name: "post_to_chat_page",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the story accessible after it expires")
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ if the content of the story must be protected from forwarding and screenshotting")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editStory", "EditStory", "edit_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Edits a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editstory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to edit")
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteStory", "DeleteStory", "delete_story"),
+            return_ty: True,
+            doc: Doc(
+                md: "Deletes a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletestory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to delete")
+                ),
+            ]
+        ),
+        Method(
             names: ("sendInvoice", "SendInvoice", "send_invoice"),
             return_ty: RawTy("Message"),
             doc: Doc(

@@ -8,8 +8,8 @@ use crate::{
         AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
         ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
         InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto, InputSticker,
-        LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId, Recipient, Seconds,
-        ShippingQueryId, StickerFormat, TelegramTransactionId, ThreadId, UserId,
+        InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId, Recipient,
+        Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1693,6 +1693,47 @@ impl Requester for Bot {
         Self::TransferGift::new(
             self.clone(),
             payloads::TransferGift::new(business_connection_id, owned_gift_id, new_owner_chat_id),
+        )
+    }
+
+    type PostStory = JsonRequest<payloads::PostStory>;
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory {
+        Self::PostStory::new(
+            self.clone(),
+            payloads::PostStory::new(business_connection_id, content, active_period),
+        )
+    }
+
+    type EditStory = JsonRequest<payloads::EditStory>;
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory {
+        Self::EditStory::new(
+            self.clone(),
+            payloads::EditStory::new(business_connection_id, story_id, content),
+        )
+    }
+
+    type DeleteStory = JsonRequest<payloads::DeleteStory>;
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory {
+        Self::DeleteStory::new(
+            self.clone(),
+            payloads::DeleteStory::new(business_connection_id, story_id),
         )
     }
 

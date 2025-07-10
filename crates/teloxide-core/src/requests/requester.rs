@@ -1436,6 +1436,35 @@ pub trait Requester {
     where
         N: Into<ChatId>;
 
+    type PostStory: Request<Payload = PostStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`PostStory`].
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory;
+
+    type EditStory: Request<Payload = EditStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditStory`].
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory;
+
+    type DeleteStory: Request<Payload = DeleteStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteStory`].
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1728,6 +1757,9 @@ macro_rules! forward_all {
             convert_gift_to_stars,
             upgrade_gift,
             transfer_gift,
+            post_story,
+            edit_story,
+            delete_story,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,

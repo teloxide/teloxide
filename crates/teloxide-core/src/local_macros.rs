@@ -1631,6 +1631,30 @@ macro_rules! requester_forward {
             $body!(transfer_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N))
         }
     };
+    (@method post_story $body:ident $ty:ident) => {
+        type PostStory = $ty![PostStory];
+
+        fn post_story(&self, business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds) -> Self::PostStory {
+            let this = self;
+            $body!(post_story this (business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds))
+        }
+    };
+    (@method edit_story $body:ident $ty:ident) => {
+        type EditStory = $ty![EditStory];
+
+        fn edit_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent) -> Self::EditStory {
+            let this = self;
+            $body!(edit_story this (business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent))
+        }
+    };
+    (@method delete_story $body:ident $ty:ident) => {
+        type DeleteStory = $ty![DeleteStory];
+
+        fn delete_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId) -> Self::DeleteStory {
+            let this = self;
+            $body!(delete_story this (business_connection_id: BusinessConnectionId, story_id: StoryId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
