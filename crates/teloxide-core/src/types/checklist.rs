@@ -2,6 +2,15 @@ use crate::types::{Message, MessageEntity, ParseMode, User};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
+// Yes, it's really an i32. See: https://t.me/teloxide_dev/78461
+/// Unique identifier of the task.
+#[derive(Clone, Copy)]
+#[derive(Debug, derive_more::Display)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Serialize, Deserialize)]
+#[serde(transparent)]
+pub struct ChecklistTaskId(pub i32);
+
 /// Describes a task in a checklist.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug)]
@@ -9,7 +18,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct ChecklistTask {
     /// Unique identifier of the task
-    pub id: u8,
+    pub id: ChecklistTaskId,
 
     /// Text of the task
     pub text: String,
@@ -69,7 +78,7 @@ pub struct Checklist {
 pub struct InputChecklistTask {
     /// Unique identifier of the task; must be positive and unique among all
     /// task identifiers currently present in the checklist
-    pub id: u8,
+    pub id: ChecklistTaskId,
 
     /// Text of the task; 1-100 characters after entities parsing
     pub text: String,
@@ -132,10 +141,10 @@ pub struct ChecklistTasksDone {
     pub checklist_message: Option<Box<Message>>,
 
     /// Identifiers of the tasks that were marked as done
-    pub marked_as_done_task_ids: Option<Vec<u8>>,
+    pub marked_as_done_task_ids: Option<Vec<ChecklistTaskId>>,
 
     /// Identifiers of the tasks that were marked as not done
-    pub marked_as_not_done_task_ids: Option<Vec<u8>>,
+    pub marked_as_not_done_task_ids: Option<Vec<ChecklistTaskId>>,
 }
 
 /// Describes a service message about tasks added to a checklist.
