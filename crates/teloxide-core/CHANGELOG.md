@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
   - Add `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
+  - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
 
 ### Changed
 

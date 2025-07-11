@@ -7,7 +7,7 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
-    ChatId, ChatShared, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
+    ChatId, ChatShared, Checklist, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
     ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
     GeneralForumTopicUnhidden, GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated,
     GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
@@ -397,6 +397,7 @@ pub enum MediaKind {
     Location(MediaLocation),
     Photo(MediaPhoto),
     Poll(MediaPoll),
+    Checklist(MediaChecklist),
     Sticker(MediaSticker),
     Story(MediaStory),
     Text(MediaText),
@@ -549,6 +550,13 @@ pub struct MediaPhoto {
 pub struct MediaPoll {
     /// Message is a native poll, information about the poll.
     pub poll: Poll,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MediaChecklist {
+    /// Message is a checklist, information about the checklist.
+    pub checklist: Checklist,
 }
 
 #[serde_with::skip_serializing_none]
@@ -821,15 +829,16 @@ mod getters {
 
     use crate::types::{
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
-        MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaContact, MediaDocument,
-        MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll, MediaSticker,
-        MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice, Message,
-        MessageChannelChatCreated, MessageChatShared, MessageCommon, MessageConnectedWebsite,
-        MessageDeleteChatPhoto, MessageDice, MessageEntity, MessageGroupChatCreated, MessageId,
-        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
-        MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
-        MessageProximityAlertTriggered, MessageSuccessfulPayment, MessageSupergroupChatCreated,
-        MessageUsersShared, MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
+        MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaChecklist, MediaContact,
+        MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll,
+        MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
+        Message, MessageChannelChatCreated, MessageChatShared, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
+        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
+        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin,
+        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
+        MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
     };
 
     use super::{
@@ -1106,6 +1115,7 @@ mod getters {
                     | MediaKind::Venue(_)
                     | MediaKind::Location(_)
                     | MediaKind::Poll(_)
+                    | MediaKind::Checklist(_)
                     | MediaKind::Sticker(_)
                     | MediaKind::Story(_)
                     | MediaKind::Text(_)
@@ -1137,6 +1147,7 @@ mod getters {
                     | MediaKind::Venue(_)
                     | MediaKind::Location(_)
                     | MediaKind::Poll(_)
+                    | MediaKind::Checklist(_)
                     | MediaKind::Sticker(_)
                     | MediaKind::Story(_)
                     | MediaKind::Text(_)
@@ -1325,6 +1336,17 @@ mod getters {
                     media_kind: MediaKind::Poll(MediaPoll { poll, .. }),
                     ..
                 }) => Some(poll),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn checklist(&self) -> Option<&types::Checklist> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Checklist(MediaChecklist { checklist, .. }),
+                    ..
+                }) => Some(checklist),
                 _ => None,
             }
         }

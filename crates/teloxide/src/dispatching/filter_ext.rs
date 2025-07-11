@@ -86,6 +86,7 @@ define_message_ext! {
     (filter_location, Message::location),
     (filter_photo, Message::photo),
     (filter_poll, Message::poll),
+    (filter_checklist, Message::checklist),
     (filter_sticker, Message::sticker),
     (filter_story, Message::story),
     (filter_text, Message::text),
