@@ -1803,6 +1803,43 @@ Schema(
             sibling: Some("stopMessageLiveLocation"),
         ),
         Method(
+            names: ("editMessageChecklist", "EditMessageChecklist", "edit_message_checklist"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to edit a checklist on behalf of a connected business account. On success, the edited [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editmessagechecklist",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target chat")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Unique identifier for the target message")
+                ),
+                Param(
+                    name: "checklist",
+                    ty: RawTy("InputChecklist"),
+                    descr: Doc(md: "The new checklist"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(md: "The new inline keyboard for the message"),
+                ),
+            ],
+        ),
+        Method(
             names: ("sendVenue", "SendVenue", "send_venue"),
             return_ty: RawTy("Message"),
             doc: Doc(
@@ -2139,6 +2176,58 @@ Schema(
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
                         }
                     ),
+                ),
+            ],
+        ),
+        Method(
+            names: ("sendChecklist", "SendChecklist", "send_checklist"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send a checklist on behalf of a connected business account. On success, the sent [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendchecklist",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target chat")
+                ),
+                Param(
+                    name: "checklist",
+                    ty: RawTy("InputChecklist"),
+                    descr: Doc(md: "Checklist to send"),
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(md: "Sends the message silently. Users will receive a notification with no sound")
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(RawTy("EffectId")),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message"),
+                ),
+                Param(
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(md: "An inline keyboard"),
                 ),
             ],
         ),

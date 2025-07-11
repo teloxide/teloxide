@@ -5,10 +5,11 @@ use url::Url;
 use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
-        EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
-        SavePreparedInlineMessage, SendAnimation, SendAudio, SendDocument, SendGift, SendGiftChat,
-        SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageCaptionInline, EditMessageChecklist, EditMessageMedia, EditMessageMediaInline,
+        EditMessageText, EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
+        SavePreparedInlineMessage, SendAnimation, SendAudio, SendChecklist, SendDocument, SendGift,
+        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
+        SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -146,6 +147,7 @@ where
     B::EditMessageCaption: Clone,
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
+    B::SendChecklist: Clone,
     B::CopyMessage: Clone,
     B::PostStory: Clone,
     B::EditStory: Clone,
@@ -154,6 +156,7 @@ where
     B::SavePreparedInlineMessage: Clone,
     B::EditMessageMedia: Clone,
     B::EditMessageMediaInline: Clone,
+    B::EditMessageChecklist: Clone,
     B::SendPaidMedia: Clone,
     B::SendMediaGroup: Clone,
     B::GiftPremiumSubscription: Clone,
@@ -171,10 +174,12 @@ where
         send_animation,
         send_voice,
         send_poll,
+        send_checklist,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
         edit_message_caption_inline,
+        edit_message_checklist,
         copy_message,
         post_story,
         edit_story,
@@ -428,6 +433,18 @@ impl VisitParseModes for EditMessageMedia {
 impl VisitParseModes for EditMessageMediaInline {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+impl VisitParseModes for EditMessageChecklist {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visitor(&mut self.checklist.parse_mode);
+    }
+}
+
+impl VisitParseModes for SendChecklist {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visitor(&mut self.checklist.parse_mode);
     }
 }
 

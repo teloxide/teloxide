@@ -53,6 +53,7 @@ mod edit_forum_topic;
 mod edit_general_forum_topic;
 mod edit_message_caption;
 mod edit_message_caption_inline;
+mod edit_message_checklist;
 mod edit_message_live_location;
 mod edit_message_live_location_inline;
 mod edit_message_media;
@@ -114,6 +115,7 @@ mod save_prepared_inline_message;
 mod send_animation;
 mod send_audio;
 mod send_chat_action;
+mod send_checklist;
 mod send_contact;
 mod send_dice;
 mod send_document;
@@ -221,6 +223,7 @@ pub use edit_forum_topic::{EditForumTopic, EditForumTopicSetters};
 pub use edit_general_forum_topic::{EditGeneralForumTopic, EditGeneralForumTopicSetters};
 pub use edit_message_caption::{EditMessageCaption, EditMessageCaptionSetters};
 pub use edit_message_caption_inline::{EditMessageCaptionInline, EditMessageCaptionInlineSetters};
+pub use edit_message_checklist::{EditMessageChecklist, EditMessageChecklistSetters};
 pub use edit_message_live_location::{EditMessageLiveLocation, EditMessageLiveLocationSetters};
 pub use edit_message_live_location_inline::{
     EditMessageLiveLocationInline, EditMessageLiveLocationInlineSetters,
@@ -296,6 +299,7 @@ pub use save_prepared_inline_message::{
 pub use send_animation::{SendAnimation, SendAnimationSetters};
 pub use send_audio::{SendAudio, SendAudioSetters};
 pub use send_chat_action::{SendChatAction, SendChatActionSetters};
+pub use send_checklist::{SendChecklist, SendChecklistSetters};
 pub use send_contact::{SendContact, SendContactSetters};
 pub use send_dice::{SendDice, SendDiceSetters};
 pub use send_document::{SendDocument, SendDocumentSetters};

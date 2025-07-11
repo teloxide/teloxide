@@ -368,6 +368,19 @@ pub trait Requester {
     where
         I: Into<String>;
 
+    type EditMessageChecklist: Request<Payload = EditMessageChecklist, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditMessageChecklist`].
+    fn edit_message_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> Self::EditMessageChecklist
+    where
+        C: Into<ChatId>;
+
     type SendVenue: Request<Payload = SendVenue, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendVenue`].
@@ -406,6 +419,18 @@ pub trait Requester {
         C: Into<Recipient>,
         Q: Into<String>,
         O: IntoIterator<Item = InputPollOption>;
+
+    type SendChecklist: Request<Payload = SendChecklist, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendChecklist`].
+    fn send_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        checklist: InputChecklist,
+    ) -> Self::SendChecklist
+    where
+        C: Into<ChatId>;
 
     type SendDice: Request<Payload = SendDice, Err = Self::Err>;
 
@@ -1637,9 +1662,11 @@ macro_rules! forward_all {
             edit_message_live_location_inline,
             stop_message_live_location,
             stop_message_live_location_inline,
+            edit_message_checklist,
             send_venue,
             send_contact,
             send_poll,
+            send_checklist,
             send_dice,
             send_chat_action,
             set_message_reaction,

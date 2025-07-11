@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
   - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
   - Add `ChecklistTasksDone` and `ChecklistTasksAdded` service messages
+  - Add `send_checklist` and `edit_message_checklist` methods
 
 ### Changed
 

@@ -631,6 +631,14 @@ macro_rules! requester_forward {
             $body!(stop_message_live_location_inline this (inline_message_id: I))
         }
     };
+    (@method edit_message_checklist $body:ident $ty:ident) => {
+        type EditMessageChecklist = $ty![EditMessageChecklist];
+
+        fn edit_message_checklist<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId, checklist: InputChecklist) -> Self::EditMessageChecklist where C: Into<ChatId> {
+            let this = self;
+            $body!(edit_message_checklist this (business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId, checklist: InputChecklist))
+        }
+    };
     (@method send_venue $body:ident $ty:ident) => {
         type SendVenue = $ty![SendVenue];
 
@@ -659,6 +667,14 @@ macro_rules! requester_forward {
         O: IntoIterator<Item = InputPollOption> {
             let this = self;
             $body!(send_poll this (chat_id: C, question: Q, options: O))
+        }
+    };
+    (@method send_checklist $body:ident $ty:ident) => {
+        type SendChecklist = $ty![SendChecklist];
+
+        fn send_checklist<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, checklist: InputChecklist) -> Self::SendChecklist where C: Into<ChatId> {
+            let this = self;
+            $body!(send_checklist this (business_connection_id: BusinessConnectionId, chat_id: C, checklist: InputChecklist))
         }
     };
     (@method send_dice $body:ident $ty:ident) => {
