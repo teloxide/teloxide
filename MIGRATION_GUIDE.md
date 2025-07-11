@@ -3,6 +3,8 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.16 -> 0.17
+
 ### teloxide
 
 TBA removed `hide_url` field from `InlineQueryResultArticle`. Just don't pass the url instead:
