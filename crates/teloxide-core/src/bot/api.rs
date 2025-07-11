@@ -7,9 +7,10 @@ use crate::{
     types::{
         AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
         ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
-        InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto, InputSticker,
-        InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId, Recipient,
-        Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId, ThreadId, UserId,
+        InputChecklist, InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto,
+        InputSticker, InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId,
+        Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId,
+        ThreadId, UserId,
     },
     Bot,
 };
@@ -257,6 +258,29 @@ impl Requester for Bot {
         )
     }
 
+    type EditMessageChecklist = JsonRequest<payloads::EditMessageChecklist>;
+
+    fn edit_message_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> Self::EditMessageChecklist
+    where
+        C: Into<ChatId>,
+    {
+        Self::EditMessageChecklist::new(
+            self.clone(),
+            payloads::EditMessageChecklist::new(
+                business_connection_id,
+                chat_id,
+                message_id,
+                checklist,
+            ),
+        )
+    }
+
     type SendVenue = JsonRequest<payloads::SendVenue>;
 
     fn send_venue<C, T, A>(
@@ -301,6 +325,23 @@ impl Requester for Bot {
         O: IntoIterator<Item = InputPollOption>,
     {
         Self::SendPoll::new(self.clone(), payloads::SendPoll::new(chat_id, question, options))
+    }
+
+    type SendChecklist = JsonRequest<payloads::SendChecklist>;
+
+    fn send_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        checklist: InputChecklist,
+    ) -> Self::SendChecklist
+    where
+        C: Into<ChatId>,
+    {
+        Self::SendChecklist::new(
+            self.clone(),
+            payloads::SendChecklist::new(business_connection_id, chat_id, checklist),
+        )
     }
 
     type SendDice = JsonRequest<payloads::SendDice>;
@@ -1809,6 +1850,12 @@ impl Requester for Bot {
             self.clone(),
             payloads::AnswerPreCheckoutQuery::new(pre_checkout_query_id, ok),
         )
+    }
+
+    type GetMyStarBalance = JsonRequest<payloads::GetMyStarBalance>;
+
+    fn get_my_star_balance(&self) -> Self::GetMyStarBalance {
+        Self::GetMyStarBalance::new(self.clone(), payloads::GetMyStarBalance::new())
     }
 
     type GetStarTransactions = JsonRequest<payloads::GetStarTransactions>;

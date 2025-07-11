@@ -397,7 +397,7 @@ Run `cargo test --features "full nightly"` or `just test`. This will trigger the
 
 Rerun the tests, and look at the compiler errors. Most likely there will be errors from `crates/teloxide-core/src/adaptors`, `crates/teloxide-core/src/requests/requester.rs` and `crates/teloxide-core/src/bot/api.rs`.
 
-1. To fix some of the errors in the adaptors, just add the snake_case of the new method to the `requester_forward!` macro in `throttle/requester_impl.rs`, `cache_me.rs`, `erased.rs` and `trace.rs`. You also need to add it to the end of `requests/requester.rs` to `forward_all!` macro:
+1. To fix some of the errors in the adaptors, just add the snake_case of the new method to the `requester_forward!` macro in `cache_me.rs`, `erased.rs` and `trace.rs`. You also need to add it to the end of `requests/requester.rs` to `forward_all!` macro:
 ```diff
 requester_forward! {
     ...
@@ -408,7 +408,45 @@ requester_forward! {
 }
 ```
 
-2. To fix `parse_mode.rs` adaptor, most of the time you will need to add the snake_case of the new method to the **second** `requester_forward!` macro:
+2. To fix `throttle/requester_impl.rs`, most of the time you will need to add the snake_case of the new method to the **second** `requester_forward!` macro:
+```diff
+requester_forward! {
+    ...
+    => f, fty
+}
+
+requester_forward! {
+    ...
+    stop_message_live_location_inline,
++   edit_message_checklist,
+    send_chat_action,
+    ...
+}
+```
+
+But if the new method must be throttled to meet the TBA rate limits, you will need to add where clause to the `Throttle` impl and the snake_case of the new method to the **first** `requester_forward!` macro:
+```diff
+impl<B> Requester for Throttle<B>
+where
+...
+    B::SendContact: Clone + Send + Sync + 'static,
+    B::SendPoll: Clone + Send + Sync + 'static,
++   B::SendChecklist: Clone + Send + Sync + 'static,
+...
+requester_forward! {
+    ...
+    send_contact,
+    send_poll,
++   send_checklist,
+    ...
+    => f, fty
+}
+
+requester_forward! {
+    ...
+```
+
+3. To fix `parse_mode.rs` adaptor, most of the time you will need to add the snake_case of the new method to the **second** `requester_forward!` macro:
 ```diff
 requester_forward! {
     ...
@@ -448,7 +486,7 @@ requester_forward! {
 
 Also if your method contains `ParseMode` in any form, you will need to implement `VisitParseModes` trait, see `parse_mode.rs` for examples.
 
-3. Then you have to add the function definition to `bot/api.rs` like that:
+4. Then you have to add the function definition to `bot/api.rs` like that:
 ```rust
 type CreateChatInviteLink = JsonRequest<payloads::CreateChatInviteLink>;
 
@@ -460,7 +498,7 @@ where
 }
 ```
 
-4. To fix `erased.rs` adaptor you need to add a new function to `ErasedRequester`. First, add the definition:
+5. To fix `erased.rs` adaptor you need to add a new function to `ErasedRequester`. First, add the definition:
 
 ```rust
 fn create_chat_invite_link(

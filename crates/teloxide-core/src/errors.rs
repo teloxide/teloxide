@@ -318,13 +318,13 @@ impl_api_error! {
         /// [`SendPoll`]: crate::payloads::SendPoll
         PollMustHaveMoreOptions = "Bad Request: poll must have at least 2 option",
 
-        /// Occurs when bot tries to send poll with more than 10 options.
+        /// Occurs when bot tries to send poll with more than 12 options.
         ///
         /// May happen in methods:
         /// 1. [`SendPoll`]
         ///
         /// [`SendPoll`]: crate::payloads::SendPoll
-        PollCantHaveMoreOptions = "Bad Request: poll can't have more than 10 options",
+        PollCantHaveMoreOptions = "Bad Request: poll can't have more than 12 options",
 
         /// Occurs when bot tries to send poll with empty option (without text).
         ///
@@ -882,7 +882,7 @@ mod tests {
                 ApiError::PollMustHaveMoreOptions,
             ),
             (
-                "{\"data\": \"Bad Request: poll can't have more than 10 options\"}",
+                "{\"data\": \"Bad Request: poll can't have more than 12 options\"}",
                 ApiError::PollCantHaveMoreOptions,
             ),
             (

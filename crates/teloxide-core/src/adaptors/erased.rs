@@ -214,9 +214,11 @@ where
         edit_message_live_location_inline,
         stop_message_live_location,
         stop_message_live_location_inline,
+        edit_message_checklist,
         send_venue,
         send_contact,
         send_poll,
+        send_checklist,
         send_dice,
         send_chat_action,
         set_message_reaction,
@@ -341,6 +343,7 @@ where
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_my_star_balance,
         get_star_transactions,
         refund_star_payment,
         edit_user_star_subscription,
@@ -496,6 +499,14 @@ trait ErasableRequester<'a> {
         inline_message_id: String,
     ) -> ErasedRequest<'a, StopMessageLiveLocationInline, Self::Err>;
 
+    fn edit_message_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, EditMessageChecklist, Self::Err>;
+
     fn send_venue(
         &self,
         chat_id: Recipient,
@@ -518,6 +529,13 @@ trait ErasableRequester<'a> {
         question: String,
         options: Vec<InputPollOption>,
     ) -> ErasedRequest<'a, SendPoll, Self::Err>;
+
+    fn send_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, SendChecklist, Self::Err>;
 
     fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err>;
 
@@ -1183,6 +1201,8 @@ trait ErasableRequester<'a> {
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
 
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err>;
+
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err>;
 
     fn refund_star_payment(
@@ -1428,6 +1448,23 @@ where
         Requester::stop_message_live_location_inline(self, inline_message_id).erase()
     }
 
+    fn edit_message_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, EditMessageChecklist, Self::Err> {
+        Requester::edit_message_checklist(
+            self,
+            business_connection_id,
+            chat_id,
+            message_id,
+            checklist,
+        )
+        .erase()
+    }
+
     fn send_venue(
         &self,
         chat_id: Recipient,
@@ -1455,6 +1492,15 @@ where
         options: Vec<InputPollOption>,
     ) -> ErasedRequest<'a, SendPoll, Self::Err> {
         Requester::send_poll(self, chat_id, question, options).erase()
+    }
+
+    fn send_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, SendChecklist, Self::Err> {
+        Requester::send_checklist(self, business_connection_id, chat_id, checklist).erase()
     }
 
     fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err> {
@@ -2388,6 +2434,10 @@ where
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()
+    }
+
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err> {
+        Requester::get_my_star_balance(self).erase()
     }
 
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err> {

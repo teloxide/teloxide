@@ -49,6 +49,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `LocationAddress` and all `StoryArea*` structs
   - Add `post_story`, `edit_story` and `delete_story` methods
 
+- Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
+  - Add `ChecklistTaskId`, `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
+  - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
+  - Add `ChecklistTasksDone` and `ChecklistTasksAdded` service messages
+  - Add `send_checklist` and `edit_message_checklist` methods
+  - Increased the maximum number of options in a poll to 12
+  - Add `get_my_star_balance` method
+  - Add `DirectMessagePriceChanged` service message
+
 ### Changed
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
