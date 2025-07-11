@@ -1712,6 +1712,14 @@ macro_rules! requester_forward {
             $body!(answer_pre_checkout_query this (pre_checkout_query_id: PreCheckoutQueryId, ok: bool))
         }
     };
+    (@method get_my_star_balance $body:ident $ty:ident) => {
+        type GetMyStarBalance = $ty![GetMyStarBalance];
+
+        fn get_my_star_balance(&self, ) -> Self::GetMyStarBalance {
+            let this = self;
+            $body!(get_my_star_balance this ())
+        }
+    };
     (@method get_star_transactions $body:ident $ty:ident) => {
         type GetStarTransactions = $ty![GetStarTransactions];
 

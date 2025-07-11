@@ -1546,6 +1546,11 @@ pub trait Requester {
         ok: bool,
     ) -> Self::AnswerPreCheckoutQuery;
 
+    type GetMyStarBalance: Request<Payload = GetMyStarBalance, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyStarBalance`].
+    fn get_my_star_balance(&self) -> Self::GetMyStarBalance;
+
     type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetStarTransactions`].
@@ -1791,6 +1796,7 @@ macro_rules! forward_all {
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
+            get_my_star_balance,
             get_star_transactions,
             refund_star_payment,
             edit_user_star_subscription,

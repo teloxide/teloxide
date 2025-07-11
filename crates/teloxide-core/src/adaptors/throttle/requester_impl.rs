@@ -228,6 +228,7 @@ where
         answer_shipping_query,
         create_invoice_link,
         answer_pre_checkout_query,
+        get_my_star_balance,
         get_star_transactions,
         refund_star_payment,
         edit_user_star_subscription,

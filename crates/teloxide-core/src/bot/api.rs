@@ -1852,6 +1852,12 @@ impl Requester for Bot {
         )
     }
 
+    type GetMyStarBalance = JsonRequest<payloads::GetMyStarBalance>;
+
+    fn get_my_star_balance(&self) -> Self::GetMyStarBalance {
+        Self::GetMyStarBalance::new(self.clone(), payloads::GetMyStarBalance::new())
+    }
+
     type GetStarTransactions = JsonRequest<payloads::GetStarTransactions>;
 
     fn get_star_transactions(&self) -> Self::GetStarTransactions {

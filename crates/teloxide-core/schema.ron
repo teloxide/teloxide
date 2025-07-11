@@ -5849,6 +5849,17 @@ Schema(
             ],
         ),
         Method(
+            names: ("getMyStarBalance", "GetMyStarBalance", "get_my_star_balance"),
+            return_ty: RawTy("StarAmount"),
+            doc: Doc(
+                md: "A method to get the current Telegram Stars balance of the bot. Requires no parameters. On success, returns a [StarAmount] object.",
+                md_links: {"StarAmount":"https://core.telegram.org/bots/api#staramount"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmystarbalance",
+            tg_category: "Payments",
+            params: [],
+        ),
+        Method(
             names: ("getStarTransactions", "GetStarTransactions", "get_star_transactions"),
             return_ty: RawTy("StarTransactions"),
             doc: Doc(

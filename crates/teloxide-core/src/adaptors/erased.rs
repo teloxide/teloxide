@@ -343,6 +343,7 @@ where
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_my_star_balance,
         get_star_transactions,
         refund_star_payment,
         edit_user_star_subscription,
@@ -1199,6 +1200,8 @@ trait ErasableRequester<'a> {
         pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
+
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err>;
 
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err>;
 
@@ -2431,6 +2434,10 @@ where
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()
+    }
+
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err> {
+        Requester::get_my_star_balance(self).erase()
     }
 
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err> {
