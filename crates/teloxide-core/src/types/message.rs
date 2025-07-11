@@ -8,10 +8,10 @@ use url::Url;
 use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
     ChatId, ChatShared, Checklist, ChecklistTasksAdded, ChecklistTasksDone, Contact, Dice,
-    Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited,
-    ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, GiftInfo,
-    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
-    LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
+    DirectMessagePriceChanged, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
+    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
+    GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup,
+    Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
     MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMediaInfo,
     PaidMessagePriceChanged, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
     RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, UniqueGiftInfo,
@@ -97,6 +97,7 @@ pub enum MessageKind {
     ChatBackground(MessageChatBackground),
     ChecklistTasksDone(MessageChecklistTasksDone),
     ChecklistTasksAdded(MessageChecklistTasksAdded),
+    DirectMessagePriceChanged(MessageDirectMessagePriceChanged),
     ForumTopicCreated(MessageForumTopicCreated),
     ForumTopicEdited(MessageForumTopicEdited),
     ForumTopicClosed(MessageForumTopicClosed),
@@ -696,6 +697,14 @@ pub struct MessageChecklistTasksAdded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageDirectMessagePriceChanged {
+    /// Service message: the price for paid messages in the corresponding direct
+    /// messages chat of a channel has changed.
+    pub direct_message_price_changed: DirectMessagePriceChanged,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
     /// to write messages.
@@ -851,11 +860,12 @@ mod getters {
         MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
         Message, MessageChannelChatCreated, MessageChatShared, MessageChecklistTasksAdded,
         MessageChecklistTasksDone, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
-        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
-        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
-        MessageOrigin, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
-        MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
-        MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
+        MessageDice, MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated,
+        MessageId, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
+        MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin, MessagePassportData,
+        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MessageSupergroupChatCreated, MessageUsersShared, MessageVideoChatParticipantsInvited,
+        PhotoSize, Story, TextQuote, User,
     };
 
     use super::{
@@ -1646,6 +1656,16 @@ mod getters {
                 ChecklistTasksAdded(MessageChecklistTasksAdded { checklist_tasks_added }) => {
                     Some(checklist_tasks_added)
                 }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn direct_message_price_changed(&self) -> Option<&types::DirectMessagePriceChanged> {
+            match &self.kind {
+                DirectMessagePriceChanged(MessageDirectMessagePriceChanged {
+                    direct_message_price_changed,
+                }) => Some(direct_message_price_changed),
                 _ => None,
             }
         }

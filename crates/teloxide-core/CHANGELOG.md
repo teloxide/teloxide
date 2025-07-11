@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `send_checklist` and `edit_message_checklist` methods
   - Increased the maximum number of options in a poll to 12
   - Add `get_my_star_balance` method
+  - Add `DirectMessagePriceChanged` service message
 
 ### Changed
 
