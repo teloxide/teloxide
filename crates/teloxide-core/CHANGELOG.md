@@ -49,6 +49,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `LocationAddress` and all `StoryArea*` structs
   - Add `post_story`, `edit_story` and `delete_story` methods
 
+- Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
+  - Add `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
+
 ### Changed
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
