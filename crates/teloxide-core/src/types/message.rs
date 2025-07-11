@@ -7,16 +7,16 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
-    ChatId, ChatShared, Checklist, Contact, Dice, Document, ExternalReplyInfo, ForumTopicClosed,
-    ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden,
-    GeneralForumTopicUnhidden, GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated,
-    GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
-    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
-    MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
-    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote,
-    ThreadId, True, UniqueGiftInfo, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
+    ChatId, ChatShared, Checklist, ChecklistTasksAdded, ChecklistTasksDone, Contact, Dice,
+    Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated, ForumTopicEdited,
+    ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden, GiftInfo,
+    Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice,
+    LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
+    MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMediaInfo,
+    PaidMessagePriceChanged, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
+    RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, UniqueGiftInfo,
+    User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
+    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -95,6 +95,8 @@ pub enum MessageKind {
     ProximityAlertTriggered(MessageProximityAlertTriggered),
     ChatBoostAdded(MessageChatBoostAdded),
     ChatBackground(MessageChatBackground),
+    ChecklistTasksDone(MessageChecklistTasksDone),
+    ChecklistTasksAdded(MessageChecklistTasksAdded),
     ForumTopicCreated(MessageForumTopicCreated),
     ForumTopicEdited(MessageForumTopicEdited),
     ForumTopicClosed(MessageForumTopicClosed),
@@ -679,6 +681,21 @@ pub struct MessageChatBackground {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChecklistTasksDone {
+    /// Service message: some tasks in a checklist were marked as done or not
+    /// done.
+    pub checklist_tasks_done: ChecklistTasksDone,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageChecklistTasksAdded {
+    /// Service message: tasks were added to a checklist.
+    pub checklist_tasks_added: ChecklistTasksAdded,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
     /// to write messages.
@@ -832,11 +849,11 @@ mod getters {
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaChecklist, MediaContact,
         MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll,
         MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
-        Message, MessageChannelChatCreated, MessageChatShared, MessageCommon,
-        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice, MessageEntity,
-        MessageGroupChatCreated, MessageId, MessageInvoice, MessageLeftChatMember,
-        MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin,
-        MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
+        Message, MessageChannelChatCreated, MessageChatShared, MessageChecklistTasksAdded,
+        MessageChecklistTasksDone, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
+        MessageDice, MessageEntity, MessageGroupChatCreated, MessageId, MessageInvoice,
+        MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto, MessageNewChatTitle,
+        MessageOrigin, MessagePassportData, MessagePinned, MessageProximityAlertTriggered,
         MessageSuccessfulPayment, MessageSupergroupChatCreated, MessageUsersShared,
         MessageVideoChatParticipantsInvited, PhotoSize, Story, TextQuote, User,
     };
@@ -1608,6 +1625,26 @@ mod getters {
             match &self.kind {
                 ChatBackground(MessageChatBackground { chat_background_set }) => {
                     Some(chat_background_set)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn checklist_tasks_done(&self) -> Option<&types::ChecklistTasksDone> {
+            match &self.kind {
+                ChecklistTasksDone(MessageChecklistTasksDone { checklist_tasks_done }) => {
+                    Some(checklist_tasks_done)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn checklist_tasks_added(&self) -> Option<&types::ChecklistTasksAdded> {
+            match &self.kind {
+                ChecklistTasksAdded(MessageChecklistTasksAdded { checklist_tasks_added }) => {
+                    Some(checklist_tasks_added)
                 }
                 _ => None,
             }

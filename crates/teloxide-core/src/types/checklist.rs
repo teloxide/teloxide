@@ -1,4 +1,4 @@
-use crate::types::{MessageEntity, ParseMode, User};
+use crate::types::{Message, MessageEntity, ParseMode, User};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
@@ -118,4 +118,36 @@ pub struct InputChecklist {
     /// checklist
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub others_can_mark_tasks_as_done: bool,
+}
+
+/// Describes a service message about checklist tasks marked as done or not
+/// done.
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize)]
+pub struct ChecklistTasksDone {
+    /// Message containing the checklist whose tasks were marked as done or not
+    /// done. Note that the Message object in this field will not contain the
+    /// reply_to_message field even if it itself is a reply
+    pub checklist_message: Option<Box<Message>>,
+
+    /// Identifiers of the tasks that were marked as done
+    pub marked_as_done_task_ids: Option<Vec<u8>>,
+
+    /// Identifiers of the tasks that were marked as not done
+    pub marked_as_not_done_task_ids: Option<Vec<u8>>,
+}
+
+/// Describes a service message about tasks added to a checklist.
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize)]
+pub struct ChecklistTasksAdded {
+    /// Message containing the checklist to which the tasks were added. Note
+    /// that the Message object in this field will not contain the
+    /// reply_to_message field even if it itself is a reply
+    pub checklist_message: Option<Box<Message>>,
+
+    /// List of tasks added to the checklist
+    pub tasks: Vec<ChecklistTask>,
 }

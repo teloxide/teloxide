@@ -119,6 +119,8 @@ define_message_ext! {
     (filter_proximity_alert_triggered, Message::proximity_alert_triggered),
     (filter_boost_added, Message::boost_added),
     (filter_chat_background_set, Message::chat_background_set),
+    (filter_checklist_tasks_done, Message::checklist_tasks_done),
+    (filter_checklist_tasks_added, Message::checklist_tasks_added),
     (filter_forum_topic_created, Message::forum_topic_created),
     (filter_forum_topic_edited, Message::forum_topic_edited),
     (filter_forum_topic_closed, Message::forum_topic_closed),

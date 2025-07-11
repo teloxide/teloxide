@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add `filter_paid_message_price_changed`, `filter_gift_info` and `filter_unique_gift_info` filters
 
 - Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
-  - Add `filter_checklist` filter to the `MessageFilterExt` trait
+  - Add `filter_checklist`, `checklist_tasks_done`, and `checklist_tasks_added` filters to the `MessageFilterExt` trait
 
 ### Changed
 
