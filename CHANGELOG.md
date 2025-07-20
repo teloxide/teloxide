@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Changed
+
+- Bumped `rand` to `0.9` ([#1394](https://github.com/teloxide/teloxide/pull/1394))
+
 ## 0.17.0 - 2025-07-11
 
 ### Added
