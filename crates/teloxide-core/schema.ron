@@ -1736,7 +1736,7 @@ Schema(
                     "stopMessageLiveLocation": "https://core.telegram.org/bots/api#stopmessagelivelocation",
                 },
             ),
-            tg_doc: "https://core.telegram.org/bots/api#editmessagelivelocation",
+            tg_doc: "https://core.telegram.org/bots/api#stopmessagelivelocation",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -1775,7 +1775,7 @@ Schema(
                 md: "Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [stopMessageLiveLocation]. On success, True is returned.",
                 md_links: {"stopMessageLiveLocation": "https://core.telegram.org/bots/api#stopmessagelivelocation"},
             ),
-            tg_doc: "https://core.telegram.org/bots/api#editmessagelivelocation",
+            tg_doc: "https://core.telegram.org/bots/api#stopmessagelivelocation",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -2441,7 +2441,7 @@ Schema(
                     "getFile": "https://core.telegram.org/bots/api#getfile",
                 },
             ),
-            tg_doc: "https://core.telegram.org/bots/api#getuserprofilephotos",
+            tg_doc: "https://core.telegram.org/bots/api#getfile",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -2458,7 +2458,7 @@ Schema(
                 md: "Use this method to ban a user in a group, a supergroup or a channel. In the case of supergroups and channels, the user will not be able to return to the chat on their own using invite links, etc., unless [unbanned] first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns _True_ on success.",
                 md_links: {"unbanned": "https://core.telegram.org/bots/api#unbanchatmember"},
             ),
-            tg_doc: "https://core.telegram.org/bots/api#kickchatmember",
+            tg_doc: "https://core.telegram.org/bots/api#banchatmember",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -2923,7 +2923,7 @@ Schema(
                 md: "Use this method to revoke an invite link created by the bot. If the primary link is revoked, a new link is automatically generated. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the revoked invite link as [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
             ),
-            tg_doc: "https://core.telegram.org/bots/api#editchatinvitelink",
+            tg_doc: "https://core.telegram.org/bots/api#revokechatinvitelink",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -2997,7 +2997,7 @@ Schema(
         ),
         Method(
             names: ("deleteChatPhoto", "DeleteChatPhoto", "delete_chat_photo"),
-            return_ty: String,
+            return_ty: True,
             doc: Doc(md: "Use this method to delete a chat photo. Photos can't be changed for private chats. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns True on success."),
             tg_doc: "https://core.telegram.org/bots/api#deletechatphoto",
             tg_category: "Available methods",
@@ -3166,7 +3166,7 @@ Schema(
             names: ("getChatMemberCount", "GetChatMemberCount", "get_chat_member_count"),
             return_ty: u32,
             doc: Doc(md: "Use this method to get the number of members in a chat. Returns _Int_ on success."),
-            tg_doc: "https://core.telegram.org/bots/api#getchatmemberscount",
+            tg_doc: "https://core.telegram.org/bots/api#getchatmembercount",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -3217,7 +3217,7 @@ Schema(
             names: ("setChatStickerSet", "SetChatStickerSet", "set_chat_sticker_set"),
             return_ty: True,
             doc: Doc(md: "Use this method to set a new group sticker set for a supergroup. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Use the field _can\\_set\\_sticker\\_set_ optionally returned in getChat requests to check if the bot can use this method. Returns _True_ on success."),
-            tg_doc: "https://core.telegram.org/bots/api#set_chat_sticker_set",
+            tg_doc: "https://core.telegram.org/bots/api#setchatstickerset",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -3776,7 +3776,7 @@ Schema(
             names: ("getMyDefaultAdministratorRights", "GetMyDefaultAdministratorRights", "get_my_default_administrator_rights"),
             return_ty: RawTy("ChatAdministratorRights"),
             doc: Doc(md: "Use this method to get the current value of the bot's menu button in a private chat, or the default menu button."),
-            tg_doc: "https://core.telegram.org/bots/api#setmydefaultadministratorrights",
+            tg_doc: "https://core.telegram.org/bots/api/#getmydefaultadministratorrights",
             tg_category: "Available methods",
             params: [
                 Param(
@@ -4084,7 +4084,7 @@ Schema(
             names: ("editMessageCaptionInline", "EditMessageCaptionInline", "edit_message_caption_inline"),
             return_ty: True,
             doc: Doc(md: "Use this method to edit captions of messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
-            tg_doc: "https://core.telegram.org/bots/api#editmessagetext",
+            tg_doc: "https://core.telegram.org/bots/api#editmessagecaption",
             tg_category: "Updating messages",
             sibling: Some("editMessageCaption"),
             params: [
@@ -4169,7 +4169,7 @@ Schema(
             names: ("editMessageMediaInline", "EditMessageMediaInline", "edit_message_media_inline"),
             return_ty: True,
             doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
-            tg_doc: "https://core.telegram.org/bots/api#editmessagemediainline",
+            tg_doc: "https://core.telegram.org/bots/api#editmessagemedia",
             tg_category: "Updating messages",
             sibling: Some("editMessageMedia"),
             params: [
@@ -4204,7 +4204,7 @@ Schema(
             doc: Doc(md: "Use this method to edit only the reply markup of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagereplymarkup",
             tg_category: "Updating messages",
-            sibling: Some("editMessageMediaInline"),
+            sibling: Some("editMessageReplyMarkupInline"),
             params: [
                 Param(
                     name: "chat_id",
@@ -4295,7 +4295,7 @@ Schema(
             names: ("deleteMessage", "DeleteMessage", "delete_message"),
             return_ty: True,
             doc: Doc(md: "Use this method to delete a message, including service messages, with the following limitations:\n- A message can only be deleted if it was sent less than 48 hours ago.\n- A dice message in a private chat can only be deleted if it was sent more than 24 hours ago.\n- Bots can delete outgoing messages in private chats, groups, and supergroups.\n- Bots can delete incoming messages in private chats.\n- Bots granted can_post_messages permissions can delete outgoing messages in channels.\n- If the bot is an administrator of a group, it can delete any message there.\n- If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.\n\nReturns True on success."),
-            tg_doc: "https://core.telegram.org/bots/api#delete_message",
+            tg_doc: "https://core.telegram.org/bots/api#deletemessage",
             tg_category: "Updating messages",
             params: [
                 Param(
@@ -4314,7 +4314,7 @@ Schema(
             names: ("deleteMessages", "DeleteMessages", "delete_messages"),
             return_ty: True,
             doc: Doc(md: "Use this method to delete multiple messages simultaneously. If some of the specified messages can't be found, they are skipped. Returns _True_ on success."),
-            tg_doc: "https://core.telegram.org/bots/api#delete_messages",
+            tg_doc: "https://core.telegram.org/bots/api#deletemessages",
             tg_category: "Updating messages",
             params: [
                 Param(
@@ -4441,7 +4441,7 @@ Schema(
         ),
         Method(
             names: ("uploadStickerFile", "UploadStickerFile", "upload_sticker_file"),
-            return_ty: RawTy("FileMeta"),
+            return_ty: RawTy("File"),
             doc: Doc(
                 md: "Use this method to upload a file with a sticker for later use in the [CreateNewStickerSet], [AddStickerToSet] or [ReplaceStickerInSet] methods (the file can be used multiple times). Returns the uploaded [File] on success.",
                 md_links: {
@@ -4481,7 +4481,7 @@ Schema(
             names: ("createNewStickerSet", "CreateNewStickerSet", "create_new_sticker_set"),
             return_ty: True,
             doc: Doc(md: "Use this method to create a new sticker set owned by a user. The bot will be able to edit the sticker set thus created. Returns True on success."),
-            tg_doc: "https://core.telegram.org/bots/api#createstickerset",
+            tg_doc: "https://core.telegram.org/bots/api#createnewstickerset",
             tg_category: "Stickers",
             params: [
                 Param(
@@ -5739,17 +5739,17 @@ Schema(
                 ),
                 Param(
                     name: "photo_size",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo size in bytes")
                 ),
                 Param(
                     name: "photo_width",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo width")
                 ),
                 Param(
                     name: "photo_height",
-                    ty: Option(String),
+                    ty: Option(u32),
                     descr: Doc(md: "Photo height")
                 ),
                 Param(
@@ -5828,7 +5828,7 @@ Schema(
                 md: "Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an [Update] with the field pre\\_checkout\\_query. Use this method to respond to such pre-checkout queries. On success, True is returned. **Note:** The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.",
                 md_links: {"Update":"https://core.telegram.org/bots/api#update"},
             ),
-            tg_doc: "https://core.telegram.org/bots/api#answershippingquery",
+            tg_doc: "https://core.telegram.org/bots/api#answerprecheckoutquery",
             tg_category: "Payments",
             params: [
                 Param(
@@ -6094,7 +6094,7 @@ Schema(
         ),
         Method(
             names: ("getGameHighScores", "GetGameHighScores", "get_game_high_scores"),
-            return_ty: True,
+            return_ty: ArrayOf(RawTy("GameHighScore")),
             doc: Doc(
                 md: "Use this method to get data for high score tables. Will return the score of the specified user and several of their neighbors in a game. On success, returns an Array of [GameHighScore] objects.\n\n> This method will currently return scores for the target user, plus two of their closest neighbors on each side. Will also return the top three users if the user and his neighbors are not among them. Please note that this behavior is subject to change.",
                 md_links: {"GameHighScore": "https://core.telegram.org/bots/api#gamehighscore"},
