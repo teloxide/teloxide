@@ -31,7 +31,7 @@ pub struct ApiVersion {
     pub date: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Method {
     pub names: (String, String, String),
@@ -46,7 +46,7 @@ pub struct Method {
     pub sibling: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Doc {
     pub md: String,
@@ -54,7 +54,7 @@ pub struct Doc {
     pub md_links: HashMap<String, String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, PartialEq, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Param {
     pub name: String,

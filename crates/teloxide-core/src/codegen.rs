@@ -11,6 +11,7 @@
 
 pub(crate) mod convert;
 mod patch;
+mod schema_check;
 pub(crate) mod schema;
 
 use std::{
