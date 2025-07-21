@@ -360,6 +360,7 @@ mod tests {
         }
     }
 
+    // Checks everything about the method that is not params
     fn check_ron_method_meta(
         ron_method: &schema::Method,
         method: &ApiMethod,
@@ -442,6 +443,7 @@ mod tests {
             Exception::FieldType { ron_raw_type: "Me".to_owned(), actual_type: "User".to_owned() },
         ]);
 
+        // If it matches, do nothing
         match (ron_type, api_type) {
             (schema::Type::bool, Kind::Bool { default: _ }) => {}
             (
@@ -521,7 +523,7 @@ mod tests {
     }
 
     #[test]
-    fn test_schema() {
+    fn check_ron_schema() {
         let ron_schema = schema::get();
         let api_schema = get_api_schema();
         let mut errors = vec![];
@@ -594,6 +596,16 @@ mod tests {
             } else {
                 errors.push(ApiCheckError::MethodDoesNotExist { method: method.name });
             };
+        }
+
+        if !errors.is_empty() {
+            let mut errors_string = String::new();
+            for (i, error) in errors.iter().enumerate() {
+                errors_string = format!("{errors_string}\n\n{}. {error}", i + 1);
+            }
+            panic!(
+                "schema.ron does not match the check schema. The errors are:\n\n{errors_string}",
+            );
         }
     }
 }
