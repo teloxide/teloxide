@@ -8,10 +8,11 @@ fn get_api_schema() -> ApiSchema {
     let text = fs::read_to_string(path).unwrap();
     let schema: ApiSchema = serde_json::from_str(&text).unwrap();
 
-    return schema;
+    schema
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct ApiSchema {
     version: Version,
     recent_changes: Date,
@@ -20,6 +21,7 @@ struct ApiSchema {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct Version {
     major: u64,
     minor: u64,
@@ -27,6 +29,7 @@ struct Version {
 }
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct Date {
     year: i32,
     month: u32,
@@ -36,6 +39,7 @@ struct Date {
 #[derive(Debug, Deserialize, Clone)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
+#[allow(dead_code)]
 enum Kind {
     Integer {
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -76,6 +80,7 @@ enum Kind {
 struct KindWrapper(Kind);
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct ApiMethod {
     name: String,
     description: String,
@@ -86,6 +91,7 @@ struct ApiMethod {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct Argument {
     name: String,
     description: String,
@@ -95,6 +101,7 @@ struct Argument {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct Object {
     name: String,
     description: String,
@@ -106,6 +113,7 @@ struct Object {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
+#[allow(dead_code)]
 enum ObjectData {
     Properties { properties: Vec<Property> },
     AnyOf { any_of: Vec<KindWrapper> },
@@ -113,6 +121,7 @@ enum ObjectData {
 }
 
 #[derive(Debug, Deserialize)]
+#[allow(dead_code)]
 struct Property {
     name: String,
     description: String,
@@ -167,6 +176,11 @@ mod tests {
             raw_type: schema::Type,
             actual_type: Kind,
         },
+        #[display(
+            "Method {method} has a link to TBA {doc_link}, but the actual link is \
+             {actual_doc_link}"
+        )]
+        MethodDocLinkDoesNotMatch { method: String, doc_link: String, actual_doc_link: String },
     }
 
     #[derive(Debug, Clone, PartialEq)]
@@ -200,7 +214,7 @@ mod tests {
     }
 
     fn find_ron_method_by_name(name: &str, schema: &schema::Schema) -> Option<schema::Method> {
-        schema.methods.iter().find(|x| &x.names.0 == name).cloned()
+        schema.methods.iter().find(|x| x.names.0 == name).cloned()
     }
 
     fn find_ron_param_by_name(name: &str, method: &schema::Method) -> Option<schema::Param> {
@@ -224,6 +238,9 @@ mod tests {
             Exception::SiblingParam { param: "message_id".to_owned() },
         ]);
 
+        check_ron_method_meta(ron_method, method, errors);
+        check_ron_method_meta(ron_sibling_method, method, errors);
+
         for param in &method.arguments {
             let mut param_name = param.name.clone();
             escape_kw(&mut param_name); // Converts type to type_. Will think field is missing
@@ -231,49 +248,35 @@ mod tests {
 
             let maybe_ron_param = find_ron_param_by_name(&param_name, ron_method);
             let maybe_ron_sibling_param = find_ron_param_by_name(&param_name, ron_sibling_method);
-            if let (Some(ron_param), Some(ron_sibling_param)) =
-                (maybe_ron_param.clone(), maybe_ron_sibling_param.clone())
-            {
-                if ron_param != ron_sibling_param {
-                    errors.push(ApiCheckError::SiblingParamsDontMatch {
-                        method: method.name.clone(),
-                        sibling: ron_sibling_method.names.0.clone(),
-                        param: param.name.clone(),
-                    });
-                } else {
-                    check_param(&ron_param, param, method.name.clone(), false, errors);
-                }
-            } else {
-                if maybe_ron_param.is_some() || maybe_ron_sibling_param.is_some() {
-                    let (ron_param, ron_method_name, ron_method_without_param_name) =
-                        match (maybe_ron_param, maybe_ron_sibling_param) {
-                            (Some(ron_param), None) => (
-                                ron_param,
-                                ron_method.names.0.clone(),
-                                ron_sibling_method.names.0.clone(),
-                            ),
-                            (None, Some(ron_sibling_param)) => (
-                                ron_sibling_param,
-                                ron_sibling_method.names.0.clone(),
-                                ron_method.names.0.clone(),
-                            ),
-                            _ => unreachable!("Only one param is possible"),
-                        };
 
-                    if (!acceptable_sibling_params.is_sibling_param_exception(param.name.clone()))
-                        && (!missing_field_exceptions.is_method_field_exception(
-                            ron_method_without_param_name.clone(),
-                            param_name,
-                        ))
-                    {
-                        errors.push(ApiCheckError::ParamDoesNotExist {
-                            method: ron_method_without_param_name,
-                            param: param.name.clone(),
-                        });
-                    } else {
-                        check_param(&ron_param, param, ron_method_name, true, errors);
-                    }
-                } else {
+            match (maybe_ron_param.clone(), maybe_ron_sibling_param.clone()) {
+                (Some(ron_param), Some(ron_sibling_param)) => check_ron_siblings_field(
+                    ron_method,
+                    ron_sibling_method,
+                    &ron_param,
+                    &ron_sibling_param,
+                    param,
+                    errors,
+                ),
+                (Some(ron_param), None) => check_ron_siblings_only_one_field(
+                    &ron_param,
+                    ron_method.names.0.clone(),
+                    ron_sibling_method.names.0.clone(),
+                    param,
+                    errors,
+                    &acceptable_sibling_params,
+                    missing_field_exceptions,
+                ),
+                (None, Some(ron_sibling_param)) => check_ron_siblings_only_one_field(
+                    &ron_sibling_param,
+                    ron_sibling_method.names.0.clone(),
+                    ron_method.names.0.clone(),
+                    param,
+                    errors,
+                    &acceptable_sibling_params,
+                    missing_field_exceptions,
+                ),
+                (None, None) => {
                     if !missing_field_exceptions
                         .is_method_field_exception(method.name.clone(), param_name)
                     {
@@ -287,11 +290,80 @@ mod tests {
         }
     }
 
-    fn check_ron_method(
+    fn check_ron_siblings_field(
+        ron_method: &schema::Method,
+        ron_sibling_method: &schema::Method,
+        ron_param: &schema::Param,
+        ron_sibling_param: &schema::Param,
+        param: &Argument,
+        errors: &mut Vec<ApiCheckError>,
+    ) {
+        if ron_param != ron_sibling_param {
+            errors.push(ApiCheckError::SiblingParamsDontMatch {
+                method: ron_method.names.0.clone(),
+                sibling: ron_sibling_method.names.0.clone(),
+                param: param.name.clone(),
+            });
+        } else {
+            check_param(ron_param, param, ron_method.names.0.clone(), false, errors);
+        }
+    }
+
+    fn check_ron_siblings_only_one_field(
+        ron_param: &schema::Param,
+        ron_method_name: String,
+        ron_method_without_param_name: String,
+        param: &Argument,
+        errors: &mut Vec<ApiCheckError>,
+        acceptable_sibling_params: &Exceptions,
+        missing_field_exceptions: &Exceptions,
+    ) {
+        let mut param_name = param.name.clone();
+        escape_kw(&mut param_name);
+
+        // Check if its in some exceptions
+        if (!acceptable_sibling_params.is_sibling_param_exception(param_name.clone()))
+            && (!missing_field_exceptions
+                .is_method_field_exception(ron_method_without_param_name.clone(), param_name))
+        {
+            errors.push(ApiCheckError::ParamDoesNotExist {
+                method: ron_method_without_param_name,
+                param: param.name.clone(),
+            });
+        } else {
+            // It is in some exceptions. We don't care about optional fields, since its an
+            // exception.
+            check_param(ron_param, param, ron_method_name, true, errors);
+        }
+    }
+
+    fn check_ron_params(
         ron_method: &schema::Method,
         method: &ApiMethod,
         errors: &mut Vec<ApiCheckError>,
         missing_field_exceptions: &Exceptions,
+    ) {
+        for param in &method.arguments {
+            let mut param_name = param.name.clone();
+            escape_kw(&mut param_name);
+
+            if let Some(ron_param) = find_ron_param_by_name(&param_name, ron_method) {
+                check_param(&ron_param, param, method.name.clone(), false, errors);
+            } else if !missing_field_exceptions
+                .is_method_field_exception(method.name.clone(), param_name)
+            {
+                errors.push(ApiCheckError::ParamDoesNotExist {
+                    method: method.name.clone(),
+                    param: param.name.clone(),
+                });
+            }
+        }
+    }
+
+    fn check_ron_method_meta(
+        ron_method: &schema::Method,
+        method: &ApiMethod,
+        errors: &mut Vec<ApiCheckError>,
     ) {
         check_type(
             &ron_method.return_ty,
@@ -301,23 +373,24 @@ mod tests {
             errors,
         );
 
-        for param in &method.arguments {
-            let mut param_name = param.name.clone();
-            escape_kw(&mut param_name);
-
-            if let Some(ron_param) = find_ron_param_by_name(&param_name, &ron_method) {
-                check_param(&ron_param, param, method.name.clone(), false, errors);
-            } else {
-                if !missing_field_exceptions
-                    .is_method_field_exception(method.name.clone(), param_name)
-                {
-                    errors.push(ApiCheckError::ParamDoesNotExist {
-                        method: method.name.clone(),
-                        param: param.name.clone(),
-                    });
-                }
-            }
+        // Some docs are for some reason like api/#something, not api#something.
+        if ron_method.tg_doc.replace("/#", "#") != method.documentation_link.replace("/#", "#") {
+            errors.push(ApiCheckError::MethodDocLinkDoesNotMatch {
+                method: method.name.clone(),
+                doc_link: ron_method.tg_doc.clone(),
+                actual_doc_link: method.documentation_link.clone(),
+            });
         }
+    }
+
+    fn check_ron_method(
+        ron_method: &schema::Method,
+        method: &ApiMethod,
+        errors: &mut Vec<ApiCheckError>,
+        missing_field_exceptions: &Exceptions,
+    ) {
+        check_ron_method_meta(ron_method, method, errors);
+        check_ron_params(ron_method, method, errors, missing_field_exceptions);
     }
 
     fn check_param(
@@ -339,13 +412,11 @@ mod tests {
                 });
             }
             ron_param.ty = *ron_param_type.clone()
-        } else {
-            if !param.required && !ignore_optional {
-                errors.push(ApiCheckError::ParamIsNotRequired {
-                    method: method_name.clone(),
-                    param: param.name.clone(),
-                });
-            }
+        } else if !param.required && !ignore_optional {
+            errors.push(ApiCheckError::ParamIsNotRequired {
+                method: method_name.clone(),
+                param: param.name.clone(),
+            });
         }
 
         check_type(&ron_param.ty, &param.kind.0, param.name.clone(), method_name.clone(), errors);
@@ -387,11 +458,11 @@ mod tests {
                     schema::Type::u8 => (u8::MIN as i64, u8::MAX as i64),
                     schema::Type::u16 => (u16::MIN as i64, u16::MAX as i64),
                     schema::Type::u32 => (u32::MIN as i64, u32::MAX as i64),
-                    schema::Type::u64 => (u64::MIN as i64, i64::MAX as i64), // u64::MAX will
+                    schema::Type::u64 => (u64::MIN as i64, i64::MAX), // u64::MAX will
                     // overflow. And the TBA will never return something bigger than i64.
                     schema::Type::i32 => (i32::MIN as i64, i32::MAX as i64),
-                    schema::Type::i64 => (i64::MIN as i64, i64::MAX as i64),
-                    schema::Type::DateTime => (i64::MIN as i64, i64::MAX as i64),
+                    schema::Type::i64 => (i64::MIN, i64::MAX),
+                    schema::Type::DateTime => (i64::MIN, i64::MAX),
                     _ => unreachable!("Other types are not in the match statement"),
                 };
 
@@ -436,6 +507,8 @@ mod tests {
             }
             (schema::Type::RawTy(_), Kind::AnyOf { any_of: _ }) => {} // If it's AnyOf, we have to
             // have our own type like `Recipient`
+            (schema::Type::True, Kind::AnyOf { any_of: _ }) => {} // Or with AnyOf there could be
+            // either True or Message, like with editMessageMedia
             (schema::Type::RawTy(_), _) => {} // Any other is fine, we can't check if
             // our type like PollId is actually String or Integer
             _ => errors.push(ApiCheckError::ParamTyDoesNotMatch {
@@ -488,11 +561,25 @@ mod tests {
             },
         ]);
 
+        let api_version = format!("{}.{}", api_schema.version.major, api_schema.version.minor);
+        let ron_version = ron_schema.api_version.ver.clone();
+        if api_version != ron_version {
+            panic!(
+                "schema.ron is of api version {ron_version}, while the checking schema is \
+                 {api_version}. Please update the checking schema."
+            );
+        }
+
         for method in api_schema.methods {
             if let Some(ron_method) = find_ron_method_by_name(&method.name, &ron_schema) {
                 if let Some(ref sibling) = ron_method.sibling {
                     let ron_sibling_method = find_ron_method_by_name(sibling, &ron_schema)
-                        .expect(&format!("Sibling method of {} does not exist", &method.name));
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "{}",
+                                format!("Sibling method of {} does not exist", &method.name)
+                            )
+                        });
 
                     check_ron_siblings(
                         &ron_method,
@@ -508,6 +595,5 @@ mod tests {
                 errors.push(ApiCheckError::MethodDoesNotExist { method: method.name });
             };
         }
-        dbg!(errors);
     }
 }
