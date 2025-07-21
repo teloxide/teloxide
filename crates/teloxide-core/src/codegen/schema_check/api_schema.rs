@@ -147,6 +147,11 @@ mod tests {
             "Method {method} and sibling {sibling} have something different in {param} param."
         )]
         SiblingParamsDontMatch { method: String, sibling: String, param: String },
+        #[display(
+            "Method {method} has a sibling {fake_sibling}, but {fake_sibling} doesn't have \
+             {method} as a sibling."
+        )]
+        SiblingsDontMatch { method: String, fake_sibling: String },
         #[display("Method {method} has required {param} parameter, when it is not required")]
         ParamIsNotRequired { method: String, param: String },
         #[display("Method {method} has optional {param} parameter, when it is not optional")]
@@ -353,7 +358,7 @@ mod tests {
                 .is_method_field_exception(method.name.clone(), param_name)
             {
                 errors.push(ApiCheckError::ParamDoesNotExist {
-                    method: method.name.clone(),
+                    method: ron_method.names.0.clone(),
                     param: param.name.clone(),
                 });
             }
@@ -377,7 +382,7 @@ mod tests {
         // Some docs are for some reason like api/#something, not api#something.
         if ron_method.tg_doc.replace("/#", "#") != method.documentation_link.replace("/#", "#") {
             errors.push(ApiCheckError::MethodDocLinkDoesNotMatch {
-                method: method.name.clone(),
+                method: ron_method.names.0.clone(),
                 doc_link: ron_method.tg_doc.clone(),
                 actual_doc_link: method.documentation_link.clone(),
             });
@@ -582,6 +587,15 @@ mod tests {
                                 format!("Sibling method of {} does not exist", &method.name)
                             )
                         });
+
+                    if ron_sibling_method.sibling != Some(ron_method.names.0.clone()) {
+                        errors.push(ApiCheckError::SiblingsDontMatch {
+                            method: ron_method.names.0.clone(),
+                            fake_sibling: ron_sibling_method.names.0.clone(),
+                        });
+                        // No point in checking corrupt method
+                        continue;
+                    }
 
                     check_ron_siblings(
                         &ron_method,
