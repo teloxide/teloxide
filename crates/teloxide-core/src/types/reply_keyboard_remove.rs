@@ -15,6 +15,7 @@ use crate::types::True;
 #[serde_with::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Default, Serialize, Deserialize)]
 #[derive(Eq, Hash, PartialEq)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct KeyboardRemove {
     /// Requests clients to remove the custom keyboard (user will not be able
     /// to summon this keyboard; if you want to hide the keyboard from sight

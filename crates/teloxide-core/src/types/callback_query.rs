@@ -16,6 +16,7 @@ use crate::types::{MaybeInaccessibleMessage, Message, User};
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct CallbackQueryId(pub String);
@@ -35,6 +36,7 @@ pub struct CallbackQueryId(pub String);
 /// [inline mode]: https://core.telegram.org/bots/api#inline-mode
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct CallbackQuery {
     /// A unique identifier for this query.
     pub id: CallbackQueryId,

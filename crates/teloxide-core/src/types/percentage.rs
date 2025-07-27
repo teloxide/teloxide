@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, derive_more::Display)]
 #[display("{_0}%")]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct Percentage(u8);
 

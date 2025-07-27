@@ -17,6 +17,7 @@ use crate::types::ChatBoostSource;
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct BoostId(pub String);
@@ -24,17 +25,20 @@ pub struct BoostId(pub String);
 /// This object contains information about a chat boost.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoost {
     /// Unique identifier of the boost.
     pub boost_id: BoostId,
 
     /// Point in time (Unix timestamp) when the chat was boosted.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub add_date: DateTime<Utc>,
 
     /// Point in time (Unix timestamp) when the boost will automatically expire,
     /// unless the booster's Telegram Premium subscription is prolonged.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub expiration_date: DateTime<Utc>,
 
     /// Source of the added boost.

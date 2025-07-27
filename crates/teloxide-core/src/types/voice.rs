@@ -8,6 +8,7 @@ use crate::types::{FileMeta, Seconds};
 /// [The official docs](https://core.telegram.org/bots/api#voice).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Voice {
     /// Metadata of the voice file.
     #[serde(flatten)]
@@ -18,5 +19,6 @@ pub struct Voice {
 
     /// MIME type of the file as defined by sender.
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 }

@@ -7,17 +7,20 @@ use crate::types::{Chat, MessageId, User};
 /// public winners.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct GiveawayWinners {
     /// The chat that created the giveaway
     pub chat: Chat,
 
     /// Identifier of the messsage with the giveaway in the chat
     #[serde(flatten, with = "crate::types::prefix_giveaway_message_id")]
+    #[cfg_attr(test, schemars(with = "i32"))]
     pub giveaway_message_id: MessageId,
 
     /// Point in time (Unix timestamp) when winners of the giveaway were
     /// selected
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub winners_selection_date: DateTime<Utc>,
 
     /// Total number of winners in the giveaway

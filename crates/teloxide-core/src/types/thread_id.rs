@@ -39,6 +39,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [`thread_id`]: crate::types::Message::thread_id
 #[derive(Clone, Copy, Debug, derive_more::Display, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(from = "ThreadIdRaw", into = "ThreadIdRaw")]
 pub struct ThreadId(/** Identifier of the root message in a reply thread. */ pub MessageId);
 
@@ -46,6 +47,7 @@ pub struct ThreadId(/** Identifier of the root message in a reply thread. */ pub
 //      we need this since `MessageId` is [de]serialized as `{"message_id":n}`.
 
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 struct ThreadIdRaw(i32);
 
 impl From<ThreadIdRaw> for ThreadId {

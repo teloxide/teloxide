@@ -5,6 +5,7 @@ use crate::types::{Chat, User};
 /// Represents either [`User`] or anonymous user ([`Chat`]) that acts on behalf
 /// of the chat
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum MaybeAnonymousUser {
     User(User),
