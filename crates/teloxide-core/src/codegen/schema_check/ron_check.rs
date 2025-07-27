@@ -3,38 +3,40 @@ use derive_more::derive::Display;
 
 #[derive(Debug, Display)]
 enum ApiCheckError {
-    #[display("Method {method} does not exist")]
+    #[display("Method `{method}` does not exist")]
     MethodDoesNotExist { method: String },
-    #[display("Method {method} does not have {param} parameter")]
+    #[display("Method `{method}` does not have `{param}` parameter")]
     ParamDoesNotExist { method: String, param: String },
-    #[display("Method {method} and sibling {sibling} have something different in {param} param.")]
+    #[display(
+        "Method `{method}` and sibling `{sibling}` have something different in `{param}` param."
+    )]
     SiblingParamsDontMatch { method: String, sibling: String, param: String },
     #[display(
-        "Method {method} has a sibling {fake_sibling}, but {fake_sibling} doesn't have {method} \
-         as a sibling."
+        "Method `{method}` has a sibling `{fake_sibling}`, but `{fake_sibling}` doesn't have \
+         `{method}` as a sibling."
     )]
     SiblingsDontMatch { method: String, fake_sibling: String },
-    #[display("Method {method} has required {param} parameter, when it is not required")]
+    #[display("Method `{method}` has required `{param}` parameter, when it is not required")]
     ParamIsNotRequired { method: String, param: String },
-    #[display("Method {method} has optional {param} parameter, when it is not optional")]
+    #[display("Method `{method}` has optional `{param}` parameter, when it is not optional")]
     ParamIsNotOptional { method: String, param: String },
     #[display(
-        "{param} parameter of method {method} has a number type that can't fit all the possible \
-         values. The limit is {param_limit}, but values go up to {actual_limit}"
+        "`{param}` parameter of method `{method}` has a number type that can't fit all the \
+         possible values. The limit is `{param_limit}`, but values go up to `{actual_limit}`"
     )]
     ParamIsTooRestrictive { method: String, param: String, param_limit: i64, actual_limit: i64 }, /* Limit can't be higher than i64 ever */
     #[display(
-        "{param} parameter of method {method} is of type {raw_type}, but the actual type is \
-         {actual_type}"
+        "`{param}` parameter of method `{method}` is of type `{raw_type}`, but the actual type is \
+         `{actual_type}`"
     )]
     ParamRawTyDoesNotMatch { method: String, param: String, raw_type: String, actual_type: String },
     #[display(
-        "{param} parameter of method {method} is of type [{raw_type:?}], but the actual type is \
-         [{actual_type:?}]"
+        "`{param}` parameter of method `{method}` is of type [{raw_type:?}], but the actual type \
+         is [{actual_type:?}]"
     )]
     ParamTyDoesNotMatch { method: String, param: String, raw_type: schema::Type, actual_type: Kind },
     #[display(
-        "Method {method} has a link to TBA {doc_link}, but the actual link is {actual_doc_link}"
+        "Method `{method}` has a link to TBA {doc_link}, but the actual link is {actual_doc_link}"
     )]
     MethodDocLinkDoesNotMatch { method: String, doc_link: String, actual_doc_link: String },
 }
