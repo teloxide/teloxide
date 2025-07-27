@@ -1,8 +1,64 @@
 use crate::codegen::schema_check::api_schema::*;
+use derive_more::derive::Display;
 use serde_json::{Map, Value};
 
 fn convert_reference_string(reference: String, initial_object_name: String) -> String {
     reference.trim_start_matches("#/$defs/").replace("#", &initial_object_name).to_string()
+}
+
+#[derive(Debug, Clone, PartialEq)]
+enum Exception {
+    IgnoreObject { object: String },
+    IgnoreFieldName { field_name: String },
+    IgnoreFieldRequiredName { field_name: String },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct Exceptions {
+    exceptions: Vec<Exception>,
+}
+
+impl Exceptions {
+    fn new(exceptions: Vec<Exception>) -> Self {
+        Self { exceptions }
+    }
+
+    fn is_object_ignored(&self, object: String) -> bool {
+        self.exceptions.contains(&Exception::IgnoreObject { object })
+    }
+
+    fn is_field_ignored(&self, field_name: String) -> bool {
+        self.exceptions.contains(&Exception::IgnoreFieldName { field_name })
+    }
+
+    fn is_field_required_ignored(&self, field_name: String) -> bool {
+        self.exceptions.contains(&Exception::IgnoreFieldRequiredName { field_name })
+    }
+}
+
+#[derive(Debug, Display)]
+enum ApiCheckError {
+    #[display("Object `{object}` does not have `{field}` field")]
+    FieldDoesNotExist { object: String, field: String },
+    #[display("Object `{object}` has required `{field}` field, when it is not required")]
+    FieldIsNotRequired { object: String, field: String },
+    #[display("Object `{object}` has optional `{field}` field, when it is not optional")]
+    FieldIsNotOptional { object: String, field: String },
+    #[display(
+        "`{field}` field of object `{object}` is of type `{raw_type}`, but the actual type is \
+         `{actual_type}`"
+    )]
+    FieldReferenceTyDoesNotMatch {
+        object: String,
+        field: String,
+        raw_type: String,
+        actual_type: String,
+    },
+    #[display(
+        "`{field}` field of object `{object}` is of type [{raw_type:?}], but the actual type is \
+         [{actual_type:?}]"
+    )]
+    FieldTyDoesNotMatch { object: String, field: String, raw_type: Kind, actual_type: Kind },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -268,34 +324,73 @@ fn get_fields_of_rust_object(
     fields
 }
 
-fn check_struct_kind(rust_kind: &Kind, api_kind: &Kind, field_name: String) {
+fn check_struct_kind(
+    rust_kind: &Kind,
+    api_kind: &Kind,
+    field_name: String,
+    object_name: String,
+    errors: &mut Vec<ApiCheckError>,
+) {
     if std::mem::discriminant(rust_kind) != std::mem::discriminant(api_kind) {
-        dbg!(field_name, rust_kind, "NOT EXISTS");
+        errors.push(ApiCheckError::FieldTyDoesNotMatch {
+            object: object_name,
+            field: field_name,
+            raw_type: rust_kind.clone(),
+            actual_type: api_kind.clone(),
+        });
     } else if let (
         Kind::Reference { reference: rust_reference },
         Kind::Reference { reference: api_reference },
     ) = (rust_kind, api_kind)
     {
         if rust_reference != api_reference {
-            dbg!(field_name, rust_kind, "WRONG REFERENCE");
+            errors.push(ApiCheckError::FieldReferenceTyDoesNotMatch {
+                object: object_name,
+                field: field_name,
+                raw_type: rust_reference.to_owned(),
+                actual_type: api_reference.to_owned(),
+            });
         }
     } else if let (Kind::Array { array: rust_array }, Kind::Array { array: api_array }) =
         (rust_kind, api_kind)
     {
-        check_struct_kind(&rust_array.0, &api_array.0, field_name);
+        check_struct_kind(&rust_array.0, &api_array.0, field_name, object_name, errors);
     }
 }
 
-fn check_struct_field(rust_field: &Property, api_field: &Property, field_name: String) {
+fn check_struct_field(
+    rust_field: &Property,
+    api_field: &Property,
+    field_name: String,
+    object_name: String,
+    ignore_field_names: &Exceptions,
+    errors: &mut Vec<ApiCheckError>,
+) {
+    // Fields that usually have something different with Option<>
+    let ignore_fields_required = Exceptions::new(vec![
+        // file_size has a fallback
+        Exception::IgnoreFieldRequiredName { field_name: "file_size".to_owned() },
+    ]);
+
+    if ignore_field_names.is_field_ignored(field_name.clone())
+        || ignore_fields_required.is_field_required_ignored(field_name.clone())
+    {
+        return;
+    }
+
     let rust_kind = rust_field.kind.0.clone();
     let api_kind = api_field.kind.0.clone();
 
-    check_struct_kind(&rust_kind, &api_kind, field_name.clone());
-    if rust_field.required != api_field.required
-        // We have a lot skip_serializing_if for bools
-        && !matches!(rust_kind, Kind::Bool { default: _ })
-    {
-        dbg!(field_name, rust_field, "REQUIRED IS DIFFERENT");
+    check_struct_kind(&rust_kind, &api_kind, field_name.clone(), object_name.clone(), errors);
+    // We have a lot skip_serializing_if for bools
+    if !matches!(rust_kind, Kind::Bool { default: _ }) {
+        if rust_field.required && !api_field.required {
+            errors
+                .push(ApiCheckError::FieldIsNotRequired { object: object_name, field: field_name });
+        } else if !rust_field.required && api_field.required {
+            errors
+                .push(ApiCheckError::FieldIsNotOptional { object: object_name, field: field_name });
+        }
     }
 }
 
@@ -327,7 +422,18 @@ fn get_fields_of_api_object(api_schema: ApiSchema, api_object: Object) -> Vec<Pr
     fields
 }
 
-fn check_object(api_schema: ApiSchema, rust_object: schemars::Schema) {
+fn check_object(
+    api_schema: ApiSchema,
+    rust_object: schemars::Schema,
+    errors: &mut Vec<ApiCheckError>,
+) {
+    // Fields that are usually problematic are better to skip completely
+    let ignore_field_names = Exceptions::new(vec![
+        // The `type` fields is usually a serde tag, and its messy
+        Exception::IgnoreFieldName { field_name: "type".to_owned() },
+        Exception::IgnoreFieldName { field_name: "transaction_type".to_owned() },
+    ]);
+
     let official_types: Vec<String> = api_schema.objects.iter().map(|x| x.name.clone()).collect();
     let initial_object_name = rust_object.get("title").unwrap().as_str().unwrap().to_owned();
 
@@ -341,7 +447,7 @@ fn check_object(api_schema: ApiSchema, rust_object: schemars::Schema) {
         rust_object.as_value(),
         official_types,
         references,
-        initial_object_name,
+        initial_object_name.clone(),
         false,
     );
 
@@ -349,9 +455,21 @@ fn check_object(api_schema: ApiSchema, rust_object: schemars::Schema) {
 
     for api_field in api_fields {
         if let Some(rust_field) = rust_fields.iter().find(|x| x.name == api_field.name) {
-            check_struct_field(rust_field, &api_field, api_field.name.clone());
+            check_struct_field(
+                rust_field,
+                &api_field,
+                api_field.name.clone(),
+                initial_object_name.clone(),
+                &ignore_field_names,
+                errors,
+            );
         } else {
-            dbg!(api_field, "NOT EXISTS");
+            if !ignore_field_names.is_field_ignored(api_field.name.clone()) {
+                errors.push(ApiCheckError::FieldDoesNotExist {
+                    object: initial_object_name.clone(),
+                    field: api_field.name.clone(),
+                });
+            }
         }
     }
 }
@@ -365,7 +483,19 @@ mod tests {
     #[test]
     fn test_rust_object() {
         let api_schema = get_api_schema();
+        let ignore_objects =
+            Exceptions::new(vec![Exception::IgnoreObject { object: "Update".to_string() }]);
 
-        check_object(api_schema.clone(), schema_for!(Message));
+        let mut errors = vec![];
+
+        check_object(api_schema.clone(), schema_for!(Message), &mut errors);
+
+        if !errors.is_empty() {
+            let mut errors_string = String::new();
+            for (i, error) in errors.iter().enumerate() {
+                errors_string = format!("{errors_string}\n\n{}. {error}", i + 1);
+            }
+            panic!("schema.ron does not match the rust types. The errors are:\n\n{errors_string}",);
+        }
     }
 }
