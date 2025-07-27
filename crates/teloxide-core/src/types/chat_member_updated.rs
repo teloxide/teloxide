@@ -8,6 +8,7 @@ use crate::types::{Chat, ChatInviteLink, ChatMember, User};
 /// [The official docs](https://core.telegram.org/bots/api#chatmemberupdated).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatMemberUpdated {
     /// Chat the user belongs to
     pub chat: Chat,
@@ -17,6 +18,7 @@ pub struct ChatMemberUpdated {
 
     /// Date the change was done
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 
     /// Previous information about the chat member

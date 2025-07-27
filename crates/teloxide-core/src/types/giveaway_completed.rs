@@ -6,6 +6,7 @@ use crate::types::Message;
 /// without public winners.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct GiveawayCompleted {
     /// Number of winners in the giveaway
     pub winner_count: u32,

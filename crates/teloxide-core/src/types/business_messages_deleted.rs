@@ -5,6 +5,7 @@ use crate::types::{BusinessConnectionId, Chat, MessageId};
 /// This object is received when messages are deleted from a connected business
 /// account.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BusinessMessagesDeleted {
     /// Unique identifier of the business connection.
     pub business_connection_id: BusinessConnectionId,

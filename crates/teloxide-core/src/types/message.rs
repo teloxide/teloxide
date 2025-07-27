@@ -26,6 +26,7 @@ use crate::types::{
 /// [The official docs](https://core.telegram.org/bots/api#message).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Message {
     /// Unique message identifier inside this chat.
     #[serde(flatten)]
@@ -51,6 +52,7 @@ pub struct Message {
 
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 
     /// Conversation the message belongs to.
@@ -86,6 +88,7 @@ pub struct Message {
 //        untagged (`MessageCommon` as an example), while other need to be
 //        tagged (e.g.: Forum*)
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum MessageKind {
     Common(MessageCommon),
@@ -155,12 +158,14 @@ pub enum MessageKind {
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct EffectId(pub String);
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageCommon {
     /// Signature of the post author for messages in channels, or the custom
     /// title of an anonymous group administrator.
@@ -201,6 +206,7 @@ pub struct MessageCommon {
 
     /// Date the message was last edited in Unix time.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub edit_date: Option<DateTime<Utc>>,
 
     #[serde(flatten)]
@@ -233,6 +239,7 @@ pub struct MessageCommon {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageNewChatMembers {
     /// New members that were added to the group or supergroup and
     /// information about them (the bot itself may be one of these
@@ -242,6 +249,7 @@ pub struct MessageNewChatMembers {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageLeftChatMember {
     /// A member was removed from the group, information about them (this
     /// member may be the bot itself).
@@ -250,6 +258,7 @@ pub struct MessageLeftChatMember {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageNewChatTitle {
     /// A chat title was changed to this value.
     pub new_chat_title: String,
@@ -257,6 +266,7 @@ pub struct MessageNewChatTitle {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageNewChatPhoto {
     /// A chat photo was change to this value.
     pub new_chat_photo: Vec<PhotoSize>,
@@ -264,6 +274,7 @@ pub struct MessageNewChatPhoto {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageDeleteChatPhoto {
     /// Service message: the chat photo was deleted.
     pub delete_chat_photo: True,
@@ -271,6 +282,7 @@ pub struct MessageDeleteChatPhoto {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGroupChatCreated {
     /// Service message: the group has been created.
     pub group_chat_created: True,
@@ -278,6 +290,7 @@ pub struct MessageGroupChatCreated {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSupergroupChatCreated {
     /// Service message: the supergroup has been created. This field can‘t
     /// be received in a message coming through updates, because bot can’t
@@ -289,6 +302,7 @@ pub struct MessageSupergroupChatCreated {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChannelChatCreated {
     /// Service message: the channel has been created. This field can‘t be
     /// received in a message coming through updates, because bot can’t be
@@ -300,6 +314,7 @@ pub struct MessageChannelChatCreated {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageMessageAutoDeleteTimerChanged {
     /// Service message: auto-delete timer settings changed in the chat.
     pub message_auto_delete_timer_changed: MessageAutoDeleteTimerChanged,
@@ -316,6 +331,7 @@ pub struct MessageMessageAutoDeleteTimerChanged {
 /// - `message.chat.id = 1`, `message.chat_migration() = ChatMigration::From {
 ///   chat_id: 0 }`
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum ChatMigration {
     /// The group has been migrated to a supergroup with the specified
@@ -335,6 +351,7 @@ pub enum ChatMigration {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessagePinned {
     /// Specified message was pinned. Note that the Message object in this
     /// field will not contain further `reply_to_message` fields even if it
@@ -344,12 +361,14 @@ pub struct MessagePinned {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChatShared {
     /// A chat was shared with the bot.
     pub chat_shared: ChatShared,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageUsersShared {
     /// Users were shared with the bot
     pub users_shared: UsersShared,
@@ -357,6 +376,7 @@ pub struct MessageUsersShared {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageInvoice {
     /// Message is an invoice for a [payment], information about the
     /// invoice. [More about payments »].
@@ -368,6 +388,7 @@ pub struct MessageInvoice {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageRefundedPayment {
     /// Message is a service message about a successful payment, information
     /// about the payment. [More about payments »].
@@ -378,6 +399,7 @@ pub struct MessageRefundedPayment {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuccessfulPayment {
     /// Message is a service message about a successful payment,
     /// information about the payment. [More about payments »].
@@ -388,6 +410,7 @@ pub struct MessageSuccessfulPayment {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageConnectedWebsite {
     /// The domain name of the website on which the user has logged in.
     /// [More about Telegram Login »].
@@ -398,12 +421,14 @@ pub struct MessageConnectedWebsite {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessagePassportData {
     /// Telegram Passport data.
     pub passport_data: PassportData,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum MediaKind {
     // Note:
@@ -436,6 +461,7 @@ pub enum MediaKind {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaAnimation {
     /// Message is an animation, information about the animation. For
     /// backward compatibility, when this field is set, the document field
@@ -473,12 +499,14 @@ pub struct MediaAnimation {
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct MediaGroupId(pub String);
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaAudio {
     /// Message is an audio file, information about the file.
     pub audio: Audio,
@@ -498,6 +526,7 @@ pub struct MediaAudio {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaContact {
     /// Message is a shared contact, information about the contact.
     pub contact: Contact,
@@ -505,6 +534,7 @@ pub struct MediaContact {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaDocument {
     /// Message is a general file, information about the file.
     pub document: Document,
@@ -523,6 +553,7 @@ pub struct MediaDocument {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaPaid {
     /// Message contains paid media; information about the paid media.
     pub paid_media: PaidMediaInfo,
@@ -530,6 +561,7 @@ pub struct MediaPaid {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaGame {
     /// Message is a game, information about the game. [More
     /// about games »].
@@ -540,6 +572,7 @@ pub struct MediaGame {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaLocation {
     /// Message is a shared location, information about the location.
     pub location: Location,
@@ -547,6 +580,7 @@ pub struct MediaLocation {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaPhoto {
     /// Message is a photo, available sizes of the photo.
     pub photo: Vec<PhotoSize>,
@@ -574,6 +608,7 @@ pub struct MediaPhoto {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaPoll {
     /// Message is a native poll, information about the poll.
     pub poll: Poll,
@@ -581,6 +616,7 @@ pub struct MediaPoll {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaChecklist {
     /// Message is a checklist, information about the checklist.
     pub checklist: Checklist,
@@ -588,6 +624,7 @@ pub struct MediaChecklist {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaSticker {
     /// Message is a sticker, information about the sticker.
     pub sticker: Sticker,
@@ -595,6 +632,7 @@ pub struct MediaSticker {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaStory {
     /// Message is a forwarded story
     pub story: Story,
@@ -602,6 +640,7 @@ pub struct MediaStory {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaText {
     /// For text messages, the actual UTF-8 text of the message, 0-4096
     /// characters.
@@ -619,6 +658,7 @@ pub struct MediaText {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaVideo {
     /// Message is a video, information about the video.
     pub video: Video,
@@ -646,6 +686,7 @@ pub struct MediaVideo {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaVideoNote {
     /// Message is a [video note], information about the video message.
     ///
@@ -655,6 +696,7 @@ pub struct MediaVideoNote {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaVoice {
     /// Message is a voice message, information about the file.
     pub voice: Voice,
@@ -669,6 +711,7 @@ pub struct MediaVoice {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MediaVenue {
     /// Message is a venue, information about the venue.
     pub venue: Venue,
@@ -677,6 +720,7 @@ pub struct MediaVenue {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageDice {
     /// Message is a dice with random value from 1 to 6.
     pub dice: Dice,
@@ -684,6 +728,7 @@ pub struct MessageDice {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageProximityAlertTriggered {
     /// Service message. A user in the chat triggered another user's proximity
     /// alert while sharing Live Location.
@@ -692,6 +737,7 @@ pub struct MessageProximityAlertTriggered {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChatBoostAdded {
     /// Service message. User boosted the chat.
     pub boost_added: ChatBoostAdded,
@@ -699,6 +745,7 @@ pub struct MessageChatBoostAdded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChatBackground {
     /// Service message. Chat background set.
     pub chat_background_set: ChatBackground,
@@ -706,6 +753,7 @@ pub struct MessageChatBackground {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChecklistTasksDone {
     /// Service message: some tasks in a checklist were marked as done or not
     /// done.
@@ -714,6 +762,7 @@ pub struct MessageChecklistTasksDone {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageChecklistTasksAdded {
     /// Service message: tasks were added to a checklist.
     pub checklist_tasks_added: ChecklistTasksAdded,
@@ -721,6 +770,7 @@ pub struct MessageChecklistTasksAdded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageDirectMessagePriceChanged {
     /// Service message: the price for paid messages in the corresponding direct
     /// messages chat of a channel has changed.
@@ -729,6 +779,7 @@ pub struct MessageDirectMessagePriceChanged {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageWriteAccessAllowed {
     /// Service message: the user allowed the bot added to the attachment menu
     /// to write messages.
@@ -737,6 +788,7 @@ pub struct MessageWriteAccessAllowed {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageForumTopicCreated {
     /// Service message: forum topic created.
     pub forum_topic_created: ForumTopicCreated,
@@ -744,6 +796,7 @@ pub struct MessageForumTopicCreated {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageForumTopicEdited {
     /// Service message: forum topic edited.
     pub forum_topic_edited: ForumTopicEdited,
@@ -751,6 +804,7 @@ pub struct MessageForumTopicEdited {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageForumTopicClosed {
     /// Service message: forum topic closed.
     pub forum_topic_closed: ForumTopicClosed,
@@ -758,6 +812,7 @@ pub struct MessageForumTopicClosed {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageForumTopicReopened {
     /// Service message: forum topic reopened.
     pub forum_topic_reopened: ForumTopicReopened,
@@ -765,6 +820,7 @@ pub struct MessageForumTopicReopened {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGeneralForumTopicHidden {
     /// Service message: the 'General' forum topic hidden.
     pub general_forum_topic_hidden: GeneralForumTopicHidden,
@@ -772,6 +828,7 @@ pub struct MessageGeneralForumTopicHidden {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGeneralForumTopicUnhidden {
     /// Service message: the 'General' forum topic unhidden.
     pub general_forum_topic_unhidden: GeneralForumTopicUnhidden,
@@ -779,6 +836,7 @@ pub struct MessageGeneralForumTopicUnhidden {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGiveaway {
     /// Message is giveaway, information about a scheduled giveaway. [More about
     /// giveaways »]
@@ -789,6 +847,7 @@ pub struct MessageGiveaway {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGiveawayCompleted {
     /// Service message: a 'Giveaway' completed. [More about giveaways
     /// »]
@@ -799,6 +858,7 @@ pub struct MessageGiveawayCompleted {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGiveawayCreated {
     /// Service message: a scheduled 'Giveaway' created. [More about giveaways
     /// »]
@@ -809,6 +869,7 @@ pub struct MessageGiveawayCreated {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGiveawayWinners {
     /// Message is giveaway winners, information about the completion of a
     /// giveaway with public winners. [More about giveaways »]
@@ -819,6 +880,7 @@ pub struct MessageGiveawayWinners {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessagePaidMessagePriceChanged {
     /// Service message: the price for paid messages has changed in the chat
     pub paid_message_price_changed: PaidMessagePriceChanged,
@@ -826,6 +888,7 @@ pub struct MessagePaidMessagePriceChanged {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuggestedPostApproved {
     /// Service message: a suggested post was approved
     pub suggested_post_approved: SuggestedPostApproved,
@@ -833,6 +896,7 @@ pub struct MessageSuggestedPostApproved {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuggestedPostApprovalFailed {
     /// Service message: approval of a suggested post has failed
     pub suggested_post_approval_failed: SuggestedPostApprovalFailed,
@@ -840,6 +904,7 @@ pub struct MessageSuggestedPostApprovalFailed {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuggestedPostDeclined {
     /// Service message: a suggested post was declined
     pub suggested_post_declined: SuggestedPostDeclined,
@@ -847,6 +912,7 @@ pub struct MessageSuggestedPostDeclined {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuggestedPostPaid {
     /// Service message: payment for a suggested post was received
     pub suggested_post_paid: SuggestedPostPaid,
@@ -854,6 +920,7 @@ pub struct MessageSuggestedPostPaid {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageSuggestedPostRefunded {
     /// Service message: payment for a suggested post was refunded
     pub suggested_post_refunded: SuggestedPostRefunded,
@@ -861,6 +928,7 @@ pub struct MessageSuggestedPostRefunded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageGiftInfo {
     /// Service message: a regular gift was sent or received
     pub gift: GiftInfo,
@@ -868,6 +936,7 @@ pub struct MessageGiftInfo {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageUniqueGiftInfo {
     /// Service message: a unique gift was sent or received
     pub unique_gift: UniqueGiftInfo,
@@ -875,6 +944,7 @@ pub struct MessageUniqueGiftInfo {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageVideoChatScheduled {
     /// Service message: video chat scheduled
     pub video_chat_scheduled: VideoChatScheduled,
@@ -882,6 +952,7 @@ pub struct MessageVideoChatScheduled {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageVideoChatStarted {
     /// Service message: video chat started.
     pub video_chat_started: VideoChatStarted,
@@ -889,6 +960,7 @@ pub struct MessageVideoChatStarted {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageVideoChatEnded {
     /// Service message: video chat ended.
     pub video_chat_ended: VideoChatEnded,
@@ -896,6 +968,7 @@ pub struct MessageVideoChatEnded {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageVideoChatParticipantsInvited {
     /// Service message: new participants invited to a video chat.
     pub video_chat_participants_invited: VideoChatParticipantsInvited,
@@ -903,6 +976,7 @@ pub struct MessageVideoChatParticipantsInvited {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageWebAppData {
     /// Service message: data sent by a Web App.
     pub web_app_data: WebAppData,
