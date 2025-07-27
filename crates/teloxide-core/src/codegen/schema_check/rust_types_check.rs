@@ -7,6 +7,7 @@ fn convert_reference_string(reference: String, initial_object_name: String) -> S
 }
 
 #[derive(Debug, Clone, PartialEq)]
+#[allow(clippy::enum_variant_names)] // Other exceptions might be added in the future
 enum Exception {
     IgnoreObject { object: String },
     IgnoreFieldName { field_name: String },
@@ -23,6 +24,10 @@ impl Exceptions {
         Self { exceptions }
     }
 
+    fn extend(&mut self, exceptions: Vec<Exception>) {
+        self.exceptions.extend(exceptions);
+    }
+
     fn is_object_ignored(&self, object: String) -> bool {
         self.exceptions.contains(&Exception::IgnoreObject { object })
     }
@@ -37,6 +42,7 @@ impl Exceptions {
 }
 
 #[derive(Debug, Display)]
+#[allow(clippy::enum_variant_names)] // Other errors might be added in the future
 enum ApiCheckError {
     #[display("Object `{object}` does not have `{field}` field")]
     FieldDoesNotExist { object: String, field: String },
@@ -363,17 +369,11 @@ fn check_struct_field(
     api_field: &Property,
     field_name: String,
     object_name: String,
-    ignore_field_names: &Exceptions,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
-    // Fields that usually have something different with Option<>
-    let ignore_fields_required = Exceptions::new(vec![
-        // file_size has a fallback
-        Exception::IgnoreFieldRequiredName { field_name: "file_size".to_owned() },
-    ]);
-
-    if ignore_field_names.is_field_ignored(field_name.clone())
-        || ignore_fields_required.is_field_required_ignored(field_name.clone())
+    if exceptions.is_field_ignored(field_name.clone())
+        || exceptions.is_field_required_ignored(field_name.clone())
     {
         return;
     }
@@ -426,16 +426,14 @@ fn check_object(
     api_schema: ApiSchema,
     rust_object: schemars::Schema,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
-    // Fields that are usually problematic are better to skip completely
-    let ignore_field_names = Exceptions::new(vec![
-        // The `type` fields is usually a serde tag, and its messy
-        Exception::IgnoreFieldName { field_name: "type".to_owned() },
-        Exception::IgnoreFieldName { field_name: "transaction_type".to_owned() },
-    ]);
-
     let official_types: Vec<String> = api_schema.objects.iter().map(|x| x.name.clone()).collect();
     let initial_object_name = rust_object.get("title").unwrap().as_str().unwrap().to_owned();
+
+    if exceptions.is_object_ignored(initial_object_name.clone()) {
+        return;
+    }
 
     let binding = api_schema.objects.clone();
     let api_object = binding.iter().find(|x| x.name == initial_object_name).unwrap();
@@ -460,16 +458,14 @@ fn check_object(
                 &api_field,
                 api_field.name.clone(),
                 initial_object_name.clone(),
-                &ignore_field_names,
                 errors,
+                exceptions,
             );
-        } else {
-            if !ignore_field_names.is_field_ignored(api_field.name.clone()) {
-                errors.push(ApiCheckError::FieldDoesNotExist {
-                    object: initial_object_name.clone(),
-                    field: api_field.name.clone(),
-                });
-            }
+        } else if !exceptions.is_field_ignored(api_field.name.clone()) {
+            errors.push(ApiCheckError::FieldDoesNotExist {
+                object: initial_object_name.clone(),
+                field: api_field.name.clone(),
+            });
         }
     }
 }
@@ -483,12 +479,27 @@ mod tests {
     #[test]
     fn test_rust_object() {
         let api_schema = get_api_schema();
-        let ignore_objects =
-            Exceptions::new(vec![Exception::IgnoreObject { object: "Update".to_string() }]);
+        let mut exceptions = Exceptions::new(vec![
+            // Update has custom serialization, and it probably won't be wrong any time soon
+            Exception::IgnoreObject { object: "Update".to_string() },
+        ]);
+
+        // Fields that are usually problematic are better to skip completely
+        exceptions.extend(vec![
+            // The `type` fields is usually a serde tag, and its messy
+            Exception::IgnoreFieldName { field_name: "type".to_owned() },
+            Exception::IgnoreFieldName { field_name: "transaction_type".to_owned() },
+        ]);
+
+        // Fields that usually have something different with Option<>
+        exceptions.extend(vec![
+            // file_size has a fallback
+            Exception::IgnoreFieldRequiredName { field_name: "file_size".to_owned() },
+        ]);
 
         let mut errors = vec![];
 
-        check_object(api_schema.clone(), schema_for!(Message), &mut errors);
+        check_object(api_schema.clone(), schema_for!(Message), &mut errors, &exceptions);
 
         if !errors.is_empty() {
             let mut errors_string = String::new();
