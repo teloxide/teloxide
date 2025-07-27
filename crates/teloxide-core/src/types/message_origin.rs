@@ -5,12 +5,14 @@ use crate::types::{Chat, MessageId, User};
 
 /// This object describes the origin of a message
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MessageOrigin {
     User {
         /// Date the message was sent originally in Unix time
         #[serde(default, with = "crate::types::serde_date_from_unix_timestamp")]
+        #[cfg_attr(test, schemars(with = "i64"))]
         date: DateTime<Utc>,
         /// User that sent the message originally
         sender_user: User,
@@ -18,6 +20,7 @@ pub enum MessageOrigin {
     HiddenUser {
         /// Date the message was sent originally in Unix time
         #[serde(default, with = "crate::types::serde_date_from_unix_timestamp")]
+        #[cfg_attr(test, schemars(with = "i64"))]
         date: DateTime<Utc>,
         /// Name of the user that sent the message originally
         sender_user_name: String,
@@ -25,6 +28,7 @@ pub enum MessageOrigin {
     Chat {
         /// Date the message was sent originally in Unix time
         #[serde(default, with = "crate::types::serde_date_from_unix_timestamp")]
+        #[cfg_attr(test, schemars(with = "i64"))]
         date: DateTime<Utc>,
         /// Chat that sent the message originally
         sender_chat: Chat,
@@ -35,6 +39,7 @@ pub enum MessageOrigin {
     Channel {
         /// Date the message was sent originally in Unix time
         #[serde(default, with = "crate::types::serde_date_from_unix_timestamp")]
+        #[cfg_attr(test, schemars(with = "i64"))]
         date: DateTime<Utc>,
         /// Channel chat to which the message was originally sent
         chat: Chat,

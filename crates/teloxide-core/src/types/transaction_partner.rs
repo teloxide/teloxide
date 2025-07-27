@@ -9,6 +9,7 @@ use crate::types::{Chat, Gift, PaidMedia, RevenueWithdrawalState, Seconds, User}
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum TransactionPartner {
@@ -25,6 +26,7 @@ pub enum TransactionPartner {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerFragment {
     /// State of the transaction if the transaction is outgoing.
     pub withdrawal_state: Option<RevenueWithdrawalState>,
@@ -34,6 +36,7 @@ pub struct TransactionPartnerFragment {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerUser {
     /// Information about the user.
     pub user: User,
@@ -51,6 +54,7 @@ pub struct TransactionPartnerUser {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(tag = "transaction_type", rename_all = "snake_case")]
 pub enum TransactionPartnerUserKind {
     InvoicePayment(TransactionPartnerUserInvoicePayment),
@@ -63,6 +67,7 @@ pub enum TransactionPartnerUserKind {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerUserInvoicePayment {
     /// Information about the affiliate that received a commission via this
     /// transaction
@@ -78,6 +83,7 @@ pub struct TransactionPartnerUserInvoicePayment {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerUserPaidMediaPayment {
     /// Information about the affiliate that received a commission via this
     /// transaction
@@ -93,6 +99,7 @@ pub struct TransactionPartnerUserPaidMediaPayment {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerUserGiftPurchase {
     /// The gift sent to the user by the bot
     pub gift: Option<Gift>,
@@ -101,6 +108,7 @@ pub struct TransactionPartnerUserGiftPurchase {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerUserPremiumPurchase {
     /// Number of months the gifted Telegram Premium subscription will be active
     /// for
@@ -164,6 +172,7 @@ impl TransactionPartnerUserKind {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerChat {
     /// Information about the chat
     pub chat: Chat,
@@ -177,6 +186,7 @@ pub struct TransactionPartnerChat {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct AffiliateInfo {
     /// The bot or the user that received an affiliate commission if it was
     /// received by a bot or a user
@@ -204,6 +214,7 @@ pub struct AffiliateInfo {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerAffiliateProgram {
     /// Information about the bot that sponsored the affiliate program
     pub sponsor_user: Option<User>,
@@ -217,6 +228,7 @@ pub struct TransactionPartnerAffiliateProgram {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TransactionPartnerTelegramApi {
     /// The number of successful requests that exceeded regular limits and were
     /// therefore billed

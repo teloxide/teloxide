@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
     Serialize,
     Deserialize
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(from = "MessageIdRaw", into = "MessageIdRaw")]
 pub struct MessageId(pub i32);
 
@@ -27,6 +28,7 @@ pub struct MessageId(pub i32);
 // `#[serde(flatten)]`
 
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 struct MessageIdRaw {
     message_id: i32,
 }

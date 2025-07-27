@@ -9,6 +9,7 @@ use crate::types::{FileMeta, PhotoSize, Seconds};
 /// [The official docs](https://core.telegram.org/bots/api#audio).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Audio {
     /// Metadata of the audio file.
     #[serde(flatten)]
@@ -28,6 +29,7 @@ pub struct Audio {
 
     /// A MIME type of the file as defined by a sender.
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 
     /// A thumbnail of the album cover to which the music file belongs.

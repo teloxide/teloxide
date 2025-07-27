@@ -12,6 +12,7 @@ use crate::types::KeyboardButton;
 /// [Introduction to bots]: https://core.telegram.org/bots#keyboards
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct KeyboardMarkup {
     /// Array of button rows, each represented by an Array of
     /// [`KeyboardButton`] objects

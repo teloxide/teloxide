@@ -9,6 +9,7 @@ use crate::types::Sticker;
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Gifts {
     /// The list of gifts
     pub gifts: Vec<Gift>,
@@ -18,6 +19,7 @@ pub struct Gifts {
 #[derive(Clone, Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize, From)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct GiftId(pub String);
@@ -29,6 +31,7 @@ pub struct GiftId(pub String);
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Gift {
     /// Unique identifier of the gift
     pub id: GiftId,

@@ -11,6 +11,7 @@ use crate::types::Seconds;
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum LivePeriod {
     Timeframe(Seconds),

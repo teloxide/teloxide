@@ -8,6 +8,7 @@ use crate::types::{PhotoSize, Seconds, Video};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaInfo {
     /// The number of Telegram Stars that must be paid to buy access to the
     /// media.
@@ -23,6 +24,7 @@ pub struct PaidMediaInfo {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum PaidMedia {
@@ -38,6 +40,7 @@ pub enum PaidMedia {
 #[derive(Clone, Copy, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaPreview {
     /// Media width as defined by the sender.
     pub width: Option<u32>,
@@ -55,6 +58,7 @@ pub struct PaidMediaPreview {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaPhoto {
     pub photo: PhotoSize,
 }
@@ -65,6 +69,7 @@ pub struct PaidMediaPhoto {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaVideo {
     pub video: Video,
 }

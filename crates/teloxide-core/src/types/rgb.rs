@@ -5,6 +5,7 @@ use serde::{de::Visitor, Deserialize, Serialize};
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Rgb {
     pub r: u8,
     pub g: u8,

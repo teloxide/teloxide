@@ -12,6 +12,7 @@ use crate::types::{
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct KeyboardButton {
     /// Text of the button. If none of the optional fields are used, it will
     /// be sent as a message when the button is pressed.
@@ -46,6 +47,7 @@ impl KeyboardButton {
 ///
 /// See individual variants documentation for more info.
 #[derive(Clone, Debug, Eq, Hash, PartialEq /*, Serialize, Deserialize */)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum ButtonRequest {
     /// If this variant is used, the user's current location will be sent when
     /// the button is pressed.
@@ -92,6 +94,7 @@ pub enum ButtonRequest {
 /// Helper struct for (de)serializing [`ButtonRequest`](ButtonRequest)
 #[serde_with::skip_serializing_none]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 struct RawRequest {
     /// If `true`, the user's phone number will be sent as a contact
     /// when the button is pressed. Available in private chats only.

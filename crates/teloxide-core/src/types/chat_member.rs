@@ -9,6 +9,7 @@ use crate::types::{UntilDate, User};
 /// [The official docs](https://core.telegram.org/bots/api#chatmember).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatMember {
     /// Information about the user.
     pub user: User,
@@ -19,6 +20,7 @@ pub struct ChatMember {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "status")]
 pub enum ChatMemberKind {
@@ -35,6 +37,7 @@ pub enum ChatMemberKind {
 /// Owner of the group. This struct is part of the [`ChatMemberKind`] enum.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Owner {
     /// Custom title for this user.
     pub custom_title: Option<String>,
@@ -47,6 +50,7 @@ pub struct Owner {
 /// enum.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Administrator {
     /// Custom title for this user.
     pub custom_title: Option<String>,
@@ -121,6 +125,7 @@ pub struct Administrator {
 /// This struct is part of the [`ChatMemberKind`] enum.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Member {
     /// Date when the user's subscription will expire
     pub until_date: Option<UntilDate>,
@@ -130,6 +135,7 @@ pub struct Member {
 /// enum.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Restricted {
     /// Date when restrictions will be lifted for this user.
     pub until_date: UntilDate,
@@ -189,6 +195,7 @@ pub struct Restricted {
 /// messages. This struct is part of the [`ChatMemberKind`] enum.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Banned {
     /// Date when restrictions will be lifted for this user.
     pub until_date: UntilDate,

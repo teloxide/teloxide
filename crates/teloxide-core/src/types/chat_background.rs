@@ -7,6 +7,7 @@ use crate::types::BackgroundType;
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBackground {
     /// Type of the background
     pub r#type: BackgroundType,

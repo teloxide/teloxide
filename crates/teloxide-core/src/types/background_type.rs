@@ -6,6 +6,7 @@ use crate::types::{BackgroundFill, Document, Percentage};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum BackgroundType {
@@ -19,6 +20,7 @@ pub enum BackgroundType {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundTypeFill {
     /// The background fill
     pub fill: BackgroundFill,
@@ -31,6 +33,7 @@ pub struct BackgroundTypeFill {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundTypeWallpaper {
     /// Document with the wallpaper
     pub document: Document,
@@ -54,6 +57,7 @@ pub struct BackgroundTypeWallpaper {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundTypePattern {
     /// Document with the wallpaper
     pub document: Document,
@@ -79,6 +83,7 @@ pub struct BackgroundTypePattern {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundTypeChatTheme {
     /// Name of the chat theme, which is usually an emoji
     pub theme_name: String,
