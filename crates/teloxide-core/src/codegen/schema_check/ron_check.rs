@@ -58,6 +58,10 @@ impl Exceptions {
         Self { exceptions }
     }
 
+    fn extend(&mut self, exceptions: Vec<Exception>) {
+        self.exceptions.extend(exceptions);
+    }
+
     fn is_method_field_exception(&self, method: String, param: String) -> bool {
         self.exceptions.contains(&Exception::MethodField { method, param })
     }
@@ -84,20 +88,10 @@ fn check_ron_siblings(
     ron_sibling_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
-    missing_field_exceptions: &Exceptions,
+    exceptions: &Exceptions,
 ) {
-    // If checker finds that one sibling has that field name, while the other
-    // doesn't, it will consider it normal. To add a one-time exception,
-    // refer to `missing_field_exceptions` argument.
-    let acceptable_sibling_params = Exceptions::new(vec![
-        Exception::SiblingParam { param: "inline_message_id".to_owned() },
-        Exception::SiblingParam { param: "user_id".to_owned() },
-        Exception::SiblingParam { param: "chat_id".to_owned() },
-        Exception::SiblingParam { param: "message_id".to_owned() },
-    ]);
-
-    check_ron_method_meta(ron_method, method, errors);
-    check_ron_method_meta(ron_sibling_method, method, errors);
+    check_ron_method_meta(ron_method, method, errors, exceptions);
+    check_ron_method_meta(ron_sibling_method, method, errors, exceptions);
 
     for param in &method.arguments {
         let mut param_name = param.name.clone();
@@ -115,6 +109,7 @@ fn check_ron_siblings(
                 &ron_sibling_param,
                 param,
                 errors,
+                exceptions,
             ),
             (Some(ron_param), None) => check_ron_siblings_only_one_field(
                 &ron_param,
@@ -122,8 +117,7 @@ fn check_ron_siblings(
                 ron_sibling_method.names.0.clone(),
                 param,
                 errors,
-                &acceptable_sibling_params,
-                missing_field_exceptions,
+                exceptions,
             ),
             (None, Some(ron_sibling_param)) => check_ron_siblings_only_one_field(
                 &ron_sibling_param,
@@ -131,13 +125,10 @@ fn check_ron_siblings(
                 ron_method.names.0.clone(),
                 param,
                 errors,
-                &acceptable_sibling_params,
-                missing_field_exceptions,
+                exceptions,
             ),
             (None, None) => {
-                if !missing_field_exceptions
-                    .is_method_field_exception(method.name.clone(), param_name)
-                {
+                if !exceptions.is_method_field_exception(method.name.clone(), param_name) {
                     errors.push(ApiCheckError::ParamDoesNotExist {
                         method: method.name.clone(),
                         param: param.name.clone(),
@@ -155,6 +146,7 @@ fn check_ron_siblings_field(
     ron_sibling_param: &schema::Param,
     param: &Argument,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
     if ron_param != ron_sibling_param {
         errors.push(ApiCheckError::SiblingParamsDontMatch {
@@ -163,7 +155,7 @@ fn check_ron_siblings_field(
             param: param.name.clone(),
         });
     } else {
-        check_param(ron_param, param, ron_method.names.0.clone(), false, errors);
+        check_param(ron_param, param, ron_method.names.0.clone(), false, errors, exceptions);
     }
 }
 
@@ -173,15 +165,14 @@ fn check_ron_siblings_only_one_field(
     ron_method_without_param_name: String,
     param: &Argument,
     errors: &mut Vec<ApiCheckError>,
-    acceptable_sibling_params: &Exceptions,
-    missing_field_exceptions: &Exceptions,
+    exceptions: &Exceptions,
 ) {
     let mut param_name = param.name.clone();
     escape_kw(&mut param_name);
 
     // Check if its in some exceptions
-    if (!acceptable_sibling_params.is_sibling_param_exception(param_name.clone()))
-        && (!missing_field_exceptions
+    if (!exceptions.is_sibling_param_exception(param_name.clone()))
+        && (!exceptions
             .is_method_field_exception(ron_method_without_param_name.clone(), param_name))
     {
         errors.push(ApiCheckError::ParamDoesNotExist {
@@ -191,7 +182,7 @@ fn check_ron_siblings_only_one_field(
     } else {
         // It is in some exceptions. We don't care about optional fields, since its an
         // exception.
-        check_param(ron_param, param, ron_method_name, true, errors);
+        check_param(ron_param, param, ron_method_name, true, errors, exceptions);
     }
 }
 
@@ -199,17 +190,15 @@ fn check_ron_params(
     ron_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
-    missing_field_exceptions: &Exceptions,
+    exceptions: &Exceptions,
 ) {
     for param in &method.arguments {
         let mut param_name = param.name.clone();
         escape_kw(&mut param_name);
 
         if let Some(ron_param) = find_ron_param_by_name(&param_name, ron_method) {
-            check_param(&ron_param, param, method.name.clone(), false, errors);
-        } else if !missing_field_exceptions
-            .is_method_field_exception(method.name.clone(), param_name)
-        {
+            check_param(&ron_param, param, method.name.clone(), false, errors, exceptions);
+        } else if !exceptions.is_method_field_exception(method.name.clone(), param_name) {
             errors.push(ApiCheckError::ParamDoesNotExist {
                 method: ron_method.names.0.clone(),
                 param: param.name.clone(),
@@ -223,6 +212,7 @@ fn check_ron_method_meta(
     ron_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
     check_type(
         &ron_method.return_ty,
@@ -230,6 +220,7 @@ fn check_ron_method_meta(
         "return_ty".to_owned(),
         method.name.clone(),
         errors,
+        exceptions,
     );
 
     // Some docs are for some reason like api/#something, not api#something.
@@ -246,10 +237,10 @@ fn check_ron_method(
     ron_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
-    missing_field_exceptions: &Exceptions,
+    exceptions: &Exceptions,
 ) {
-    check_ron_method_meta(ron_method, method, errors);
-    check_ron_params(ron_method, method, errors, missing_field_exceptions);
+    check_ron_method_meta(ron_method, method, errors, exceptions);
+    check_ron_params(ron_method, method, errors, exceptions);
 }
 
 fn check_param(
@@ -260,6 +251,7 @@ fn check_param(
     // schema
     ignore_optional: bool,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
     let mut ron_param = ron_param.clone();
 
@@ -278,7 +270,14 @@ fn check_param(
         });
     }
 
-    check_type(&ron_param.ty, &param.kind.0, param.name.clone(), method_name.clone(), errors);
+    check_type(
+        &ron_param.ty,
+        &param.kind.0,
+        param.name.clone(),
+        method_name.clone(),
+        errors,
+        exceptions,
+    );
 }
 
 fn check_type(
@@ -287,19 +286,11 @@ fn check_type(
     param_name: String,
     method_name: String,
     errors: &mut Vec<ApiCheckError>,
+    exceptions: &Exceptions,
 ) {
     // Assumes that the ron_type is not Option, since api_type has `required` field
     // instead
     assert!(!matches!(ron_type, &schema::Type::Option(_)), "ron_type can't be Option");
-
-    // Some types can be more narrow in teloxide, e.g. `Me` is a subset of `User`
-    let acceptable_different_raw_type = Exceptions::new(vec![
-        Exception::FieldType {
-            ron_raw_type: "ReplyMarkup".to_owned(),
-            actual_type: "InlineKeyboardMarkup".to_owned(),
-        },
-        Exception::FieldType { ron_raw_type: "Me".to_owned(), actual_type: "User".to_owned() },
-    ]);
 
     // If it matches, do nothing
     match (ron_type, api_type) {
@@ -350,12 +341,11 @@ fn check_type(
         (schema::Type::f64, Kind::Float) => {}
         (schema::Type::True, Kind::Bool { default: Some(true) }) => {}
         (schema::Type::ArrayOf(ron_type), Kind::Array { array: api_type }) => {
-            check_type(ron_type, &api_type.0, param_name, method_name, errors);
+            check_type(ron_type, &api_type.0, param_name, method_name, errors, exceptions);
         }
         (schema::Type::RawTy(ron_raw_type), Kind::Reference { reference: raw_type }) => {
             if ron_raw_type != raw_type
-                && !acceptable_different_raw_type
-                    .is_field_type_exception(ron_raw_type.to_owned(), raw_type.to_owned())
+                && !exceptions.is_field_type_exception(ron_raw_type.to_owned(), raw_type.to_owned())
             {
                 errors.push(ApiCheckError::ParamRawTyDoesNotMatch {
                     method: method_name.clone(),
@@ -392,7 +382,7 @@ mod tests {
 
         // Here you can set exceptions for fields that don't exist in our schema for
         // some reason
-        let missing_field_exceptions = Exceptions::new(vec![
+        let mut exceptions = Exceptions::new(vec![
             // The Inline methods can't set these values
             Exception::MethodField {
                 method: "editMessageTextInline".to_owned(),
@@ -423,6 +413,25 @@ mod tests {
                 method: "getGameHighScores".to_owned(),
                 param: "inline_message_id".to_owned(),
             },
+        ]);
+
+        // Some types can be more narrow in teloxide, e.g. `Me` is a subset of `User`
+        exceptions.extend(vec![
+            Exception::FieldType {
+                ron_raw_type: "ReplyMarkup".to_owned(),
+                actual_type: "InlineKeyboardMarkup".to_owned(),
+            },
+            Exception::FieldType { ron_raw_type: "Me".to_owned(), actual_type: "User".to_owned() },
+        ]);
+
+        // If checker finds that one sibling has that field name, while the other
+        // doesn't, it will consider it normal. To add a one-time exception,
+        // refer to `missing_field_exceptions` argument.
+        exceptions.extend(vec![
+            Exception::SiblingParam { param: "inline_message_id".to_owned() },
+            Exception::SiblingParam { param: "user_id".to_owned() },
+            Exception::SiblingParam { param: "chat_id".to_owned() },
+            Exception::SiblingParam { param: "message_id".to_owned() },
         ]);
 
         let api_version = format!("{}.{}", api_schema.version.major, api_schema.version.minor);
@@ -459,10 +468,10 @@ mod tests {
                         &ron_sibling_method,
                         &method,
                         &mut errors,
-                        &missing_field_exceptions,
+                        &exceptions,
                     );
                 } else {
-                    check_ron_method(&ron_method, &method, &mut errors, &missing_field_exceptions);
+                    check_ron_method(&ron_method, &method, &mut errors, &exceptions);
                 }
             } else {
                 errors.push(ApiCheckError::MethodDoesNotExist { method: method.name });
