@@ -168,12 +168,12 @@ where
 /// Generates a random string consisting of 32 characters (`a-z`, `A-Z`, `0-9`,
 /// `_` and `-`).
 fn gen_secret_token() -> String {
-    use rand::{distributions::Uniform, Rng};
+    use rand::{distr::Uniform, Rng};
     const CHARSET: &[u8] = b"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
     const SECRET_LENGTH: usize = 32;
 
-    let random = rand::thread_rng()
-        .sample_iter(Uniform::new(0, CHARSET.len()))
+    let random = rand::rng()
+        .sample_iter(Uniform::new(0, CHARSET.len()).unwrap())
         .map(|idx| CHARSET[idx] as char)
         .take(SECRET_LENGTH);
 
