@@ -93,13 +93,11 @@ impl Exceptions {
 
     fn get_renamed(&self, api_object: String) -> Option<String> {
         for exception in self.exceptions.iter() {
-            match exception {
-                Exception::RenameCheckingObject { api_object_name, rust_object_name } => {
-                    if *api_object_name == api_object {
-                        return Some(rust_object_name.to_owned());
-                    }
+            if let Exception::RenameCheckingObject { api_object_name, rust_object_name } = exception
+            {
+                if *api_object_name == api_object {
+                    return Some(rust_object_name.to_owned());
                 }
-                _ => {}
             }
         }
 
@@ -373,7 +371,7 @@ fn expand_reference(
         .unwrap_or_else(|| panic!("Reference does not exist, {field_name}, {reference}"));
 
     // A check if its really a wrapper and not smth like FileMeta
-    if reference_object.get("type").map(|x| x.as_str()).flatten() != Some("object") {
+    if reference_object.get("type").and_then(|x| x.as_str()) != Some("object") {
         let (reference_required, reference_kind) =
             get_type(reference_object, initial_object_name.clone());
 
@@ -385,7 +383,7 @@ fn expand_reference(
         return Some(reference_kind);
     }
 
-    return None;
+    None
 }
 
 fn extract_fields_from_properties_object(
@@ -418,7 +416,7 @@ fn extract_fields_from_properties_object(
                 }
             }
         } else if let Kind::Array { ref array } = kind {
-            if let Kind::Reference { ref reference } = (*array).0 {
+            if let Kind::Reference { ref reference } = array.0 {
                 if !official_types.contains(reference)
                     || exceptions.is_expand_refenence(reference.to_owned())
                 {
@@ -709,12 +707,7 @@ pub fn check_object(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        codegen::reformat,
-        types::{
-            BotCommandScope, BusinessMessagesDeleted, Chat, ChatMember, GiveawayWinners, InputPollOption, KeyboardButton, MenuButton, Message, MessageOrigin, PassportElementError, ReactionType, ResponseParameters, StickerSet, StoryAreaTypeWeather
-        },
-    };
+    use crate::{codegen::reformat, types::BusinessMessagesDeleted};
     use schemars::schema_for;
 
     #[test]
@@ -1028,6 +1021,6 @@ fn test_rust_objects() {{
         );
 
         contents = reformat(contents);
-        println!("{}", contents);
+        println!("{contents}");
     }
 }

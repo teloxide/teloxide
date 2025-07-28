@@ -428,7 +428,7 @@ mod tests {
     #[test]
     fn deserialize_encrypted_passport_element_email() {
         let json = r#"{"type":"email", "hash": "123456", "email": "test@gmail.com"}"#;
-        let actual = serde_json::from_str(&json).unwrap();
+        let actual = serde_json::from_str(json).unwrap();
 
         let expected = EncryptedPassportElement {
             hash: "123456".to_owned(),
