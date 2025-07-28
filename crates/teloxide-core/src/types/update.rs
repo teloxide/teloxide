@@ -16,7 +16,6 @@ use crate::types::{
 /// [object]: https://core.telegram.org/bots/api#available-types
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Update {
     /// The update‘s unique identifier. Update identifiers start from a certain
     /// positive number and increase sequentially. This ID becomes especially
@@ -39,12 +38,10 @@ pub struct Update {
 #[derive(Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
-#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct UpdateId(pub u32);
 
 #[derive(Clone, Debug, PartialEq)]
-#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum UpdateKind {
     // NB: When adding new variants, don't forget to update
     //     - `AllowedUpdate`

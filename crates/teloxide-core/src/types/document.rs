@@ -27,6 +27,6 @@ pub struct Document {
 
     /// A MIME type of the file as defined by a sender.
     #[serde(default, with = "crate::types::non_telegram_types::mime::opt_deser")]
-    #[cfg_attr(test, schemars(with = "Option<i64>"))]
+    #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 }
