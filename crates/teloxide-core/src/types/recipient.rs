@@ -8,6 +8,7 @@ use crate::types::{ChatId, UserId};
 #[derive(Clone, PartialEq, Eq, Hash)]
 #[derive(Debug, Display, From)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum Recipient {
     /// A chat identifier.

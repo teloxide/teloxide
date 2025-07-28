@@ -36,7 +36,7 @@ pub struct Date {
     pub day: u32,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 #[allow(dead_code)]
@@ -76,7 +76,7 @@ pub enum Kind {
     Null,
 }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Clone, PartialEq)]
 #[serde(transparent)]
 pub struct KindWrapper(pub Kind);
 

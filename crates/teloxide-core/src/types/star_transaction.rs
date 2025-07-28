@@ -7,6 +7,7 @@ use crate::types::{TelegramTransactionId, TransactionPartner};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StarTransactions {
     /// The list of transactions.
     pub transactions: Vec<StarTransaction>,
@@ -17,6 +18,7 @@ pub struct StarTransactions {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StarTransaction {
     /// Unique identifier of the transaction. Coincides with the identifer of
     /// the original transaction for refund transactions. Coincides with
@@ -35,6 +37,7 @@ pub struct StarTransaction {
 
     /// Date the transaction was created in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 
     /// Source of an incoming transaction (e.g., a user purchasing goods or

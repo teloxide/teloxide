@@ -6,6 +6,7 @@ use serde::{de::Visitor, Deserialize, Serialize};
 #[derive(Clone, Copy, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
+#[cfg_attr(test, schemars(with = "u32"))]
 pub struct Rgb {
     pub r: u8,
     pub g: u8,
@@ -97,6 +98,8 @@ impl From<RGB8> for Rgb {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+#[cfg_attr(test, schemars(with = "u32"))]
 pub struct Argb {
     pub a: u8,
     pub r: u8,

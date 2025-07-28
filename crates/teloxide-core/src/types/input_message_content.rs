@@ -8,6 +8,7 @@ use crate::types::{LabeledPrice, LinkPreviewOptions, LivePeriod, MessageEntity, 
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmessagecontent).
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum InputMessageContent {
     Text(InputMessageContentText),
@@ -20,6 +21,7 @@ pub enum InputMessageContent {
 /// inline query.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputMessageContentText {
     /// Text of the message to be sent, 1-4096 characters.
     pub message_text: String,
@@ -86,6 +88,7 @@ impl InputMessageContentText {
 /// inline query.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputMessageContentLocation {
     /// Latitude of the location in degrees.
     pub latitude: f64,
@@ -147,6 +150,7 @@ impl InputMessageContentLocation {
 /// an inline query.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputMessageContentVenue {
     /// Latitude of the venue in degrees.
     pub latitude: f64,
@@ -244,6 +248,7 @@ impl InputMessageContentVenue {
 /// an inline query.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputMessageContentContact {
     /// Contact's phone number.
     pub phone_number: String,
@@ -314,6 +319,7 @@ impl InputMessageContentContact {
 /// [content]: InputMessageContent
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputMessageContentInvoice {
     /// Product name, 1-32 characters
     pub title: String,

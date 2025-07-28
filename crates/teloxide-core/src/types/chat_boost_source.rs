@@ -45,7 +45,7 @@ pub struct ChatBoostSourceGiveaway {
     /// Identifier of a message in the chat with the giveaway; the message could
     /// have been deleted already. May be 0 if the message isn't sent yet.
     #[serde(flatten, with = "crate::types::prefix_giveaway_message_id")]
-    #[cfg_attr(test, schemars(with = "i32"))]
+    #[cfg_attr(test, schemars(!flatten, with = "i32"))]
     pub giveaway_message_id: MessageId,
 
     /// User that won the prize in the giveaway if any.

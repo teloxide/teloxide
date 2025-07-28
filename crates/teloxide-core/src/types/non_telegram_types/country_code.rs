@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
-#[cfg_attr(test, schemars(with = "String"))]
 pub enum CountryCode {
     /// Andorra
     AD,
