@@ -57,6 +57,14 @@ fn test_rust_objects() {
             field_name: "can_join_groups".to_owned(),
         },
         Exception::IgnoreFieldRequiredObjectName {
+            object: "File".to_owned(),
+            field_name: "file_path".to_owned(),
+        },
+        Exception::IgnoreFieldRequiredObjectName {
+            object: "InputSticker".to_owned(),
+            field_name: "keywords".to_owned(),
+        },
+        Exception::IgnoreFieldRequiredObjectName {
             object: "TextQuote".to_owned(),
             field_name: "entities".to_owned(),
         },

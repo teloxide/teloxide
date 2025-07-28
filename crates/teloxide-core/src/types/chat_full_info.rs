@@ -65,7 +65,8 @@ pub struct ChatFullInfo {
     /// details.
     ///
     /// [accent colors]: https://core.telegram.org/bots/api#accent-colors
-    pub accent_color_id: Option<u8>,
+    #[serde(default)]
+    pub accent_color_id: u8,
 
     /// Custom emoji identifier of the emoji chosen by the chat for the reply
     /// header and link preview background
@@ -745,7 +746,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
@@ -807,7 +808,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
@@ -867,7 +868,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
