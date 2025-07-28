@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{CustomEmojiId, FileMeta, MaskPosition, PhotoSize};
+use crate::types::{CustomEmojiId, File, FileMeta, MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
@@ -78,7 +78,7 @@ pub enum StickerKind {
     /// "Normal", raster, animated or video sticker.
     Regular {
         /// Premium animation for the sticker, if the sticker is premium.
-        premium_animation: Option<FileMeta>,
+        premium_animation: Option<File>,
     },
     /// Mask sticker.
     Mask {
@@ -237,7 +237,7 @@ impl StickerKind {
 
     /// Getter for [`StickerKind::Regular::premium_animation`].
     #[must_use]
-    pub fn premium_animation(&self) -> Option<&FileMeta> {
+    pub fn premium_animation(&self) -> Option<&File> {
         if let Self::Regular { premium_animation } = self {
             premium_animation.as_ref()
         } else {

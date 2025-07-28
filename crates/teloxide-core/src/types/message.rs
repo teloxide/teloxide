@@ -2161,7 +2161,7 @@ impl Message {
             .chain(flatten(self.caption_entities().map(mentioned_users_from_entities)))
             .chain(flatten(self.poll().map(Poll::mentioned_users)))
             .chain(flatten(self.proximity_alert_triggered().map(|a| [&a.traveler, &a.watcher])))
-            .chain(flatten(self.video_chat_participants_invited().and_then(|i| i.users.as_deref())))
+            .chain(flatten(self.video_chat_participants_invited().map(|i| &i.users)))
     }
 
     /// `Message::mentioned_users` is recursive (due to replies), as such we

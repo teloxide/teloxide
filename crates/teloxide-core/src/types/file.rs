@@ -27,7 +27,7 @@ pub struct File {
     /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
     ///
     /// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
-    #[serde(rename = "file_path")]
+    #[serde(default, rename = "file_path")]
     pub path: String,
 }
 

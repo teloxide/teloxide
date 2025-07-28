@@ -60,7 +60,7 @@ pub struct PaidMediaPreview {
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaPhoto {
-    pub photo: PhotoSize,
+    pub photo: Vec<PhotoSize>,
 }
 
 /// The paid media is a video.
@@ -82,9 +82,9 @@ impl PaidMedia {
         }
     }
 
-    pub fn photo(&self) -> Option<&PhotoSize> {
+    pub fn photo(&self) -> Option<PhotoSize> {
         match self {
-            Self::Photo(photo) => Some(&photo.photo),
+            Self::Photo(photo) => Some(photo.photo.last()?.clone()),
             _ => None,
         }
     }
