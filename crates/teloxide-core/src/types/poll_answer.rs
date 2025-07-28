@@ -28,7 +28,6 @@ pub struct PollAnswer {
 /// `None`, but rather actual value for backward compatibility, the field `user`
 /// in such objects will contain the user 136817688 (@Channel_Bot).
 #[derive(Deserialize)]
-#[cfg_attr(test, derive(schemars::JsonSchema))]
 struct VoterDe {
     /// The chat that changed the answer to the poll, if the voter is anonymous
     pub voter_chat: Option<Chat>,

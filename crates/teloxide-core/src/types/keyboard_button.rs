@@ -54,6 +54,7 @@ pub enum ButtonRequest {
     ///
     /// **Note:** this option will only work in Telegram versions released after
     /// 9 April, 2016. Older clients will display unsupported message.
+    #[cfg_attr(test, schemars(rename = "request_location", with = "bool"))]
     Location,
 
     /// If this variant is used, the user's phone number will be sent as a
@@ -61,6 +62,7 @@ pub enum ButtonRequest {
     ///
     /// **Note:** this option will only work in Telegram versions released after
     /// 9 April, 2016. Older clients will display unsupported message.
+    #[cfg_attr(test, schemars(rename = "request_contact", with = "bool"))]
     Contact,
 
     /// If this variant is used, pressing the button will open a list of
@@ -68,11 +70,13 @@ pub enum ButtonRequest {
     /// a [`chat_shared`] service message.
     ///
     /// [`chat_shared`]: crate::types::MessageKind::ChatShared
+    #[cfg_attr(test, schemars(rename = "request_chat"))]
     RequestChat(KeyboardButtonRequestChat),
 
     /// If specified, pressing the button will open a list of suitable users.
     /// Identifiers of selected users will be sent to the bot in a
     /// “users_shared” service message. Available in private chats only.
+    #[cfg_attr(test, schemars(rename = "request_users"))]
     RequestUsers(KeyboardButtonRequestUsers),
 
     /// If this variant is used, the user will be asked to create a poll and
@@ -80,6 +84,7 @@ pub enum ButtonRequest {
     ///
     /// **Note:** this option will only work in Telegram versions released after
     /// 23 January, 2020. Older clients will display unsupported message.
+    #[cfg_attr(test, schemars(rename = "request_poll"))]
     Poll(KeyboardButtonPollType),
 
     /// If this variant is used, the described Web App will be launched when the
@@ -88,6 +93,7 @@ pub enum ButtonRequest {
     ///
     /// **Note:** this option will only work in Telegram versions released after
     /// 16 April, 2022. Older clients will display unsupported message.
+    #[cfg_attr(test, schemars(rename = "web_app"))]
     WebApp(WebAppInfo),
 }
 

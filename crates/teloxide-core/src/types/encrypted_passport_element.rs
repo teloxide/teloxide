@@ -23,7 +23,7 @@ pub struct EncryptedPassportElement {
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "snake_case", untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum EncryptedPassportElementKind {
     PersonalDetails(EncryptedPassportElementPersonalDetails),
@@ -419,4 +419,23 @@ pub struct EncryptedPassportElementPhoneNumber {
 pub struct EncryptedPassportElementEmail {
     /// User's verified email address, available only for `email` type.
     pub email: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_encrypted_passport_element_email() {
+        let json = r#"{"type":"email", "hash": "123456", "email": "test@gmail.com"}"#;
+        let actual = serde_json::from_str(&json).unwrap();
+
+        let expected = EncryptedPassportElement {
+            hash: "123456".to_owned(),
+            kind: EncryptedPassportElementKind::Email(EncryptedPassportElementEmail {
+                email: "test@gmail.com".to_owned(),
+            }),
+        };
+        assert_eq!(expected, actual);
+    }
 }

@@ -9,6 +9,7 @@ use crate::types::InlineKeyboardMarkup;
 /// [game]: https://core.telegram.org/bots/api#games
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineQueryResultGame {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,

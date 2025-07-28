@@ -12,6 +12,9 @@ use crate::types::Seconds;
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
+// Its a wrapper for a wrapper (LivePeriod for Seconds), better to just tell the
+// schemars that its a u32
+#[cfg_attr(test, schemars(with = "u32"))]
 #[serde(untagged)]
 pub enum LivePeriod {
     Timeframe(Seconds),

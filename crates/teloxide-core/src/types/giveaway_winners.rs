@@ -14,7 +14,7 @@ pub struct GiveawayWinners {
 
     /// Identifier of the messsage with the giveaway in the chat
     #[serde(flatten, with = "crate::types::prefix_giveaway_message_id")]
-    #[cfg_attr(test, schemars(with = "i32"))]
+    #[cfg_attr(test, schemars(!flatten, with = "i32"))]
     pub giveaway_message_id: MessageId,
 
     /// Point in time (Unix timestamp) when winners of the giveaway were

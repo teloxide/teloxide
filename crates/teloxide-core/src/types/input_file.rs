@@ -25,6 +25,8 @@ use crate::types::{self, InputSticker};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+#[cfg_attr(test, schemars(with = "String"))] // It is just a String in the TBA 
 pub struct InputFile {
     id: OnceCell<Arc<str>>,
     file_name: Option<Cow<'static, str>>,
