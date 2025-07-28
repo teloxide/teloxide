@@ -707,7 +707,7 @@ pub fn check_object(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{codegen::reformat, types::BusinessMessagesDeleted};
+    use crate::{codegen::reformat, types::Message};
     use schemars::schema_for;
 
     #[test]
@@ -715,30 +715,97 @@ mod tests {
         let api_schema = get_api_schema();
 
         // Fields that are usually problematic are better to skip completely
-        let mut exceptions = Exceptions::new(vec![
-            // The `type` fields is usually a serde tag, and its messy
-            Exception::IgnoreFieldName { field_name: "type".to_owned() },
-            Exception::IgnoreFieldName { field_name: "transaction_type".to_owned() },
-            Exception::IgnoreFieldName { field_name: "sticker_type".to_owned() },
-            Exception::IgnoreFieldName { field_name: "source".to_owned() },
-        ]);
-
-        // Fields that usually have something different with Option<>
-        exceptions.extend(vec![
-            // file_size has a fallback
+        let exceptions = Exceptions::new(vec![
+            Exception::ExpandTelegramReferece { reference: "InputFile".to_owned() },
+            Exception::IgnoreObjectField {
+                object: "ChatMember".to_owned(),
+                field_name: "status".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "MessageReactionUpdated".to_owned(),
+                field_name: "user".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "MessageReactionUpdated".to_owned(),
+                field_name: "actor_chat".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "PollAnswer".to_owned(),
+                field_name: "user".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "PollAnswer".to_owned(),
+                field_name: "voter_chat".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "InaccessibleMessage".to_owned(),
+                field_name: "date".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "User".to_owned(),
+                field_name: "supports_inline_queries".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "User".to_owned(),
+                field_name: "has_main_web_app".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "User".to_owned(),
+                field_name: "can_connect_to_business".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "User".to_owned(),
+                field_name: "can_read_all_group_messages".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "User".to_owned(),
+                field_name: "can_join_groups".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "File".to_owned(),
+                field_name: "file_path".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "InputSticker".to_owned(),
+                field_name: "keywords".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "TextQuote".to_owned(),
+                field_name: "entities".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "KeyboardMarkup".to_owned(),
+                field_name: "input_field_placeholder".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "KeyboardButtonRequestUsers".to_owned(),
+                field_name: "max_quantity".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "SuccessfulPayment".to_owned(),
+                field_name: "order_info".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "PreCheckoutQuery".to_owned(),
+                field_name: "order_info".to_owned(),
+            },
+            Exception::IgnoreFieldRequiredObjectName {
+                object: "MaybeInaccessibleMessage".to_owned(),
+                field_name: "date".to_owned(),
+            },
             Exception::IgnoreFieldRequiredName { field_name: "file_size".to_owned() },
+            Exception::IgnoreFieldName { field_name: "source".to_owned() },
+            Exception::IgnoreFieldName { field_name: "sticker_type".to_owned() },
+            Exception::IgnoreFieldName { field_name: "transaction_type".to_owned() },
+            Exception::IgnoreFieldName { field_name: "type".to_owned() },
         ]);
-
-        // Some TBA types exist, but don't actually do anything
-        exceptions
-            .extend(vec![Exception::ExpandTelegramReferece { reference: "InputFile".to_owned() }]);
 
         let mut errors = vec![];
 
         check_object(
             api_schema.clone(),
-            schema_for!(BusinessMessagesDeleted),
-            "BusinessMessagesDeleted".to_owned(),
+            schema_for!(Message),
+            "Message".to_owned(),
             &mut errors,
             &exceptions,
         );
