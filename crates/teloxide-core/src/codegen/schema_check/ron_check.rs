@@ -83,6 +83,8 @@ fn find_ron_param_by_name(name: &str, method: &schema::Method) -> Option<schema:
     method.params.iter().find(|x| x.name == name).cloned()
 }
 
+// This function checks both sibling methods and insures that the sibling status
+// is correct
 fn check_ron_siblings(
     ron_method: &schema::Method,
     ron_sibling_method: &schema::Method,
@@ -98,6 +100,7 @@ fn check_ron_siblings(
         escape_kw(&mut param_name); // Converts type to type_. Will think field is missing
                                     // otherwise.
 
+        // Try to find both parameters
         let maybe_ron_param = find_ron_param_by_name(&param_name, ron_method);
         let maybe_ron_sibling_param = find_ron_param_by_name(&param_name, ron_sibling_method);
 
@@ -148,6 +151,7 @@ fn check_ron_siblings_field(
     errors: &mut Vec<ApiCheckError>,
     exceptions: &Exceptions,
 ) {
+    // Sibling parameters must match exactly, down to the docs
     if ron_param != ron_sibling_param {
         errors.push(ApiCheckError::SiblingParamsDontMatch {
             method: ron_method.names.0.clone(),
@@ -159,6 +163,8 @@ fn check_ron_siblings_field(
     }
 }
 
+// This function will add an error if the field is not an exception. Will check
+// normally otherwise.
 fn check_ron_siblings_only_one_field(
     ron_param: &schema::Param,
     ron_method_name: String,
@@ -170,7 +176,8 @@ fn check_ron_siblings_only_one_field(
     let mut param_name = param.name.clone();
     escape_kw(&mut param_name);
 
-    // Check if its in some exceptions
+    // Some fields are common to have siblings. For example, message_id and
+    // inline_message_id.
     if (!exceptions.is_sibling_param_exception(param_name.clone()))
         && (!exceptions
             .is_method_field_exception(ron_method_without_param_name.clone(), param_name))
@@ -358,9 +365,9 @@ fn check_type(
         (schema::Type::RawTy(_), Kind::AnyOf { any_of: _ }) => {} // If it's AnyOf, we have to
         // have our own type like `Recipient`
         (schema::Type::True, Kind::AnyOf { any_of: _ }) => {} // Or with AnyOf there could be
-        // either True or Message, like with editMessageMedia
+        // either `True` or `Message`, like with `editMessageMedia`
         (schema::Type::RawTy(_), _) => {} // Any other is fine, we can't check if
-        // our type like PollId is actually String or Integer
+        // our type like `PollId` is actually String or Integer
         _ => errors.push(ApiCheckError::ParamTyDoesNotMatch {
             method: method_name.clone(),
             param: param_name.clone(),
