@@ -2,6 +2,7 @@ use crate::codegen::schema_check::api_schema::*;
 use derive_more::derive::Display;
 use serde_json::{Map, Value};
 
+// In schemars if an object references itself its named `#`
 fn convert_reference_string(reference: String, initial_object_name: String) -> String {
     reference.trim_start_matches("#/$defs/").replace("#", &initial_object_name).to_string()
 }
@@ -131,6 +132,7 @@ pub enum ApiCheckError {
     FieldTyDoesNotMatch { object: String, field: String, raw_type: Kind, actual_type: Kind },
 }
 
+// Helper enum for parsing
 #[derive(Debug, Clone, PartialEq)]
 pub enum Type {
     String,
@@ -144,11 +146,13 @@ pub enum Type {
     Unknown,
 }
 
+// Returns if the value is required and its type
 fn get_type(prop: &Value, initial_object_name: String) -> (bool, Kind) {
     let mut required = true;
     let mut prop_type: Option<Type> = None;
-    let mut item_kind: Option<Kind> = None;
+    let mut item_kind: Option<Kind> = None; // Used for arrays
 
+    // Any of is usually either a Recipient or an optional field
     if let Some(any_of) = prop.get("anyOf") {
         if let Some(array) = any_of.as_array() {
             let mut types_array = vec![];
@@ -292,6 +296,8 @@ fn parse_type(val: &Value) -> Type {
     }
 }
 
+// Converts an array of references (usually from oneOf or anyOf) and returns an
+// array of fields, including duplicates
 fn extract_fields_from_references_array(
     array: Vec<Value>,
     official_types: Vec<String>,
@@ -304,6 +310,7 @@ fn extract_fields_from_references_array(
 ) -> Vec<Property> {
     let mut fields = vec![];
 
+    // Gets all of the fields in one big array
     for value in array.clone() {
         if value.get("type").map(Value::as_str) == Some("object".into()) {
             let x = get_fields_of_rust_object(
@@ -311,7 +318,8 @@ fn extract_fields_from_references_array(
                 official_types.clone(),
                 references,
                 initial_object_name.clone(),
-                false,
+                false, // If `most_fields_are_optional` is true, the fields will be made optional
+                // later
                 exceptions,
             );
             fields.extend(x);
@@ -340,11 +348,12 @@ fn extract_fields_from_references_array(
     let fields_clone = fields.clone();
 
     // If some field appears as much times are there are references, its in every
-    // single reference, and is required
+    // single reference, and is required. Otherwise - make it optional.
     for field in fields.iter_mut() {
         let fields_count = fields_clone
             .iter()
             .filter(|x| {
+                // The fields have to be required in the first place to retain it
                 x.name == field.name && x.kind == field.kind && field.required && x.required
             })
             .count();
@@ -352,7 +361,7 @@ fn extract_fields_from_references_array(
             if all_fields_are_optional {
                 field.required = false;
             } // Otherwise - do nothing, the field is required
-        } else if most_fields_are_optional {
+        } else if most_fields_are_optional || all_fields_are_optional {
             field.required = false
         }
     }
@@ -360,6 +369,8 @@ fn extract_fields_from_references_array(
     fields
 }
 
+// If the reference is a wrapper, like `PollId`, it will expand it to String or
+// Integer
 fn expand_reference(
     references: &Value,
     reference: String,
@@ -386,6 +397,7 @@ fn expand_reference(
     None
 }
 
+// Gets an array of properties and returns their parsed values
 fn extract_fields_from_properties_object(
     rust_object: &Map<String, Value>,
     official_types: Vec<String>,
@@ -404,6 +416,7 @@ fn extract_fields_from_properties_object(
             // If its a reference that isnt in official types, its probably a wrapper for a
             // type
             if !official_types.contains(reference)
+                // Some official types are still in need of being expanded, like InputFile
                 || exceptions.is_expand_refenence(reference.to_owned())
             {
                 if let Some(reference_kind) = expand_reference(
@@ -447,6 +460,7 @@ fn extract_fields_from_properties_object(
     fields
 }
 
+// Adds new fields while removing duplicates
 fn extend_fields(fields: &mut Vec<Property>, new_fields: Vec<Property>) {
     for field in new_fields {
         if fields.iter().any(|x| x.name == field.name) {
@@ -540,6 +554,8 @@ fn check_struct_kind(
     object_name: String,
     errors: &mut Vec<ApiCheckError>,
 ) {
+    // Basic check so that if one field is Bool, but is supposed to be an Integer it
+    // is caught
     if std::mem::discriminant(rust_kind) != std::mem::discriminant(api_kind) {
         errors.push(ApiCheckError::FieldTyDoesNotMatch {
             object: object_name,
@@ -604,6 +620,7 @@ fn check_struct_field(
     }
 }
 
+// Gets all the fields out of the check schema object
 fn get_fields_of_api_object(api_schema: ApiSchema, api_object: Object) -> Vec<Property> {
     let mut fields = vec![];
 
@@ -665,8 +682,8 @@ pub fn check_object(
     let official_types: Vec<String> = api_schema.objects.iter().map(|x| x.name.clone()).collect();
     let initial_object_name = rust_object.get("title").unwrap().as_str().unwrap().to_owned();
 
-    let binding = api_schema.objects.clone();
-    let api_object = binding.iter().find(|x| x.name == api_object_name).unwrap();
+    let api_objects = api_schema.objects.clone();
+    let api_object = api_objects.iter().find(|x| x.name == api_object_name).unwrap();
 
     let empty_object = Value::Object(serde_json::Map::new());
     let references = rust_object.get("$defs").unwrap_or(&empty_object);
@@ -710,6 +727,7 @@ mod tests {
     use crate::{codegen::reformat, types::Message};
     use schemars::schema_for;
 
+    // Purely for manual testing
     #[test]
     fn test_rust_object_types() {
         let api_schema = get_api_schema();
