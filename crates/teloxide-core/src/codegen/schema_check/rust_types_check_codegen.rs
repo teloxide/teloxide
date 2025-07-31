@@ -724,7 +724,10 @@ pub fn check_object(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{codegen::reformat, types::Message};
+    use crate::{
+        codegen::{ensure_file_contents, project_root, reformat},
+        types::Message,
+    };
     use schemars::schema_for;
 
     // Purely for manual testing
@@ -838,9 +841,10 @@ mod tests {
     }
 
     #[test]
-    #[allow(clippy::print_stdout)]
     fn codegen_types_checking() {
         let generator = "codegen_types_checking";
+        let codegen_path =
+            project_root().join("src/codegen/schema_check/rust_types_check_tests.rs");
 
         // These are exceptions that apply to the types and objects
         // Fields that are usually problematic are better to skip completely
@@ -1115,6 +1119,6 @@ fn test_rust_objects() {{
         );
 
         contents = reformat(contents);
-        println!("{contents}");
+        ensure_file_contents(&codegen_path, &contents);
     }
 }
