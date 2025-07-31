@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{CustomEmojiId, FileMeta, MaskPosition, PhotoSize};
+use crate::types::{CustomEmojiId, File, FileMeta, MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
@@ -11,6 +11,7 @@ use crate::types::{CustomEmojiId, FileMeta, MaskPosition, PhotoSize};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Sticker {
     /// Metadata of the sticker file.
     #[serde(flatten)]
@@ -70,13 +71,14 @@ pub struct Sticker {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum StickerKind {
     /// "Normal", raster, animated or video sticker.
     Regular {
         /// Premium animation for the sticker, if the sticker is premium.
-        premium_animation: Option<FileMeta>,
+        premium_animation: Option<File>,
     },
     /// Mask sticker.
     Mask {
@@ -94,6 +96,7 @@ pub enum StickerKind {
 ///
 /// Dataless version of [`StickerType`].
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(tag = "sticker_type")]
 #[serde(rename_all = "snake_case")]
 pub enum StickerType {
@@ -106,6 +109,7 @@ pub enum StickerType {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StickerFormatFlags {
     /// True, if the sticker is animated
     #[serde(default)]
@@ -117,6 +121,7 @@ pub struct StickerFormatFlags {
 
 /// Format of a [`Sticker`] - regular/webp, animated/tgs or video/webm.
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum StickerFormat {
     /// Image in `.png` or `.webp` format.
@@ -232,7 +237,7 @@ impl StickerKind {
 
     /// Getter for [`StickerKind::Regular::premium_animation`].
     #[must_use]
-    pub fn premium_animation(&self) -> Option<&FileMeta> {
+    pub fn premium_animation(&self) -> Option<&File> {
         if let Self::Regular { premium_animation } = self {
             premium_animation.as_ref()
         } else {

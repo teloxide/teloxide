@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGift {
     /// Human-readable name of the regular gift from which this unique gift was
     /// upgraded
@@ -33,6 +34,7 @@ pub struct UniqueGift {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGiftModel {
     /// Name of the model
     pub name: String,
@@ -50,6 +52,7 @@ pub struct UniqueGiftModel {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGiftSymbol {
     /// Name of the symbol
     pub name: String,
@@ -67,6 +70,7 @@ pub struct UniqueGiftSymbol {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGiftBackdrop {
     /// Name of the backdrop
     pub name: String,
@@ -84,6 +88,7 @@ pub struct UniqueGiftBackdrop {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGiftBackdropColors {
     /// The color in the center of the backdrop in RGB format
     pub center_color: Rgb,

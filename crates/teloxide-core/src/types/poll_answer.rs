@@ -4,6 +4,7 @@ use crate::types::{Chat, MaybeAnonymousUser, PollId, User};
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PollAnswer {
     /// Unique poll identifier.
     pub poll_id: PollId,

@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Added schema and rust types checking ([#1396](https://github.com/teloxide/teloxide/pull/1396)) [**BC**]
+  - `delete_chat_photo` method now returns `True`, not `String`
+  - `upload_sticker_file` method now returns `File` instead of `FileMeta`
+  - `photo_size`, `photo_width` and `photo_height` parameters of `create_invoice_link` method now are of type `u32`, not `String`
+  - `get_game_high_score` method now returns `Vec<GameHighScore>`, not `True`
+  - `BusinessMessagesDeleted` struct now has correct deserialization of `message_ids` field
+  - `accent_color_id` field of `ChatFullInfo` struct now is of type `u8`, not `Option<u8>`
+  - `EncryptedPassportElement` and `EncryptedPassportElementKind` structs now deserialize correctly
+  - `photo` field of `PaidMediaPhoto` struct now is of type `Vec<PhotoSize>`, not `PhotoSize`
+  - `premium_animation` field of `StickerKind::Regular` enum variant is now of type `Option<File>`, not `Option<FileMeta>`
+  - `users` field of `VideoChatParticipantsInvited` struct now is of type `Vec<User>`, not `Option<Vec<User>>`
+
 ## 0.17.0 - 2025-07-11
 
 ### Added

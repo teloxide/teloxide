@@ -9,6 +9,7 @@ use crate::types::UserId;
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct ChatId(pub i64);
 

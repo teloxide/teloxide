@@ -607,8 +607,12 @@ pub(crate) mod option_msg_id_as_int {
 
 pub(crate) mod vec_msg_id_as_vec_int {
     use crate::types::MessageId;
-
-    use serde::{ser::SerializeSeq, Serializer};
+    use serde::{
+        de::{SeqAccess, Visitor},
+        ser::SerializeSeq,
+        Deserializer, Serializer,
+    };
+    use std::fmt;
 
     pub(crate) fn serialize<S>(msg_ids: &Vec<MessageId>, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -621,9 +625,37 @@ pub(crate) mod vec_msg_id_as_vec_int {
         seq.end()
     }
 
+    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<Vec<MessageId>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct MsgIdVecVisitor;
+
+        impl<'de> Visitor<'de> for MsgIdVecVisitor {
+            type Value = Vec<MessageId>;
+
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("a sequence of integers representing message IDs")
+            }
+
+            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+            where
+                A: SeqAccess<'de>,
+            {
+                let mut vec = Vec::new();
+                while let Some(value) = seq.next_element::<i32>()? {
+                    vec.push(MessageId(value));
+                }
+                Ok(vec)
+            }
+        }
+
+        deserializer.deserialize_seq(MsgIdVecVisitor)
+    }
+
     #[test]
     fn test() {
-        #[derive(serde::Serialize)]
+        #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq)]
         struct Struct {
             #[serde(with = "crate::types::vec_msg_id_as_vec_int")]
             msg_ids: Vec<MessageId>,
@@ -633,6 +665,12 @@ pub(crate) mod vec_msg_id_as_vec_int {
             let s = Struct { msg_ids: vec![MessageId(1), MessageId(2)] };
             let json = serde_json::to_string(&s).unwrap();
             assert_eq!(json, "{\"msg_ids\":[1,2]}");
+        }
+
+        {
+            let json = "{\"msg_ids\":[1,2]}";
+            let s: Struct = serde_json::from_str(json).unwrap();
+            assert_eq!(s, Struct { msg_ids: vec![MessageId(1), MessageId(2)] });
         }
     }
 }

@@ -152,6 +152,7 @@ So, writing that out into a struct:
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))] // This is needed for testing
 pub struct PollOption {
     /// Option text, 1-100 characters.
     pub text: String,
@@ -177,6 +178,7 @@ And all new types should be added to `teloxide-core/src/types/` as a new file, i
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct StoryId(pub u64);
 ```
@@ -188,6 +190,7 @@ for numbered ids, and
 #[derive(Clone, Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize, From)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct TelegramTransactionId(pub String);
@@ -203,6 +206,7 @@ for `String` ids
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum TransactionPartner {
@@ -224,6 +228,7 @@ Or, if a type has variants, but all variants share some common variables, you sh
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Sticker {
     /// Metadata of the sticker file.
     #[serde(flatten)]
@@ -260,13 +265,14 @@ pub struct Sticker {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum StickerKind {
     /// "Normal", raster, animated or video sticker.
     Regular {
         /// Premium animation for the sticker, if the sticker is premium.
-        premium_animation: Option<FileMeta>,
+        premium_animation: Option<File>,
     },
     /// Mask sticker.
     Mask {
@@ -283,6 +289,14 @@ pub enum StickerKind {
 
 4. You should write out all of the `serde` stuff. For `TypeKind` you need to add `#[serde(flatten)]`. For almost all structs you need to add `#[serde_with::skip_serializing_none]`. For fields that don't have a default (like `bool`) you need to add `#[serde(default)]`. There are more `serde` stuff, mostly try to look at the existing types and copy them.
 
+5. Sometimes fields are not compatible with `schemars`, especially if there is `serde(with = ...)`. For that you need to add
+
+```diff
+#[serde(with = "crate::types::serde_date_from_unix_timestamp")]
++#[cfg_attr(test, schemars(with = "i64"))]
+pub add_date: DateTime<Utc>,
+```
+
 #### Step 3:
 
 Add new fields to types and new parameters to methods. For how to add a new parameter to a method, look at the [Adding a new TBA method](#adding-a-new-tba-method) section.
@@ -297,23 +311,27 @@ If some new things broke too much, or are complex in general, they should be tes
 
 #### Step 6:
 
-Finally, update all of the docs! Beware: TBA can be a little secretive about what it updated in the docs.
+You need to update the check schema. It is located in `teloxide-core/custom_v2.json`. To obtain it, you need to clone the repository https://github.com/ENCRYPTEDFOREVER/tg-bot-api/tree/bot_api_9_0 (update if there is a new version) and generate a new schema. Run `cargo run -- production` in the `gh-pages-generator` directory and copy the `public/custom_v2.json` to `teloxide-core/custom_v2.json`, then run the tests!
 
 #### Step 7:
+
+Finally, update all of the docs! Beware: TBA can be a little secretive about what it updated in the docs.
+
+#### Step 8:
 
 Bump the supported TBA version where needed. For how to do that look at [Bumping supported TBA version](#bumping-supported-tba-version) section.
 
 If there were breaking changes, you should also write them in `MIGRATION_GUIDE.md`!
 
-#### Step 8:
+#### Step 9:
 
 If there was a release lately, you should probably change the `teloxide/Cargo.toml` to use the path for `teloxide-core` and `teloxide-macros`, so they reference the latest code
 
-#### Step 9:
+#### Step 10:
 
 If there was something that wasn't documented in `CONTRIBUTING.md`, you should update it with your experience!
 
-#### Step 10:
+#### Step 11:
 
 Make a PR and wait for review, you should be all set.
 

@@ -7,6 +7,7 @@ use crate::types::{Chat, MessageId, ReactionType};
 /// reactions.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageReactionCountUpdated {
     /// The chat containing the message
     pub chat: Chat,
@@ -17,6 +18,7 @@ pub struct MessageReactionCountUpdated {
 
     /// Date of the change in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 
     /// List of reactions that are present on the message
@@ -27,6 +29,7 @@ pub struct MessageReactionCountUpdated {
 /// was added.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ReactionCount {
     /// Type of the reaction
     pub r#type: ReactionType,

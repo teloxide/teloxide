@@ -4,6 +4,7 @@ use crate::types::{Chat, ChatKind, StoryId};
 
 /// This object represents a story.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Story {
     /// Unique identifier for the story in the chat.
     pub id: StoryId,

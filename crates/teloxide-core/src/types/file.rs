@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 /// [`GetFile`]: crate::payloads::GetFile
 /// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct File {
     /// Metadata of the file.
     ///
@@ -26,7 +27,7 @@ pub struct File {
     /// File path. Use [`Bot::download_file(file_path, dst)`] to get the file.
     ///
     /// [`Bot::download_file(file_path, dst)`]: crate::net::Download::download_file
-    #[serde(rename = "file_path")]
+    #[serde(default, rename = "file_path")]
     pub path: String,
 }
 
@@ -43,6 +44,7 @@ pub struct File {
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct FileId(pub String);
@@ -62,12 +64,14 @@ pub struct FileId(pub String);
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct FileUniqueId(pub String);
 
 /// Metadata of a [`File`].
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct FileMeta {
     /// Identifier for this file.
     #[serde(rename = "file_id")]

@@ -2,6 +2,7 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Display, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct RequestId(pub i32);
 
