@@ -16,8 +16,8 @@
 //! }
 //!
 //! let data = "Fruit;apple";
-//! let expected = DefaultData::Fruit("apple".to_string());
-//! let actual = DefaultData::parse(data).unwrap();
+//! let expected = CallbackButtons::Fruit("apple".to_string());
+//! let actual = CallbackButtons::parse(data).unwrap();
 //! assert_eq!(actual, expected);
 //! # }
 //! ```
@@ -46,16 +46,16 @@ pub use teloxide_macros::InlineButtons;
 /// }
 ///
 /// let data = "Fruit;apple";
-/// let expected = DefaultData::Fruit("apple".to_string());
-/// let actual = DefaultData::parse(data).unwrap();
+/// let expected = CallbackButtons::Fruit("apple".to_string());
+/// let actual = CallbackButtons::parse(data).unwrap();
 /// assert_eq!(actual, expected);
 /// # }
 /// ```
 ///
 /// # Building buttons
 ///
-/// Using this macro you can build buttons to achieve the same result you would with regular
-/// builders:
+/// Using this macro you can build buttons to achieve the same result you would
+/// with regular builders:
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
@@ -74,8 +74,9 @@ pub use teloxide_macros::InlineButtons;
 /// ```
 ///
 /// # Enum attributes
-///  1. `#[button(fields_separator = "separator")]` change the separator of the fields (the default
-///     is `;`). Useful if the default separator can be in the data.
+///  1. `#[button(fields_separator = "separator")]` change the separator of the
+///     fields (the default is `;`). Useful if the default separator can be in
+///     the data.
 ///
 /// ## Example
 ///
@@ -91,18 +92,20 @@ pub use teloxide_macros::InlineButtons;
 /// }
 ///
 /// let data = "Fruit|apple";
-/// let expected = DefaultData::Fruit("apple".to_string());
-/// let actual = DefaultData::parse(data).unwrap();
+/// let expected = CallbackButtons::Fruit("apple".to_string());
+/// let actual = CallbackButtons::parse(data).unwrap();
 /// assert_eq!(actual, expected);
 /// # }
 /// ```
 ///
 /// # Variant attributes
 /// All variant attributes override the corresponding `enum` attributes.
-///  1. `#[button(fields_separator = "separator")]` change the separator of the field (the default
-///     is `;`). Useful if the default separator can be in the data.
-///  2. `#[button(rename = "rename")]` change the serialized name of the field. Useful if the
-///     enum variants name is long (64 character is the data limit in the TBA).
+///  1. `#[button(fields_separator = "separator")]` change the separator of the
+///     field (the default is `;`). Useful if the default separator can be in
+///     the data.
+///  2. `#[button(rename = "rename")]` change the serialized name of the field.
+///     Useful if the enum variants name is long (64 character is the data limit
+///     in the TBA).
 ///
 /// ## Example
 ///
@@ -118,8 +121,8 @@ pub use teloxide_macros::InlineButtons;
 /// }
 ///
 /// let data = "f;apple";
-/// let expected = DefaultData::Fruit("apple".to_string());
-/// let actual = DefaultData::parse(data).unwrap();
+/// let expected = CallbackButtons::Fruit("apple".to_string());
+/// let actual = CallbackButtons::parse(data).unwrap();
 /// assert_eq!(actual, expected);
 /// # }
 /// ```
