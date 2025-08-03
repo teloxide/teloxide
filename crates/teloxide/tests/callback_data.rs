@@ -22,6 +22,22 @@ fn parse_and_stringify_button_with_args() {
 
 #[test]
 #[cfg(feature = "macros")]
+fn parse_and_stringify_button_with_empty_args() {
+    #[derive(InlineButtons, Debug, PartialEq)]
+    enum DefaultData {
+        Fruit(String),
+        Other,
+    }
+
+    let data = "Fruit;";
+    let expected = DefaultData::Fruit("".to_string());
+    let actual = DefaultData::parse(data).unwrap();
+    assert_eq!(actual, expected);
+    assert_eq!(actual.stringify().unwrap(), data.to_owned())
+}
+
+#[test]
+#[cfg(feature = "macros")]
 fn parse_and_stringify_button_with_non_string_arg() {
     #[derive(InlineButtons, Debug, PartialEq)]
     enum DefaultData {

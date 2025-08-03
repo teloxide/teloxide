@@ -89,7 +89,7 @@ impl ButtonAttr {
                     _ => {
                         return Err(compile_error_at(
                             "unexpected attribute name (expected one of `rename` or \
-                             `fields_separator`",
+                             `fields_separator`)",
                             attr.span(),
                         ))
                     }
