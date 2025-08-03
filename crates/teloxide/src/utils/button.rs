@@ -1,4 +1,30 @@
-//! Docs later
+//! Inline button parser.
+//!
+//! To use it, you need to create an `enum` with derived [`InlineButtons`],
+//! containing buttons of your keyboard.
+//!
+//! # Using InlineButtons
+//!
+//! ```
+//! # #[cfg(feature = "macros")] {
+//! use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+//!
+//! #[derive(InlineButtons, Debug, PartialEq)]
+//! enum CallbackButtons {
+//!     Fruit(String),
+//!     Other,
+//! }
+//!
+//! let data = "Fruit;apple";
+//! let expected = DefaultData::Fruit("apple".to_string());
+//! let actual = DefaultData::parse(data).unwrap();
+//! assert_eq!(actual, expected);
+//! # }
+//! ```
+//! See [examples/inline_buttons_enum] as a more complicated examples.
+//!
+//! [examples/inline_buttons_enum]: https://github.com/teloxide/teloxide/blob/master/crates/teloxide/examples/inline_buttons_enum.rs
+
 use std::fmt::{Display, Formatter};
 
 use super::command::ParseError;
@@ -6,7 +32,97 @@ use teloxide_core::types::InlineKeyboardButton;
 #[cfg(feature = "macros")]
 pub use teloxide_macros::InlineButtons;
 
-/// Docs later
+/// An enumeration of keyboards buttons.
+///
+/// # Example
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+///
+/// #[derive(InlineButtons, Debug, PartialEq)]
+/// enum CallbackButtons {
+///     Fruit(String),
+///     Other,
+/// }
+///
+/// let data = "Fruit;apple";
+/// let expected = DefaultData::Fruit("apple".to_string());
+/// let actual = DefaultData::parse(data).unwrap();
+/// assert_eq!(actual, expected);
+/// # }
+/// ```
+///
+/// # Building buttons
+///
+/// Using this macro you can build buttons to achieve the same result you would with regular
+/// builders:
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+///
+/// #[derive(InlineButtons, Debug, PartialEq)]
+/// enum CallbackButtons {
+///     Button1,
+///     Button2,
+/// }
+///
+/// let text = "Text for button 1";
+/// let actual = CallbackButtons::Button1.build_button(text).unwrap();
+/// let expected = InlineKeyboardButton::callback(text, "Button1");
+/// assert_eq!(actual, expected);
+/// # }
+/// ```
+///
+/// # Enum attributes
+///  1. `#[button(fields_separator = "separator")]` change the separator of the fields (the default
+///     is `;`). Useful if the default separator can be in the data.
+///
+/// ## Example
+///
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+///
+/// #[derive(InlineButtons, Debug, PartialEq)]
+/// #[button(fields_separator = "|")]
+/// enum CallbackButtons {
+///     Fruit(String),
+///     Other,
+/// }
+///
+/// let data = "Fruit|apple";
+/// let expected = DefaultData::Fruit("apple".to_string());
+/// let actual = DefaultData::parse(data).unwrap();
+/// assert_eq!(actual, expected);
+/// # }
+/// ```
+///
+/// # Variant attributes
+/// All variant attributes override the corresponding `enum` attributes.
+///  1. `#[button(fields_separator = "separator")]` change the separator of the field (the default
+///     is `;`). Useful if the default separator can be in the data.
+///  2. `#[button(rename = "rename")]` change the serialized name of the field. Useful if the
+///     enum variants name is long (64 character is the data limit in the TBA).
+///
+/// ## Example
+///
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+///
+/// #[derive(InlineButtons, Debug, PartialEq)]
+/// enum CallbackButtons {
+///     #[button(rename = "f")]
+///     Fruit(String),
+///     Other,
+/// }
+///
+/// let data = "f;apple";
+/// let expected = DefaultData::Fruit("apple".to_string());
+/// let actual = DefaultData::parse(data).unwrap();
+/// assert_eq!(actual, expected);
+/// # }
+/// ```
 pub trait InlineButtons: Sized {
     /// Parses the callback data.
     fn parse(s: &str) -> Result<Self, ParseError>;
