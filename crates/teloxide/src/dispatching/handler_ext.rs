@@ -203,9 +203,9 @@ mod tests {
     use chrono::DateTime;
     use dptree::deps;
     use teloxide_core::types::{
-        CallbackQuery, CallbackQueryId, Chat, ChatFullInfo, ChatId, ChatKind, ChatPrivate,
-        LinkPreviewOptions, Me, MediaKind, MediaText, Message, MessageCommon, MessageId,
-        MessageKind, Update, UpdateId, UpdateKind, User, UserId,
+        CallbackQuery, CallbackQueryId, Chat, ChatId, ChatKind, ChatPrivate, LinkPreviewOptions,
+        Me, MediaKind, MediaText, Message, MessageCommon, MessageId, MessageKind, Update, UpdateId,
+        UpdateKind, User, UserId,
     };
 
     use super::HandlerExt;
