@@ -7,6 +7,7 @@ use crate::types::ShippingAddress;
 /// [The official docs](https://core.telegram.org/bots/api#orderinfo).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct OrderInfo {
     /// User's name.
     pub name: Option<String>,

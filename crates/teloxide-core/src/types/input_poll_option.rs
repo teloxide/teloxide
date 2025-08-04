@@ -8,6 +8,7 @@ use crate::types::{MessageEntity, ParseMode};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputPollOption {
     /// Option text, 1-100 characters.
     pub text: String,
@@ -19,6 +20,7 @@ pub struct InputPollOption {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum InputPollOptionFormatting {
     /// Mode for parsing entities in the text. See [formatting options] for more

@@ -20,6 +20,7 @@ use crate::types::{
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct CustomEmojiId(pub String);
@@ -27,6 +28,7 @@ pub struct CustomEmojiId(pub String);
 /// This object contains full information about a chat.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatFullInfo {
     /// A unique identifier for this chat.
     pub id: ChatId,
@@ -63,7 +65,8 @@ pub struct ChatFullInfo {
     /// details.
     ///
     /// [accent colors]: https://core.telegram.org/bots/api#accent-colors
-    pub accent_color_id: Option<u8>,
+    #[serde(default)]
+    pub accent_color_id: u8,
 
     /// Custom emoji identifier of the emoji chosen by the chat for the reply
     /// header and link preview background
@@ -86,6 +89,7 @@ pub struct ChatFullInfo {
     /// Expiration date of the emoji status of the chat or the other party in a
     /// private chat, in Unix time, if any
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub emoji_status_expiration_date: Option<DateTime<Utc>>,
 
     /// True, if new chat members will have access to old messages; available
@@ -100,6 +104,7 @@ pub struct ChatFullInfo {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum ChatFullInfoKind {
     Public(Box<ChatFullInfoPublic>),
@@ -108,6 +113,7 @@ pub enum ChatFullInfoKind {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatFullInfoPublic {
     /// A title, for supergroups, channels and group chats.
     pub title: Option<String>,
@@ -138,6 +144,7 @@ pub struct ChatFullInfoPublic {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(from = "serde_helper::ChatPrivateFullInfo", into = "serde_helper::ChatPrivateFullInfo")]
 pub struct ChatFullInfoPrivate {
     /// A username, for private chats, supergroups and channels if
@@ -182,6 +189,7 @@ pub struct ChatFullInfoPrivate {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum ChatFullInfoPublicKind {
@@ -192,6 +200,7 @@ pub enum ChatFullInfoPublicKind {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatFullInfoPublicChannel {
     /// A username, for private chats, supergroups and channels if available.
     pub username: Option<String>,
@@ -209,6 +218,7 @@ pub struct ChatFullInfoPublicChannel {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatFullInfoPublicGroup {
     /// A default chat member permissions, for groups and supergroups.
     pub permissions: Option<ChatPermissions>,
@@ -216,6 +226,7 @@ pub struct ChatFullInfoPublicGroup {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatFullInfoPublicSupergroup {
     /// A username, for private chats, supergroups and channels if
     /// available.
@@ -597,6 +608,7 @@ mod serde_helper {
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(rename_all = "snake_case")]
     enum Type {
         Private,
@@ -604,6 +616,7 @@ mod serde_helper {
 
     #[serde_with::skip_serializing_none]
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     pub(super) struct ChatPrivateFullInfo {
         /// A dummy field. Used to ensure that the `type` field is equal to
         /// `private`.
@@ -724,7 +737,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
@@ -786,7 +799,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
@@ -846,7 +859,7 @@ mod tests {
                 unique_gifts: true,
                 premium_subscription: true,
             },
-            accent_color_id: None,
+            accent_color_id: 0,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,

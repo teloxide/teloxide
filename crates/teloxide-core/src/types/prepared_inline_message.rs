@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PreparedInlineMessage {
     /// Unique identifier of the prepared message
     pub id: String,
@@ -13,5 +14,6 @@ pub struct PreparedInlineMessage {
     /// Expiration date of the prepared message, in Unix time. Expired prepared
     /// messages can no longer be used
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub expiration_date: DateTime<Utc>,
 }

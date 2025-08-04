@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// giveaway.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct GiveawayCreated {
     /// The number of Telegram Stars to be split between giveaway winners; for
     /// Telegram Star giveaways only

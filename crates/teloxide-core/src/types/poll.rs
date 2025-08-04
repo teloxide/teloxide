@@ -17,6 +17,7 @@ use serde::{Deserialize, Serialize};
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct PollId(pub String);
@@ -26,6 +27,7 @@ pub struct PollId(pub String);
 /// [The official docs](https://core.telegram.org/bots/api#poll).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Poll {
     /// Unique poll identifier.
     pub id: PollId,
@@ -74,6 +76,7 @@ pub struct Poll {
 
     /// Point in time when the poll will be automatically closed.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub close_date: Option<DateTime<Utc>>,
 }
 
@@ -81,6 +84,7 @@ pub struct Poll {
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PollOption {
     /// Option text, 1-100 characters.
     pub text: String,

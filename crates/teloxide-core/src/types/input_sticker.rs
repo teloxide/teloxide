@@ -7,6 +7,7 @@ use super::StickerFormat;
 /// This object describes a sticker to be added to a sticker set.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputSticker {
     /// The added sticker. Pass a file_id as a FileId to send a file that
     /// already exists on the Telegram servers, pass an HTTP URL as a String
@@ -31,5 +32,6 @@ pub struct InputSticker {
 
     /// List of 0-20 search keywords for the sticker with total length of up to
     /// 64 characters. For “regular” and “custom_emoji” stickers only.
+    #[serde(default)]
     pub keywords: Vec<String>,
 }

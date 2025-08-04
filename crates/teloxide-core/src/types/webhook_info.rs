@@ -10,9 +10,11 @@ use crate::types::AllowedUpdate;
 /// [The official docs](https://core.telegram.org/bots/api#webhookinfo).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct WebhookInfo {
     /// Webhook URL, `None` if webhook is not set up.
     #[serde(with = "crate::types::option_url_from_string")]
+    #[cfg_attr(test, schemars(with = "String"))] // Lack of Option is on purpose
     pub url: Option<reqwest::Url>,
 
     /// `true`, if a custom certificate was provided for webhook certificate
@@ -28,6 +30,7 @@ pub struct WebhookInfo {
     /// Time of the most recent error that happened when trying to
     /// deliver an update via webhook.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub last_error_date: Option<DateTime<Utc>>,
 
     /// Error message in human-readable format for the most recent error that
@@ -37,6 +40,7 @@ pub struct WebhookInfo {
     /// Time of the most recent error that happened when trying to synchronize
     /// available updates with Telegram data-centers.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub last_synchronization_error_date: Option<DateTime<Utc>>,
 
     /// Maximum allowed number of simultaneous HTTPS connections to the webhook

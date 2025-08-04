@@ -7,6 +7,7 @@ use crate::types::TelegramTransactionId;
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct RefundedPayment {
     /// Three-letter ISO 4217 [currency] code, or “XTR” for payments in
     /// [Telegram Stars]. Currently, always “XTR”.

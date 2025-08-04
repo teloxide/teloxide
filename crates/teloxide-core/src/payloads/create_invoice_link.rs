@@ -46,11 +46,11 @@ impl_payload! {
             /// URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
             pub photo_url: String [into],
             /// Photo size in bytes
-            pub photo_size: String [into],
+            pub photo_size: u32,
             /// Photo width
-            pub photo_width: String [into],
+            pub photo_width: u32,
             /// Photo height
-            pub photo_height: String [into],
+            pub photo_height: u32,
             /// Pass _True_, if you require the user's full name to complete the order
             pub need_name: bool,
             /// Pass _True_, if you require the user's phone number to complete the order

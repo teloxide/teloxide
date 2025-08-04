@@ -5,6 +5,7 @@ use crate::types::LivePeriod;
 /// This object represents a point on the map.
 #[serde_with::skip_serializing_none]
 #[derive(Copy, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Location {
     /// Longitude as defined by sender.
     pub longitude: f64,

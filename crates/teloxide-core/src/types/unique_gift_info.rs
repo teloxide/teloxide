@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 /// Describes a service message about a unique gift that was sent or received.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UniqueGiftInfo {
     /// Information about the gift
     pub gift: UniqueGift,
@@ -28,6 +29,7 @@ pub struct UniqueGiftInfo {
     /// Point in time when the gift can be transferred. If it is in the past,
     /// then the gift can be transferred now
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub next_transfer_date: Option<DateTime<Utc>>,
 }
 
@@ -35,6 +37,7 @@ pub struct UniqueGiftInfo {
 /// regular gifts, `Transfer` for gifts transferred from other users or
 /// channels, or `Resale` for gifts bought from other users
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum UniqueGiftOrigin {
     Upgrade,

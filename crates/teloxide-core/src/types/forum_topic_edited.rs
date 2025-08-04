@@ -7,6 +7,7 @@ use crate::types::CustomEmojiId;
 /// [The official docs](https://core.telegram.org/bots/api#forumtopicedited).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ForumTopicEdited {
     /// New name of the topic, if it was edited
     pub name: Option<String>,

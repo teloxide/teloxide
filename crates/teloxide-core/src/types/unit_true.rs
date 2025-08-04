@@ -5,6 +5,8 @@ use serde::{
 
 /// A type that is always true.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Default)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+#[cfg_attr(test, schemars(with = "bool"))]
 pub struct True;
 
 impl std::convert::TryFrom<bool> for True {

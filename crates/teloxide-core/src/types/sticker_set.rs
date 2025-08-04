@@ -9,6 +9,7 @@ use crate::types::{PhotoSize, Sticker, StickerType};
 /// [The official docs](https://core.telegram.org/bots/api#stickerset).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StickerSet {
     /// Sticker set name.
     pub name: String,

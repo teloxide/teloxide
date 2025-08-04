@@ -6,6 +6,7 @@ use crate::types::{BoostId, Chat, ChatBoostSource};
 /// This object represents a boost removed from a chat.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoostRemoved {
     /// Chat which was boosted
     pub chat: Chat,
@@ -15,6 +16,7 @@ pub struct ChatBoostRemoved {
 
     /// Point in time (Unix timestamp) when the boost was removed
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub remove_date: DateTime<Utc>,
 
     /// Source of the removed boost

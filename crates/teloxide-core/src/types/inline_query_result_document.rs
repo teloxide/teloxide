@@ -13,6 +13,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultdocument).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineQueryResultDocument {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,
@@ -41,6 +42,7 @@ pub struct InlineQueryResultDocument {
     /// Mime type of the content of the file, either `application/pdf` or
     /// `application/zip`.
     #[serde(with = "crate::types::non_telegram_types::mime::deser")]
+    #[cfg_attr(test, schemars(with = "String"))]
     pub mime_type: Mime,
 
     /// Short description of the result.

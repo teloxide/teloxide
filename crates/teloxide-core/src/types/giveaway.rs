@@ -6,6 +6,7 @@ use crate::types::{Chat, CountryCode};
 /// This object represents a message about a scheduled giveaway.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Giveaway {
     /// The list of chats which the user must join to participate in the
     /// giveaway.
@@ -14,6 +15,7 @@ pub struct Giveaway {
     /// Point in time (Unix timestamp) when winners of the giveaway will be
     /// selected
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub winners_selection_date: DateTime<Utc>,
 
     /// The number of users which are supposed to be selected as winners of the

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SwitchInlineQueryChosenChat {
     /// The default inline query to be inserted in the input field. If left
     /// empty, only the bot's username will be inserted

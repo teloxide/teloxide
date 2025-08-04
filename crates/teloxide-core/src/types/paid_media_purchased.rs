@@ -8,6 +8,7 @@ use crate::types::User;
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMediaPurchased {
     /// User who purchased the media
     pub from: User,

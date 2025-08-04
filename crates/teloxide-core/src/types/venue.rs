@@ -5,6 +5,7 @@ use crate::types::Location;
 /// This object represents a venue.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Venue {
     /// Venue location.
     pub location: Location,

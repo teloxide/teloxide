@@ -9,6 +9,7 @@ use crate::types::RequestId;
 ///
 /// [More about requesting users »]: https://core.telegram.org/bots/features#chat-and-user-selection
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub struct KeyboardButtonRequestUsers {
     /// Identifier of the request, which will be received back in the

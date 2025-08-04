@@ -8,6 +8,7 @@ use crate::types::WebAppInfo;
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultsbutton)
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineQueryResultsButton {
     /// Label text on the button
     pub text: String,
@@ -17,6 +18,7 @@ pub struct InlineQueryResultsButton {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum InlineQueryResultsButtonKind {
     /// Description of the [Web App] that will be launched when the user presses

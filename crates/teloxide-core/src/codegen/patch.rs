@@ -250,7 +250,7 @@ fn intra_links(doc: &mut Doc) {
     }
 }
 
-fn escape_kw(s: &mut String) {
+pub(crate) fn escape_kw(s: &mut String) {
     if ["type"].contains(&s.as_str()) {
         *s = format!("{s}_");
     }

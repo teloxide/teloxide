@@ -5,6 +5,7 @@ use crate::types::User;
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatInviteLink {
     /// The invite link. If the link was created by another chat administrator,
     /// then the second part of the link will be replaced with “…”.
@@ -23,6 +24,7 @@ pub struct ChatInviteLink {
     /// Point in time when the link will expire or has been
     /// expired
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub expire_date: Option<DateTime<Utc>>,
     /// Maximum number of users that can be members of the chat simultaneously
     /// after joining the chat via this invite link; 1-99999

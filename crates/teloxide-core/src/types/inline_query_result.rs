@@ -19,6 +19,7 @@ use crate::types::{
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, From)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(from = "raw::InlineQueryResult", into = "raw::InlineQueryResult")]
 pub enum InlineQueryResult {
     #[serde(rename = "audio")]
@@ -57,6 +58,7 @@ mod raw {
     use super::*;
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum AudioKind {
         Cached(InlineQueryResultCachedAudio),
@@ -64,6 +66,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum DocumentKind {
         Cached(InlineQueryResultCachedDocument),
@@ -71,6 +74,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum GifKind {
         Cached(InlineQueryResultCachedGif),
@@ -78,6 +82,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum Mpeg4GifKind {
         Cached(InlineQueryResultCachedMpeg4Gif),
@@ -85,6 +90,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum PhotoKind {
         Cached(InlineQueryResultCachedPhoto),
@@ -92,6 +98,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum VideoKind {
         Cached(InlineQueryResultCachedVideo),
@@ -99,6 +106,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(untagged)]
     pub(super) enum VoiceKind {
         Cached(InlineQueryResultCachedVoice),
@@ -106,6 +114,7 @@ mod raw {
     }
 
     #[derive(Serialize, Deserialize)]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     #[serde(tag = "type")]
     #[serde(rename_all = "snake_case")]
     pub(super) enum InlineQueryResult {

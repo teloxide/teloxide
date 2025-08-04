@@ -12,6 +12,7 @@ use crate::types::FileMeta;
 /// [The official docs](https://core.telegram.org/bots/api#passportfile).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize, Deref)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PassportFile {
     /// Metadata of the passport file.
     #[deref]
@@ -21,5 +22,6 @@ pub struct PassportFile {
     /// Time when the file was uploaded.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     #[serde(rename = "file_date")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 }
