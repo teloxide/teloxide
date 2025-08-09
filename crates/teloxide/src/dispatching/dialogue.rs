@@ -99,7 +99,7 @@ pub use self::{RedisStorage, RedisStorageError};
 #[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 pub use self::{SqliteStorage, SqliteStorageError};
 
-#[cfg(feature = "postgres-storage-nativetls")]
+#[cfg(any(feature = "postgres-storage-nativetls", feature = "postgres-storage-rustls"))]
 pub use self::{PostgresStorage, PostgresStorageError};
 
 pub use get_chat_id::GetChatId;
