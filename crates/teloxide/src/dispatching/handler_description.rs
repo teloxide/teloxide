@@ -77,6 +77,7 @@ impl EventKind for Kind {
             CallbackQuery,
             ShippingQuery,
             PreCheckoutQuery,
+            PurchasedPaidMedia,
             Poll,
             PollAnswer,
             MyChatMember,
@@ -157,6 +158,7 @@ mod tests {
             CallbackQuery,
             ShippingQuery,
             PreCheckoutQuery,
+            PurchasedPaidMedia,
             Poll,
             PollAnswer,
             MyChatMember,
@@ -180,6 +182,7 @@ mod tests {
                 | CallbackQuery
                 | ShippingQuery
                 | PreCheckoutQuery
+                | PurchasedPaidMedia
                 | Poll
                 | PollAnswer
                 | MyChatMember

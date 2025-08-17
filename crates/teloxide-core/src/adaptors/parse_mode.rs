@@ -5,9 +5,11 @@ use url::Url;
 use crate::{
     payloads::{
         AnswerInlineQuery, AnswerWebAppQuery, CopyMessage, EditMessageCaption,
-        EditMessageCaptionInline, EditMessageMedia, EditMessageMediaInline, EditMessageText,
-        EditMessageTextInline, SendAnimation, SendAudio, SendDocument, SendMediaGroup, SendMessage,
-        SendPhoto, SendPoll, SendVideo, SendVoice,
+        EditMessageCaptionInline, EditMessageChecklist, EditMessageMedia, EditMessageMediaInline,
+        EditMessageText, EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
+        SavePreparedInlineMessage, SendAnimation, SendAudio, SendChecklist, SendDocument, SendGift,
+        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
+        SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -145,12 +147,21 @@ where
     B::EditMessageCaption: Clone,
     B::EditMessageCaptionInline: Clone,
     B::SendPoll: Clone,
+    B::SendChecklist: Clone,
     B::CopyMessage: Clone,
+    B::PostStory: Clone,
+    B::EditStory: Clone,
     B::AnswerInlineQuery: Clone,
     B::AnswerWebAppQuery: Clone,
+    B::SavePreparedInlineMessage: Clone,
     B::EditMessageMedia: Clone,
     B::EditMessageMediaInline: Clone,
+    B::EditMessageChecklist: Clone,
+    B::SendPaidMedia: Clone,
     B::SendMediaGroup: Clone,
+    B::GiftPremiumSubscription: Clone,
+    B::SendGift: Clone,
+    B::SendGiftChat: Clone,
 {
     type Err = B::Err;
 
@@ -163,16 +174,25 @@ where
         send_animation,
         send_voice,
         send_poll,
+        send_checklist,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
         edit_message_caption_inline,
+        edit_message_checklist,
         copy_message,
+        post_story,
+        edit_story,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
+        send_paid_media,
         send_media_group,
         edit_message_media,
         edit_message_media_inline,
+        gift_premium_subscription,
+        send_gift,
+        send_gift_chat,
         => f, fty
     }
 
@@ -199,6 +219,7 @@ where
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,
@@ -212,6 +233,8 @@ where
         export_chat_invite_link,
         create_chat_invite_link,
         edit_chat_invite_link,
+        create_chat_subscription_invite_link,
+        edit_chat_subscription_invite_link,
         revoke_chat_invite_link,
         set_chat_photo,
         delete_chat_photo,
@@ -278,12 +301,34 @@ where
         set_sticker_emoji_list,
         set_sticker_keywords,
         set_sticker_mask_position,
+        get_available_gifts,
+        verify_user,
+        verify_chat,
+        remove_user_verification,
+        remove_chat_verification,
+        read_business_message,
+        delete_business_messages,
+        set_business_account_name,
+        set_business_account_username,
+        set_business_account_bio,
+        set_business_account_profile_photo,
+        remove_business_account_profile_photo,
+        set_business_account_gift_settings,
+        get_business_account_star_balance,
+        transfer_business_account_stars,
+        get_business_account_gifts,
+        convert_gift_to_stars,
+        upgrade_gift,
+        transfer_gift,
+        delete_story,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_my_star_balance,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
@@ -340,9 +385,15 @@ impl_visit_parse_modes! {
     EditMessageTextInline => [parse_mode],
     EditMessageCaption => [parse_mode],
     EditMessageCaptionInline => [parse_mode],
+    SendPaidMedia => [parse_mode],
+    GiftPremiumSubscription => [text_parse_mode],
+    SendGift => [text_parse_mode],
+    SendGiftChat => [text_parse_mode],
     // FIXME: check if `parse_mode` changes anything if `.caption` is not set
     //        (and if it does, maybe not call visitor if `self.caption.is_none()`)
     CopyMessage => [parse_mode],
+    PostStory => [parse_mode],
+    EditStory => [parse_mode],
     SendPoll => [explanation_parse_mode],
 }
 
@@ -355,6 +406,12 @@ impl VisitParseModes for AnswerInlineQuery {
 }
 
 impl VisitParseModes for AnswerWebAppQuery {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
+    }
+}
+
+impl VisitParseModes for SavePreparedInlineMessage {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_inline_query_result(&mut self.result, &mut visitor);
     }
@@ -377,6 +434,18 @@ impl VisitParseModes for EditMessageMedia {
 impl VisitParseModes for EditMessageMediaInline {
     fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
         visit_parse_modes_in_input_media(&mut self.media, &mut visitor);
+    }
+}
+
+impl VisitParseModes for EditMessageChecklist {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visitor(&mut self.checklist.parse_mode);
+    }
+}
+
+impl VisitParseModes for SendChecklist {
+    fn visit_parse_modes(&mut self, mut visitor: impl FnMut(&mut Option<ParseMode>)) {
+        visitor(&mut self.checklist.parse_mode);
     }
 }
 

@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BusinessConnectionId, User, UserId};
+use crate::types::{BusinessBotRights, BusinessConnectionId, User, UserId};
 
 /// Describes the connection of the bot with a business account.
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BusinessConnection {
     /// Unique identifier of the business connection
@@ -20,9 +21,8 @@ pub struct BusinessConnection {
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
 
-    /// `true`, if the bot can act on behalf of the business account in chats
-    /// that were active in the last 24 hours
-    pub can_reply: bool,
+    /// Rights of the business bot
+    pub rights: Option<BusinessBotRights>,
 
     /// `true`, if the connection is alive
     pub is_enabled: bool,

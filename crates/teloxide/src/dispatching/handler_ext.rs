@@ -6,7 +6,7 @@ use crate::{
     types::{Me, Message},
     utils::command::BotCommands,
 };
-use dptree::{di::DependencyMap, Handler};
+use dptree::Handler;
 
 use std::fmt::Debug;
 
@@ -67,7 +67,7 @@ pub trait HandlerExt<Output> {
         Upd: GetChatId + Clone + Send + Sync + 'static;
 }
 
-impl<Output> HandlerExt<Output> for Handler<'static, DependencyMap, Output, DpHandlerDescription>
+impl<Output> HandlerExt<Output> for Handler<'static, Output, DpHandlerDescription>
 where
     Output: Send + Sync + 'static,
 {
@@ -107,7 +107,7 @@ where
 ///  - [`crate::types::Message`]
 ///  - [`crate::types::Me`]
 #[must_use]
-pub fn filter_command<C, Output>() -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+pub fn filter_command<C, Output>() -> Handler<'static, Output, DpHandlerDescription>
 where
     C: BotCommands + Send + Sync + 'static,
     Output: Send + Sync + 'static,
@@ -131,8 +131,7 @@ where
 ///  - [`crate::types::Message`]
 ///  - [`crate::types::Me`]
 #[must_use]
-pub fn filter_mention_command<C, Output>(
-) -> Handler<'static, DependencyMap, Output, DpHandlerDescription>
+pub fn filter_mention_command<C, Output>() -> Handler<'static, Output, DpHandlerDescription>
 where
     C: BotCommands + Send + Sync + 'static,
     Output: Send + Sync + 'static,
@@ -223,6 +222,7 @@ mod tests {
                     }),
                     reply_markup: None,
                     author_signature: None,
+                    paid_star_count: None,
                     effect_id: None,
                     is_automatic_forward: false,
                     has_protected_content: false,
@@ -251,6 +251,7 @@ mod tests {
             can_read_all_group_messages: false,
             supports_inline_queries: false,
             can_connect_to_business: false,
+            has_main_web_app: false,
         }
     }
 

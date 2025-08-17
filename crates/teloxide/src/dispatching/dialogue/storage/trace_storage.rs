@@ -39,7 +39,7 @@ where
     where
         D: Send + 'static,
     {
-        log::trace!("Removing dialogue #{}", chat_id);
+        log::trace!("Removing dialogue #{chat_id}");
         <S as Storage<D>>::remove_dialogue(self.inner.clone(), chat_id)
     }
 
@@ -54,7 +54,7 @@ where
         Box::pin(async move {
             let to = format!("{dialogue:#?}");
             <S as Storage<D>>::update_dialogue(self.inner.clone(), chat_id, dialogue).await?;
-            log::trace!("Updated a dialogue #{}: {:#?}", chat_id, to);
+            log::trace!("Updated a dialogue #{chat_id}: {to:#?}");
             Ok(())
         })
     }
@@ -63,7 +63,7 @@ where
         self: Arc<Self>,
         chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
-        log::trace!("Requested a dialogue #{}", chat_id);
+        log::trace!("Requested a dialogue #{chat_id}");
         <S as Storage<D>>::get_dialogue(self.inner.clone(), chat_id)
     }
 }

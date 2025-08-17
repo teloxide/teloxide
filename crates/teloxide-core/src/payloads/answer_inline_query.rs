@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{InlineQueryResult, InlineQueryResultsButton, True};
+use crate::types::{InlineQueryId, InlineQueryResult, InlineQueryResultsButton, True};
 
 impl_payload! {
     /// Use this method to send answers to an inline query. On success, _True_ is returned. No more than **50** results per query are allowed.
@@ -10,7 +10,7 @@ impl_payload! {
     pub AnswerInlineQuery (AnswerInlineQuerySetters) => True {
         required {
             /// Unique identifier for the answered query
-            pub inline_query_id: String [into],
+            pub inline_query_id: InlineQueryId,
             /// A JSON-serialized array of results for the inline query
             pub results: Vec<InlineQueryResult> [collect],
         }

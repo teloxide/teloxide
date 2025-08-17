@@ -26,6 +26,7 @@
 //!   + `PollType` type of poll, either “quiz” or “regular”
 //!   + `DiceEmoji` emoji that can be used in `sendDice` one of “🎲”, “🎯”, or “🏀”
 //!   + `TargetMessage` either `inline_message_id: String` or `chat_id: ChatId` and `message_id: i64`
+//!   + Many string ids, e.g. `BusinessConnectionId`, `CallbackQueryId`, etc
 //! * Integers represented with more strict (when possible) types, e.g.:
 //!   `u8` (unsigned, 8-bit integer), `u32` (unsigned, 32-bit),
 //!   `i64` (signed, 64-bit), etc
@@ -39,7 +40,7 @@
 //! [github]: https://github.com/WaffleLapkin/tg-methods-schema
 
 Schema(
-    api_version: ApiVersion(ver: "7.5", date: "June 18, 2024"),
+    api_version: ApiVersion(ver: "9.1", date: "July 3, 2025"),
     methods: [
         Method(
             names: ("getUpdates", "GetUpdates", "get_updates"),
@@ -276,8 +277,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -322,6 +328,11 @@ Schema(
                     name: "from_chat_id",
                     ty: RawTy("Recipient"),
                     descr: Doc(md: "Unique identifier for the chat where the original message was sent (or channel username in the format `@channelusername`)"),
+                ),
+                Param(
+                    name: "video_start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "New start timestamp for the forwarded video in the message"),
                 ),
                 Param(
                     name: "disable_notification",
@@ -392,8 +403,12 @@ Schema(
             names: ("copyMessage", "CopyMessage", "copy_message"),
             return_ty: RawTy("MessageId"),
             doc: Doc(
-                md: "Use this method to copy messages of any kind. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the [MessageId] of the sent message on success.",
-                md_links: {"MessageId": "https://core.telegram.org/bots/api#messageid"},
+                md: "Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [Poll] can be copied only if the value of the field *correct_option_id* is known to the bot. The method is analogous to the method [forwardMessage], but the copied message doesn't have a link to the original message. Returns the [MessageId] of the sent message on success.",
+                md_links: {
+                    "Poll": "https://core.telegram.org/bots/api#poll",
+                    "forwardMessage": "https://core.telegram.org/bots/api#forwardmessage",
+                    "MessageId": "https://core.telegram.org/bots/api#messageid",
+                },
             ),
             tg_doc: "https://core.telegram.org/bots/api#copymessage",
             tg_category: "Available methods",
@@ -417,6 +432,11 @@ Schema(
                     name: "message_id",
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
+                ),
+                Param(
+                    name: "video_start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "New start timestamp for the copied video in the message"),
                 ),
                 Param(
                     name: "caption",
@@ -455,6 +475,11 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -476,10 +501,11 @@ Schema(
             names: ("copyMessages", "CopyMessages", "copy_messages"),
             return_ty: ArrayOf(RawTy("MessageId")),
             doc: Doc(
-                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz poll can be copied only if the value of the field _correct\\_option\\_id_ is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
+                md: "Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [Poll] can be copied only if the value of the field *correct_option_id* is known to the bot. The method is analogous to the method [forwardMessages], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [MessageId] of the sent messages is returned.",
                 md_links: {
+                    "Poll": "https://core.telegram.org/bots/api#poll",
                     "forwardMessages": "https://core.telegram.org/bots/api#forwardmessages",
-                    "MessageId": "https://core.telegram.org/bots/api#messageid"
+                    "MessageId": "https://core.telegram.org/bots/api#messageid",
                 },
             ),
             tg_doc: "https://core.telegram.org/bots/api#copymessages",
@@ -554,7 +580,7 @@ Schema(
                     name: "photo",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
+                        md: "Photo to send. Pass a file_id as FileId to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     )
                 ),
@@ -600,8 +626,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -654,7 +685,7 @@ Schema(
                     name: "audio",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "Audio file to send. Pass a file_id as FileId to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -713,8 +744,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -764,7 +800,7 @@ Schema(
                     name: "document",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "File to send. Pass a file_id as FileId to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -813,8 +849,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -867,7 +908,7 @@ Schema(
                     name: "video",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Video to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
+                        md: "Video to send. Pass a file_id as FileId to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -893,6 +934,19 @@ Schema(
                         md: "Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
+                ),
+                Param(
+                    name: "cover",
+                    ty: Option(RawTy("InputFile")),
+                    descr: Doc(
+                        md: "Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. [More information on Sending Files »]",
+                        md_links: {"More information on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
+                    ),
+                ),
+                Param(
+                    name: "start_timestamp",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "Start timestamp for the video in the message"),
                 ),
                 Param(
                     name: "caption",
@@ -941,8 +995,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -993,7 +1052,7 @@ Schema(
                     name: "animation",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Animation to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
+                        md: "Animation to send. Pass a file_id as FileId to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -1062,8 +1121,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1117,7 +1181,7 @@ Schema(
                     name: "voice",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
+                        md: "Audio file to send. Pass a file_id as FileId to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -1158,8 +1222,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent message from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1212,7 +1281,7 @@ Schema(
                     name: "video_note",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported",
+                        md: "Video note to send. Pass a file_id as FileId to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. [More info on Sending Files »]. Sending video notes by a URL is currently unsupported",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -1248,8 +1317,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1268,6 +1342,100 @@ Schema(
                         }
                     ),
 
+                ),
+            ],
+        ),
+        Method(
+            names: ("sendPaidMedia", "SendPaidMedia", "send_paid_media"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send paid media. On success, the sent [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendpaidmedia",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "The number of Telegram Stars that must be paid to buy access to the media")
+                ),
+                Param(
+                    name: "media",
+                    ty: ArrayOf(RawTy("InputPaidMedia")),
+                    descr: Doc(md: "A JSON-serialized array describing the media to be sent; up to 10 items")
+                ),
+                Param(
+                    name: "payload",
+                    ty: Option(String),
+                    descr: Doc(md: "Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Media caption, 0-1024 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the media caption. See [formatting options] for more details.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode"),
+                ),
+                Param(
+                    name: "show_caption_above_media",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the caption must be shown above the message media")
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user",
+                        md_links: {
+                            "inline keyboard": "https://core.telegram.org/bots/features#inline-keyboards",
+                            "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
+                        }
+                    ),
                 ),
             ],
         ),
@@ -1315,8 +1483,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1398,8 +1571,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1625,6 +1803,43 @@ Schema(
             sibling: Some("stopMessageLiveLocation"),
         ),
         Method(
+            names: ("editMessageChecklist", "EditMessageChecklist", "edit_message_checklist"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to edit a checklist on behalf of a connected business account. On success, the edited [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editmessagechecklist",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target chat")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Unique identifier for the target message")
+                ),
+                Param(
+                    name: "checklist",
+                    ty: RawTy("InputChecklist"),
+                    descr: Doc(md: "The new checklist"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(md: "The new inline keyboard for the message"),
+                ),
+            ],
+        ),
+        Method(
             names: ("sendVenue", "SendVenue", "send_venue"),
             return_ty: RawTy("Message"),
             doc: Doc(
@@ -1706,8 +1921,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1790,8 +2010,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1927,8 +2152,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -1946,6 +2176,58 @@ Schema(
                             "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
                         }
                     ),
+                ),
+            ],
+        ),
+        Method(
+            names: ("sendChecklist", "SendChecklist", "send_checklist"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send a checklist on behalf of a connected business account. On success, the sent [Message] is returned.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendchecklist",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target chat")
+                ),
+                Param(
+                    name: "checklist",
+                    ty: RawTy("InputChecklist"),
+                    descr: Doc(md: "Checklist to send"),
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(md: "Sends the message silently. Users will receive a notification with no sound")
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(RawTy("EffectId")),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message"),
+                ),
+                Param(
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(md: "An inline keyboard"),
                 ),
             ],
         ),
@@ -1993,8 +2275,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -2118,6 +2405,33 @@ Schema(
             ],
         ),
         Method(
+            names: ("setUserEmojiStatus", "SetUserEmojiStatus", "set_user_emoji_status"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the emoji status for a given user that previously allowed the bot to manage their emoji status via the Mini App method [requestEmojiStatusAccess]. Returns True on success.",
+                md_links: {"requestEmojiStatusAccess": "https://core.telegram.org/bots/webapps#initializing-mini-apps"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setuseremojistatus",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user")
+                ),
+                Param(
+                    name: "emoji_status_custom_emoji_id",
+                    ty: Option(RawTy("CustomEmojiId")),
+                    descr: Doc(md: "Custom emoji identifier of the emoji status to set. Pass an empty string to remove the status")
+                ),
+                Param(
+                    name: "emoji_status_expiration_date",
+                    ty: Option(i64),
+                    descr: Doc(md: "Expiration date of the emoji status, if any")
+                ),
+            ],
+        ),
+        Method(
             names: ("getFile", "GetFile", "get_file"),
             return_ty: RawTy("File"),
             doc: Doc(
@@ -2132,7 +2446,7 @@ Schema(
             params: [
                 Param(
                     name: "file_id",
-                    ty: String,
+                    ty: RawTy("FileId"),
                     descr: Doc(md: "File identifier to get info about")
                 ),
             ],
@@ -2497,7 +2811,7 @@ Schema(
         ),
         Method(
             names: ("editChatInviteLink", "EditChatInviteLink", "edit_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to edit a non-primary invite link created by the bot. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the edited invite link as a [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
@@ -2538,8 +2852,73 @@ Schema(
             ],
         ),
         Method(
+            names: ("createChatSubscriptionInviteLink", "CreateChatSubscriptionInviteLink", "create_chat_subscription_invite_link"),
+            return_ty: RawTy("ChatInviteLink"),
+            doc: Doc(
+                md: "Use this method to create a subscription invite link for a channel chat. The bot must have the can_invite_users administrator rights. The link can be edited using the method [editChatSubscriptionInviteLink] or revoked using the method [revokeChatInviteLink]. Returns the new invite link as a [ChatInviteLink] object.",
+                md_links: {
+                    "editChatSubscriptionInviteLink": "https://core.telegram.org/bots/api#editchatsubscriptioninvitelink",
+                    "revokeChatInviteLink": "https://core.telegram.org/bots/api#revokechatinvitelink",
+                    "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#createchatsubscriptioninvitelink",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "Invite link name; 0-32 characters")
+                ),
+                Param(
+                    name: "subscription_period",
+                    ty: RawTy("Seconds"),
+                    descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. Currently, it must always be 2592000 (30 days).")
+                ),
+                Param(
+                    name: "subscription_price",
+                    ty: u32,
+                    descr: Doc(md: "The amount of Telegram Stars a user must pay initially and after each subsequent subscription period to be a member of the chat; 1-10000")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editChatSubscriptionInviteLink", "EditChatSubscriptionInviteLink", "edit_chat_subscription_invite_link"),
+            return_ty: RawTy("ChatInviteLink"),
+            doc: Doc(
+                md: "Use this method to edit a subscription invite link created by the bot. The bot must have the can_invite_users administrator rights. Returns the edited invite link as a [ChatInviteLink] object.",
+                md_links: {
+                    "ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink",
+                }
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editchatsubscriptioninvitelink",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "invite_link",
+                    ty: String,
+                    descr: Doc(md: "The invite link to edit")
+                ),
+                Param(
+                    name: "name",
+                    ty: Option(String),
+                    descr: Doc(md: "Invite link name; 0-32 characters")
+                ),
+            ]
+        ),
+        Method(
             names: ("revokeChatInviteLink", "RevokeChatInviteLink", "revoke_chat_invite_link"),
-            return_ty: String,
+            return_ty: RawTy("ChatInviteLink"),
             doc: Doc(
                 md: "Use this method to revoke an invite link created by the bot. If the primary link is revoked, a new link is automatically generated. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns the revoked invite link as [ChatInviteLink] object.",
                 md_links: {"ChatInviteLink": "https://core.telegram.org/bots/api#chatinvitelink"}
@@ -2690,6 +3069,11 @@ Schema(
                     ty: Option(bool),
                     descr: Doc(md: "Pass True, if it is not necessary to send a notification to all chat members about the new pinned message. Notifications are always disabled in channels.")
                 ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
             ],
         ),
         Method(
@@ -2708,6 +3092,11 @@ Schema(
                     name: "message_id",
                     ty: Option(RawTy("MessageId")),
                     descr: Doc(md: "Identifier of a message to unpin. If not specified, the most recent pinned message (by sending date) will be unpinned.")
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection"),
                 ),
             ],
         ),
@@ -2887,7 +3276,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_color",
-                    ty: RawTy("Rgb"),
+                    ty: Option(RawTy("Rgb")),
                     descr: Doc(
                         md: "Color of the topic icon in RGB format. Currently, must be one of 7322096 (`0x6FB9F0`), 16766590 (`0xFFD67E`), 13338331 (`0xCB86DB`), 9367192 (`0x8EEE98`), 16749490 (`0xFF93B2`), or 16478047 (`0xFB6F5F`). To construct color from these values use [`Rgb::from_u32`]",
                         md_links: {"`Rgb::from_u32`": "crate::types::Rgb::from_u32"}
@@ -2895,7 +3284,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: String,
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers.")
                 ),
             ],
@@ -2924,7 +3313,7 @@ Schema(
                 ),
                 Param(
                     name: "icon_custom_emoji_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Unique identifier of the custom emoji shown as the topic icon. Use `getForumTopicIconStickers` to get all allowed custom emoji identifiers. Pass an empty string to remove the icon. If not specified, the current icon will be kept")
                 ),
             ],
@@ -3109,7 +3498,7 @@ Schema(
             params: [
                 Param(
                     name: "callback_query_id",
-                    ty: String,
+                    ty: RawTy("CallbackQueryId"),
                     descr: Doc(md: "Unique identifier for the query to be answered"),
                 ),
                 Param(
@@ -3428,7 +3817,7 @@ Schema(
             params: [
                 Param(
                     name: "inline_query_id",
-                    ty: String,
+                    ty: RawTy("InlineQueryId"),
                     descr: Doc(md: "Unique identifier for the answered query")
                 ),
                 Param(
@@ -3474,9 +3863,51 @@ Schema(
                     descr: Doc(md: "Unique identifier for the query to be answered")
                 ),
                 Param(
-                    name :"result",
+                    name: "result",
                     ty: RawTy("InlineQueryResult"),
                     descr: Doc(md: "A JSON-serialized object describing the message to be sent"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("savePreparedInlineMessage", "SavePreparedInlineMessage", "save_prepared_inline_message"),
+            return_ty: RawTy("PreparedInlineMessage"),
+            doc: Doc(
+                md: "Stores a message that can be sent by a user of a Mini App. Returns a [PreparedInlineMessage] object.",
+                md_links: {"PreparedInlineMessage": "https://core.telegram.org/bots/api#preparedinlinemessage"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#savepreparedinlinemessage",
+            tg_category: "Inline Mode",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that can use the prepared message")
+                ),
+                Param(
+                    name: "result",
+                    ty: RawTy("InlineQueryResult"),
+                    descr: Doc(md: "An object describing the message to be sent"),
+                ),
+                Param(
+                    name: "allow_user_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to private chats with users"),
+                ),
+                Param(
+                    name: "allow_bot_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to private chats with bots"),
+                ),
+                Param(
+                    name: "allow_group_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to group and supergroup chats"),
+                ),
+                Param(
+                    name: "allow_channel_chats",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true`, if the message can be sent to channel chats"),
                 ),
             ]
         ),
@@ -3699,7 +4130,7 @@ Schema(
         Method(
             names: ("editMessageMedia", "EditMessageMedia", "edit_message_media"),
             return_ty: RawTy("Message"),
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemedia",
             tg_category: "Updating messages",
             sibling: Some("editMessageMediaInline"),
@@ -3737,7 +4168,7 @@ Schema(
         Method(
             names: ("editMessageMediaInline", "EditMessageMediaInline", "edit_message_media_inline"),
             return_ty: True,
-            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
+            doc: Doc(md: "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent."),
             tg_doc: "https://core.telegram.org/bots/api#editmessagemediainline",
             tg_category: "Updating messages",
             sibling: Some("editMessageMedia"),
@@ -3930,7 +4361,7 @@ Schema(
                     name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
-                        md: "Sticker to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
+                        md: "Sticker to send. Pass a file_id as FileId to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. [More info on Sending Files »]",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     )
                 ),
@@ -3953,8 +4384,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -3998,7 +4434,7 @@ Schema(
             params: [
                 Param(
                     name: "custom_emoji_ids",
-                    ty: ArrayOf(String),
+                    ty: ArrayOf(RawTy("CustomEmojiId")),
                     descr: Doc(md: "List of custom emoji identifiers. At most 200 custom emoji identifiers can be specified."),
                 ),
             ],
@@ -4196,7 +4632,7 @@ Schema(
                     name: "thumbnail",
                     ty: Option(RawTy("InputFile")),
                     descr: Doc(
-                        md: "A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.",
+                        md: "A .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as FileId to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.",
                         md_links: {"More info on Sending Files »": "https://core.telegram.org/bots/api#sending-files"},
                     ),
                 ),
@@ -4221,7 +4657,7 @@ Schema(
                 ),
                 Param(
                     name: "custom_emoji_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("CustomEmojiId")),
                     descr: Doc(md: "Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail."),
                 )
             ]
@@ -4313,6 +4749,728 @@ Schema(
                     name: "mask_position",
                     ty: Option(RawTy("MaskPosition")),
                     descr: Doc(md: "A JSON-serialized object with the position where the mask should be placed on faces. Omit the parameter to remove the mask position."),
+                ),
+            ]
+        ),
+        Method(
+            names: ("getAvailableGifts", "GetAvailableGifts", "get_available_gifts"),
+            return_ty: RawTy("Gifts"),
+            doc: Doc(
+                md: "Returns the list of gifts that can be sent by the bot to users. Requires no parameters. Returns a [Gifts] object.",
+                md_links: {"Gifts": "https://core.telegram.org/bots/api#gifts"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getavailablegifts",
+            tg_category: "Stickers",
+            params: [],
+        ),
+        Method(
+            names: ("sendGift", "SendGift", "send_gift"),
+            return_ty: True,
+            doc: Doc(md: "Sends a gift to the given user. The gift can't be converted to Telegram Stars by the user. Returns True on success."),
+            sibling: Some("sendGiftChat"),
+            tg_doc: "https://core.telegram.org/bots/api#sendgift",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user that will receive the gift"),
+                ),
+                Param(
+                    name: "gift_id",
+                    ty: RawTy("GiftId"),
+                    descr: Doc(md: "Identifier of the gift"),
+                ),
+                Param(
+                    name: "pay_for_upgrade",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver"),
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
+            names: ("sendGiftChat", "SendGiftChat", "send_gift_chat"),
+            return_ty: True,
+            doc: Doc(md: "Sends a gift to the given channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success."),
+            sibling: Some("sendGift"),
+            tg_doc: "https://core.telegram.org/bots/api#sendgift",
+            tg_category: "Stickers",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the chat or username of the channel that will receive the gift"),
+                ),
+                Param(
+                    name: "gift_id",
+                    ty: RawTy("GiftId"),
+                    descr: Doc(md: "Identifier of the gift"),
+                ),
+                Param(
+                    name: "pay_for_upgrade",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver"),
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the gift; 0-255 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored."),
+                ),
+            ]
+        ),
+        Method(
+            names: ("giftPremiumSubscription", "GiftPremiumSubscription", "gift_premium_subscription"),
+            return_ty: True,
+            doc: Doc(
+                md: "Gifts a Telegram Premium subscription to the given user. Returns True on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#giftpremiumsubscription",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "month_count",
+                    ty: u8,
+                    descr: Doc(md: "Number of months the Telegram Premium subscription will be active for the user; must be one of 3, 6, or 12")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to pay for the Telegram Premium subscription; must be 1000 for 3 months, 1500 for 6 months, and 2500 for 12 months")
+                ),
+                Param(
+                    name: "text",
+                    ty: Option(String),
+                    descr: Doc(md: "Text that will be shown along with the service message about the subscription; 0-128 characters"),
+                ),
+                Param(
+                    name: "text_parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "text_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(
+                        md: "List of special entities that appear in the gift text. It can be specified instead of `text_parse_mode`. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                )
+            ]
+        ),
+        Method(
+            names: ("verifyUser", "VerifyUser", "verify_user"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a user [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifyuser",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("verifyChat", "VerifyChat", "verify_chat"),
+            return_ty: True,
+            doc: Doc(
+                md: "Verifies a chat [on behalf of the organization] which is represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#verifychat",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+                Param(
+                    name: "custom_description",
+                    ty: Option(String),
+                    descr: Doc(md: "Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeUserVerification", "RemoveUserVerification", "remove_user_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a user who is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removeuserverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Unique identifier of the target user"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeChatVerification", "RemoveChatVerification", "remove_chat_verification"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes verification from a chat that is currently verified [on behalf of the organization] represented by the bot. Returns _true_ on success.",
+                md_links: {"on behalf of the organization": "https://telegram.org/verify#third-party-verification"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removechatverification",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("readBusinessMessage", "ReadBusinessMessage", "read_business_message"),
+            return_ty: True,
+            doc: Doc(
+                md: "Marks incoming message as read on behalf of a business account. Requires the _can_read_messages_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#readbusinessmessage",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to read the message"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat in which the message was received. The chat must have been active in the last 24 hours"),
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Unique identifier of the message to mark as read")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteBusinessMessages", "DeleteBusinessMessages", "delete_business_messages"),
+            return_ty: True,
+            doc: Doc(
+                md: "Delete messages on behalf of a business account. Requires the _can_delete_sent_messages_ business bot right to delete messages sent by the bot itself, or the _can_delete_all_messages_ business bot right to delete any message. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletebusinessmessages",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which to delete the messages"),
+                ),
+                Param(
+                    name: "message_ids",
+                    ty: ArrayOf(RawTy("MessageId")),
+                    descr: Doc(
+                        md: "List of 1-100 identifiers of messages to delete. All messages must be from the same chat. See [deleteMessage] for limitations on which messages can be deleted",
+                        md_links: {"deleteMessage": "https://core.telegram.org/bots/api#delete_message"}
+                    )
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountName", "SetBusinessAccountName", "set_business_account_name"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the first and last name of a managed business account. Requires the _can_change_name_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountname",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "first_name",
+                    ty: String,
+                    descr: Doc(md: "The new value of the first name for the business account; 1-64 characters"),
+                ),
+                Param(
+                    name: "last_name",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the last name for the business account; 0-64 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountUsername", "SetBusinessAccountUsername", "set_business_account_username"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the username of a managed business account. Requires the _can_change_username_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountusername",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "username",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the username for the business account; 0-32 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountBio", "SetBusinessAccountBio", "set_business_account_bio"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the bio of a managed business account. Requires the _can_change_bio_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountbio",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "bio",
+                    ty: Option(String),
+                    descr: Doc(md: "The new value of the bio for the business account; 0-140 characters")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountProfilePhoto", "SetBusinessAccountProfilePhoto", "set_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "photo",
+                    ty: RawTy("InputProfilePhoto"),
+                    descr: Doc(md: "The new profile photo to set"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to set the public photo, which will be visible even if the main photo is hidden by the business account's privacy settings. An account can have only one public photo.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("removeBusinessAccountProfilePhoto", "RemoveBusinessAccountProfilePhoto", "remove_business_account_profile_photo"),
+            return_ty: True,
+            doc: Doc(
+                md: "Removes the current profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#removebusinessaccountprofilephoto",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "is_public",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to remove the public photo, which is visible even if the main photo is hidden by the business account's privacy settings. After the main photo is removed, the previous profile photo (if present) becomes the main photo.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("setBusinessAccountGiftSettings", "SetBusinessAccountGiftSettings", "set_business_account_gift_settings"),
+            return_ty: True,
+            doc: Doc(
+                md: "Changes the privacy settings pertaining to incoming gifts in a managed business account. Requires the _can_change_gift_settings_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#setbusinessaccountgiftsettings",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "show_gift_button",
+                    ty: bool,
+                    descr: Doc(md: "Pass _true_, if a button for sending a gift to the user or by the business account must always be shown in the input field"),
+                ),
+                Param(
+                    name: "accepted_gift_types",
+                    ty: RawTy("AcceptedGiftTypes"),
+                    descr: Doc(md: "Types of gifts accepted by the business account"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("getBusinessAccountStarBalance", "GetBusinessAccountStarBalance", "get_business_account_star_balance"),
+            return_ty: RawTy("StarAmount"),
+            doc: Doc(
+                md: "Returns the amount of Telegram Stars owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [StarAmount] on success.",
+                md_links: {"StarAmount": "https://core.telegram.org/bots/api#staramount"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountstarbalance",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferBusinessAccountStars", "TransferBusinessAccountStars", "transfer_business_account_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers Telegram Stars from the business account balance to the bot's balance. Requires the _can_transfer_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transferbusinessaccountstars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "star_count",
+                    ty: u32,
+                    descr: Doc(md: "Number of Telegram Stars to transfer; 1-10000")
+                ),
+            ]
+        ),
+        Method(
+            names: ("getBusinessAccountGifts", "GetBusinessAccountGifts", "get_business_account_gifts"),
+            return_ty: RawTy("OwnedGifts"),
+            doc: Doc(
+                md: "Returns the gifts received and owned by a managed business account. Requires the _can_view_gifts_and_stars_ business bot right. Returns [OwnedGifts] on success.",
+                md_links: {"OwnedGifts": "https://core.telegram.org/bots/api#ownedgifts"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getbusinessaccountgifts",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "exclude_unsaved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that aren't saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_saved",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that are saved to the account's profile page")
+                ),
+                Param(
+                    name: "exclude_unlimited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased an unlimited number of times")
+                ),
+                Param(
+                    name: "exclude_limited",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude gifts that can be purchased a limited number of times")
+                ),
+                Param(
+                    name: "exclude_unique",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to exclude unique gifts")
+                ),
+                Param(
+                    name: "sort_by_price",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to sort results by gift price instead of send date. Sorting is applied before pagination")
+                ),
+                Param(
+                    name: "offset",
+                    ty: Option(String),
+                    descr: Doc(md: "Offset of the first entry to return as received from the previous request; use empty string to get the first chunk of results")
+                ),
+                Param(
+                    name: "limit",
+                    ty: Option(u8),
+                    descr: Doc(md: "The maximum number of gifts to be returned; 1-100. Defaults to 100")
+                ),
+            ]
+        ),
+        Method(
+            names: ("convertGiftToStars", "ConvertGiftToStars", "convert_gift_to_stars"),
+            return_ty: True,
+            doc: Doc(
+                md: "Converts a given regular gift to Telegram Stars. Requires the _can_convert_gifts_to_stars_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#convertgifttostars",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+            ]
+        ),
+        Method(
+            names: ("upgradeGift", "UpgradeGift", "upgrade_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Upgrades a given regular gift to a unique gift. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Additionally requires the _can_transfer_stars_ business bot right if the upgrade is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#upgradegift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "keep_original_details",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the original gift text, sender and receiver in the upgraded gift")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the upgrade from the business account balance. If `gift.prepaid_upgrade_star_count > 0`, then pass 0, otherwise, the _can_transfer_stars_ business bot right is required and `gift.upgrade_star_count` must be passed.")
+                ),
+            ]
+        ),
+        Method(
+            names: ("transferGift", "TransferGift", "transfer_gift"),
+            return_ty: True,
+            doc: Doc(
+                md: "Transfers an owned unique gift to another user. Requires the _can_transfer_and_upgrade_gifts_ business bot right. Requires _can_transfer_stars_ business bot right if the transfer is paid. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#transfergift",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "owned_gift_id",
+                    ty: RawTy("OwnedGiftId"),
+                    descr: Doc(md: "Unique identifier of the regular gift that should be converted to Telegram Stars")
+                ),
+                Param(
+                    name: "new_owner_chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier of the chat which will own the gift. The chat must be active in the last 24 hours")
+                ),
+                Param(
+                    name: "star_count",
+                    ty: Option(u32),
+                    descr: Doc(md: "The amount of Telegram Stars that will be paid for the transfer from the business account balance. If positive, then the _can_transfer_stars_ business bot right is required")
+                ),
+            ]
+        ),
+        Method(
+            names: ("postStory", "PostStory", "post_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Posts a story on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#poststory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "active_period",
+                    ty: RawTy("Seconds"),
+                    descr: Doc(md: "Period after which the story is moved to the archive, in seconds; must be one of `6 * 3600`, `12 * 3600`, `86400`, or `2 * 86400`")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+                Param(
+                    name: "post_to_chat_page",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ to keep the story accessible after it expires")
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass _true_ if the content of the story must be protected from forwarding and screenshotting")
+                ),
+            ]
+        ),
+        Method(
+            names: ("editStory", "EditStory", "edit_story"),
+            return_ty: RawTy("Story"),
+            doc: Doc(
+                md: "Edits a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns [Story] on success.",
+                md_links: {"Story": "https://core.telegram.org/bots/api#story"}
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#editstory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to edit")
+                ),
+                Param(
+                    name: "content",
+                    ty: RawTy("InputStoryContent"),
+                    descr: Doc(md: "Content of the story")
+                ),
+                Param(
+                    name: "caption",
+                    ty: Option(String),
+                    descr: Doc(md: "Caption of the story, 0-2048 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the story caption. See [formatting options] for more details",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "caption_entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the caption, which can be specified instead of _parse_mode_")
+                ),
+                Param(
+                    name: "areas",
+                    ty: Option(ArrayOf(RawTy("StoryArea"))),
+                    descr: Doc(md: "List of clickable areas to be shown on the story")
+                ),
+            ]
+        ),
+        Method(
+            names: ("deleteStory", "DeleteStory", "delete_story"),
+            return_ty: True,
+            doc: Doc(
+                md: "Deletes a story previously posted by the bot on behalf of a managed business account. Requires the _can_manage_stories_ business bot right. Returns _true_ on success.",
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletestory",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: RawTy("BusinessConnectionId"),
+                    descr: Doc(md: "Unique identifier of the business connection"),
+                ),
+                Param(
+                    name: "story_id",
+                    ty: RawTy("StoryId"),
+                    descr: Doc(md: "Unique identifier of the story to delete")
                 ),
             ]
         ),
@@ -4470,8 +5628,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
@@ -4537,6 +5700,19 @@ Schema(
                     name: "prices",
                     ty: ArrayOf(RawTy("LabeledPrice")),
                     descr: Doc(md: "Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)"),
+                ),
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(
+                        md: "Unique identifier of the business connection on behalf of which the link will be created. For payments in [Telegram Stars] only.",
+                        md_links: {"Telegram Stars":"https://t.me/BotNews/90"}
+                    ),
+                ),
+                Param(
+                    name: "subscription_period",
+                    ty: Option(RawTy("Seconds")),
+                    descr: Doc(md: "The number of seconds the subscription will be active for before the next payment. The currency must be set to “XTR” (Telegram Stars) if the parameter is used. Currently, it must always be 2592000 (30 days) if specified. Any number of subscriptions can be active for a given bot at the same time, including multiple concurrent subscriptions from the same user."),
                 ),
                 Param(
                     name: "max_tip_amount",
@@ -4625,7 +5801,7 @@ Schema(
             params: [
                 Param(
                     name: "shipping_query_id",
-                    ty: String,
+                    ty: RawTy("ShippingQueryId"),
                     descr: Doc(md: "Unique identifier for the query to be answered"),
                 ),
                 Param(
@@ -4657,7 +5833,7 @@ Schema(
             params: [
                 Param(
                     name: "pre_checkout_query_id",
-                    ty: String,
+                    ty: RawTy("PreCheckoutQueryId"),
                     descr: Doc(md: "Unique identifier for the query to be answered"),
                 ),
                 Param(
@@ -4671,6 +5847,17 @@ Schema(
                     descr: Doc(md: "Required if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. \"Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!\"). Telegram will display this message to the user."),
                 ),
             ],
+        ),
+        Method(
+            names: ("getMyStarBalance", "GetMyStarBalance", "get_my_star_balance"),
+            return_ty: RawTy("StarAmount"),
+            doc: Doc(
+                md: "A method to get the current Telegram Stars balance of the bot. Requires no parameters. On success, returns a [StarAmount] object.",
+                md_links: {"StarAmount":"https://core.telegram.org/bots/api#staramount"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#getmystarbalance",
+            tg_category: "Payments",
+            params: [],
         ),
         Method(
             names: ("getStarTransactions", "GetStarTransactions", "get_star_transactions"),
@@ -4711,8 +5898,32 @@ Schema(
                 ),
                 Param(
                     name: "telegram_payment_charge_id",
-                    ty: String,
+                    ty: RawTy("TelegramTransactionId"),
                     descr: Doc(md: "Telegram payment identifier"),
+                ),
+            ],
+        ),
+        Method(
+            names: ("editUserStarSubscription", "EditUserStarSubscription", "edit_user_star_subscription"),
+            return_ty: True,
+            doc: Doc(md: "Allows the bot to cancel or re-enable extension of a subscription paid in Telegram Stars. Returns True on success."),
+            tg_doc: "https://core.telegram.org/bots/api#edituserstarsubscription",
+            tg_category: "Payments",
+            params: [
+                Param(
+                    name: "user_id",
+                    ty: RawTy("UserId"),
+                    descr: Doc(md: "Identifier of the user whose subscription will be edited"),
+                ),
+                Param(
+                    name: "telegram_payment_charge_id",
+                    ty: RawTy("TelegramTransactionId"),
+                    descr: Doc(md: "Telegram payment identifier for the subscription"),
+                ),
+                Param(
+                    name: "is_canceled",
+                    ty: bool,
+                    descr: Doc(md: "Pass `true` to cancel extension of the user subscription; the subscription must be active up to the end of the current subscription period. Pass `false` to allow the user to re-enable a subscription that was previously canceled by the bot."),
                 ),
             ],
         ),
@@ -4779,8 +5990,13 @@ Schema(
                     descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
                 ),
                 Param(
+                    name: "allow_paid_broadcast",
+                    ty: Option(bool),
+                    descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
+                ),
+                Param(
                     name: "message_effect_id",
-                    ty: Option(String),
+                    ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(

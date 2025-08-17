@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to an animated GIF file stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedGif {
     pub id: String,
 
     /// A valid file identifier for the GIF file.
-    pub gif_file_id: String,
+    pub gif_file_id: FileId,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -51,14 +51,13 @@ pub struct InlineQueryResultCachedGif {
 }
 
 impl InlineQueryResultCachedGif {
-    pub fn new<S1, S2>(id: S1, gif_file_id: S2) -> Self
+    pub fn new<S1>(id: S1, gif_file_id: FileId) -> Self
     where
         S1: Into<String>,
-        S2: Into<String>,
     {
         Self {
             id: id.into(),
-            gif_file_id: gif_file_id.into(),
+            gif_file_id,
             title: None,
             caption: None,
             parse_mode: None,
@@ -77,11 +76,8 @@ impl InlineQueryResultCachedGif {
         self
     }
 
-    pub fn gif_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.gif_file_id = val.into();
+    pub fn gif_file_id(mut self, val: FileId) -> Self {
+        self.gif_file_id = val;
         self
     }
 

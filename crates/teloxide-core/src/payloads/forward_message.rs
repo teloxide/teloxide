@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, Recipient, ThreadId};
+use crate::types::{Message, MessageId, Recipient, Seconds, ThreadId};
 
 impl_payload! {
     /// Use this method to forward messages of any kind. On success, the sent [`Message`] is returned.
@@ -22,6 +22,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// New start timestamp for the forwarded video in the message
+            pub video_start_timestamp: Seconds,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

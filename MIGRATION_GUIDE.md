@@ -3,6 +3,88 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+## 0.16 -> 0.17
+
+### teloxide
+
+TBA removed `hide_url` field from `InlineQueryResultArticle`. Just don't pass the url instead:
+
+```diff
+InlineQueryResultArticle::new(
+    "01".to_string(),
+    "DuckDuckGo Search".to_string(),
+    InputMessageContent::Text(InputMessageContentText::new(format!(
+        "https://duckduckgo.com/?q={}",
+        q.query
+    ))),
+)
+-.url("https://duckduckgo.com/about".parse().unwrap())
+-.hide_url(true)
+```
+
+`create_forum_topic` was fixed to only require `chat_id` and `name`, making `icon_color` and `icon_custom_emoji_id` optional
+
+```diff
+-bot.create_forum_topic(chat_id, name, icon_color, icon_custom_emoji_id).await
++bot.create_forum_topic(chat_id, name)
++.icon_color(icon_color)
++.icon_custom_emoji_id(icon_custom_emoji_id)
++.await
+```
+
+`TransactionPartnerUser` was reworked to have a `kind` field. To access the fields you had you need to call an appropriate getter
+
+```diff
+-let invoice_payload = transaction_partner_user.invoice_payload;
++let invoice_payload = transaction_partner_user.invoice_payment().unwrap().invoice_payload;
+
+-let gift = transaction_partner_user.gift;
++let gift = transaction_partner_user.gift_purchase().unwrap().gift;
+```
+
+## 0.15 -> 0.16
+
+### teloxide
+
+A lot of previously `String` type ids got their own types. To easily convert into them you can just add `.into()`
+
+```diff
+-InputFile::file_id("123456")
++InputFile::file_id("123456".into())
+```
+
+Or you could also:
+
+```diff
+-InputFile::file_id("123456")
++InputFile::file_id(FileId("123456".to_string()))
+```
+
+And borrowed id types will have to be cloned now:
+
+```diff
+-bot.answer_callback_query(&q.id).await?;
++bot.answer_callback_query(q.id.clone()).await?;
+```
+
+Also `refund_star_payment`, `SuccessfulPayment` and `StarTransaction` switched from `String` to `TelegramTransactionId` in `telegram_payment_charge_id`/`id`:
+
+```diff
+-bot.refund_star_payment(user_id, "txn").await?;
++bot.refund_star_payment(user_id, "txn".into()).await?;
+```
+
+dptree's handler signature has changed:
+
+```diff
+type UpdHandler = Handler<
+    'static,
+-    DependencyMap,
+    core::result::Result<(), Box<dyn std::error::Error + Send + Sync + 'static>>,
+    teloxide::dispatching::DpHandlerDescription,
+>;
+```
+
 ## 0.14.1 -> 0.15.0
 
 ### teloxide

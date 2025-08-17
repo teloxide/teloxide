@@ -26,7 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    log::info!("Trace settings: {:?}", trace_settings);
+    log::info!("Trace settings: {trace_settings:?}");
 
     let bot = if trace_settings.is_empty() {
         Bot::from_env().erase()

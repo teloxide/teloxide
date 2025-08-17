@@ -6,6 +6,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- make sure `postgres-storage-rustls` feature actually enables rustls-based postgres storage ([#1400](https://github.com/teloxide/teloxide/pull/1400))
+
+## 0.17.0 - 2025-07-11
+
+### Added
+
+- Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - Add `filter_paid_message_price_changed`, `filter_gift_info` and `filter_unique_gift_info` filters
+
+- Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
+  - Add `filter_checklist`, `checklist_tasks_done`, `checklist_tasks_added`, and `direct_message_price_changed` filters to the `MessageFilterExt` trait
+
+### Changed
+
+- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
+  - Removed `hide_url` field from `InlineQueryResultArticle` struct [**BC**]
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - `PaidMedia::Video` is now wrapped in a `Box` [**BC**]
+  - `InputPaidMedia::Video` is now wrapped in a `Box` [**BC**]
+
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters [**BC**]
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types` [**BC**]
+  - `can_reply` field in `BusinessConnection` struct was replaced by `rights` [**BC**]
+
+### Fixed
+
+- Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382)) [**BC**]
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))
+
+[pr1385]: https://github.com/teloxide/teloxide/pull/1385
+[pr1387]: https://github.com/teloxide/teloxide/pull/1387
+
+## 0.16.0 - 2025-06-19
+
+### Added
+
+- `dptree` type checking and dead code checking [**BC**].
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153)) [**BC**]
+  - Add `PollId` struct
+  - Add `CallbackQueryId` struct
+  - Add `FileId` and `FileUniqueId` structs
+  - Add `PreCheckoutQueryId` struct
+  - Add `ShippingQueryId` struct
+  - Add `InlineQueryId` struct
+  - Add `BoostId` struct
+  - Add `CustomEmojiId` struct
+  - Add `MediaGroupId` struct
+  - Add `EffectId` struct
+
+- Support for TBA 7.6 ([#1356](https://github.com/teloxide/teloxide/pull/1356))
+  - Add `filter_paid_media` to `MessageFilterExt` trait
+
+- Support for TBA 7.7 ([#1357](https://github.com/teloxide/teloxide/pull/1357)) [**BC**]
+
+- Support for TBA 7.10 ([#1366](https://github.com/teloxide/teloxide/pull/1366))
+  - Add `filter_purchased_paid_media` filter
+
+- Support for TBA 7.11 ([#1367](https://github.com/teloxide/teloxide/pull/1367))
+
+- Support for TBA 8.0 ([#1369](pr1369))
+
+[pr1369]: https://github.com/teloxide/teloxide/pull/1369
+
+### Changed
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153)) [**BC**]
+  - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
+  - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
+  - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
+  - Changed `unique_id` field to `FileUniqueId` in `File`
+  - Changed `small_file_id` and `big_file_id` to `FileId` in `ChatPhoto`
+  - Changed `small_file_unique_id` and `big_file_unique_id` to `FileUniqueId` in `ChatPhoto`
+  - Changed `inline_query_result_cached_...` structs to use `FileId`
+  - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
+  - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
+  - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
+  - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
+  - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
+  - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
+  - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
+  - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
+  - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
+  - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
+  - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
+  - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
+  - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
+  - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
+  - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+
+- MSRV (Minimal Supported Rust Version) was bumped from `1.80` to `1.82` ([#1358](https://github.com/teloxide/teloxide/pull/1358))
+
+- Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
+    - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink` [**BC**]
+
 ## 0.15.0 - 2025-04-04
 
 ### Added

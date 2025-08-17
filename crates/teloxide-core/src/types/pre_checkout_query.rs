@@ -1,6 +1,24 @@
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{OrderInfo, User};
+
+/// Unique query identifier.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct PreCheckoutQueryId(pub String);
 
 /// This object contains information about an incoming pre-checkout query.
 ///
@@ -9,7 +27,7 @@ use crate::types::{OrderInfo, User};
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct PreCheckoutQuery {
     /// Unique query identifier.
-    pub id: String,
+    pub id: PreCheckoutQueryId,
 
     /// User who sent the query.
     pub from: User,

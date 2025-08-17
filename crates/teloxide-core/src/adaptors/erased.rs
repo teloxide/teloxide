@@ -143,6 +143,9 @@ macro_rules! fwd_erased {
         $this.inner.$m($( fwd_erased!(@convert $m, $arg, $arg : $T) ),*)
     };
 
+    (@convert send_paid_media, $arg:ident, media : $T:ty) => {
+        $arg.into_iter().collect()
+    };
     (@convert send_media_group, $arg:ident, media : $T:ty) => {
         $arg.into_iter().collect()
     };
@@ -204,19 +207,23 @@ where
         send_animation,
         send_voice,
         send_video_note,
+        send_paid_media,
         send_media_group,
         send_location,
         edit_message_live_location,
         edit_message_live_location_inline,
         stop_message_live_location,
         stop_message_live_location_inline,
+        edit_message_checklist,
         send_venue,
         send_contact,
         send_poll,
+        send_checklist,
         send_dice,
         send_chat_action,
         set_message_reaction,
         get_user_profile_photos,
+        set_user_emoji_status,
         get_file,
         kick_chat_member,
         ban_chat_member,
@@ -230,6 +237,8 @@ where
         export_chat_invite_link,
         create_chat_invite_link,
         edit_chat_invite_link,
+        create_chat_subscription_invite_link,
+        edit_chat_subscription_invite_link,
         revoke_chat_invite_link,
         set_chat_photo,
         delete_chat_photo,
@@ -277,6 +286,7 @@ where
         delete_my_commands,
         answer_inline_query,
         answer_web_app_query,
+        save_prepared_inline_message,
         edit_message_text,
         edit_message_text_inline,
         edit_message_caption,
@@ -304,12 +314,39 @@ where
         set_sticker_emoji_list,
         set_sticker_keywords,
         set_sticker_mask_position,
+        get_available_gifts,
+        send_gift,
+        send_gift_chat,
+        gift_premium_subscription,
+        verify_user,
+        verify_chat,
+        remove_user_verification,
+        remove_chat_verification,
+        read_business_message,
+        delete_business_messages,
+        set_business_account_name,
+        set_business_account_username,
+        set_business_account_bio,
+        set_business_account_profile_photo,
+        remove_business_account_profile_photo,
+        set_business_account_gift_settings,
+        get_business_account_star_balance,
+        transfer_business_account_stars,
+        get_business_account_gifts,
+        convert_gift_to_stars,
+        upgrade_gift,
+        transfer_gift,
+        post_story,
+        edit_story,
+        delete_story,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
         answer_pre_checkout_query,
+        get_my_star_balance,
         get_star_transactions,
         refund_star_payment,
+        edit_user_star_subscription,
         set_passport_data_errors,
         send_game,
         set_game_score,
@@ -416,6 +453,13 @@ trait ErasableRequester<'a> {
         video_note: InputFile,
     ) -> ErasedRequest<'a, SendVideoNote, Self::Err>;
 
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u32,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err>;
+
     fn send_media_group(
         &self,
         chat_id: Recipient,
@@ -455,6 +499,14 @@ trait ErasableRequester<'a> {
         inline_message_id: String,
     ) -> ErasedRequest<'a, StopMessageLiveLocationInline, Self::Err>;
 
+    fn edit_message_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, EditMessageChecklist, Self::Err>;
+
     fn send_venue(
         &self,
         chat_id: Recipient,
@@ -478,6 +530,13 @@ trait ErasableRequester<'a> {
         options: Vec<InputPollOption>,
     ) -> ErasedRequest<'a, SendPoll, Self::Err>;
 
+    fn send_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, SendChecklist, Self::Err>;
+
     fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err>;
 
     fn send_chat_action(
@@ -497,7 +556,12 @@ trait ErasableRequester<'a> {
         user_id: UserId,
     ) -> ErasedRequest<'a, GetUserProfilePhotos, Self::Err>;
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err>;
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err>;
+
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err>;
 
     fn ban_chat_member(
         &self,
@@ -570,6 +634,19 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err>;
+
+    fn create_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        subscription_period: Seconds,
+        subscription_price: u32,
+    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err>;
+
+    fn edit_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        invite_link: String,
+    ) -> ErasedRequest<'a, EditChatSubscriptionInviteLink, Self::Err>;
 
     fn revoke_chat_invite_link(
         &self,
@@ -673,8 +750,6 @@ trait ErasableRequester<'a> {
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: String,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err>;
 
     fn edit_forum_topic(
@@ -740,7 +815,7 @@ trait ErasableRequester<'a> {
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err>;
 
     fn get_user_chat_boosts(
@@ -789,7 +864,7 @@ trait ErasableRequester<'a> {
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err>;
 
@@ -798,6 +873,12 @@ trait ErasableRequester<'a> {
         web_app_query_id: String,
         result: InlineQueryResult,
     ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err>;
 
     fn edit_message_text(
         &self,
@@ -875,7 +956,7 @@ trait ErasableRequester<'a> {
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err>;
 
     fn upload_sticker_file(
@@ -955,6 +1036,140 @@ trait ErasableRequester<'a> {
         sticker: String,
     ) -> ErasedRequest<'a, SetStickerMaskPosition, Self::Err>;
 
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId)
+        -> ErasedRequest<'a, SendGift, Self::Err>;
+
+    fn send_gift_chat(
+        &self,
+        chat_id: Recipient,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGiftChat, Self::Err>;
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u8,
+        star_count: u32,
+    ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err>;
+
+    fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err>;
+
+    fn verify_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, VerifyChat, Self::Err>;
+
+    fn remove_user_verification(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, RemoveUserVerification, Self::Err>;
+
+    fn remove_chat_verification(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err>;
+
+    fn read_business_message(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ReadBusinessMessage, Self::Err>;
+
+    fn delete_business_messages(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteBusinessMessages, Self::Err>;
+
+    fn set_business_account_name(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: String,
+    ) -> ErasedRequest<'a, SetBusinessAccountName, Self::Err>;
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountUsername, Self::Err>;
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetBusinessAccountProfilePhoto, Self::Err>;
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err>;
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> ErasedRequest<'a, SetBusinessAccountGiftSettings, Self::Err>;
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountStarBalance, Self::Err>;
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err>;
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountGifts, Self::Err>;
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, ConvertGiftToStars, Self::Err>;
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, UpgradeGift, Self::Err>;
+
+    fn transfer_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: ChatId,
+    ) -> ErasedRequest<'a, TransferGift, Self::Err>;
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, PostStory, Self::Err>;
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> ErasedRequest<'a, EditStory, Self::Err>;
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> ErasedRequest<'a, DeleteStory, Self::Err>;
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountBio, Self::Err>;
+
     fn send_invoice(
         &self,
         chat_id: Recipient,
@@ -976,23 +1191,32 @@ trait ErasableRequester<'a> {
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err>;
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err>;
+
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err>;
 
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err>;
 
     fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: String,
+        telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err>;
 
     fn set_passport_data_errors(
         &self,
@@ -1162,6 +1386,15 @@ where
         Requester::send_video_note(self, chat_id, video_note).erase()
     }
 
+    fn send_paid_media(
+        &self,
+        chat_id: Recipient,
+        star_count: u32,
+        media: Vec<InputPaidMedia>,
+    ) -> ErasedRequest<'a, SendPaidMedia, Self::Err> {
+        Requester::send_paid_media(self, chat_id, star_count, media).erase()
+    }
+
     fn send_media_group(
         &self,
         chat_id: Recipient,
@@ -1215,6 +1448,23 @@ where
         Requester::stop_message_live_location_inline(self, inline_message_id).erase()
     }
 
+    fn edit_message_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, EditMessageChecklist, Self::Err> {
+        Requester::edit_message_checklist(
+            self,
+            business_connection_id,
+            chat_id,
+            message_id,
+            checklist,
+        )
+        .erase()
+    }
+
     fn send_venue(
         &self,
         chat_id: Recipient,
@@ -1244,6 +1494,15 @@ where
         Requester::send_poll(self, chat_id, question, options).erase()
     }
 
+    fn send_checklist(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        checklist: InputChecklist,
+    ) -> ErasedRequest<'a, SendChecklist, Self::Err> {
+        Requester::send_checklist(self, business_connection_id, chat_id, checklist).erase()
+    }
+
     fn send_dice(&self, chat_id: Recipient) -> ErasedRequest<'a, SendDice, Self::Err> {
         Requester::send_dice(self, chat_id).erase()
     }
@@ -1271,7 +1530,14 @@ where
         Requester::get_user_profile_photos(self, user_id).erase()
     }
 
-    fn get_file(&self, file_id: String) -> ErasedRequest<'a, GetFile, Self::Err> {
+    fn set_user_emoji_status(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetUserEmojiStatus, Self::Err> {
+        Requester::set_user_emoji_status(self, user_id).erase()
+    }
+
+    fn get_file(&self, file_id: FileId) -> ErasedRequest<'a, GetFile, Self::Err> {
         Requester::get_file(self, file_id).erase()
     }
 
@@ -1369,6 +1635,29 @@ where
         invite_link: String,
     ) -> ErasedRequest<'a, EditChatInviteLink, Self::Err> {
         Requester::edit_chat_invite_link(self, chat_id, invite_link).erase()
+    }
+
+    fn create_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        subscription_period: Seconds,
+        subscription_price: u32,
+    ) -> ErasedRequest<'a, CreateChatSubscriptionInviteLink, Self::Err> {
+        Requester::create_chat_subscription_invite_link(
+            self,
+            chat_id,
+            subscription_period,
+            subscription_price,
+        )
+        .erase()
+    }
+
+    fn edit_chat_subscription_invite_link(
+        &self,
+        chat_id: Recipient,
+        invite_link: String,
+    ) -> ErasedRequest<'a, EditChatSubscriptionInviteLink, Self::Err> {
+        Requester::edit_chat_subscription_invite_link(self, chat_id, invite_link).erase()
     }
 
     fn revoke_chat_invite_link(
@@ -1511,10 +1800,8 @@ where
         &self,
         chat_id: Recipient,
         name: String,
-        icon_color: Rgb,
-        icon_custom_emoji_id: String,
     ) -> ErasedRequest<'a, CreateForumTopic, Self::Err> {
-        Requester::create_forum_topic(self, chat_id, name, icon_color, icon_custom_emoji_id).erase()
+        Requester::create_forum_topic(self, chat_id, name).erase()
     }
 
     fn edit_forum_topic(
@@ -1602,7 +1889,7 @@ where
 
     fn answer_callback_query(
         &self,
-        callback_query_id: String,
+        callback_query_id: CallbackQueryId,
     ) -> ErasedRequest<'a, AnswerCallbackQuery, Self::Err> {
         Requester::answer_callback_query(self, callback_query_id).erase()
     }
@@ -1683,7 +1970,7 @@ where
 
     fn answer_inline_query(
         &self,
-        inline_query_id: String,
+        inline_query_id: InlineQueryId,
         results: Vec<InlineQueryResult>,
     ) -> ErasedRequest<'a, AnswerInlineQuery, Self::Err> {
         Requester::answer_inline_query(self, inline_query_id, results).erase()
@@ -1695,6 +1982,14 @@ where
         result: InlineQueryResult,
     ) -> ErasedRequest<'a, AnswerWebAppQuery, Self::Err> {
         Requester::answer_web_app_query(self, web_app_query_id, result).erase()
+    }
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, SavePreparedInlineMessage, Self::Err> {
+        Requester::save_prepared_inline_message(self, user_id, result).erase()
     }
 
     fn edit_message_text(
@@ -1799,7 +2094,7 @@ where
 
     fn get_custom_emoji_stickers(
         &self,
-        custom_emoji_ids: Vec<String>,
+        custom_emoji_ids: Vec<CustomEmojiId>,
     ) -> ErasedRequest<'a, GetCustomEmojiStickers, Self::Err> {
         Requester::get_custom_emoji_stickers(self, custom_emoji_ids).erase()
     }
@@ -1907,6 +2202,200 @@ where
         Requester::set_sticker_mask_position(self, sticker).erase()
     }
 
+    fn get_available_gifts(&self) -> ErasedRequest<'a, GetAvailableGifts, Self::Err> {
+        Requester::get_available_gifts(self).erase()
+    }
+
+    fn send_gift(
+        &self,
+        user_id: UserId,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGift, Self::Err> {
+        Requester::send_gift(self, user_id, gift_id).erase()
+    }
+
+    fn send_gift_chat(
+        &self,
+        chat_id: Recipient,
+        gift_id: GiftId,
+    ) -> ErasedRequest<'a, SendGiftChat, Self::Err> {
+        Requester::send_gift_chat(self, chat_id, gift_id).erase()
+    }
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u8,
+        star_count: u32,
+    ) -> ErasedRequest<'a, GiftPremiumSubscription, Self::Err> {
+        Requester::gift_premium_subscription(self, user_id, month_count, star_count).erase()
+    }
+
+    fn verify_user(&self, user_id: UserId) -> ErasedRequest<'a, VerifyUser, Self::Err> {
+        Requester::verify_user(self, user_id).erase()
+    }
+
+    fn verify_chat(&self, chat_id: Recipient) -> ErasedRequest<'a, VerifyChat, Self::Err> {
+        Requester::verify_chat(self, chat_id).erase()
+    }
+
+    fn remove_user_verification(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, RemoveUserVerification, Self::Err> {
+        Requester::remove_user_verification(self, user_id).erase()
+    }
+
+    fn remove_chat_verification(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, RemoveChatVerification, Self::Err> {
+        Requester::remove_chat_verification(self, chat_id).erase()
+    }
+
+    fn read_business_message(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ReadBusinessMessage, Self::Err> {
+        Requester::read_business_message(self, business_connection_id, chat_id, message_id).erase()
+    }
+
+    fn delete_business_messages(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: Vec<MessageId>,
+    ) -> ErasedRequest<'a, DeleteBusinessMessages, Self::Err> {
+        Requester::delete_business_messages(self, business_connection_id, message_ids).erase()
+    }
+
+    fn set_business_account_name(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: String,
+    ) -> ErasedRequest<'a, SetBusinessAccountName, Self::Err> {
+        Requester::set_business_account_name(self, business_connection_id, first_name).erase()
+    }
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountUsername, Self::Err> {
+        Requester::set_business_account_username(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, SetBusinessAccountBio, Self::Err> {
+        Requester::set_business_account_bio(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetBusinessAccountProfilePhoto, Self::Err> {
+        Requester::set_business_account_profile_photo(self, business_connection_id, photo).erase()
+    }
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, RemoveBusinessAccountProfilePhoto, Self::Err> {
+        Requester::remove_business_account_profile_photo(self, business_connection_id).erase()
+    }
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> ErasedRequest<'a, SetBusinessAccountGiftSettings, Self::Err> {
+        Requester::set_business_account_gift_settings(
+            self,
+            business_connection_id,
+            show_gift_button,
+            accepted_gift_types,
+        )
+        .erase()
+    }
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountStarBalance, Self::Err> {
+        Requester::get_business_account_star_balance(self, business_connection_id).erase()
+    }
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> ErasedRequest<'a, TransferBusinessAccountStars, Self::Err> {
+        Requester::transfer_business_account_stars(self, business_connection_id, star_count).erase()
+    }
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> ErasedRequest<'a, GetBusinessAccountGifts, Self::Err> {
+        Requester::get_business_account_gifts(self, business_connection_id).erase()
+    }
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, ConvertGiftToStars, Self::Err> {
+        Requester::convert_gift_to_stars(self, business_connection_id, owned_gift_id).erase()
+    }
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> ErasedRequest<'a, UpgradeGift, Self::Err> {
+        Requester::upgrade_gift(self, business_connection_id, owned_gift_id).erase()
+    }
+
+    fn transfer_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: ChatId,
+    ) -> ErasedRequest<'a, TransferGift, Self::Err> {
+        Requester::transfer_gift(self, business_connection_id, owned_gift_id, new_owner_chat_id)
+            .erase()
+    }
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, PostStory, Self::Err> {
+        Requester::post_story(self, business_connection_id, content, active_period).erase()
+    }
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> ErasedRequest<'a, EditStory, Self::Err> {
+        Requester::edit_story(self, business_connection_id, story_id, content).erase()
+    }
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> ErasedRequest<'a, DeleteStory, Self::Err> {
+        Requester::delete_story(self, business_connection_id, story_id).erase()
+    }
+
     fn send_invoice(
         &self,
         chat_id: Recipient,
@@ -1933,7 +2422,7 @@ where
 
     fn answer_shipping_query(
         &self,
-        shipping_query_id: String,
+        shipping_query_id: ShippingQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerShippingQuery, Self::Err> {
         Requester::answer_shipping_query(self, shipping_query_id, ok).erase()
@@ -1941,10 +2430,14 @@ where
 
     fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: String,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
     ) -> ErasedRequest<'a, AnswerPreCheckoutQuery, Self::Err> {
         Requester::answer_pre_checkout_query(self, pre_checkout_query_id, ok).erase()
+    }
+
+    fn get_my_star_balance(&self) -> ErasedRequest<'a, GetMyStarBalance, Self::Err> {
+        Requester::get_my_star_balance(self).erase()
     }
 
     fn get_star_transactions(&self) -> ErasedRequest<'a, GetStarTransactions, Self::Err> {
@@ -1954,9 +2447,24 @@ where
     fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: String,
+        telegram_payment_charge_id: TelegramTransactionId,
     ) -> ErasedRequest<'a, RefundStarPayment, Self::Err> {
         Requester::refund_star_payment(self, user_id, telegram_payment_charge_id).erase()
+    }
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> ErasedRequest<'a, EditUserStarSubscription, Self::Err> {
+        Requester::edit_user_star_subscription(
+            self,
+            user_id,
+            telegram_payment_charge_id,
+            is_canceled,
+        )
+        .erase()
     }
 
     fn set_passport_data_errors(

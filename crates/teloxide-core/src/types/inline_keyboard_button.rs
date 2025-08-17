@@ -1,4 +1,6 @@
-use crate::types::{CallbackGame, LoginUrl, SwitchInlineQueryChosenChat, True, WebAppInfo};
+use crate::types::{
+    CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True, WebAppInfo,
+};
 use serde::{Deserialize, Serialize};
 
 /// This object represents one button of an inline keyboard.
@@ -78,6 +80,10 @@ pub enum InlineKeyboardButtonKind {
     /// username and the specified inline query in the input field. Not
     /// supported for messages sent on behalf of a Telegram Business account.
     SwitchInlineQueryChosenChat(SwitchInlineQueryChosenChat),
+
+    /// Description of the button that copies the specified text to the
+    /// clipboard.
+    CopyText(CopyTextButton),
 
     /// Description of the game that will be launched when the user presses the
     /// button.
@@ -178,6 +184,17 @@ impl InlineKeyboardButton {
                 switch_inline_query_current_chat.into(),
             ),
         )
+    }
+
+    /// Constructor for `InlineKeyboardButton` with
+    /// [`CopyText`] kind.
+    ///
+    /// [`CopyText`]: InlineKeyboardButtonKind::CopyText
+    pub fn copy_text_button<T>(text: T, copy_text_button: CopyTextButton) -> Self
+    where
+        T: Into<String>,
+    {
+        Self::new(text, InlineKeyboardButtonKind::CopyText(copy_text_button))
     }
 
     /// Constructor for `InlineKeyboardButton` with [`CallbackGame`] kind.

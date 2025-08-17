@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a video animation (H.264/MPEG-4 AVC video without
 /// sound) stored on the Telegram servers.
@@ -17,7 +17,7 @@ pub struct InlineQueryResultCachedMpeg4Gif {
     pub id: String,
 
     /// A valid file identifier for the MP4 file.
-    pub mpeg4_file_id: String,
+    pub mpeg4_file_id: FileId,
 
     /// Title for the result.
     pub title: Option<String>,
@@ -51,14 +51,13 @@ pub struct InlineQueryResultCachedMpeg4Gif {
 }
 
 impl InlineQueryResultCachedMpeg4Gif {
-    pub fn new<S1, S2>(id: S1, mpeg4_file_id: S2) -> Self
+    pub fn new<S1>(id: S1, mpeg4_file_id: FileId) -> Self
     where
         S1: Into<String>,
-        S2: Into<String>,
     {
         Self {
             id: id.into(),
-            mpeg4_file_id: mpeg4_file_id.into(),
+            mpeg4_file_id,
             title: None,
             caption: None,
             parse_mode: None,

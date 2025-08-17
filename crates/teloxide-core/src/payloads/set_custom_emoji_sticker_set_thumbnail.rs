@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::True;
+use crate::types::{CustomEmojiId, True};
 
 impl_payload! {
     /// Use this method to set the thumbnail of a custom emoji sticker set. Returns True on success.
@@ -14,7 +14,7 @@ impl_payload! {
         }
         optional {
             /// Custom emoji identifier of a sticker from the sticker set; pass an empty string to drop the thumbnail and use the first sticker as the thumbnail.
-            pub custom_emoji_id: String [into],
+            pub custom_emoji_id: CustomEmojiId,
         }
     }
 }

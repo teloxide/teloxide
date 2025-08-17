@@ -3,12 +3,12 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, InputFile, Message, MessageEntity, ParseMode, Recipient, ReplyMarkup,
-    ReplyParameters, ThreadId,
+    BusinessConnectionId, EffectId, InputFile, Message, MessageEntity, ParseMode, Recipient,
+    ReplyMarkup, ReplyParameters, Seconds, ThreadId,
 };
 
 impl_payload! {
-    @[multipart = video, thumbnail]
+    @[multipart = video, thumbnail, cover]
     /// Use this method to send video files, Telegram clients support mp4 videos (other formats may be sent as [`Document`]). On success, the sent [`Message`] is returned. Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
     ///
     /// [`Document`]: crate::types::Document
@@ -18,7 +18,7 @@ impl_payload! {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
-            /// Video to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]
+            /// Video to send. Pass a file_id as FileId to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. [More info on Sending Files »]
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
             pub video: InputFile,
@@ -38,6 +38,12 @@ impl_payload! {
             ///
             /// [More info on Sending Files »]: crate::types::InputFile
             pub thumbnail: InputFile,
+            /// Cover for the video in the message. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. [More information on Sending Files »]
+            ///
+            /// [More information on Sending Files »]: https://core.telegram.org/bots/api#sending-files
+            pub cover: InputFile,
+            /// Start timestamp for the video in the message
+            pub start_timestamp: Seconds,
             /// Video caption (may also be used when resending videos by _file\_id_), 0-1024 characters after entities parsing
             pub caption: String [into],
             /// Mode for parsing entities in the video caption. See [formatting options] for more details.
@@ -58,8 +64,10 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+            pub allow_paid_broadcast: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
-            pub message_effect_id: String [into],
+            pub message_effect_id: EffectId,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

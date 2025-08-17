@@ -3,13 +3,15 @@
 use serde::Serialize;
 
 use crate::types::{
-    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, ThreadId,
+    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, Seconds, ThreadId,
 };
 
 impl_payload! {
-    /// Use this method to copy messages of any kind. The method is analogous to the method forwardMessage, but the copied message doesn't have a link to the original message. Returns the [`MessageId`] of the sent message on success.
+    /// Use this method to copy messages of any kind. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [`Poll`] can be copied only if the value of the field *correct_option_id* is known to the bot. The method is analogous to the method [`ForwardMessage`], but the copied message doesn't have a link to the original message. Returns the [`MessageId`] of the sent message on success.
     ///
+    /// [`Poll`]: crate::types::Poll
     /// [`MessageId`]: crate::types::MessageId
+    /// [`ForwardMessage`]: crate::payloads::ForwardMessage
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub CopyMessage (CopyMessageSetters) => MessageId {
         required {
@@ -24,6 +26,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// New start timestamp for the copied video in the message
+            pub video_start_timestamp: Seconds,
             /// New caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
             pub caption: String [into],
             /// Mode for parsing entities in the photo caption. See [formatting options] for more details.
@@ -40,6 +44,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+            pub allow_paid_broadcast: bool,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

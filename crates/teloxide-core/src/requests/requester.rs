@@ -293,6 +293,14 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type SendPaidMedia: Request<Payload = SendPaidMedia, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendPaidMedia`].
+    fn send_paid_media<C, M>(&self, chat_id: C, star_count: u32, media: M) -> Self::SendPaidMedia
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia>;
+
     type SendMediaGroup: Request<Payload = SendMediaGroup, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendMediaGroup`].
@@ -360,6 +368,19 @@ pub trait Requester {
     where
         I: Into<String>;
 
+    type EditMessageChecklist: Request<Payload = EditMessageChecklist, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditMessageChecklist`].
+    fn edit_message_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> Self::EditMessageChecklist
+    where
+        C: Into<ChatId>;
+
     type SendVenue: Request<Payload = SendVenue, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendVenue`].
@@ -399,6 +420,18 @@ pub trait Requester {
         Q: Into<String>,
         O: IntoIterator<Item = InputPollOption>;
 
+    type SendChecklist: Request<Payload = SendChecklist, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendChecklist`].
+    fn send_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        checklist: InputChecklist,
+    ) -> Self::SendChecklist
+    where
+        C: Into<ChatId>;
+
     type SendDice: Request<Payload = SendDice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendDice`].
@@ -429,12 +462,15 @@ pub trait Requester {
     /// For Telegram documentation see [`GetUserProfilePhotos`].
     fn get_user_profile_photos(&self, user_id: UserId) -> Self::GetUserProfilePhotos;
 
+    type SetUserEmojiStatus: Request<Payload = SetUserEmojiStatus, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetUserEmojiStatus`].
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus;
+
     type GetFile: Request<Payload = GetFile, Err = Self::Err>;
 
     /// For Telegram documentation see [`GetFile`].
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>;
+    fn get_file(&self, file_id: FileId) -> Self::GetFile;
 
     type BanChatMember: Request<Payload = BanChatMember, Err = Self::Err>;
 
@@ -541,6 +577,36 @@ pub trait Requester {
 
     /// For Telegram documentation see [`EditChatInviteLink`].
     fn edit_chat_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatInviteLink
+    where
+        C: Into<Recipient>,
+        I: Into<String>;
+
+    type CreateChatSubscriptionInviteLink: Request<
+        Payload = CreateChatSubscriptionInviteLink,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`CreateChatSubscriptionInviteLink`].
+    fn create_chat_subscription_invite_link<C>(
+        &self,
+        chat_id: C,
+        subscription_period: Seconds,
+        subscription_price: u32,
+    ) -> Self::CreateChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>;
+
+    type EditChatSubscriptionInviteLink: Request<
+        Payload = EditChatSubscriptionInviteLink,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`EditChatSubscriptionInviteLink`].
+    fn edit_chat_subscription_invite_link<C, I>(
+        &self,
+        chat_id: C,
+        invite_link: I,
+    ) -> Self::EditChatSubscriptionInviteLink
     where
         C: Into<Recipient>,
         I: Into<String>;
@@ -698,17 +764,10 @@ pub trait Requester {
     type CreateForumTopic: Request<Payload = CreateForumTopic, Err = Self::Err>;
 
     /// For Telegram documentation see [`CreateForumTopic`].
-    fn create_forum_topic<C, N, I>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: I,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String>;
+        N: Into<String>;
 
     type EditForumTopic: Request<Payload = EditForumTopic, Err = Self::Err>;
 
@@ -813,9 +872,10 @@ pub trait Requester {
     type AnswerCallbackQuery: Request<Payload = AnswerCallbackQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerCallbackQuery`].
-    fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
-    where
-        C: Into<String>;
+    fn answer_callback_query(
+        &self,
+        callback_query_id: CallbackQueryId,
+    ) -> Self::AnswerCallbackQuery;
 
     type GetUserChatBoosts: Request<Payload = GetUserChatBoosts, Err = Self::Err>;
 
@@ -908,9 +968,12 @@ pub trait Requester {
     type AnswerInlineQuery: Request<Payload = AnswerInlineQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerInlineQuery`].
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>;
 
     type AnswerWebAppQuery: Request<Payload = AnswerWebAppQuery, Err = Self::Err>;
@@ -923,6 +986,15 @@ pub trait Requester {
     ) -> Self::AnswerWebAppQuery
     where
         W: Into<String>;
+
+    type SavePreparedInlineMessage: Request<Payload = SavePreparedInlineMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SavePreparedInlineMessage`].
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage;
 
     type EditMessageText: Request<Payload = EditMessageText, Err = Self::Err>;
 
@@ -1058,7 +1130,7 @@ pub trait Requester {
     /// For Telegram documentation see [`GetCustomEmojiStickers`].
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>;
+        C: IntoIterator<Item = CustomEmojiId>;
 
     type UploadStickerFile: Request<Payload = UploadStickerFile, Err = Self::Err>;
 
@@ -1191,6 +1263,233 @@ pub trait Requester {
     where
         S: Into<String>;
 
+    type GetAvailableGifts: Request<Payload = GetAvailableGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetAvailableGifts`].
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts;
+
+    type SendGift: Request<Payload = SendGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGift`].
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift;
+
+    type SendGiftChat: Request<Payload = SendGiftChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendGiftChat`].
+    fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat
+    where
+        C: Into<Recipient>;
+
+    type GiftPremiumSubscription: Request<Payload = GiftPremiumSubscription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GiftPremiumSubscription`].
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u8,
+        star_count: u32,
+    ) -> Self::GiftPremiumSubscription;
+
+    type VerifyUser: Request<Payload = VerifyUser, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyUser`].
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser;
+
+    type VerifyChat: Request<Payload = VerifyChat, Err = Self::Err>;
+
+    /// For Telegram documentation see [`VerifyChat`].
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>;
+
+    type RemoveUserVerification: Request<Payload = RemoveUserVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveUserVerification`].
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification;
+
+    type RemoveChatVerification: Request<Payload = RemoveChatVerification, Err = Self::Err>;
+
+    /// For Telegram documentation see [`RemoveChatVerification`].
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>;
+
+    type ReadBusinessMessage: Request<Payload = ReadBusinessMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ReadBusinessMessage`].
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>;
+
+    type DeleteBusinessMessages: Request<Payload = DeleteBusinessMessages, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteBusinessMessages`].
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>;
+
+    type SetBusinessAccountName: Request<Payload = SetBusinessAccountName, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountName`].
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>;
+
+    type SetBusinessAccountUsername: Request<Payload = SetBusinessAccountUsername, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountUsername`].
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername;
+
+    type SetBusinessAccountBio: Request<Payload = SetBusinessAccountBio, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SetBusinessAccountBio`].
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio;
+
+    type SetBusinessAccountProfilePhoto: Request<
+        Payload = SetBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountProfilePhoto`].
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto;
+
+    type RemoveBusinessAccountProfilePhoto: Request<
+        Payload = RemoveBusinessAccountProfilePhoto,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`RemoveBusinessAccountProfilePhoto`].
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto;
+
+    type SetBusinessAccountGiftSettings: Request<
+        Payload = SetBusinessAccountGiftSettings,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`SetBusinessAccountGiftSettings`].
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings;
+
+    type GetBusinessAccountStarBalance: Request<
+        Payload = GetBusinessAccountStarBalance,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`GetBusinessAccountStarBalance`].
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance;
+
+    type TransferBusinessAccountStars: Request<
+        Payload = TransferBusinessAccountStars,
+        Err = Self::Err,
+    >;
+
+    /// For Telegram documentation see [`TransferBusinessAccountStars`].
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars;
+
+    type GetBusinessAccountGifts: Request<Payload = GetBusinessAccountGifts, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetBusinessAccountGifts`].
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts;
+
+    type ConvertGiftToStars: Request<Payload = ConvertGiftToStars, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ConvertGiftToStars`].
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars;
+
+    type UpgradeGift: Request<Payload = UpgradeGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`UpgradeGift`].
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift;
+
+    type TransferGift: Request<Payload = TransferGift, Err = Self::Err>;
+
+    /// For Telegram documentation see [`TransferGift`].
+    fn transfer_gift<N>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: N,
+    ) -> Self::TransferGift
+    where
+        N: Into<ChatId>;
+
+    type PostStory: Request<Payload = PostStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`PostStory`].
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory;
+
+    type EditStory: Request<Payload = EditStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditStory`].
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory;
+
+    type DeleteStory: Request<Payload = DeleteStory, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteStory`].
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory;
+
     type SendInvoice: Request<Payload = SendInvoice, Err = Self::Err>;
 
     /// For Telegram documentation see [`SendInvoice`].
@@ -1232,20 +1531,25 @@ pub trait Requester {
     type AnswerShippingQuery: Request<Payload = AnswerShippingQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerShippingQuery`].
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>;
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery;
 
     type AnswerPreCheckoutQuery: Request<Payload = AnswerPreCheckoutQuery, Err = Self::Err>;
 
     /// For Telegram documentation see [`AnswerPreCheckoutQuery`].
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>;
+    ) -> Self::AnswerPreCheckoutQuery;
+
+    type GetMyStarBalance: Request<Payload = GetMyStarBalance, Err = Self::Err>;
+
+    /// For Telegram documentation see [`GetMyStarBalance`].
+    fn get_my_star_balance(&self) -> Self::GetMyStarBalance;
 
     type GetStarTransactions: Request<Payload = GetStarTransactions, Err = Self::Err>;
 
@@ -1255,13 +1559,21 @@ pub trait Requester {
     type RefundStarPayment: Request<Payload = RefundStarPayment, Err = Self::Err>;
 
     /// For Telegram documentation see [`RefundStarPayment`].
-    fn refund_star_payment<T>(
+    fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: T,
-    ) -> Self::RefundStarPayment
-    where
-        T: Into<String>;
+        telegram_payment_charge_id: TelegramTransactionId,
+    ) -> Self::RefundStarPayment;
+
+    type EditUserStarSubscription: Request<Payload = EditUserStarSubscription, Err = Self::Err>;
+
+    /// For Telegram documentation see [`EditUserStarSubscription`].
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> Self::EditUserStarSubscription;
 
     type SetPassportDataErrors: Request<Payload = SetPassportDataErrors, Err = Self::Err>;
 
@@ -1348,19 +1660,23 @@ macro_rules! forward_all {
             send_animation,
             send_voice,
             send_video_note,
+            send_paid_media,
             send_media_group,
             send_location,
             edit_message_live_location,
             edit_message_live_location_inline,
             stop_message_live_location,
             stop_message_live_location_inline,
+            edit_message_checklist,
             send_venue,
             send_contact,
             send_poll,
+            send_checklist,
             send_dice,
             send_chat_action,
             set_message_reaction,
             get_user_profile_photos,
+            set_user_emoji_status,
             get_file,
             kick_chat_member,
             ban_chat_member,
@@ -1374,6 +1690,8 @@ macro_rules! forward_all {
             export_chat_invite_link,
             create_chat_invite_link,
             edit_chat_invite_link,
+            create_chat_subscription_invite_link,
+            edit_chat_subscription_invite_link,
             revoke_chat_invite_link,
             set_chat_photo,
             delete_chat_photo,
@@ -1421,6 +1739,7 @@ macro_rules! forward_all {
             delete_my_commands,
             answer_inline_query,
             answer_web_app_query,
+            save_prepared_inline_message,
             edit_message_text,
             edit_message_text_inline,
             edit_message_caption,
@@ -1448,12 +1767,39 @@ macro_rules! forward_all {
             set_sticker_emoji_list,
             set_sticker_keywords,
             set_sticker_mask_position,
+            get_available_gifts,
+            send_gift,
+            send_gift_chat,
+            gift_premium_subscription,
+            verify_user,
+            verify_chat,
+            remove_user_verification,
+            remove_chat_verification,
+            read_business_message,
+            delete_business_messages,
+            set_business_account_name,
+            set_business_account_username,
+            set_business_account_bio,
+            set_business_account_profile_photo,
+            remove_business_account_profile_photo,
+            set_business_account_gift_settings,
+            get_business_account_star_balance,
+            transfer_business_account_stars,
+            get_business_account_gifts,
+            convert_gift_to_stars,
+            upgrade_gift,
+            transfer_gift,
+            post_story,
+            edit_story,
+            delete_story,
             send_invoice,
             create_invoice_link,
             answer_shipping_query,
             answer_pre_checkout_query,
+            get_my_star_balance,
             get_star_transactions,
             refund_star_payment,
+            edit_user_star_subscription,
             set_passport_data_errors,
             send_game,
             set_game_score,

@@ -131,7 +131,7 @@ where
         let req = bot.delete_webhook().send();
         let res = req.await;
         if let Err(err) = res {
-            log::error!("Couldn't delete webhook: {}", err);
+            log::error!("Couldn't delete webhook: {err}");
         }
     });
 
@@ -198,11 +198,9 @@ pub fn axum_no_setup(
             }
             Err(error) => {
                 log::error!(
-                    "Cannot parse an update.\nError: {:?}\nValue: {}\n\
+                    "Cannot parse an update.\nError: {error:?}\nValue: {input}\n\
                      This is a bug in teloxide-core, please open an issue here: \
-                     https://github.com/teloxide/teloxide/issues.",
-                    error,
-                    input
+                     https://github.com/teloxide/teloxide/issues."
                 );
             }
         };

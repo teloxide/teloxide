@@ -7,6 +7,187 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.13.0 - 2025-07-11
+
+### Added
+
+- Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
+  - Add `nanostar_amount` field to `StarTransaction` struct
+  - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
+  - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
+
+- Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
+  - Add `upgrade_star_count` field to `Gift` struct
+  - Add `pay_for_upgrade` parameter to `send_gift` method
+  - Removed `hide_url` field from `InlineQueryResultArticle` struct
+  - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - Add `send_gift_chat` method
+  - Add `can_send_gift` field to `ChatFullInfo` struct
+  - Add `TransactionPartner::Chat` enum variant and `TransactionPartnerChat` struct
+  - Add `cover` and `start_timestamp` fields to `Video`, `InputMediaVideo` and `InputPaidMediaVideo` structs
+  - Add `cover` and `start_timestamp` parameters to `send_video` method
+  - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
+
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - Add `paid_star_count` field to `MessageCommon` struct
+  - Add `PaidMessagePriceChanged` service message
+  - Add `premium_subscription_duration` field to `TransactionPartnerUser`
+  - Add `gift_premium_subscription` method
+  - Add `GiftInfo` and `UniqueGiftInfo` service messages
+  - Add `AcceptedGiftTypes` struct
+  - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
+  - Add `BusinessBotRights` struct
+  - Add `read_business_message`, `delete_business_messages`, `set_business_account_name`, `set_business_account_username` and `set_business_account_bio` methods
+  - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
+  - Add `set_business_account_profile_photo` and `remove_business_account_profile_photo` methods
+  - Add `StarAmount` struct
+  - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
+  - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
+  - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
+  - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
+  - Add `Argb` struct
+  - Add `LocationAddress` and all `StoryArea*` structs
+  - Add `post_story`, `edit_story` and `delete_story` methods
+
+- Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
+  - Add `ChecklistTaskId`, `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
+  - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
+  - Add `ChecklistTasksDone` and `ChecklistTasksAdded` service messages
+  - Add `send_checklist` and `edit_message_checklist` methods
+  - Increased the maximum number of options in a poll to 12
+  - Add `get_my_star_balance` method
+  - Add `DirectMessagePriceChanged` service message
+
+### Changed
+
+- Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
+  - `PaidMedia::Video` is now wrapped in a `Box`
+  - `InputPaidMedia::Video` is now wrapped in a `Box`
+
+- Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
+  - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
+
+### Fixed
+
+- Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
+- Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))
+
+[pr1385]: https://github.com/teloxide/teloxide/pull/1385
+[pr1387]: https://github.com/teloxide/teloxide/pull/1387
+
+## 0.12.0 - 2025-06-19
+
+### Added
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
+  - Add `PollId` struct
+  - Add `CallbackQueryId` struct
+  - Add `FileId` and `FileUniqueId` structs
+  - Add `PreCheckoutQueryId` struct
+  - Add `ShippingQueryId` struct
+  - Add `InlineQueryId` struct
+  - Add `BoostId` struct
+  - Add `CustomEmojiId` struct
+  - Add `MediaGroupId` struct
+  - Add `EffectId` struct
+
+- Support for TBA 7.6 ([#1356](pr1356))
+  - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
+  - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
+  - Add `sendPaidMedia` TBA method
+  - Add `can_send_paid_media` field to `ChatFullInfoPublicChannel` struct
+  - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
+  - Add `TelegramAds` variant to `TransactionPartner` enum
+  - Add `invoice_payload` field to `TransactionPartnerUser` struct
+
+- Support for TBA 7.7 ([#1357](https://github.com/teloxide/teloxide/pull/1357))
+  - Add `TelegramTransactionId` struct
+  - Add `RefundedPayment` struct and relevant `Message` variant
+
+- Support for TBA 7.8 ([#1360](https://github.com/teloxide/teloxide/pull/1360))
+  - Add `has_main_web_app` field to `Me` struct
+  - Add `business_connection_id` to `pin_chat_message` and `unpin_chat_message` methods
+
+- Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
+  - Add `business_connection_id` field to `send_paid_media` method
+  - Add `paid_media` field to `TransactionPartnerUser` class
+  - Add `subscription_period` and `subscription_price` fields to `ChatInviteLink` class
+  - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
+  - Add `until_date` field to `ChatMemberKind::Member`
+
+- Support for TBA 7.10 ([#1366](https://github.com/teloxide/teloxide/pull/1366))
+  - Add `purchased_paid_media` field to `Update` struct
+  - Add `PurchasedPaidMedia` variant to `AllowedUpdate` enum
+  - Add `PaidMediaPurchased` struct for `purchased_paid_media` field
+  - Add `prize_star_count` field to `GiveawayCreated`, `Giveaway`, `GiveawayWinners` and `ChatBoostSourceGiveaway` structs
+  - Add `is_star_giveaway` field to `GiveawayCompleted` struct
+  - Add `payload` field to `send_paid_media` method
+  - Add `paid_media_payload` field to `TransactionPartnerUser` struct
+
+- Support for TBA 7.11 ([#1367](https://github.com/teloxide/teloxide/pull/1367))
+  - Add `CopyTextButton` struct and `CopyText` variant to `InlineKeyboardButtonKind`
+  - Add `copy_text_button` method impl to `InlineKeyboardButton`
+  - Add `allow_paid_broadcast` field to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_poll`, `send_dice`, `send_invoice`, `send_game`, `send_media_group` and `copy_message` methods
+  - Add `TransactionPartnerTelegramApi` struct and `TelegramApi` variant to `TransactionPartner` enum
+
+- Support for TBA 8.0 ([#1369](pr1369))
+  - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
+  - Add `subscription_expiration_date`, `is_recurring` and `is_first_recurring` fields to the `SuccessfulPayment` struct
+  - Add `editUserStarSubscription` TBA method
+  - Add `subscription_period` field to the `TransactionPartnerUser` struct
+  - Add `setUserEmojiStatus` TBA method
+  - Add `PreparedInlineMessage` struct
+  - Add `savePreparedInlineMessage` TBA method
+  - Add `GiftId`, `Gift` and `Gifts` structs
+  - Add `getAvailableGifts` and `sendGift` TBA methods
+  - Add `gift` field to `TransactionPartnerUser` struct
+
+### Changed
+
+- New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
+  - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
+  - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
+  - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
+  - Changed `unique_id` field to `FileUniqueId` in `File`
+  - Changed `small_file_id` and `big_file_id` to `FileId` in `ChatPhoto`
+  - Changed `small_file_unique_id` and `big_file_unique_id` to `FileUniqueId` in `ChatPhoto`
+  - Changed `inline_query_result_cached_...` structs to use `FileId`
+  - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
+  - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
+  - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
+  - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
+  - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
+  - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
+  - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
+  - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
+  - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
+  - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
+  - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
+  - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
+  - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
+  - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
+  - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+
+- Support for TBA 7.6 ([#1356](pr1356))
+  - Update documentation of the `copyMessage` and `copyMessages` methods
+  - Update documentation of the `MenuButton::WebApp` enum variant
+
+- MSRV (Minimal Supported Rust Version) was bumped from `1.80` to `1.82` ([#1358](https://github.com/teloxide/teloxide/pull/1358))
+
+- Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
+    - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink`
+
+- Support for TBA 8.0 ([#1369](pr1369))
+  - `StickerKind`, `Sticker`, `MaskPoint` and `MaskPosition` now implement `Eq` and `Hash` traits
+  - Put `TransactionPartnerUser` in `TransactionPartner` behind the `Box`
+
+[pr1356]: https://github.com/teloxide/teloxide/pull/1356
+[pr1369]: https://github.com/teloxide/teloxide/pull/1369
+
 ## 0.11.2 - 2025-04-04
 
 ### Fixed

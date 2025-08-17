@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to a file stored on the Telegram servers.
 ///
@@ -19,7 +19,7 @@ pub struct InlineQueryResultCachedDocument {
     pub title: String,
 
     /// A valid file identifier for the file.
-    pub document_file_id: String,
+    pub document_file_id: FileId,
 
     /// Short description of the result.
     pub description: Option<String>,
@@ -49,16 +49,15 @@ pub struct InlineQueryResultCachedDocument {
 }
 
 impl InlineQueryResultCachedDocument {
-    pub fn new<S1, S2, S3>(id: S1, title: S2, document_file_id: S3) -> Self
+    pub fn new<S1, S2>(id: S1, title: S2, document_file_id: FileId) -> Self
     where
         S1: Into<String>,
         S2: Into<String>,
-        S3: Into<String>,
     {
         Self {
             id: id.into(),
             title: title.into(),
-            document_file_id: document_file_id.into(),
+            document_file_id,
             description: None,
             caption: None,
             parse_mode: None,
@@ -84,11 +83,8 @@ impl InlineQueryResultCachedDocument {
         self
     }
 
-    pub fn document_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.document_file_id = val.into();
+    pub fn document_file_id(mut self, val: FileId) -> Self {
+        self.document_file_id = val;
         self
     }
 

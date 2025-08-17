@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/crates/v/teloxide.svg">
   </a>
   <a href="https://core.telegram.org/bots/api">
-    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%207.5%20(inclusively)-green.svg">
+    <img src="https://img.shields.io/badge/API%20coverage-Up%20to%209.1%20(inclusively)-green.svg">
   </a>
   <a href="https://t.me/teloxide">
     <img src="https://img.shields.io/badge/support-t.me%2Fteloxide-blueviolet">
@@ -32,7 +32,7 @@
 
  - **Feature-rich.** You can use both long polling and webhooks, configure an underlying HTTPS client, set a custom URL of a Telegram API server, do graceful shutdown, and much more.
 
- - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can just replace a one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
+ - **Simple dialogues.** Our dialogues subsystem is simple and easy-to-use, and, furthermore, is agnostic of how/where dialogues are stored. For example, you can simply replace one line to achieve [persistence]. Out-of-the-box storages include [Redis] and [Sqlite].
 
 [persistence]: https://en.wikipedia.org/wiki/Persistence_(computer_science)
 [Redis]: https://redis.io/
@@ -59,7 +59,7 @@ $ set TELOXIDE_TOKEN=<Your token here>
 $ $env:TELOXIDE_TOKEN=<Your token here>
 ```
 
- 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.80):
+ 4. Make sure that your Rust compiler is up to date (`teloxide` currently requires rustc at least version 1.82):
 ```bash
 # If you're using stable
 $ rustup update stable
@@ -73,7 +73,7 @@ $ rustup override set nightly
  5. Run `cargo new my_bot`, enter the directory and put these lines into your `Cargo.toml`:
 ```toml
 [dependencies]
-teloxide = { version = "0.15.0", features = ["macros"] }
+teloxide = { version = "0.17.0", features = ["macros"] }
 log = "0.4"
 pretty_env_logger = "0.5"
 tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
@@ -301,6 +301,7 @@ The community has made a crate called [`teloxide_tests`](https://github.com/Last
 
 ## Tutorials
 
+ - [_`dptree` starter guide with teloxide_](https://github.com/teloxide/teloxide/blob/master/DPTREE_GUIDE.md)
  - [_"Migrating my family finance bot from Python to Rust (teloxide) because I am tired of exceptions (part 1)"_](https://web.archive.org/web/20230130112018/https://trkohler.com/posts/i-migrated-my-family-finance-bot-from-python-to-rust-because-i-am-tired-of-exceptions/) by Troy Köhler.
  - [_"Migrating my family finance bot from Python to Rust (teloxide) [part 2]"_](https://web.archive.org/web/20240529200929/https://trkohler.com/posts/migrating-my-family-finance-bot-from-python-to-rust-teloxide-part-2/) by Troy Köhler.
 

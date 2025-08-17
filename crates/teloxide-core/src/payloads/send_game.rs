@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{BusinessConnectionId, ChatId, Message, ReplyMarkup, ReplyParameters, ThreadId};
+use crate::types::{
+    BusinessConnectionId, ChatId, EffectId, Message, ReplyMarkup, ReplyParameters, ThreadId,
+};
 
 impl_payload! {
     /// Use this method to send a game. On success, the sent [`Message`] is returned.
@@ -27,8 +29,10 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+            pub allow_paid_broadcast: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
-            pub message_effect_id: String [into],
+            pub message_effect_id: EffectId,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Play game_title' button will be shown. If not empty, the first button must launch the game. Not supported for messages sent on behalf of a business account.

@@ -25,6 +25,12 @@ pub struct Video {
     /// Video thumbnail.
     pub thumbnail: Option<PhotoSize>,
 
+    /// Available sizes of the cover of the video in the message
+    pub cover: Option<Vec<PhotoSize>>,
+
+    /// Timestamp in seconds from which the video will play in the message
+    pub start_timestamp: Option<Seconds>,
+
     /// Original filename as defined by sender
     pub file_name: Option<String>,
 

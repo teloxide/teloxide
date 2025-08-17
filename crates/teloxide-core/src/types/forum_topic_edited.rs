@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::CustomEmojiId;
+
 /// This object represents a service message about an edited forum topic.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#forumtopicedited).
@@ -11,5 +13,5 @@ pub struct ForumTopicEdited {
 
     /// New identifier of the custom emoji shown as the topic icon, if it was
     /// edited; an empty string if the icon was removed
-    pub icon_custom_emoji_id: Option<String>,
+    pub icon_custom_emoji_id: Option<CustomEmojiId>,
 }

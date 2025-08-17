@@ -573,6 +573,15 @@ macro_rules! requester_forward {
             $body!(send_video_note this (chat_id: C, video_note: InputFile))
         }
     };
+    (@method send_paid_media $body:ident $ty:ident) => {
+        type SendPaidMedia = $ty![SendPaidMedia];
+
+        fn send_paid_media<C, M>(&self, chat_id: C, star_count: u32, media: M) -> Self::SendPaidMedia where C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia> {
+            let this = self;
+            $body!(send_paid_media this (chat_id: C, star_count: u32, media: M))
+        }
+    };
     (@method send_media_group $body:ident $ty:ident) => {
         type SendMediaGroup = $ty![SendMediaGroup];
 
@@ -622,6 +631,14 @@ macro_rules! requester_forward {
             $body!(stop_message_live_location_inline this (inline_message_id: I))
         }
     };
+    (@method edit_message_checklist $body:ident $ty:ident) => {
+        type EditMessageChecklist = $ty![EditMessageChecklist];
+
+        fn edit_message_checklist<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId, checklist: InputChecklist) -> Self::EditMessageChecklist where C: Into<ChatId> {
+            let this = self;
+            $body!(edit_message_checklist this (business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId, checklist: InputChecklist))
+        }
+    };
     (@method send_venue $body:ident $ty:ident) => {
         type SendVenue = $ty![SendVenue];
 
@@ -650,6 +667,14 @@ macro_rules! requester_forward {
         O: IntoIterator<Item = InputPollOption> {
             let this = self;
             $body!(send_poll this (chat_id: C, question: Q, options: O))
+        }
+    };
+    (@method send_checklist $body:ident $ty:ident) => {
+        type SendChecklist = $ty![SendChecklist];
+
+        fn send_checklist<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, checklist: InputChecklist) -> Self::SendChecklist where C: Into<ChatId> {
+            let this = self;
+            $body!(send_checklist this (business_connection_id: BusinessConnectionId, chat_id: C, checklist: InputChecklist))
         }
     };
     (@method send_dice $body:ident $ty:ident) => {
@@ -684,12 +709,20 @@ macro_rules! requester_forward {
             $body!(get_user_profile_photos this (user_id: UserId))
         }
     };
+    (@method set_user_emoji_status $body:ident $ty:ident) => {
+        type SetUserEmojiStatus = $ty![SetUserEmojiStatus];
+
+        fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+            let this = self;
+            $body!(set_user_emoji_status this (user_id: UserId))
+        }
+    };
     (@method get_file $body:ident $ty:ident) => {
         type GetFile = $ty![GetFile];
 
-        fn get_file<F>(&self, file_id: F) -> Self::GetFile where F: Into<String> {
+        fn get_file(&self, file_id: FileId) -> Self::GetFile {
             let this = self;
-            $body!(get_file this (file_id: F))
+            $body!(get_file this (file_id: FileId))
         }
     };
     (@method ban_chat_member $body:ident $ty:ident) => {
@@ -790,6 +823,23 @@ macro_rules! requester_forward {
         I: Into<String> {
             let this = self;
             $body!(edit_chat_invite_link this (chat_id: C, invite_link: I))
+        }
+    };
+    (@method create_chat_subscription_invite_link $body:ident $ty:ident) => {
+        type CreateChatSubscriptionInviteLink = $ty![CreateChatSubscriptionInviteLink];
+
+        fn create_chat_subscription_invite_link<C>(&self, chat_id: C, subscription_period: Seconds, subscription_price: u32) -> Self::CreateChatSubscriptionInviteLink where C: Into<Recipient> {
+            let this = self;
+            $body!(create_chat_subscription_invite_link this (chat_id: C, subscription_period: Seconds, subscription_price: u32))
+        }
+    };
+    (@method edit_chat_subscription_invite_link $body:ident $ty:ident) => {
+        type EditChatSubscriptionInviteLink = $ty![EditChatSubscriptionInviteLink];
+
+        fn edit_chat_subscription_invite_link<C, I>(&self, chat_id: C, invite_link: I) -> Self::EditChatSubscriptionInviteLink where C: Into<Recipient>,
+        I: Into<String> {
+            let this = self;
+            $body!(edit_chat_subscription_invite_link this (chat_id: C, invite_link: I))
         }
     };
     (@method revoke_chat_invite_link $body:ident $ty:ident) => {
@@ -950,11 +1000,10 @@ macro_rules! requester_forward {
     (@method create_forum_topic $body:ident $ty:ident) => {
         type CreateForumTopic = $ty![CreateForumTopic];
 
-        fn create_forum_topic<C, N, I>(&self, chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I) -> Self::CreateForumTopic where C: Into<Recipient>,
-        N: Into<String>,
-        I: Into<String> {
+        fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic where C: Into<Recipient>,
+        N: Into<String> {
             let this = self;
-            $body!(create_forum_topic this (chat_id: C, name: N, icon_color: Rgb, icon_custom_emoji_id: I))
+            $body!(create_forum_topic this (chat_id: C, name: N))
         }
     };
     (@method edit_forum_topic $body:ident $ty:ident) => {
@@ -1049,9 +1098,9 @@ macro_rules! requester_forward {
     (@method answer_callback_query $body:ident $ty:ident) => {
         type AnswerCallbackQuery = $ty![AnswerCallbackQuery];
 
-        fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery where C: Into<String> {
+        fn answer_callback_query(&self, callback_query_id: CallbackQueryId) -> Self::AnswerCallbackQuery {
             let this = self;
-            $body!(answer_callback_query this (callback_query_id: C))
+            $body!(answer_callback_query this (callback_query_id: CallbackQueryId))
         }
     };
     (@method get_user_chat_boosts $body:ident $ty:ident) => {
@@ -1177,10 +1226,9 @@ macro_rules! requester_forward {
     (@method answer_inline_query $body:ident $ty:ident) => {
         type AnswerInlineQuery = $ty![AnswerInlineQuery];
 
-        fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery where I: Into<String>,
-        R: IntoIterator<Item = InlineQueryResult> {
+        fn answer_inline_query<R>(&self, inline_query_id: InlineQueryId, results: R) -> Self::AnswerInlineQuery where R: IntoIterator<Item = InlineQueryResult> {
             let this = self;
-            $body!(answer_inline_query this (inline_query_id: I, results: R))
+            $body!(answer_inline_query this (inline_query_id: InlineQueryId, results: R))
         }
     };
     (@method answer_web_app_query $body:ident $ty:ident) => {
@@ -1189,6 +1237,14 @@ macro_rules! requester_forward {
         fn answer_web_app_query<W>(&self, web_app_query_id: W, result: InlineQueryResult) -> Self::AnswerWebAppQuery where W: Into<String> {
             let this = self;
             $body!(answer_web_app_query this (web_app_query_id: W, result: InlineQueryResult))
+        }
+    };
+    (@method save_prepared_inline_message $body:ident $ty:ident) => {
+        type SavePreparedInlineMessage = $ty![SavePreparedInlineMessage];
+
+        fn save_prepared_inline_message(&self, user_id: UserId, result: InlineQueryResult) -> Self::SavePreparedInlineMessage {
+            let this = self;
+            $body!(save_prepared_inline_message this (user_id: UserId, result: InlineQueryResult))
         }
     };
     (@method edit_message_text $body:ident $ty:ident) => {
@@ -1301,7 +1357,7 @@ macro_rules! requester_forward {
     (@method get_custom_emoji_stickers $body:ident $ty:ident) => {
         type GetCustomEmojiStickers = $ty![GetCustomEmojiStickers];
 
-        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = String> {
+        fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers where C: IntoIterator<Item = CustomEmojiId> {
             let this = self;
             $body!(get_custom_emoji_stickers this (custom_emoji_ids: C))
         }
@@ -1415,6 +1471,206 @@ macro_rules! requester_forward {
             $body!(set_sticker_mask_position this (sticker: S))
         }
     };
+    (@method get_available_gifts $body:ident $ty:ident) => {
+        type GetAvailableGifts = $ty![GetAvailableGifts];
+
+        fn get_available_gifts(&self, ) -> Self::GetAvailableGifts {
+            let this = self;
+            $body!(get_available_gifts this ())
+        }
+    };
+    (@method send_gift $body:ident $ty:ident) => {
+        type SendGift = $ty![SendGift];
+
+        fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+            let this = self;
+            $body!(send_gift this (user_id: UserId, gift_id: GiftId))
+        }
+    };
+    (@method send_gift_chat $body:ident $ty:ident) => {
+        type SendGiftChat = $ty![SendGiftChat];
+
+        fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat where C: Into<Recipient> {
+            let this = self;
+            $body!(send_gift_chat this (chat_id: C, gift_id: GiftId))
+        }
+    };
+    (@method gift_premium_subscription $body:ident $ty:ident) => {
+        type GiftPremiumSubscription = $ty![GiftPremiumSubscription];
+
+        fn gift_premium_subscription(&self, user_id: UserId, month_count: u8, star_count: u32) -> Self::GiftPremiumSubscription {
+            let this = self;
+            $body!(gift_premium_subscription this (user_id: UserId, month_count: u8, star_count: u32))
+        }
+    };
+    (@method verify_user $body:ident $ty:ident) => {
+        type VerifyUser = $ty![VerifyUser];
+
+        fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+            let this = self;
+            $body!(verify_user this (user_id: UserId))
+        }
+    };
+    (@method verify_chat $body:ident $ty:ident) => {
+        type VerifyChat = $ty![VerifyChat];
+
+        fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat where C: Into<Recipient> {
+            let this = self;
+            $body!(verify_chat this (chat_id: C))
+        }
+    };
+    (@method remove_user_verification $body:ident $ty:ident) => {
+        type RemoveUserVerification = $ty![RemoveUserVerification];
+
+        fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+            let this = self;
+            $body!(remove_user_verification this (user_id: UserId))
+        }
+    };
+    (@method remove_chat_verification $body:ident $ty:ident) => {
+        type RemoveChatVerification = $ty![RemoveChatVerification];
+
+        fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification where C: Into<Recipient> {
+            let this = self;
+            $body!(remove_chat_verification this (chat_id: C))
+        }
+    };
+    (@method read_business_message $body:ident $ty:ident) => {
+        type ReadBusinessMessage = $ty![ReadBusinessMessage];
+
+        fn read_business_message<C>(&self, business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId) -> Self::ReadBusinessMessage where C: Into<ChatId> {
+            let this = self;
+            $body!(read_business_message this (business_connection_id: BusinessConnectionId, chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_business_messages $body:ident $ty:ident) => {
+        type DeleteBusinessMessages = $ty![DeleteBusinessMessages];
+
+        fn delete_business_messages<M>(&self, business_connection_id: BusinessConnectionId, message_ids: M) -> Self::DeleteBusinessMessages where M: IntoIterator<Item = MessageId> {
+            let this = self;
+            $body!(delete_business_messages this (business_connection_id: BusinessConnectionId, message_ids: M))
+        }
+    };
+    (@method set_business_account_name $body:ident $ty:ident) => {
+        type SetBusinessAccountName = $ty![SetBusinessAccountName];
+
+        fn set_business_account_name<F>(&self, business_connection_id: BusinessConnectionId, first_name: F) -> Self::SetBusinessAccountName where F: Into<String> {
+            let this = self;
+            $body!(set_business_account_name this (business_connection_id: BusinessConnectionId, first_name: F))
+        }
+    };
+    (@method set_business_account_username $body:ident $ty:ident) => {
+        type SetBusinessAccountUsername = $ty![SetBusinessAccountUsername];
+
+        fn set_business_account_username(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountUsername {
+            let this = self;
+            $body!(set_business_account_username this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_bio $body:ident $ty:ident) => {
+        type SetBusinessAccountBio = $ty![SetBusinessAccountBio];
+
+        fn set_business_account_bio(&self, business_connection_id: BusinessConnectionId) -> Self::SetBusinessAccountBio {
+            let this = self;
+            $body!(set_business_account_bio this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_profile_photo $body:ident $ty:ident) => {
+        type SetBusinessAccountProfilePhoto = $ty![SetBusinessAccountProfilePhoto];
+
+        fn set_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId, photo: InputProfilePhoto) -> Self::SetBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(set_business_account_profile_photo this (business_connection_id: BusinessConnectionId, photo: InputProfilePhoto))
+        }
+    };
+    (@method remove_business_account_profile_photo $body:ident $ty:ident) => {
+        type RemoveBusinessAccountProfilePhoto = $ty![RemoveBusinessAccountProfilePhoto];
+
+        fn remove_business_account_profile_photo(&self, business_connection_id: BusinessConnectionId) -> Self::RemoveBusinessAccountProfilePhoto {
+            let this = self;
+            $body!(remove_business_account_profile_photo this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method set_business_account_gift_settings $body:ident $ty:ident) => {
+        type SetBusinessAccountGiftSettings = $ty![SetBusinessAccountGiftSettings];
+
+        fn set_business_account_gift_settings(&self, business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes) -> Self::SetBusinessAccountGiftSettings {
+            let this = self;
+            $body!(set_business_account_gift_settings this (business_connection_id: BusinessConnectionId, show_gift_button: bool, accepted_gift_types: AcceptedGiftTypes))
+        }
+    };
+    (@method get_business_account_star_balance $body:ident $ty:ident) => {
+        type GetBusinessAccountStarBalance = $ty![GetBusinessAccountStarBalance];
+
+        fn get_business_account_star_balance(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountStarBalance {
+            let this = self;
+            $body!(get_business_account_star_balance this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method transfer_business_account_stars $body:ident $ty:ident) => {
+        type TransferBusinessAccountStars = $ty![TransferBusinessAccountStars];
+
+        fn transfer_business_account_stars(&self, business_connection_id: BusinessConnectionId, star_count: u32) -> Self::TransferBusinessAccountStars {
+            let this = self;
+            $body!(transfer_business_account_stars this (business_connection_id: BusinessConnectionId, star_count: u32))
+        }
+    };
+    (@method get_business_account_gifts $body:ident $ty:ident) => {
+        type GetBusinessAccountGifts = $ty![GetBusinessAccountGifts];
+
+        fn get_business_account_gifts(&self, business_connection_id: BusinessConnectionId) -> Self::GetBusinessAccountGifts {
+            let this = self;
+            $body!(get_business_account_gifts this (business_connection_id: BusinessConnectionId))
+        }
+    };
+    (@method convert_gift_to_stars $body:ident $ty:ident) => {
+        type ConvertGiftToStars = $ty![ConvertGiftToStars];
+
+        fn convert_gift_to_stars(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::ConvertGiftToStars {
+            let this = self;
+            $body!(convert_gift_to_stars this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method upgrade_gift $body:ident $ty:ident) => {
+        type UpgradeGift = $ty![UpgradeGift];
+
+        fn upgrade_gift(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId) -> Self::UpgradeGift {
+            let this = self;
+            $body!(upgrade_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId))
+        }
+    };
+    (@method transfer_gift $body:ident $ty:ident) => {
+        type TransferGift = $ty![TransferGift];
+
+        fn transfer_gift<N>(&self, business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N) -> Self::TransferGift where N: Into<ChatId> {
+            let this = self;
+            $body!(transfer_gift this (business_connection_id: BusinessConnectionId, owned_gift_id: OwnedGiftId, new_owner_chat_id: N))
+        }
+    };
+    (@method post_story $body:ident $ty:ident) => {
+        type PostStory = $ty![PostStory];
+
+        fn post_story(&self, business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds) -> Self::PostStory {
+            let this = self;
+            $body!(post_story this (business_connection_id: BusinessConnectionId, content: InputStoryContent, active_period: Seconds))
+        }
+    };
+    (@method edit_story $body:ident $ty:ident) => {
+        type EditStory = $ty![EditStory];
+
+        fn edit_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent) -> Self::EditStory {
+            let this = self;
+            $body!(edit_story this (business_connection_id: BusinessConnectionId, story_id: StoryId, content: InputStoryContent))
+        }
+    };
+    (@method delete_story $body:ident $ty:ident) => {
+        type DeleteStory = $ty![DeleteStory];
+
+        fn delete_story(&self, business_connection_id: BusinessConnectionId, story_id: StoryId) -> Self::DeleteStory {
+            let this = self;
+            $body!(delete_story this (business_connection_id: BusinessConnectionId, story_id: StoryId))
+        }
+    };
     (@method send_invoice $body:ident $ty:ident) => {
         type SendInvoice = $ty![SendInvoice];
 
@@ -1443,17 +1699,25 @@ macro_rules! requester_forward {
     (@method answer_shipping_query $body:ident $ty:ident) => {
         type AnswerShippingQuery = $ty![AnswerShippingQuery];
 
-        fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery where S: Into<String> {
+        fn answer_shipping_query(&self, shipping_query_id: ShippingQueryId, ok: bool) -> Self::AnswerShippingQuery {
             let this = self;
-            $body!(answer_shipping_query this (shipping_query_id: S, ok: bool))
+            $body!(answer_shipping_query this (shipping_query_id: ShippingQueryId, ok: bool))
         }
     };
     (@method answer_pre_checkout_query $body:ident $ty:ident) => {
         type AnswerPreCheckoutQuery = $ty![AnswerPreCheckoutQuery];
 
-        fn answer_pre_checkout_query<P>(&self, pre_checkout_query_id: P, ok: bool) -> Self::AnswerPreCheckoutQuery where P: Into<String> {
+        fn answer_pre_checkout_query(&self, pre_checkout_query_id: PreCheckoutQueryId, ok: bool) -> Self::AnswerPreCheckoutQuery {
             let this = self;
-            $body!(answer_pre_checkout_query this (pre_checkout_query_id: P, ok: bool))
+            $body!(answer_pre_checkout_query this (pre_checkout_query_id: PreCheckoutQueryId, ok: bool))
+        }
+    };
+    (@method get_my_star_balance $body:ident $ty:ident) => {
+        type GetMyStarBalance = $ty![GetMyStarBalance];
+
+        fn get_my_star_balance(&self, ) -> Self::GetMyStarBalance {
+            let this = self;
+            $body!(get_my_star_balance this ())
         }
     };
     (@method get_star_transactions $body:ident $ty:ident) => {
@@ -1467,9 +1731,17 @@ macro_rules! requester_forward {
     (@method refund_star_payment $body:ident $ty:ident) => {
         type RefundStarPayment = $ty![RefundStarPayment];
 
-        fn refund_star_payment<T>(&self, user_id: UserId, telegram_payment_charge_id: T) -> Self::RefundStarPayment where T: Into<String> {
+        fn refund_star_payment(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId) -> Self::RefundStarPayment {
             let this = self;
-            $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: T))
+            $body!(refund_star_payment this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId))
+        }
+    };
+    (@method edit_user_star_subscription $body:ident $ty:ident) => {
+        type EditUserStarSubscription = $ty![EditUserStarSubscription];
+
+        fn edit_user_star_subscription(&self, user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool) -> Self::EditUserStarSubscription {
+            let this = self;
+            $body!(edit_user_star_subscription this (user_id: UserId, telegram_payment_charge_id: TelegramTransactionId, is_canceled: bool))
         }
     };
     (@method set_passport_data_errors $body:ident $ty:ident) => {

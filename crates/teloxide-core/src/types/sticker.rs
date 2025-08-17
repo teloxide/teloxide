@@ -2,13 +2,15 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, MaskPosition, PhotoSize};
+use crate::types::{CustomEmojiId, FileMeta, MaskPosition, PhotoSize};
 
 /// This object represents a sticker.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#sticker).
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 pub struct Sticker {
     /// Metadata of the sticker file.
     #[serde(flatten)]
@@ -65,7 +67,9 @@ pub struct Sticker {
 /// Kind of a [`Sticker`] - regular, mask or custom emoji.
 ///
 /// Dataful version of [`StickerType`].
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum StickerKind {
@@ -82,8 +86,7 @@ pub enum StickerKind {
     /// Custom emoji sticker.
     CustomEmoji {
         /// A unique identifier of the custom emoji.
-        // FIXME(waffle): newtype
-        custom_emoji_id: String,
+        custom_emoji_id: CustomEmojiId,
     },
 }
 
@@ -249,7 +252,7 @@ impl StickerKind {
 
     /// Getter for [`StickerKind::CustomEmoji::custom_emoji_id`].
     #[must_use]
-    pub fn custom_emoji_id(&self) -> Option<&str> {
+    pub fn custom_emoji_id(&self) -> Option<&CustomEmojiId> {
         if let Self::CustomEmoji { custom_emoji_id } = self {
             Some(custom_emoji_id)
         } else {

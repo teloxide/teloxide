@@ -39,10 +39,10 @@ async fn main() {
             .endpoint(|msg: Message, bot: Bot, cmd: MaintainerCommands| async move {
                 match cmd {
                     MaintainerCommands::Rand { from, to } => {
-                        let mut rng = rand::rngs::OsRng;
-                        let value: u64 = rng.gen_range(from..=to);
+                        let value: u64 = rand::rng().random_range(from..=to);
 
                         bot.send_message(msg.chat.id, value.to_string()).await?;
+
                         Ok(())
                     }
                 }
@@ -95,7 +95,7 @@ async fn main() {
         .dependencies(dptree::deps![parameters])
         // If no handler succeeded to handle an update, this closure will be called.
         .default_handler(|upd| async move {
-            log::warn!("Unhandled update: {:?}", upd);
+            log::warn!("Unhandled update: {upd:?}");
         })
         // If the dispatcher fails for some reason, execute this handler.
         .error_handler(LoggingErrorHandler::with_custom_text(

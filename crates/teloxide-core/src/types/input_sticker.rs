@@ -8,7 +8,7 @@ use super::StickerFormat;
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
 pub struct InputSticker {
-    /// The added sticker. Pass a file_id as a String to send a file that
+    /// The added sticker. Pass a file_id as a FileId to send a file that
     /// already exists on the Telegram servers, pass an HTTP URL as a String
     /// for Telegram to get a file from the Internet, upload a new one using
     /// multipart/form-data, or pass “attach://<file_attach_name>” to upload a

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::types::CustomEmojiId;
+
 /// The reaction type is based on an emoji or custom emoji.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -20,7 +22,7 @@ pub enum ReactionType {
     /// Custom emoji reaction.
     CustomEmoji {
         /// Custom emoji identifier.
-        custom_emoji_id: String,
+        custom_emoji_id: CustomEmojiId,
     },
     /// Paid reaction.
     Paid,
@@ -36,7 +38,7 @@ impl ReactionType {
     }
 
     #[must_use]
-    pub fn custom_emoji_id(&self) -> Option<&String> {
+    pub fn custom_emoji_id(&self) -> Option<&CustomEmojiId> {
         match &self {
             Self::CustomEmoji { custom_emoji_id } => Some(custom_emoji_id),
             _ => None,

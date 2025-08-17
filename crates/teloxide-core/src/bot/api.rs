@@ -5,9 +5,12 @@ use crate::{
     prelude::Requester,
     requests::{JsonRequest, MultipartRequest},
     types::{
-        BotCommand, BusinessConnectionId, ChatId, ChatPermissions, InlineQueryResult, InputFile,
-        InputMedia, InputPollOption, InputSticker, LabeledPrice, MessageId, Recipient, Rgb,
-        StickerFormat, ThreadId, UserId,
+        AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
+        ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
+        InputChecklist, InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto,
+        InputSticker, InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId,
+        Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId,
+        ThreadId, UserId,
     },
     Bot,
 };
@@ -154,6 +157,19 @@ impl Requester for Bot {
         Self::SendVideoNote::new(self.clone(), payloads::SendVideoNote::new(chat_id, video_note))
     }
 
+    type SendPaidMedia = MultipartRequest<payloads::SendPaidMedia>;
+
+    fn send_paid_media<C, M>(&self, chat_id: C, star_count: u32, media: M) -> Self::SendPaidMedia
+    where
+        C: Into<Recipient>,
+        M: IntoIterator<Item = InputPaidMedia>,
+    {
+        Self::SendPaidMedia::new(
+            self.clone(),
+            payloads::SendPaidMedia::new(chat_id, star_count, media),
+        )
+    }
+
     type SendMediaGroup = MultipartRequest<payloads::SendMediaGroup>;
 
     fn send_media_group<C, M>(&self, chat_id: C, media: M) -> Self::SendMediaGroup
@@ -242,6 +258,29 @@ impl Requester for Bot {
         )
     }
 
+    type EditMessageChecklist = JsonRequest<payloads::EditMessageChecklist>;
+
+    fn edit_message_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+        checklist: InputChecklist,
+    ) -> Self::EditMessageChecklist
+    where
+        C: Into<ChatId>,
+    {
+        Self::EditMessageChecklist::new(
+            self.clone(),
+            payloads::EditMessageChecklist::new(
+                business_connection_id,
+                chat_id,
+                message_id,
+                checklist,
+            ),
+        )
+    }
+
     type SendVenue = JsonRequest<payloads::SendVenue>;
 
     fn send_venue<C, T, A>(
@@ -288,6 +327,23 @@ impl Requester for Bot {
         Self::SendPoll::new(self.clone(), payloads::SendPoll::new(chat_id, question, options))
     }
 
+    type SendChecklist = JsonRequest<payloads::SendChecklist>;
+
+    fn send_checklist<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        checklist: InputChecklist,
+    ) -> Self::SendChecklist
+    where
+        C: Into<ChatId>,
+    {
+        Self::SendChecklist::new(
+            self.clone(),
+            payloads::SendChecklist::new(business_connection_id, chat_id, checklist),
+        )
+    }
+
     type SendDice = JsonRequest<payloads::SendDice>;
 
     fn send_dice<C>(&self, chat_id: C) -> Self::SendDice
@@ -328,12 +384,15 @@ impl Requester for Bot {
         Self::GetUserProfilePhotos::new(self.clone(), payloads::GetUserProfilePhotos::new(user_id))
     }
 
+    type SetUserEmojiStatus = JsonRequest<payloads::SetUserEmojiStatus>;
+
+    fn set_user_emoji_status(&self, user_id: UserId) -> Self::SetUserEmojiStatus {
+        Self::SetUserEmojiStatus::new(self.clone(), payloads::SetUserEmojiStatus::new(user_id))
+    }
+
     type GetFile = JsonRequest<payloads::GetFile>;
 
-    fn get_file<F>(&self, file_id: F) -> Self::GetFile
-    where
-        F: Into<String>,
-    {
+    fn get_file(&self, file_id: FileId) -> Self::GetFile {
         Self::GetFile::new(self.clone(), payloads::GetFile::new(file_id))
     }
 
@@ -485,6 +544,44 @@ impl Requester for Bot {
         Self::EditChatInviteLink::new(
             self.clone(),
             payloads::EditChatInviteLink::new(chat_id, invite_link),
+        )
+    }
+
+    type CreateChatSubscriptionInviteLink = JsonRequest<payloads::CreateChatSubscriptionInviteLink>;
+
+    fn create_chat_subscription_invite_link<C>(
+        &self,
+        chat_id: C,
+        subscription_period: Seconds,
+        subscription_price: u32,
+    ) -> Self::CreateChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>,
+    {
+        Self::CreateChatSubscriptionInviteLink::new(
+            self.clone(),
+            payloads::CreateChatSubscriptionInviteLink::new(
+                chat_id,
+                subscription_period,
+                subscription_price,
+            ),
+        )
+    }
+
+    type EditChatSubscriptionInviteLink = JsonRequest<payloads::EditChatSubscriptionInviteLink>;
+
+    fn edit_chat_subscription_invite_link<C, I>(
+        &self,
+        chat_id: C,
+        invite_link: I,
+    ) -> Self::EditChatSubscriptionInviteLink
+    where
+        C: Into<Recipient>,
+        I: Into<String>,
+    {
+        Self::EditChatSubscriptionInviteLink::new(
+            self.clone(),
+            payloads::EditChatSubscriptionInviteLink::new(chat_id, invite_link),
         )
     }
 
@@ -682,22 +779,12 @@ impl Requester for Bot {
 
     type CreateForumTopic = JsonRequest<payloads::CreateForumTopic>;
 
-    fn create_forum_topic<C, N, I>(
-        &self,
-        chat_id: C,
-        name: N,
-        icon_color: Rgb,
-        icon_custom_emoji_id: I,
-    ) -> Self::CreateForumTopic
+    fn create_forum_topic<C, N>(&self, chat_id: C, name: N) -> Self::CreateForumTopic
     where
         C: Into<Recipient>,
         N: Into<String>,
-        I: Into<String>,
     {
-        Self::CreateForumTopic::new(
-            self.clone(),
-            payloads::CreateForumTopic::new(chat_id, name, icon_color, icon_custom_emoji_id),
-        )
+        Self::CreateForumTopic::new(self.clone(), payloads::CreateForumTopic::new(chat_id, name))
     }
 
     type EditForumTopic = JsonRequest<payloads::EditForumTopic>;
@@ -851,10 +938,10 @@ impl Requester for Bot {
 
     type AnswerCallbackQuery = JsonRequest<payloads::AnswerCallbackQuery>;
 
-    fn answer_callback_query<C>(&self, callback_query_id: C) -> Self::AnswerCallbackQuery
-    where
-        C: Into<String>,
-    {
+    fn answer_callback_query(
+        &self,
+        callback_query_id: CallbackQueryId,
+    ) -> Self::AnswerCallbackQuery {
         Self::AnswerCallbackQuery::new(
             self.clone(),
             payloads::AnswerCallbackQuery::new(callback_query_id),
@@ -973,9 +1060,12 @@ impl Requester for Bot {
 
     type AnswerInlineQuery = JsonRequest<payloads::AnswerInlineQuery>;
 
-    fn answer_inline_query<I, R>(&self, inline_query_id: I, results: R) -> Self::AnswerInlineQuery
+    fn answer_inline_query<R>(
+        &self,
+        inline_query_id: InlineQueryId,
+        results: R,
+    ) -> Self::AnswerInlineQuery
     where
-        I: Into<String>,
         R: IntoIterator<Item = InlineQueryResult>,
     {
         Self::AnswerInlineQuery::new(
@@ -997,6 +1087,19 @@ impl Requester for Bot {
         Self::AnswerWebAppQuery::new(
             self.clone(),
             payloads::AnswerWebAppQuery::new(web_app_query_id, result),
+        )
+    }
+
+    type SavePreparedInlineMessage = JsonRequest<payloads::SavePreparedInlineMessage>;
+
+    fn save_prepared_inline_message(
+        &self,
+        user_id: UserId,
+        result: InlineQueryResult,
+    ) -> Self::SavePreparedInlineMessage {
+        Self::SavePreparedInlineMessage::new(
+            self.clone(),
+            payloads::SavePreparedInlineMessage::new(user_id, result),
         )
     }
 
@@ -1172,7 +1275,7 @@ impl Requester for Bot {
 
     fn get_custom_emoji_stickers<C>(&self, custom_emoji_ids: C) -> Self::GetCustomEmojiStickers
     where
-        C: IntoIterator<Item = String>,
+        C: IntoIterator<Item = CustomEmojiId>,
     {
         Self::GetCustomEmojiStickers::new(
             self.clone(),
@@ -1366,6 +1469,315 @@ impl Requester for Bot {
         )
     }
 
+    type GetAvailableGifts = JsonRequest<payloads::GetAvailableGifts>;
+
+    fn get_available_gifts(&self) -> Self::GetAvailableGifts {
+        Self::GetAvailableGifts::new(self.clone(), payloads::GetAvailableGifts::new())
+    }
+
+    type SendGift = JsonRequest<payloads::SendGift>;
+
+    fn send_gift(&self, user_id: UserId, gift_id: GiftId) -> Self::SendGift {
+        Self::SendGift::new(self.clone(), payloads::SendGift::new(user_id, gift_id))
+    }
+
+    type SendGiftChat = JsonRequest<payloads::SendGiftChat>;
+
+    fn send_gift_chat<C>(&self, chat_id: C, gift_id: GiftId) -> Self::SendGiftChat
+    where
+        C: Into<Recipient>,
+    {
+        Self::SendGiftChat::new(self.clone(), payloads::SendGiftChat::new(chat_id, gift_id))
+    }
+
+    type GiftPremiumSubscription = JsonRequest<payloads::GiftPremiumSubscription>;
+
+    fn gift_premium_subscription(
+        &self,
+        user_id: UserId,
+        month_count: u8,
+        star_count: u32,
+    ) -> Self::GiftPremiumSubscription {
+        Self::GiftPremiumSubscription::new(
+            self.clone(),
+            payloads::GiftPremiumSubscription::new(user_id, month_count, star_count),
+        )
+    }
+
+    type VerifyUser = JsonRequest<payloads::VerifyUser>;
+
+    fn verify_user(&self, user_id: UserId) -> Self::VerifyUser {
+        Self::VerifyUser::new(self.clone(), payloads::VerifyUser::new(user_id))
+    }
+
+    type VerifyChat = JsonRequest<payloads::VerifyChat>;
+
+    fn verify_chat<C>(&self, chat_id: C) -> Self::VerifyChat
+    where
+        C: Into<Recipient>,
+    {
+        Self::VerifyChat::new(self.clone(), payloads::VerifyChat::new(chat_id))
+    }
+
+    type RemoveUserVerification = JsonRequest<payloads::RemoveUserVerification>;
+
+    fn remove_user_verification(&self, user_id: UserId) -> Self::RemoveUserVerification {
+        Self::RemoveUserVerification::new(
+            self.clone(),
+            payloads::RemoveUserVerification::new(user_id),
+        )
+    }
+
+    type RemoveChatVerification = JsonRequest<payloads::RemoveChatVerification>;
+
+    fn remove_chat_verification<C>(&self, chat_id: C) -> Self::RemoveChatVerification
+    where
+        C: Into<Recipient>,
+    {
+        Self::RemoveChatVerification::new(
+            self.clone(),
+            payloads::RemoveChatVerification::new(chat_id),
+        )
+    }
+
+    type ReadBusinessMessage = JsonRequest<payloads::ReadBusinessMessage>;
+
+    fn read_business_message<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ReadBusinessMessage
+    where
+        C: Into<ChatId>,
+    {
+        Self::ReadBusinessMessage::new(
+            self.clone(),
+            payloads::ReadBusinessMessage::new(business_connection_id, chat_id, message_id),
+        )
+    }
+
+    type DeleteBusinessMessages = JsonRequest<payloads::DeleteBusinessMessages>;
+
+    fn delete_business_messages<M>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        message_ids: M,
+    ) -> Self::DeleteBusinessMessages
+    where
+        M: IntoIterator<Item = MessageId>,
+    {
+        Self::DeleteBusinessMessages::new(
+            self.clone(),
+            payloads::DeleteBusinessMessages::new(business_connection_id, message_ids),
+        )
+    }
+
+    type SetBusinessAccountName = JsonRequest<payloads::SetBusinessAccountName>;
+
+    fn set_business_account_name<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        first_name: F,
+    ) -> Self::SetBusinessAccountName
+    where
+        F: Into<String>,
+    {
+        Self::SetBusinessAccountName::new(
+            self.clone(),
+            payloads::SetBusinessAccountName::new(business_connection_id, first_name),
+        )
+    }
+
+    type SetBusinessAccountUsername = JsonRequest<payloads::SetBusinessAccountUsername>;
+
+    fn set_business_account_username(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountUsername {
+        Self::SetBusinessAccountUsername::new(
+            self.clone(),
+            payloads::SetBusinessAccountUsername::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountBio = JsonRequest<payloads::SetBusinessAccountBio>;
+
+    fn set_business_account_bio(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::SetBusinessAccountBio {
+        Self::SetBusinessAccountBio::new(
+            self.clone(),
+            payloads::SetBusinessAccountBio::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountProfilePhoto = JsonRequest<payloads::SetBusinessAccountProfilePhoto>;
+
+    fn set_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        photo: InputProfilePhoto,
+    ) -> Self::SetBusinessAccountProfilePhoto {
+        Self::SetBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::SetBusinessAccountProfilePhoto::new(business_connection_id, photo),
+        )
+    }
+
+    type RemoveBusinessAccountProfilePhoto =
+        JsonRequest<payloads::RemoveBusinessAccountProfilePhoto>;
+
+    fn remove_business_account_profile_photo(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::RemoveBusinessAccountProfilePhoto {
+        Self::RemoveBusinessAccountProfilePhoto::new(
+            self.clone(),
+            payloads::RemoveBusinessAccountProfilePhoto::new(business_connection_id),
+        )
+    }
+
+    type SetBusinessAccountGiftSettings = JsonRequest<payloads::SetBusinessAccountGiftSettings>;
+
+    fn set_business_account_gift_settings(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        show_gift_button: bool,
+        accepted_gift_types: AcceptedGiftTypes,
+    ) -> Self::SetBusinessAccountGiftSettings {
+        Self::SetBusinessAccountGiftSettings::new(
+            self.clone(),
+            payloads::SetBusinessAccountGiftSettings::new(
+                business_connection_id,
+                show_gift_button,
+                accepted_gift_types,
+            ),
+        )
+    }
+
+    type GetBusinessAccountStarBalance = JsonRequest<payloads::GetBusinessAccountStarBalance>;
+
+    fn get_business_account_star_balance(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountStarBalance {
+        Self::GetBusinessAccountStarBalance::new(
+            self.clone(),
+            payloads::GetBusinessAccountStarBalance::new(business_connection_id),
+        )
+    }
+
+    type TransferBusinessAccountStars = JsonRequest<payloads::TransferBusinessAccountStars>;
+
+    fn transfer_business_account_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        star_count: u32,
+    ) -> Self::TransferBusinessAccountStars {
+        Self::TransferBusinessAccountStars::new(
+            self.clone(),
+            payloads::TransferBusinessAccountStars::new(business_connection_id, star_count),
+        )
+    }
+
+    type GetBusinessAccountGifts = JsonRequest<payloads::GetBusinessAccountGifts>;
+
+    fn get_business_account_gifts(
+        &self,
+        business_connection_id: BusinessConnectionId,
+    ) -> Self::GetBusinessAccountGifts {
+        Self::GetBusinessAccountGifts::new(
+            self.clone(),
+            payloads::GetBusinessAccountGifts::new(business_connection_id),
+        )
+    }
+
+    type ConvertGiftToStars = JsonRequest<payloads::ConvertGiftToStars>;
+
+    fn convert_gift_to_stars(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::ConvertGiftToStars {
+        Self::ConvertGiftToStars::new(
+            self.clone(),
+            payloads::ConvertGiftToStars::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type UpgradeGift = JsonRequest<payloads::UpgradeGift>;
+
+    fn upgrade_gift(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+    ) -> Self::UpgradeGift {
+        Self::UpgradeGift::new(
+            self.clone(),
+            payloads::UpgradeGift::new(business_connection_id, owned_gift_id),
+        )
+    }
+
+    type TransferGift = JsonRequest<payloads::TransferGift>;
+
+    fn transfer_gift<C>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        owned_gift_id: OwnedGiftId,
+        new_owner_chat_id: C,
+    ) -> Self::TransferGift
+    where
+        C: Into<ChatId>,
+    {
+        Self::TransferGift::new(
+            self.clone(),
+            payloads::TransferGift::new(business_connection_id, owned_gift_id, new_owner_chat_id),
+        )
+    }
+
+    type PostStory = JsonRequest<payloads::PostStory>;
+
+    fn post_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        content: InputStoryContent,
+        active_period: Seconds,
+    ) -> Self::PostStory {
+        Self::PostStory::new(
+            self.clone(),
+            payloads::PostStory::new(business_connection_id, content, active_period),
+        )
+    }
+
+    type EditStory = JsonRequest<payloads::EditStory>;
+
+    fn edit_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+        content: InputStoryContent,
+    ) -> Self::EditStory {
+        Self::EditStory::new(
+            self.clone(),
+            payloads::EditStory::new(business_connection_id, story_id, content),
+        )
+    }
+
+    type DeleteStory = JsonRequest<payloads::DeleteStory>;
+
+    fn delete_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        story_id: StoryId,
+    ) -> Self::DeleteStory {
+        Self::DeleteStory::new(
+            self.clone(),
+            payloads::DeleteStory::new(business_connection_id, story_id),
+        )
+    }
+
     type SendInvoice = JsonRequest<payloads::SendInvoice>;
 
     fn send_invoice<Ch, T, D, Pa, C, Pri>(
@@ -1416,10 +1828,11 @@ impl Requester for Bot {
 
     type AnswerShippingQuery = JsonRequest<payloads::AnswerShippingQuery>;
 
-    fn answer_shipping_query<S>(&self, shipping_query_id: S, ok: bool) -> Self::AnswerShippingQuery
-    where
-        S: Into<String>,
-    {
+    fn answer_shipping_query(
+        &self,
+        shipping_query_id: ShippingQueryId,
+        ok: bool,
+    ) -> Self::AnswerShippingQuery {
         Self::AnswerShippingQuery::new(
             self.clone(),
             payloads::AnswerShippingQuery::new(shipping_query_id, ok),
@@ -1428,18 +1841,21 @@ impl Requester for Bot {
 
     type AnswerPreCheckoutQuery = JsonRequest<payloads::AnswerPreCheckoutQuery>;
 
-    fn answer_pre_checkout_query<P>(
+    fn answer_pre_checkout_query(
         &self,
-        pre_checkout_query_id: P,
+        pre_checkout_query_id: PreCheckoutQueryId,
         ok: bool,
-    ) -> Self::AnswerPreCheckoutQuery
-    where
-        P: Into<String>,
-    {
+    ) -> Self::AnswerPreCheckoutQuery {
         Self::AnswerPreCheckoutQuery::new(
             self.clone(),
             payloads::AnswerPreCheckoutQuery::new(pre_checkout_query_id, ok),
         )
+    }
+
+    type GetMyStarBalance = JsonRequest<payloads::GetMyStarBalance>;
+
+    fn get_my_star_balance(&self) -> Self::GetMyStarBalance {
+        Self::GetMyStarBalance::new(self.clone(), payloads::GetMyStarBalance::new())
     }
 
     type GetStarTransactions = JsonRequest<payloads::GetStarTransactions>;
@@ -1450,17 +1866,32 @@ impl Requester for Bot {
 
     type RefundStarPayment = JsonRequest<payloads::RefundStarPayment>;
 
-    fn refund_star_payment<C>(
+    fn refund_star_payment(
         &self,
         user_id: UserId,
-        telegram_payment_charge_id: C,
-    ) -> Self::RefundStarPayment
-    where
-        C: Into<String>,
-    {
+        telegram_payment_charge_id: TelegramTransactionId,
+    ) -> Self::RefundStarPayment {
         Self::RefundStarPayment::new(
             self.clone(),
             payloads::RefundStarPayment::new(user_id, telegram_payment_charge_id),
+        )
+    }
+
+    type EditUserStarSubscription = JsonRequest<payloads::EditUserStarSubscription>;
+
+    fn edit_user_star_subscription(
+        &self,
+        user_id: UserId,
+        telegram_payment_charge_id: TelegramTransactionId,
+        is_canceled: bool,
+    ) -> Self::EditUserStarSubscription {
+        Self::EditUserStarSubscription::new(
+            self.clone(),
+            payloads::EditUserStarSubscription::new(
+                user_id,
+                telegram_payment_charge_id,
+                is_canceled,
+            ),
         )
     }
 

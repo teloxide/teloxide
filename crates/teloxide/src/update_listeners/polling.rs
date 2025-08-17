@@ -155,7 +155,7 @@ where
     let webhook_info = match requester.get_webhook_info().send().await {
         Ok(ok) => ok,
         Err(e) => {
-            log::error!("Failed to get webhook info: {:?}", e);
+            log::error!("Failed to get webhook info: {e:?}");
             return;
         }
     };
@@ -164,7 +164,7 @@ where
 
     if is_webhook_setup {
         if let Err(e) = requester.delete_webhook().send().await {
-            log::error!("Failed to delete a webhook: {:?}", e);
+            log::error!("Failed to delete a webhook: {e:?}");
         }
     }
 }

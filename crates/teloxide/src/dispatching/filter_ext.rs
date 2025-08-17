@@ -2,7 +2,7 @@
 // Required for the `filter_from` currently
 #![allow(deprecated)]
 
-use dptree::{di::DependencyMap, Handler};
+use dptree::Handler;
 
 use crate::{
     dispatching::DpHandlerDescription,
@@ -26,11 +26,11 @@ macro_rules! define_ext {
 
     (@sig $func:ident, $fn_doc:expr) => {
         #[doc = $fn_doc]
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription>;
+        fn $func() -> Handler<'static, Out, DpHandlerDescription>;
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr, $Allowed:ident) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
+        fn $func() -> Handler<'static, Out, DpHandlerDescription> {
             dptree::filter_map_with_description(DpHandlerDescription::of(AllowedUpdate::$Allowed), move |input: $for_ty| {
                 $proj_fn(input)
             })
@@ -38,7 +38,7 @@ macro_rules! define_ext {
     };
 
     (@impl $for_ty:ty, $func:ident, $proj_fn:expr) => {
-        fn $func() -> Handler<'static, DependencyMap, Out, DpHandlerDescription> {
+        fn $func() -> Handler<'static, Out, DpHandlerDescription> {
             dptree::filter_map(move |input: $for_ty| {
                 $proj_fn(input)
             })
@@ -80,11 +80,13 @@ define_message_ext! {
     (filter_audio, Message::audio),
     (filter_contact, Message::contact),
     (filter_document, Message::document),
+    (filter_paid_media, Message::paid_media),
     (filter_game, Message::game),
     (filter_venue, Message::venue),
     (filter_location, Message::location),
     (filter_photo, Message::photo),
     (filter_poll, Message::poll),
+    (filter_checklist, Message::checklist),
     (filter_sticker, Message::sticker),
     (filter_story, Message::story),
     (filter_text, Message::text),
@@ -117,6 +119,9 @@ define_message_ext! {
     (filter_proximity_alert_triggered, Message::proximity_alert_triggered),
     (filter_boost_added, Message::boost_added),
     (filter_chat_background_set, Message::chat_background_set),
+    (filter_checklist_tasks_done, Message::checklist_tasks_done),
+    (filter_checklist_tasks_added, Message::checklist_tasks_added),
+    (filter_direct_message_price_changed, Message::direct_message_price_changed),
     (filter_forum_topic_created, Message::forum_topic_created),
     (filter_forum_topic_edited, Message::forum_topic_edited),
     (filter_forum_topic_closed, Message::forum_topic_closed),
@@ -127,6 +132,9 @@ define_message_ext! {
     (filter_giveaway_completed, Message::giveaway_completed),
     (filter_giveaway_created, Message::giveaway_created),
     (filter_giveaway_winners, Message::giveaway_winners),
+    (filter_paid_message_price_changed, Message::paid_message_price_changed),
+    (filter_gift_info, Message::gift_info),
+    (filter_unique_gift_info, Message::unique_gift_info),
     (filter_video_chat_scheduled, Message::video_chat_scheduled),
     (filter_video_chat_started, Message::video_chat_started),
     (filter_video_chat_ended, Message::video_chat_ended),
@@ -167,6 +175,7 @@ define_update_ext! {
     (filter_callback_query, UpdateKind::CallbackQuery, CallbackQuery),
     (filter_shipping_query, UpdateKind::ShippingQuery, ShippingQuery),
     (filter_pre_checkout_query, UpdateKind::PreCheckoutQuery, PreCheckoutQuery),
+    (filter_purchased_paid_media, UpdateKind::PurchasedPaidMedia, PurchasedPaidMedia),
     (filter_poll, UpdateKind::Poll, Poll),
     (filter_poll_answer, UpdateKind::PollAnswer, PollAnswer),
     (filter_my_chat_member, UpdateKind::MyChatMember, MyChatMember),

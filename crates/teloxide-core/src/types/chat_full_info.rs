@@ -1,10 +1,28 @@
 use chrono::{DateTime, Utc};
+use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat, ChatId, ChatLocation,
-    ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
+    AcceptedGiftTypes, Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat,
+    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
 };
+
+/// Custom emoji identifier.
+#[derive(
+    Default,
+    Clone,
+    Debug,
+    derive_more::Display,
+    PartialEq,
+    Eq,
+    Hash,
+    Serialize,
+    Deserialize,
+    From
+)]
+#[serde(transparent)]
+#[from(&'static str, String)]
+pub struct CustomEmojiId(pub String);
 
 /// This object contains full information about a chat.
 #[serde_with::skip_serializing_none]
@@ -36,6 +54,10 @@ pub struct ChatFullInfo {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub has_aggressive_anti_spam_enabled: bool,
 
+    /// Information about types of gifts that are accepted by the chat or by the
+    /// corresponding user for private chats
+    pub accepted_gift_types: AcceptedGiftTypes,
+
     /// Identifier of the accent color for the chat name and backgrounds of the
     /// chat photo, reply header, and link preview. See [accent colors] for more
     /// details.
@@ -45,8 +67,7 @@ pub struct ChatFullInfo {
 
     /// Custom emoji identifier of the emoji chosen by the chat for the reply
     /// header and link preview background
-    // FIXME: CustomEmojiId
-    pub background_custom_emoji_id: Option<String>,
+    pub background_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Identifier of the accent color for the chat's profile background. See
     /// [profile accent colors] for more details.
@@ -56,13 +77,11 @@ pub struct ChatFullInfo {
 
     /// Custom emoji identifier of the emoji chosen by the chat for its profile
     /// background
-    // FIXME: CustomEmojiId
-    pub profile_background_custom_emoji_id: Option<String>,
+    pub profile_background_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Custom emoji identifier of emoji status of the other party in a private
     /// chat.
-    // FIXME: CustomEmojiId
-    pub emoji_status_custom_emoji_id: Option<String>,
+    pub emoji_status_custom_emoji_id: Option<CustomEmojiId>,
 
     /// Expiration date of the emoji status of the chat or the other party in a
     /// private chat, in Unix time, if any
@@ -181,6 +200,11 @@ pub struct ChatFullInfoPublicChannel {
     /// identifier for a channel and vice versa.
     // SMELL: TBA uses here Integer instead of ChatId so we do that too :c
     pub linked_chat_id: Option<i64>,
+
+    /// `true`, if paid media messages can be sent or forwarded to the channel
+    /// chat. The field is available only for channel chats.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub can_send_paid_media: bool,
 }
 
 #[serde_with::skip_serializing_none]
@@ -682,6 +706,7 @@ mod tests {
                 kind: ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel {
                     username: Some("channel_name".into()),
                     linked_chat_id: None,
+                    can_send_paid_media: false,
                 }),
                 description: None,
                 invite_link: None,
@@ -693,6 +718,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -714,7 +745,13 @@ mod tests {
                     }
                 ],
                 "emoji_status_expiration_date": 1720708004,
-                "max_reaction_count": 0
+                "max_reaction_count": 0,
+                "accepted_gift_types": {
+                    "unlimited_gifts": true,
+                    "limited_gifts": true,
+                    "unique_gifts": true,
+                    "premium_subscription": true
+                }
             }"#,
         )
         .unwrap();
@@ -743,6 +780,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,
@@ -762,7 +805,13 @@ mod tests {
                     "username": "username",
                     "first_name": "Anon",
                     "emoji_status_expiration_date": 1720708004,
-                    "max_reaction_count": 0
+                    "max_reaction_count": 0,
+                    "accepted_gift_types": {
+                        "unlimited_gifts": true,
+                        "limited_gifts": true,
+                        "unique_gifts": true,
+                        "premium_subscription": true
+                    }
                 }"#
             )
             .unwrap()
@@ -791,6 +840,12 @@ mod tests {
             message_auto_delete_time: None,
             has_hidden_members: false,
             has_aggressive_anti_spam_enabled: false,
+            accepted_gift_types: AcceptedGiftTypes {
+                unlimited_gifts: true,
+                limited_gifts: true,
+                unique_gifts: true,
+                premium_subscription: true,
+            },
             accent_color_id: None,
             background_custom_emoji_id: None,
             profile_accent_color_id: None,

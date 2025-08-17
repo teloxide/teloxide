@@ -2,7 +2,7 @@ use std::iter;
 
 use serde::Serialize;
 
-use crate::types::{InputFile, MessageEntity, ParseMode};
+use crate::types::{InputFile, MessageEntity, ParseMode, Seconds};
 
 /// This object represents the content of a media message to be sent.
 ///
@@ -119,6 +119,16 @@ pub struct InputMediaVideo {
     /// using multipart/form-data.
     pub thumbnail: Option<InputFile>,
 
+    /// Cover for the video in the message. Pass a file_id to send a file that
+    /// exists on the Telegram servers (recommended), pass an HTTP URL for
+    /// Telegram to get a file from the Internet, or pass
+    /// “attach://<file_attach_name>” to upload a new one using
+    /// multipart/form-data under <file_attach_name> name
+    pub cover: Option<InputFile>,
+
+    /// Start timestamp for the video in the message
+    pub start_timestamp: Option<Seconds>,
+
     /// Caption of the video to be sent, 0-1024 characters.
     pub caption: Option<String>,
 
@@ -161,6 +171,8 @@ impl InputMediaVideo {
             media,
             thumbnail: None,
             caption: None,
+            cover: None,
+            start_timestamp: None,
             parse_mode: None,
             caption_entities: None,
             show_caption_above_media: false,
@@ -187,6 +199,16 @@ impl InputMediaVideo {
         S: Into<String>,
     {
         self.caption = Some(val.into());
+        self
+    }
+
+    pub fn cover(mut self, val: InputFile) -> Self {
+        self.cover = Some(val);
+        self
+    }
+
+    pub fn start_timestamp(mut self, val: Seconds) -> Self {
+        self.start_timestamp = Some(val);
         self
     }
 
@@ -605,7 +627,7 @@ mod tests {
     fn photo_serialize() {
         let expected_json = r#"{"type":"photo","media":"123456"}"#;
         let photo = InputMedia::Photo(InputMediaPhoto {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             caption: None,
             parse_mode: None,
             caption_entities: None,
@@ -621,8 +643,10 @@ mod tests {
     fn video_serialize() {
         let expected_json = r#"{"type":"video","media":"123456"}"#;
         let video = InputMedia::Video(InputMediaVideo {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
+            cover: None,
+            start_timestamp: None,
             caption: None,
             parse_mode: None,
             width: None,
@@ -642,7 +666,7 @@ mod tests {
     fn animation_serialize() {
         let expected_json = r#"{"type":"animation","media":"123456"}"#;
         let video = InputMedia::Animation(InputMediaAnimation {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,
@@ -662,7 +686,7 @@ mod tests {
     fn audio_serialize() {
         let expected_json = r#"{"type":"audio","media":"123456"}"#;
         let video = InputMedia::Audio(InputMediaAudio {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,
@@ -680,7 +704,7 @@ mod tests {
     fn document_serialize() {
         let expected_json = r#"{"type":"document","media":"123456"}"#;
         let video = InputMedia::Document(InputMediaDocument {
-            media: InputFile::file_id("123456"),
+            media: InputFile::file_id("123456".into()),
             thumbnail: None,
             caption: None,
             parse_mode: None,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
+use crate::types::{FileId, InlineKeyboardMarkup, InputMessageContent, MessageEntity, ParseMode};
 
 /// Represents a link to an MP3 audio file stored on the Telegram servers.
 ///
@@ -16,7 +16,7 @@ pub struct InlineQueryResultCachedAudio {
     pub id: String,
 
     /// A valid file identifier for the audio file.
-    pub audio_file_id: String,
+    pub audio_file_id: FileId,
 
     /// Caption, 0-1024 characters.
     pub caption: Option<String>,
@@ -43,14 +43,13 @@ pub struct InlineQueryResultCachedAudio {
 }
 
 impl InlineQueryResultCachedAudio {
-    pub fn new<S1, S2>(id: S1, audio_file_id: S2) -> Self
+    pub fn new<S1>(id: S1, audio_file_id: FileId) -> Self
     where
         S1: Into<String>,
-        S2: Into<String>,
     {
         Self {
             id: id.into(),
-            audio_file_id: audio_file_id.into(),
+            audio_file_id,
             caption: None,
             parse_mode: None,
             reply_markup: None,
@@ -67,11 +66,8 @@ impl InlineQueryResultCachedAudio {
         self
     }
 
-    pub fn audio_file_id<S>(mut self, val: S) -> Self
-    where
-        S: Into<String>,
-    {
-        self.audio_file_id = val.into();
+    pub fn audio_file_id(mut self, val: FileId) -> Self {
+        self.audio_file_id = val;
         self
     }
 

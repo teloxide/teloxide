@@ -23,10 +23,6 @@ pub struct InlineQueryResultArticle {
     /// URL of the result.
     pub url: Option<reqwest::Url>,
 
-    /// Pass `true`, if you don't want the URL to be shown in the
-    /// message.
-    pub hide_url: Option<bool>,
-
     /// Short description of the result.
     pub description: Option<String>,
 
@@ -52,7 +48,6 @@ impl InlineQueryResultArticle {
             input_message_content,
             reply_markup: None,
             url: None,
-            hide_url: None,
             description: None,
             thumbnail_url: None,
             thumbnail_width: None,
@@ -91,12 +86,6 @@ impl InlineQueryResultArticle {
     #[must_use]
     pub fn url(mut self, val: reqwest::Url) -> Self {
         self.url = Some(val);
-        self
-    }
-
-    #[must_use]
-    pub fn hide_url(mut self, val: bool) -> Self {
-        self.hide_url = Some(val);
         self
     }
 

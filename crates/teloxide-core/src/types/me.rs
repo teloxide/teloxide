@@ -28,6 +28,9 @@ pub struct Me {
     /// receive its messages.
     #[serde(default)]
     pub can_connect_to_business: bool,
+
+    /// `true`, if the bot has a main Web App.
+    pub has_main_web_app: bool,
 }
 
 impl Me {
@@ -79,6 +82,7 @@ mod tests {
             can_read_all_group_messages: false,
             supports_inline_queries: false,
             can_connect_to_business: false,
+            has_main_web_app: false,
         };
 
         assert_eq!(me.username(), "SomethingSomethingBot");
