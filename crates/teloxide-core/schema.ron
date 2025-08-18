@@ -4462,6 +4462,54 @@ Schema(
             ],
         ),
         Method(
+            names: ("approveSuggestedPost", "ApproveSuggestedPost", "approve_suggested_post"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to approve a suggested post in a direct messages chat. The bot must have the 'can_post_messages' administrator right in the corresponding channel chat. Returns `true` on success."),
+            tg_doc: "https://core.telegram.org/bots/api#approvesuggestedpost",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target direct messages chat")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of a suggested post message to approve")
+                ),
+                Param(
+                    name: "send_date",
+                    ty: Option(u64),
+                    descr: Doc(md: "Point in time (Unix timestamp) when the post is expected to be published; omit if the date has already been specified when the suggested post was created. If specified, then the date must be not more than 2678400 seconds (30 days) in the future")
+                ),
+            ],
+        ),
+        Method(
+            names: ("declineSuggestedPost", "DeclineSuggestedPost", "decline_suggested_post"),
+            return_ty: True,
+            doc: Doc(md: "Use this method to decline a suggested post in a direct messages chat. The bot must have the 'can_manage_direct_messages' administrator right in the corresponding channel chat. Returns `true` on success."),
+            tg_doc: "https://core.telegram.org/bots/api#declinesuggestedpost",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("ChatId"),
+                    descr: Doc(md: "Unique identifier for the target direct messages chat")
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of a suggested post message to decline")
+                ),
+                Param(
+                    name: "comment",
+                    ty: Option(String),
+                    descr: Doc(md: "Comment for the creator of the suggested post; 0-128 characters")
+                ),
+            ],
+        ),
+        Method(
             names: ("deleteMessage", "DeleteMessage", "delete_message"),
             return_ty: True,
             doc: Doc(md: "Use this method to delete a message, including service messages, with the following limitations:\n- A message can only be deleted if it was sent less than 48 hours ago.\n- A dice message in a private chat can only be deleted if it was sent more than 24 hours ago.\n- Bots can delete outgoing messages in private chats, groups, and supergroups.\n- Bots can delete incoming messages in private chats.\n- Bots granted can_post_messages permissions can delete outgoing messages in channels.\n- If the bot is an administrator of a group, it can delete any message there.\n- If the bot has can_delete_messages permission in a supergroup or a channel, it can delete any message there.\n\nReturns True on success."),

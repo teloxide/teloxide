@@ -296,6 +296,8 @@ where
         edit_message_reply_markup,
         edit_message_reply_markup_inline,
         stop_poll,
+        approve_suggested_post,
+        decline_suggested_post,
         delete_message,
         delete_messages,
         send_sticker,
@@ -933,6 +935,18 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         message_id: MessageId,
     ) -> ErasedRequest<'a, StopPoll, Self::Err>;
+
+    fn approve_suggested_post(
+        &self,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ApproveSuggestedPost, Self::Err>;
+
+    fn decline_suggested_post(
+        &self,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeclineSuggestedPost, Self::Err>;
 
     fn delete_message(
         &self,
@@ -2062,6 +2076,22 @@ where
         message_id: MessageId,
     ) -> ErasedRequest<'a, StopPoll, Self::Err> {
         Requester::stop_poll(self, chat_id, message_id).erase()
+    }
+
+    fn approve_suggested_post(
+        &self,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, ApproveSuggestedPost, Self::Err> {
+        Requester::approve_suggested_post(self, chat_id, message_id).erase()
+    }
+
+    fn decline_suggested_post(
+        &self,
+        chat_id: ChatId,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeclineSuggestedPost, Self::Err> {
+        Requester::decline_suggested_post(self, chat_id, message_id).erase()
     }
 
     fn delete_message(
