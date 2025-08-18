@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
+  - Add `filter_suggested_post_approved`, `filter_suggested_post_approval_failed`, `filter_suggested_post_declined`, `filter_suggested_post_paid`, `filter_suggested_post_refunded` filters to the `MessageFilterExt` trait
+
 ### Fixed
 
 - make sure `postgres-storage-rustls` feature actually enables rustls-based postgres storage ([#1400](https://github.com/teloxide/teloxide/pull/1400))

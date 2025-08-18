@@ -2571,7 +2571,7 @@ dependencies = [
  "serde_cbor",
  "serde_json",
  "sqlx",
- "teloxide-core 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "teloxide-core",
  "teloxide-macros 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "tokio",
@@ -2620,39 +2620,6 @@ dependencies = [
  "uuid",
  "vecrem",
  "xshell",
-]
-
-[[package]]
-name = "teloxide-core"
-version = "0.13.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f7a34ca8e971fa892e633858c07547fe138ef4a02e4a4eaa1d35e517d6e0bc4"
-dependencies = [
- "bitflags",
- "bytes",
- "chrono",
- "derive_more",
- "either",
- "futures",
- "log",
- "mime",
- "once_cell",
- "pin-project",
- "rc-box",
- "reqwest",
- "rgb",
- "serde",
- "serde_json",
- "serde_with",
- "stacker",
- "take_mut",
- "takecell",
- "thiserror",
- "tokio",
- "tokio-util",
- "url",
- "uuid",
- "vecrem",
 ]
 
 [[package]]
