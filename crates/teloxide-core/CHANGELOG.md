@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for TBA 9.2 ([#1402](https://github.com/teloxide/teloxide/pull/1402))
+- Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_id` field to `Message` struct
   - Add `publisher_chat` field to `Gift` and `UniqueGift` structs
@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Support for TBA 9.2 ([#1402](https://github.com/teloxide/teloxide/pull/1402))
+- Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - `ChatFullInfoPublicKind::Supergroup` is now of type `Box<ChatFullInfoPublicSupergroup>` instead of `ChatFullInfoPublicSupergroup`
 
 ## 0.13.0 - 2025-07-11
