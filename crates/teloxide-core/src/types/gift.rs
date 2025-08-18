@@ -1,7 +1,7 @@
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 
-use crate::types::Sticker;
+use crate::types::{Chat, Sticker};
 
 /// This object represent a list of gifts.
 ///
@@ -50,6 +50,9 @@ pub struct Gift {
     /// The number of remaining gifts of this type that can be sent; for limited
     /// gifts only
     pub remaining_count: Option<u32>,
+
+    /// Information about the chat that published the gift
+    pub publisher_chat: Option<Chat>,
 }
 
 impl Gift {

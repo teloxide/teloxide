@@ -606,11 +606,13 @@ mod test {
                     }),
                 },
                 sender_business_bot: None,
+                direct_messages_topic: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
                     external_reply: None,
                     quote: None,
+                    reply_to_checklist_task_id: None,
                     reply_to_story: None,
                     sender_boost_count: None,
                     edit_date: None,
@@ -934,6 +936,7 @@ mod test {
                         kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                             username: None,
                             is_forum: false,
+                            is_direct_messages: false,
                         }),
                     }),
                 },
@@ -990,6 +993,7 @@ mod test {
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
                     is_forum: false,
+                    is_direct_messages: false,
                 }),
             }),
         };
