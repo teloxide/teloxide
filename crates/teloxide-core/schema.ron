@@ -241,6 +241,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
+                ),
+                Param(
                     name: "text",
                     ty: String,
                     descr: Doc(md: "Text of the message to be sent, 1-4096 characters after entities parsing")
@@ -287,6 +292,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -323,6 +333,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "from_chat_id",
@@ -352,6 +367,11 @@ Schema(
                     ty: RawTy("MessageId"),
                     descr: Doc(md: "Message identifier in the chat specified in _from\\_chat\\_id_")
                 ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
             ],
         ),
         Method(
@@ -373,6 +393,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "from_chat_id",
@@ -422,6 +447,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "from_chat_id",
@@ -480,6 +510,11 @@ Schema(
                     descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -520,6 +555,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "from_chat_id",
@@ -575,6 +615,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "photo",
@@ -636,6 +681,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -680,6 +730,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "audio",
@@ -754,6 +809,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -795,6 +855,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "document",
@@ -859,6 +924,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -903,6 +973,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "video",
@@ -1005,6 +1080,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1047,6 +1127,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "animation",
@@ -1131,6 +1216,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1176,6 +1266,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "voice",
@@ -1232,6 +1327,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1276,6 +1376,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "video_note",
@@ -1327,6 +1432,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1359,6 +1469,16 @@ Schema(
                     name: "business_connection_id",
                     ty: Option(RawTy("BusinessConnectionId")),
                     descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "chat_id",
@@ -1422,6 +1542,11 @@ Schema(
                     descr: Doc(md: "Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1463,6 +1588,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "media",
@@ -1525,6 +1655,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
+                ),
+                Param(
                     name: "latitude",
                     ty: f64,
                     descr: Doc(md: "Latitude of the location"),
@@ -1579,6 +1714,11 @@ Schema(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -1863,6 +2003,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "latitude",
@@ -1931,6 +2076,11 @@ Schema(
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
                 ),
                 Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
+                ),
+                Param(
                     name: "reply_parameters",
                     ty: Option(RawTy("ReplyParameters")),
                     descr: Doc(md: "Description of the message to reply to"),
@@ -1972,6 +2122,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "phone_number",
@@ -2018,6 +2173,11 @@ Schema(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -2255,6 +2415,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "emoji",
@@ -2283,6 +2448,11 @@ Schema(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -4358,6 +4528,11 @@ Schema(
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
                 ),
                 Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
+                ),
+                Param(
                     name: "sticker",
                     ty: RawTy("InputFile"),
                     descr: Doc(
@@ -4392,6 +4567,11 @@ Schema(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
                 ),
                 Param(
                     name: "reply_parameters",
@@ -5493,6 +5673,11 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ), 
+                Param(
+                    name: "direct_messages_topic_id",
+                    ty: Option(RawTy("TopicId")),
+                    descr: Doc(md: "Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat"),
                 ),
                 Param(
                     name: "title",
@@ -5636,6 +5821,11 @@ Schema(
                     name: "message_effect_id",
                     ty: Option(RawTy("EffectId")),
                     descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "suggested_post_parameters",
+                    ty: Option(RawTy("SuggestedPostParameters")),
+                    descr: Doc(md: "An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined."),
                 ),
                 Param(
                     name: "reply_parameters",
