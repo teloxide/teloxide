@@ -187,7 +187,7 @@ pub struct ChatFullInfoPrivate {
 pub enum ChatFullInfoPublicKind {
     Channel(ChatFullInfoPublicChannel),
     Group(ChatFullInfoPublicGroup),
-    Supergroup(ChatFullInfoPublicSupergroup),
+    Supergroup(Box<ChatFullInfoPublicSupergroup>),
 }
 
 #[serde_with::skip_serializing_none]
@@ -358,11 +358,12 @@ impl ChatFullInfo {
     pub fn username(&self) -> Option<&str> {
         match &self.kind {
             ChatFullInfoKind::Public(this) => match &this.kind {
-                ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel { username, .. })
-                | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
-                    username,
-                    ..
-                }) => username.as_deref(),
+                ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel { username, .. }) => {
+                    username.as_deref()
+                }
+                ChatFullInfoPublicKind::Supergroup(chat_full_info_public_supergroup) => {
+                    chat_full_info_public_supergroup.username.as_deref()
+                }
                 ChatFullInfoPublicKind::Group(_) => None,
             },
             ChatFullInfoKind::Private(this) => this.username.as_deref(),
@@ -378,11 +379,10 @@ impl ChatFullInfo {
                 ChatFullInfoPublicKind::Channel(ChatFullInfoPublicChannel {
                     linked_chat_id,
                     ..
-                })
-                | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
-                    linked_chat_id,
-                    ..
                 }) => *linked_chat_id,
+                ChatFullInfoPublicKind::Supergroup(chat_full_info_public_supergroup) => {
+                    chat_full_info_public_supergroup.linked_chat_id
+                }
                 ChatFullInfoPublicKind::Group(_) => None,
             },
             _ => None,
@@ -393,13 +393,14 @@ impl ChatFullInfo {
     #[must_use]
     pub fn permissions(&self) -> Option<ChatPermissions> {
         if let ChatFullInfoKind::Public(this) = &self.kind {
-            if let ChatFullInfoPublicKind::Group(ChatFullInfoPublicGroup { permissions })
-            | ChatFullInfoPublicKind::Supergroup(ChatFullInfoPublicSupergroup {
-                permissions,
-                ..
-            }) = &this.kind
+            if let ChatFullInfoPublicKind::Group(ChatFullInfoPublicGroup { permissions }) =
+                &this.kind
             {
                 return permissions.clone();
+            } else if let ChatFullInfoPublicKind::Supergroup(chat_full_info_public_supergroup) =
+                &this.kind
+            {
+                return chat_full_info_public_supergroup.permissions.clone();
             }
         }
 

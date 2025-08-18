@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::types::{
     BusinessConnectionId, EffectId, LivePeriod, Message, Recipient, ReplyMarkup, ReplyParameters,
-    ThreadId,
+    SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -26,6 +26,8 @@ impl_payload! {
             pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// The radius of uncertainty for the location, measured in meters; 0-1500
             pub horizontal_accuracy: f64,
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.
@@ -46,6 +48,8 @@ impl_payload! {
             pub allow_paid_broadcast: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
             pub message_effect_id: EffectId,
+            /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+            pub suggested_post_parameters: SuggestedPostParameters,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

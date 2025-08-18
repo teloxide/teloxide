@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::types::{
     BusinessConnectionId, EffectId, InputFile, Message, Recipient, ReplyMarkup, ReplyParameters,
-    ThreadId,
+    SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -27,6 +27,8 @@ impl_payload! {
             pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Emoji associated with the sticker; only for just uploaded stickers
             pub emoji: String [into],
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -39,6 +41,8 @@ impl_payload! {
             pub allow_paid_broadcast: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
             pub message_effect_id: EffectId,
+            /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+            pub suggested_post_parameters: SuggestedPostParameters,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.

@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{MessageId, Recipient, ThreadId};
+use crate::types::{MessageId, Recipient, ThreadId, TopicId};
 
 impl_payload! {
     /// Use this method to copy messages of any kind. If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied. A quiz [`Poll`] can be copied only if the value of the field *correct_option_id* is known to the bot. The method is analogous to the method [`ForwardMessages`], but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array of [`MessageId`] of the sent messages is returned.
@@ -24,6 +24,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages
