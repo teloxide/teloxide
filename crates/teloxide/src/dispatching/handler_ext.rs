@@ -203,6 +203,7 @@ mod tests {
                         last_name: None,
                     }),
                 },
+                direct_messages_topic: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
                     forward_origin: None,
@@ -226,6 +227,7 @@ mod tests {
                     effect_id: None,
                     is_automatic_forward: false,
                     has_protected_content: false,
+                    reply_to_checklist_task_id: None,
                     reply_to_story: None,
                     sender_boost_count: None,
                     is_from_offline: false,

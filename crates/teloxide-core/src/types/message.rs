@@ -7,16 +7,17 @@ use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
-    ChatId, ChatShared, Checklist, ChecklistTasksAdded, ChecklistTasksDone, Contact, Dice,
-    DirectMessagePriceChanged, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
-    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
-    GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup,
-    Invoice, LinkPreviewOptions, Location, MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged,
-    MessageEntity, MessageEntityRef, MessageId, MessageOrigin, PaidMediaInfo,
-    PaidMessagePriceChanged, PassportData, PhotoSize, Poll, ProximityAlertTriggered,
-    RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote, ThreadId, True, UniqueGiftInfo,
-    User, UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited,
-    VideoChatScheduled, VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
+    ChatId, ChatShared, Checklist, ChecklistTaskId, ChecklistTasksAdded, ChecklistTasksDone,
+    Contact, Dice, DirectMessagePriceChanged, DirectMessagesTopic, Document, ExternalReplyInfo,
+    ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
+    GeneralForumTopicHidden, GeneralForumTopicUnhidden, GiftInfo, Giveaway, GiveawayCompleted,
+    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
+    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
+    MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
+    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote,
+    ThreadId, True, UniqueGiftInfo, User, UsersShared, Venue, Video, VideoChatEnded,
+    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
+    WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -33,6 +34,10 @@ pub struct Message {
     /// supergroups only.
     #[serde(rename = "message_thread_id")]
     pub thread_id: Option<ThreadId>,
+
+    /// Information about the direct messages chat topic that contains the
+    /// message
+    pub direct_messages_topic: Option<DirectMessagesTopic>,
 
     /// Sender, empty for messages sent to channels.
     pub from: Option<User>,
@@ -170,6 +175,9 @@ pub struct MessageCommon {
 
     /// For replies to a story, the original story
     pub reply_to_story: Option<Story>,
+
+    /// Identifier of the specific checklist task that is being replied to
+    pub reply_to_checklist_task_id: Option<ChecklistTaskId>,
 
     /// If the sender of the message boosted the chat, the number of boosts
     /// added by the user
@@ -2189,6 +2197,7 @@ mod tests {
             Message {
                 id: MessageId(198283),
                 thread_id: None,
+                direct_messages_topic: None,
                 from: None,
                 sender_chat: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
@@ -2423,6 +2432,7 @@ mod tests {
                 kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                     username: None,
                     is_forum: false,
+                    is_direct_messages: false,
                 }),
             }),
         };
@@ -2797,6 +2807,7 @@ mod tests {
                 giveaway_message: Some(Box::new(Message {
                     id: MessageId(24),
                     thread_id: None,
+                    direct_messages_topic: None,
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),

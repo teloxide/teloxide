@@ -1,4 +1,4 @@
-use crate::types::{Rgb, Sticker};
+use crate::types::{Chat, Rgb, Sticker};
 use serde::{Deserialize, Serialize};
 
 /// This object describes a unique gift that was upgraded from a regular gift.
@@ -26,6 +26,9 @@ pub struct UniqueGift {
 
     /// Backdrop of the gift
     pub backdrop: UniqueGiftBackdrop,
+
+    /// Information about the chat that published the gift
+    pub publisher_chat: Option<Chat>,
 }
 
 /// This object describes the model of a unique gift.
@@ -146,6 +149,7 @@ mod tests {
                 },
                 rarity_per_mille: 123,
             },
+            publisher_chat: None,
         };
 
         let unique_gift_json = r#"{

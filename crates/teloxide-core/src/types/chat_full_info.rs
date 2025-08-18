@@ -229,6 +229,14 @@ pub struct ChatFullInfoPublicSupergroup {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_forum: bool,
 
+    /// `true`, if the chat is the direct messages chat of a channel
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_direct_messages: bool,
+
+    /// Information about the corresponding channel chat; for direct messages
+    /// chats only
+    pub parent_chat: Option<Chat>,
+
     /// For supergroups, name of group sticker set.
     pub sticker_set_name: Option<String>,
 
