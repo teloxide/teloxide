@@ -45,6 +45,8 @@ impl_payload! {
             pub can_pin_messages: bool,
             /// Pass True if the user is allowed to create, rename, close, and reopen forum topics, supergroups only
             pub can_manage_topics: bool,
+            /// Pass True if the administrator can manage direct messages within the channel and decline suggested posts; for channels only
+            pub can_manage_direct_messages: bool,
         }
     }
 }
