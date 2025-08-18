@@ -14,10 +14,11 @@ use crate::types::{
     GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
     MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
     MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
-    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment, TextQuote,
-    ThreadId, True, UniqueGiftInfo, User, UsersShared, Venue, Video, VideoChatEnded,
-    VideoChatParticipantsInvited, VideoChatScheduled, VideoChatStarted, VideoNote, Voice,
-    WebAppData, WriteAccessAllowed,
+    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment,
+    SuggestedPostApprovalFailed, SuggestedPostApproved, SuggestedPostDeclined, SuggestedPostInfo,
+    SuggestedPostPaid, SuggestedPostRefunded, TextQuote, ThreadId, True, UniqueGiftInfo, User,
+    UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
+    VideoChatStarted, VideoNote, Voice, WebAppData, WriteAccessAllowed,
 };
 
 /// This object represents a message.
@@ -58,6 +59,11 @@ pub struct Message {
     /// `true`, if the message is sent to a forum topic.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_topic_message: bool,
+
+    /// Information about suggested post parameters if the message is a
+    /// suggested post in a channel direct messages chat. If the message is an
+    /// approved or declined suggested post, then it can't be edited.
+    pub suggested_post_info: Option<SuggestedPostInfo>,
 
     /// `true`, if the message is a paid post. Note that such posts must not be
     /// deleted for 24 hours to receive the payment and can't be edited.
@@ -119,6 +125,11 @@ pub enum MessageKind {
     GiveawayCreated(MessageGiveawayCreated),
     GiveawayWinners(MessageGiveawayWinners),
     PaidMessagePriceChanged(MessagePaidMessagePriceChanged),
+    SuggestedPostApproved(MessageSuggestedPostApproved),
+    SuggestedPostApprovalFailed(MessageSuggestedPostApprovalFailed),
+    SuggestedPostDeclined(MessageSuggestedPostDeclined),
+    SuggestedPostPaid(MessageSuggestedPostPaid),
+    SuggestedPostRefunded(MessageSuggestedPostRefunded),
     GiftInfo(MessageGiftInfo),
     UniqueGiftInfo(MessageUniqueGiftInfo),
     VideoChatScheduled(MessageVideoChatScheduled),
@@ -815,6 +826,41 @@ pub struct MessagePaidMessagePriceChanged {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageSuggestedPostApproved {
+    /// Service message: a suggested post was approved
+    pub suggested_post_approved: SuggestedPostApproved,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageSuggestedPostApprovalFailed {
+    /// Service message: approval of a suggested post has failed
+    pub suggested_post_approval_failed: SuggestedPostApprovalFailed,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageSuggestedPostDeclined {
+    /// Service message: a suggested post was declined
+    pub suggested_post_declined: SuggestedPostDeclined,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageSuggestedPostPaid {
+    /// Service message: payment for a suggested post was received
+    pub suggested_post_paid: SuggestedPostPaid,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct MessageSuggestedPostRefunded {
+    /// Service message: payment for a suggested post was refunded
+    pub suggested_post_refunded: SuggestedPostRefunded,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MessageGiftInfo {
     /// Service message: a regular gift was sent or received
     pub gift: GiftInfo,
@@ -877,6 +923,8 @@ mod getters {
         MessageId, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
         MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin, MessagePassportData,
         MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MessageSuggestedPostApprovalFailed, MessageSuggestedPostApproved,
+        MessageSuggestedPostDeclined, MessageSuggestedPostPaid, MessageSuggestedPostRefunded,
         MessageSupergroupChatCreated, MessageUsersShared, MessageVideoChatParticipantsInvited,
         PhotoSize, Story, TextQuote, User,
     };
@@ -1792,6 +1840,58 @@ mod getters {
         }
 
         #[must_use]
+        pub fn suggested_post_approval_failed(
+            &self,
+        ) -> Option<&types::SuggestedPostApprovalFailed> {
+            match &self.kind {
+                SuggestedPostApprovalFailed(MessageSuggestedPostApprovalFailed {
+                    suggested_post_approval_failed,
+                }) => Some(suggested_post_approval_failed),
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn suggested_post_approved(&self) -> Option<&types::SuggestedPostApproved> {
+            match &self.kind {
+                SuggestedPostApproved(MessageSuggestedPostApproved { suggested_post_approved }) => {
+                    Some(suggested_post_approved)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn suggested_post_declined(&self) -> Option<&types::SuggestedPostDeclined> {
+            match &self.kind {
+                SuggestedPostDeclined(MessageSuggestedPostDeclined { suggested_post_declined }) => {
+                    Some(suggested_post_declined)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn suggested_post_paid(&self) -> Option<&types::SuggestedPostPaid> {
+            match &self.kind {
+                SuggestedPostPaid(MessageSuggestedPostPaid { suggested_post_paid }) => {
+                    Some(suggested_post_paid)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
+        pub fn suggested_post_refunded(&self) -> Option<&types::SuggestedPostRefunded> {
+            match &self.kind {
+                SuggestedPostRefunded(MessageSuggestedPostRefunded { suggested_post_refunded }) => {
+                    Some(suggested_post_refunded)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn gift_info(&self) -> Option<&types::GiftInfo> {
             match &self.kind {
                 GiftInfo(MessageGiftInfo { gift }) => Some(gift),
@@ -2208,6 +2308,7 @@ mod tests {
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 is_topic_message: false,
                 is_paid_post: false,
+                suggested_post_info: None,
                 chat: Chat {
                     id: ChatId(250918540),
                     kind: ChatKind::Private(ChatPrivate {
@@ -2834,6 +2935,7 @@ mod tests {
                     },
                     via_bot: None,
                     sender_business_bot: None,
+                    suggested_post_info: None,
                     kind: MessageKind::Giveaway(MessageGiveaway {
                         giveaway: Giveaway {
                             chats: vec![Chat {
@@ -2980,6 +3082,161 @@ mod tests {
         assert_eq!(
             message.paid_message_price_changed().unwrap(),
             &PaidMessagePriceChanged { paid_message_star_count: 1234 }
+        )
+    }
+
+    #[test]
+    fn suggested_post_approved() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "suggested_post_approved": {
+                "price": {
+                    "currency": "XTR",
+                    "amount": 5
+                },
+                "send_date": 0
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.suggested_post_approved().unwrap(),
+            &SuggestedPostApproved {
+                suggested_post_message: None,
+                price: SuggestedPostPrice { currency: "XTR".to_owned(), amount: 5 },
+                send_date: DateTime::from_timestamp(0, 0).unwrap()
+            }
+        )
+    }
+
+    #[test]
+    fn suggested_post_approval_failed() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "suggested_post_approval_failed": {
+                "price": {
+                    "currency": "XTR",
+                    "amount": 5
+                }
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.suggested_post_approval_failed().unwrap(),
+            &SuggestedPostApprovalFailed {
+                suggested_post_message: None,
+                price: SuggestedPostPrice { currency: "XTR".to_owned(), amount: 5 },
+            }
+        )
+    }
+
+    #[test]
+    fn suggested_post_declined() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "suggested_post_declined": {
+                "comment": "Test"
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.suggested_post_declined().unwrap(),
+            &SuggestedPostDeclined {
+                suggested_post_message: None,
+                comment: Some("Test".to_owned())
+            }
+        )
+    }
+
+    #[test]
+    fn suggested_post_paid() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "suggested_post_paid": {
+                "currency": "XTR"
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.suggested_post_paid().unwrap(),
+            &SuggestedPostPaid {
+                suggested_post_message: None,
+                currency: "XTR".to_string(),
+                amount: None,
+                star_amount: None,
+            }
+        )
+    }
+
+    #[test]
+    fn suggested_post_refunded() {
+        let json = r#"{
+            "message_id": 27,
+            "sender_chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "chat": {
+                "id": -1002236736395,
+                "title": "Test",
+                "type": "channel"
+            },
+            "date": 1721162577,
+            "suggested_post_refunded": {
+                "reason": "post_deleted"
+            }
+        }"#;
+        let message: Message = from_str(json).unwrap();
+        assert_eq!(
+            message.suggested_post_refunded().unwrap(),
+            &SuggestedPostRefunded {
+                suggested_post_message: None,
+                reason: SuggestedPostRefundReason::PostDeleted
+            }
         )
     }
 

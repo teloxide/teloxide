@@ -194,6 +194,7 @@ mod tests {
                 sender_chat: None,
                 is_topic_message: false,
                 is_paid_post: false,
+                suggested_post_info: None,
                 sender_business_bot: None,
                 date,
                 chat: Chat {
