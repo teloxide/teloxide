@@ -59,6 +59,11 @@ pub struct Message {
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_topic_message: bool,
 
+    /// `true`, if the message is a paid post. Note that such posts must not be
+    /// deleted for 24 hours to receive the payment and can't be edited.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_paid_post: bool,
+
     /// Bot through which the message was sent.
     pub via_bot: Option<User>,
 
@@ -2202,6 +2207,7 @@ mod tests {
                 sender_chat: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 is_topic_message: false,
+                is_paid_post: false,
                 chat: Chat {
                     id: ChatId(250918540),
                     kind: ChatKind::Private(ChatPrivate {
@@ -2808,6 +2814,7 @@ mod tests {
                     id: MessageId(24),
                     thread_id: None,
                     direct_messages_topic: None,
+                    is_paid_post: false,
                     from: None,
                     sender_chat: Some(Chat {
                         id: ChatId(-1002236736395),

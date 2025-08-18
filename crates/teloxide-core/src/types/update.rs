@@ -596,6 +596,7 @@ mod test {
                 }),
                 sender_chat: None,
                 is_topic_message: false,
+                is_paid_post: false,
                 date,
                 chat: Chat {
                     id: ChatId(218_485_655),
