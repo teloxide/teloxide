@@ -107,7 +107,6 @@ impl Exceptions {
 }
 
 #[derive(Debug, Display)]
-#[allow(clippy::enum_variant_names)] // Other errors might be added in the future
 pub enum ApiCheckError {
     #[display("Object `{object}` does not have `{field}` field")]
     FieldDoesNotExist { object: String, field: String },
@@ -130,6 +129,16 @@ pub enum ApiCheckError {
          [{actual_type:?}]"
     )]
     FieldTyDoesNotMatch { object: String, field: String, raw_type: Kind, actual_type: Kind },
+    #[display(
+        "`{field}` field of object `{object}` has enum {raw_enum:?}, but the actual enum is \
+         {actual_enum:?}"
+    )]
+    EnumsDoNotMatch {
+        object: String,
+        field: String,
+        raw_enum: Vec<String>,
+        actual_enum: Vec<String>,
+    },
 }
 
 // Helper enum for parsing
@@ -151,6 +160,7 @@ fn get_type(prop: &Value, initial_object_name: String) -> (bool, Kind) {
     let mut required = true;
     let mut prop_type: Option<Type> = None;
     let mut item_kind: Option<Kind> = None; // Used for arrays
+    let mut string_enumeration: Vec<String> = vec![];
 
     // Any of is usually either a Recipient or an optional field
     if let Some(any_of) = prop.get("anyOf") {
@@ -227,23 +237,38 @@ fn get_type(prop: &Value, initial_object_name: String) -> (bool, Kind) {
     } else if let Some(one_of) = prop.get("oneOf") {
         // If its oneOf, its probably an enum, probably of String
         if let Some(array) = one_of.as_array() {
-            // Just extract the type while checking, if its all the same
+            // Just extract the type while checking, if all elements are of the same type
             let mut all_variant_type = None;
             for variant in array {
                 let variant_type = get_type(variant, initial_object_name.clone()).1;
 
                 if all_variant_type.is_none() {
-                    all_variant_type = Some(variant_type)
-                } else if all_variant_type.clone().unwrap() != variant_type {
+                    all_variant_type = Some(variant_type.clone())
+                } else if std::mem::discriminant(&all_variant_type.clone().unwrap())
+                    != std::mem::discriminant(&variant_type)
+                {
                     panic!(
                         "Object `{initial_object_name}`: oneOf variant has a different type. \
                          Initial type: {all_variant_type:?}, got type: {variant_type:?}"
                     );
                 }
+
+                // Saves all string enum variants to check later
+                if let Kind::String { default: _, min_len: _, max_len: _, enumeration } =
+                    variant_type
+                {
+                    string_enumeration.extend(enumeration);
+                }
             }
 
             if all_variant_type.is_none() {
                 panic!("Object `{initial_object_name}`: oneOf variants has no type");
+            }
+
+            if let Some(Kind::String { default: _, min_len: _, max_len: _, enumeration }) =
+                &mut all_variant_type
+            {
+                *enumeration = string_enumeration
             }
 
             return (required, all_variant_type.unwrap());
@@ -258,15 +283,29 @@ fn get_type(prop: &Value, initial_object_name: String) -> (bool, Kind) {
         } else {
             panic!("Object `{initial_object_name}`: Array without items!");
         }
+    } else if prop_type == Some(Type::String) {
+        if let Some(enumeration) = prop.get("enum").and_then(|x| x.as_array()) {
+            string_enumeration.extend(
+                enumeration
+                    .iter()
+                    .map(|x| x.as_str().expect("enum variant is not a string").to_owned())
+                    .collect::<Vec<String>>(),
+            );
+        } else if let Some(one_variant) = prop.get("const").and_then(|x| x.as_str()) {
+            string_enumeration.push(one_variant.to_owned());
+        }
     }
 
     let prop_kind = match (prop_type, item_kind) {
         (Some(Type::Integer), None) => {
             Kind::Integer { default: None, min: None, max: None, enumeration: vec![] }
         }
-        (Some(Type::String), None) => {
-            Kind::String { default: None, min_len: None, max_len: None, enumeration: vec![] }
-        }
+        (Some(Type::String), None) => Kind::String {
+            default: None,
+            min_len: None,
+            max_len: None,
+            enumeration: string_enumeration,
+        },
         (Some(Type::Number), None) => Kind::Float,
         (Some(Type::Null), None) => Kind::Null,
         (Some(Type::Boolean), None) => Kind::Bool { default: None },
@@ -580,6 +619,25 @@ fn check_struct_kind(
         (rust_kind, api_kind)
     {
         check_struct_kind(&rust_array.0, &api_array.0, field_name, object_name, errors);
+    } else if let (
+        Kind::String { default: _, min_len: _, max_len: _, enumeration: mut rust_enum },
+        Kind::String { default: _, min_len: _, max_len: _, enumeration: mut api_enum },
+    ) = (rust_kind.clone(), api_kind.clone())
+    {
+        // We check only if the existing enums are all good, if any one of these is
+        // empty then there's nothing to check
+        if !api_enum.is_empty() && !rust_enum.is_empty() {
+            rust_enum.sort();
+            api_enum.sort();
+            if rust_enum != api_enum {
+                errors.push(ApiCheckError::EnumsDoNotMatch {
+                    object: object_name,
+                    field: field_name,
+                    raw_enum: rust_enum.to_vec(),
+                    actual_enum: api_enum.to_vec(),
+                });
+            }
+        }
     }
 }
 
