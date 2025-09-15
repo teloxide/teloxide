@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
+  - Add `checklist_task_id` field to `ReplyParameters` struct
+  - Add `reply_to_checklist_id` field to `Message` struct
+  - Add `publisher_chat` field to `Gift` and `UniqueGift` structs
+  - Add `is_direct_messages` field to `PublicChatSupergroup` and `ChatFullInfoPublicSupergroup` structs
+  - Add `parent_chat` field to `ChatFullInfoPublicSupergroup` struct
+  - Add `DirectMessagesTopic` and `TopicId` structs, and added field `direct_messages_topic` to `Message` struct
+  - Add `direct_messages_topic_id` parameter to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_dice`, `send_invoice`, `send_media_group`, `copy_message`, `copy_messages`, `forward_message` and `forward_messages` methods
+  - Add `SuggestedPostParameters` struct and `suggested_post_parameters` parameter to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_dice`, `send_invoice`, `copy_message` and `forward_message` methods
+  - Add `message_thread_id` parameter to `send_paid_media` method
+  - Add `approve_suggested_post` and `decline_suggested_post` methods
+  - Add `can_manage_direct_messages` field to `Administrator` and `ChatAdministratorRights` structs
+  - Add `can_manage_direct_messages` parameter to `promote_chat_member` method
+  - Add `is_paid_post` field to `Message` struct
+  - Add `suggested_post_info` field to `Message` struct
+  - Add `suggested_post_approved`, `suggested_post_approval_failed`, `suggested_post_declined`, `suggested_post_paid` and `suggested_post_refunded` service messages
+
+### Changed
+
+- Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
+  - `ChatFullInfoPublicKind::Supergroup` is now of type `Box<ChatFullInfoPublicSupergroup>` instead of `ChatFullInfoPublicSupergroup`
+
 ## 0.13.0 - 2025-07-11
 
 ### Added

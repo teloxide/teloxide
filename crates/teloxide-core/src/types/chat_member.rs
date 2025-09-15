@@ -110,6 +110,11 @@ pub struct Administrator {
     #[serde(default)]
     pub can_manage_topics: bool,
 
+    /// `true`, if the administrator can manage direct messages of the channel
+    /// and decline suggested posts; for channels only
+    #[serde(default)]
+    pub can_manage_direct_messages: bool,
+
     /// `true` if the administrator can add new administrators with a subset of
     /// his own privileges or demote administrators that he has promoted,
     /// directly or indirectly (promoted by administrators that were appointed
@@ -704,6 +709,7 @@ mod tests {
             "can_invite_users": true,
             "can_restrict_members": true,
             "can_pin_messages": true,
+            "can_manage_direct_messages": true,
             "can_promote_members": true
         }"#;
         let expected = ChatMember {
@@ -734,6 +740,7 @@ mod tests {
                 can_restrict_members: true,
                 can_pin_messages: true,
                 can_promote_members: true,
+                can_manage_direct_messages: true,
                 can_manage_topics: false,
             }),
         };

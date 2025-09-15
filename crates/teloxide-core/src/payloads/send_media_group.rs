@@ -4,6 +4,7 @@ use serde::Serialize;
 
 use crate::types::{
     BusinessConnectionId, EffectId, InputMedia, Message, Recipient, ReplyParameters, ThreadId,
+    TopicId,
 };
 
 impl_payload! {
@@ -32,6 +33,8 @@ impl_payload! {
             pub business_connection_id: BusinessConnectionId,
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

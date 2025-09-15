@@ -2,7 +2,9 @@
 
 use serde::Serialize;
 
-use crate::types::{Message, MessageId, Recipient, Seconds, ThreadId};
+use crate::types::{
+    Message, MessageId, Recipient, Seconds, SuggestedPostParameters, ThreadId, TopicId,
+};
 
 impl_payload! {
     /// Use this method to forward messages of any kind. On success, the sent [`Message`] is returned.
@@ -22,6 +24,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// New start timestamp for the forwarded video in the message
             pub video_start_timestamp: Seconds,
             /// Sends the message [silently]. Users will receive a notification with no sound.
@@ -30,6 +34,8 @@ impl_payload! {
             pub disable_notification: bool,
             /// Protects the contents of sent messages from forwarding and saving
             pub protect_content: bool,
+            /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+            pub suggested_post_parameters: SuggestedPostParameters,
         }
     }
 }

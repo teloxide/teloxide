@@ -48,6 +48,7 @@ mod tests {
                     kind: PublicChatKind::Supergroup(PublicChatSupergroup {
                         username: Some("gnome_ru".to_owned()),
                         is_forum: false,
+                        is_direct_messages: false,
                     }),
                 }),
             },

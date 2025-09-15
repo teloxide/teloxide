@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{MessageId, Recipient, ThreadId};
+use crate::types::{MessageId, Recipient, ThreadId, TopicId};
 
 impl_payload! {
     /// Use this method to forward multiple messages of any kind. If some of the specified messages can't be found or forwarded, they are skipped. Service messages and messages with protected content can't be forwarded. Album grouping is kept for forwarded messages. On success, an array of [`MessageId`] of the sent messages is returned.
@@ -22,6 +22,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Sends the message [silently]. Users will receive a notification with no sound.
             ///
             /// [silently]: https://telegram.org/blog/channels-2-0#silent-messages

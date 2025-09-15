@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use crate::types::{
     BusinessConnectionId, InputPaidMedia, Message, MessageEntity, ParseMode, Recipient,
-    ReplyMarkup, ReplyParameters,
+    ReplyMarkup, ReplyParameters, SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -24,6 +24,10 @@ impl_payload! {
         optional {
             /// Unique identifier of the business connection on behalf of which the message will be sent
             pub business_connection_id: BusinessConnectionId,
+            /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
+            pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Bot-defined paid media payload, 0-128 bytes. This will not be displayed to the user, use it for your internal processes.
             pub payload: String [into],
             /// Media caption, 0-1024 characters after entities parsing
@@ -44,6 +48,8 @@ impl_payload! {
             pub protect_content: bool,
             /// Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
             pub allow_paid_broadcast: bool,
+            /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+            pub suggested_post_parameters: SuggestedPostParameters,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user

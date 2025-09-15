@@ -282,6 +282,7 @@ pub(crate) fn patch_ty(mut schema: Schema) -> Schema {
             ("ban_chat_member", "until_date"),
             ("kick_chat_member", "until_date"),
             ("restrict_chat_member", "until_date"),
+            ("approve_suggested_post", "send_date"),
         ],
     );
     patch_types(

@@ -1235,6 +1235,38 @@ impl Requester for Bot {
         Self::StopPoll::new(self.clone(), payloads::StopPoll::new(chat_id, message_id))
     }
 
+    type ApproveSuggestedPost = JsonRequest<payloads::ApproveSuggestedPost>;
+
+    fn approve_suggested_post<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ApproveSuggestedPost
+    where
+        C: Into<ChatId>,
+    {
+        Self::ApproveSuggestedPost::new(
+            self.clone(),
+            payloads::ApproveSuggestedPost::new(chat_id, message_id),
+        )
+    }
+
+    type DeclineSuggestedPost = JsonRequest<payloads::DeclineSuggestedPost>;
+
+    fn decline_suggested_post<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::DeclineSuggestedPost
+    where
+        C: Into<ChatId>,
+    {
+        Self::DeclineSuggestedPost::new(
+            self.clone(),
+            payloads::DeclineSuggestedPost::new(chat_id, message_id),
+        )
+    }
+
     type DeleteMessage = JsonRequest<payloads::DeleteMessage>;
 
     fn delete_message<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessage
