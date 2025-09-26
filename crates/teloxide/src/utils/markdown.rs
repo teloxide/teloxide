@@ -174,7 +174,7 @@ pub fn escape_code(s: &str) -> String {
               without using its output does nothing useful"]
 pub fn user_mention_or_link(user: &User) -> String {
     match user.mention() {
-        Some(mention) => mention,
+        Some(mention) => escape(&mention),
         None => link(user.url().as_str(), &escape(&user.full_name())),
     }
 }
@@ -308,6 +308,11 @@ mod tests {
             added_to_attachment_menu: false,
         };
         assert_eq!(user_mention_or_link(&user_with_username), "@abcd");
+        // Telegram allows underscores in usernames
+        // https://telegram.org/faq?setln=en#q-what-can-i-use-as-my-username
+        let user_with_username_underscore =
+            User { username: Some("Abcd_Efg".to_string()), ..user_with_username };
+        assert_eq!(user_mention_or_link(&user_with_username_underscore), "@Abcd\\_Efg");
         let user_without_username = User {
             id: UserId(123_456_789),
             is_bot: false,
