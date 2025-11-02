@@ -29,7 +29,7 @@ pub struct ExternalReplyInfo {
     pub has_media_spoiler: bool,
 
     #[serde(flatten)]
-    pub kind: ExternalReplyInfoKind,
+    pub kind: Option<ExternalReplyInfoKind>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
