@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make sure `postgres-storage-rustls` feature actually enables rustls-based postgres storage ([#1400](https://github.com/teloxide/teloxide/pull/1400))
 - Escape `@` mentions in `markdown::user_mention_or_link` ([#1411](https://github.com/teloxide/teloxide/pull/1411))
 - Add local TBA file downloading support in `crate::net::download` ([#1173](https://github.com/teloxide/teloxide/pull/1173))
+- Fixed `Message::kind` being `Empty` when replying to text-only messages from other channels via `external_reply` ([#1421](https://github.com/teloxide/teloxide/pull/1421))
 
 - Added schema and rust types checking ([#1396](https://github.com/teloxide/teloxide/pull/1396)) [**BC**]
   - `delete_chat_photo` method now returns `True`, not `String`
