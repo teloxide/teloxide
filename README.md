@@ -76,7 +76,7 @@ $ rustup override set nightly
 teloxide = { version = "0.17.0", features = ["macros"] }
 log = "0.4"
 pretty_env_logger = "0.5"
-tokio = { version =  "1.8", features = ["rt-multi-thread", "macros"] }
+tokio = { version =  "1.39", features = ["rt-multi-thread", "macros"] }
 ```
 
 _Note: if there is functionality in master that is not released yet, you can pull the Git repository as follows:_
