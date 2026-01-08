@@ -28,7 +28,7 @@ pub struct ExternalReplyInfo {
     #[serde(default)]
     pub has_media_spoiler: bool,
 
-    #[serde(flatten)]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub kind: Option<ExternalReplyInfoKind>,
 }
 
