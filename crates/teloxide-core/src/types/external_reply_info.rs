@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::types::{
     Animation, Audio, Chat, Checklist, Contact, Dice, Document, Game, Giveaway, GiveawayWinners,
@@ -28,7 +28,11 @@ pub struct ExternalReplyInfo {
     #[serde(default)]
     pub has_media_spoiler: bool,
 
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        flatten,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_kind"
+    )]
     pub kind: Option<ExternalReplyInfoKind>,
 }
 
@@ -64,4 +68,15 @@ pub enum ExternalReplyInfoKind {
     VideoNote(VideoNote),
     Voice(Voice),
     Invoice(Invoice),
+}
+
+fn deserialize_kind<'de, D>(deserializer: D) -> Result<Option<ExternalReplyInfoKind>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = serde_json::Value::deserialize(deserializer)?;
+    match ExternalReplyInfoKind::deserialize(&value) {
+        Ok(kind) => Ok(Some(kind)),
+        Err(_) => Ok(None),
+    }
 }
