@@ -1,4 +1,4 @@
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
 use crate::types::{
     Animation, Audio, Chat, Checklist, Contact, Dice, Document, Game, Giveaway, GiveawayWinners,
@@ -10,6 +10,7 @@ use crate::types::{
 /// which may come from another chat or forum topic.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
+#[serde(from = "ExternalReplyInfoRaw")]
 pub struct ExternalReplyInfo {
     /// Origin of the message replied to by the given message.
     pub origin: MessageOrigin,
@@ -28,12 +29,37 @@ pub struct ExternalReplyInfo {
     #[serde(default)]
     pub has_media_spoiler: bool,
 
-    #[serde(
-        flatten,
-        skip_serializing_if = "Option::is_none",
-        deserialize_with = "deserialize_kind"
-    )]
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub kind: Option<ExternalReplyInfoKind>,
+}
+
+#[derive(Deserialize)]
+struct ExternalReplyInfoRaw {
+    origin: MessageOrigin,
+    #[serde(default)]
+    chat: Option<Chat>,
+    #[serde(default, with = "crate::types::option_msg_id_as_int")]
+    message_id: Option<MessageId>,
+    #[serde(default)]
+    link_preview_options: Option<LinkPreviewOptions>,
+    #[serde(default)]
+    has_media_spoiler: bool,
+
+    #[serde(flatten)]
+    kind: serde_json::Value,
+}
+
+impl From<ExternalReplyInfoRaw> for ExternalReplyInfo {
+    fn from(raw: ExternalReplyInfoRaw) -> Self {
+        Self {
+            origin: raw.origin,
+            chat: raw.chat,
+            message_id: raw.message_id,
+            link_preview_options: raw.link_preview_options,
+            has_media_spoiler: raw.has_media_spoiler,
+            kind: serde_json::from_value(raw.kind).ok(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -68,15 +94,4 @@ pub enum ExternalReplyInfoKind {
     VideoNote(VideoNote),
     Voice(Voice),
     Invoice(Invoice),
-}
-
-fn deserialize_kind<'de, D>(deserializer: D) -> Result<Option<ExternalReplyInfoKind>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let value = serde_json::Value::deserialize(deserializer)?;
-    match ExternalReplyInfoKind::deserialize(&value) {
-        Ok(kind) => Ok(Some(kind)),
-        Err(_) => Ok(None),
-    }
 }
