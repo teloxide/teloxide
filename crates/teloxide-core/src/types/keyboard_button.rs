@@ -225,7 +225,12 @@ mod tests {
 
     #[test]
     fn serialize_no_request() {
-        let button = KeyboardButton { text: String::from(""), request: None, style: None };
+        let button = KeyboardButton {
+            text: String::from(""),
+            request: None,
+            style: None,
+            icon_custom_emoji_id: None,
+        };
         let expected = r#"{"text":""}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -237,6 +242,7 @@ mod tests {
             text: String::from(""),
             request: Some(ButtonRequest::Contact),
             style: None,
+            icon_custom_emoji_id: None,
         };
         let expected = r#"{"text":"","request_contact":true}"#;
         let actual = serde_json::to_string(&button).unwrap();
@@ -252,6 +258,7 @@ mod tests {
                 false,
             ))),
             style: None,
+            icon_custom_emoji_id: None,
         };
         let expected = r#"{"text":"","request_chat":{"request_id":0,"chat_is_channel":false}}"#;
         let actual = serde_json::to_string(&button).unwrap();
@@ -261,7 +268,12 @@ mod tests {
     #[test]
     fn deserialize_no_request() {
         let json = r#"{"text":""}"#;
-        let expected = KeyboardButton { text: String::from(""), request: None, style: None };
+        let expected = KeyboardButton {
+            text: String::from(""),
+            request: None,
+            style: None,
+            icon_custom_emoji_id: None,
+        };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
@@ -273,6 +285,7 @@ mod tests {
             text: String::from(""),
             request: Some(ButtonRequest::Contact),
             style: None,
+            icon_custom_emoji_id: None,
         };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
