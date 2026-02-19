@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support for inline and reply buttons styles (https://core.telegram.org/bots/api#inlinekeyboardbutton)
+- Support for inline and reply buttons icon custom emojis (https://core.telegram.org/bots/api#inlinekeyboardbutton)
 
 ## 0.13.0 - 2025-07-11
 
