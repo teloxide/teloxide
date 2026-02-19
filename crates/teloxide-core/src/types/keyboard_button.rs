@@ -21,6 +21,9 @@ pub struct KeyboardButton {
     /// Button style
     pub style: Option<ButtonStyle>,
 
+    /// Custom emoji
+    pub icon_custom_emoji_id: Option<String>,
+
     /// Request something from user. This is available in private chats only.
     ///
     /// See [`ButtonRequest`] documentation for options on what can be
@@ -34,12 +37,19 @@ impl KeyboardButton {
     where
         T: Into<String>,
     {
-        Self { text: text.into(), request: None, style: None }
+        Self { text: text.into(), request: None, style: None, icon_custom_emoji_id: None }
     }
 
     /// Set button style
     pub fn style(mut self, style: ButtonStyle) -> Self {
         self.style = Some(style);
+
+        self
+    }
+
+    /// Set custom emoji
+    pub fn icon_custom_emoji_id(mut self, icon_custom_emoji_id: &str) -> Self {
+        self.icon_custom_emoji_id = Some(icon_custom_emoji_id.to_string());
 
         self
     }
