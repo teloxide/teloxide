@@ -18,64 +18,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
-    - Add `nanostar_amount` field to `StarTransaction` struct
-    - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
-    - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
+  - Add `nanostar_amount` field to `StarTransaction` struct
+  - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct
+  - Add `AffiliateInfo` struct and `affiliate` field to `TransactionPartnerUser` struct
 
 - Support for TBA 8.2 ([#1381](https://github.com/teloxide/teloxide/pull/1381))
-    - Add `upgrade_star_count` field to `Gift` struct
-    - Add `pay_for_upgrade` parameter to `send_gift` method
-    - Removed `hide_url` field from `InlineQueryResultArticle` struct
-    - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
+  - Add `upgrade_star_count` field to `Gift` struct
+  - Add `pay_for_upgrade` parameter to `send_gift` method
+  - Removed `hide_url` field from `InlineQueryResultArticle` struct
+  - Add `verify_user`, `verify_chat`, `remove_user_verification` and `remove_chat_verification` methods
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
-    - Add `send_gift_chat` method
-    - Add `can_send_gift` field to `ChatFullInfo` struct
-    - Add `TransactionPartner::Chat` enum variant and `TransactionPartnerChat` struct
-    - Add `cover` and `start_timestamp` fields to `Video`, `InputMediaVideo` and `InputPaidMediaVideo` structs
-    - Add `cover` and `start_timestamp` parameters to `send_video` method
-    - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
+  - Add `send_gift_chat` method
+  - Add `can_send_gift` field to `ChatFullInfo` struct
+  - Add `TransactionPartner::Chat` enum variant and `TransactionPartnerChat` struct
+  - Add `cover` and `start_timestamp` fields to `Video`, `InputMediaVideo` and `InputPaidMediaVideo` structs
+  - Add `cover` and `start_timestamp` parameters to `send_video` method
+  - Add `video_start_timestamp` parameter to `forward_message` and `copy_message` methods
 
 - Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
-    - Add `paid_star_count` field to `MessageCommon` struct
-    - Add `PaidMessagePriceChanged` service message
-    - Add `premium_subscription_duration` field to `TransactionPartnerUser`
-    - Add `gift_premium_subscription` method
-    - Add `GiftInfo` and `UniqueGiftInfo` service messages
-    - Add `AcceptedGiftTypes` struct
-    - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
-    - Add `BusinessBotRights` struct
-    - Add `read_business_message`, `delete_business_messages`, `set_business_account_name`, `set_business_account_username` and `set_business_account_bio` methods
-    - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
-    - Add `set_business_account_profile_photo` and `remove_business_account_profile_photo` methods
-    - Add `StarAmount` struct
-    - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
-    - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
-    - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
-    - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
-    - Add `Argb` struct
-    - Add `LocationAddress` and all `StoryArea*` structs
-    - Add `post_story`, `edit_story` and `delete_story` methods
+  - Add `paid_star_count` field to `MessageCommon` struct
+  - Add `PaidMessagePriceChanged` service message
+  - Add `premium_subscription_duration` field to `TransactionPartnerUser`
+  - Add `gift_premium_subscription` method
+  - Add `GiftInfo` and `UniqueGiftInfo` service messages
+  - Add `AcceptedGiftTypes` struct
+  - Add `UniqueGift`, `UniqueGiftModel`, `UniqueGiftSymbol`, `UniqueGiftBackdropColors`, and `UniqueGiftBackdrop` structs
+  - Add `BusinessBotRights` struct
+  - Add `read_business_message`, `delete_business_messages`, `set_business_account_name`, `set_business_account_username` and `set_business_account_bio` methods
+  - Add `InputProfilePhotoStatic` and `InputProfilePhotoAnimated` structs and `InputProfilePhoto` enum
+  - Add `set_business_account_profile_photo` and `remove_business_account_profile_photo` methods
+  - Add `StarAmount` struct
+  - Add `set_business_account_gift_settings`, `get_business_account_star_balance` and `transfer_business_account_stars` methods
+  - Add `OwnedGift`, `OwnedGifts`, `OwnedGiftRegular` and `OwnedGiftUnique` structs
+  - Add `get_business_account_gifts`, `convert_gift_to_stars`, `upgrade_gift` and `transfer_gift` methods
+  - Add `InputStoryContentPhoto` and `InputStoryContentVideo` structs and `InputStoryContent` enum
+  - Add `Argb` struct
+  - Add `LocationAddress` and all `StoryArea*` structs
+  - Add `post_story`, `edit_story` and `delete_story` methods
 
 - Support for TBA 9.1 ([#1388](https://github.com/teloxide/teloxide/pull/1388))
-    - Add `ChecklistTaskId`, `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
-    - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
-    - Add `ChecklistTasksDone` and `ChecklistTasksAdded` service messages
-    - Add `send_checklist` and `edit_message_checklist` methods
-    - Increased the maximum number of options in a poll to 12
-    - Add `get_my_star_balance` method
-    - Add `DirectMessagePriceChanged` service message
+  - Add `ChecklistTaskId`, `Checklist`, `ChecklistTask`, `InputChecklist`, and `InputChecklistTask` structs
+  - Add `Checklist` to `MediaKind` and `ExternalReplyInfoKind` enums
+  - Add `ChecklistTasksDone` and `ChecklistTasksAdded` service messages
+  - Add `send_checklist` and `edit_message_checklist` methods
+  - Increased the maximum number of options in a poll to 12
+  - Add `get_my_star_balance` method
+  - Add `DirectMessagePriceChanged` service message
 
 ### Changed
 
 - Support for TBA 8.3 ([#1383](https://github.com/teloxide/teloxide/pull/1383))
-    - `PaidMedia::Video` is now wrapped in a `Box`
-    - `InputPaidMedia::Video` is now wrapped in a `Box`
+  - `PaidMedia::Video` is now wrapped in a `Box`
+  - `InputPaidMedia::Video` is now wrapped in a `Box`
 
 - Support for TBA 9.0 ([#1385](pr1385) + [#1387](pr1387))
-    - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
-    - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
-    - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
+  - `TransactionPartnerUser` was reworked to have a `kind` field with `gift_purchase`, `invoice_payment`, `paid_media_payment`, `premium_purchase` getters
+  - `can_send_gift` field in `ChatFullInfo` struct was replaced by `accepted_gift_types`
+  - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
 
 ### Fixed
 
@@ -90,97 +90,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
-    - Add `PollId` struct
-    - Add `CallbackQueryId` struct
-    - Add `FileId` and `FileUniqueId` structs
-    - Add `PreCheckoutQueryId` struct
-    - Add `ShippingQueryId` struct
-    - Add `InlineQueryId` struct
-    - Add `BoostId` struct
-    - Add `CustomEmojiId` struct
-    - Add `MediaGroupId` struct
-    - Add `EffectId` struct
+  - Add `PollId` struct
+  - Add `CallbackQueryId` struct
+  - Add `FileId` and `FileUniqueId` structs
+  - Add `PreCheckoutQueryId` struct
+  - Add `ShippingQueryId` struct
+  - Add `InlineQueryId` struct
+  - Add `BoostId` struct
+  - Add `CustomEmojiId` struct
+  - Add `MediaGroupId` struct
+  - Add `EffectId` struct
 
 - Support for TBA 7.6 ([#1356](pr1356))
-    - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
-    - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
-    - Add `sendPaidMedia` TBA method
-    - Add `can_send_paid_media` field to `ChatFullInfoPublicChannel` struct
-    - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
-    - Add `TelegramAds` variant to `TransactionPartner` enum
-    - Add `invoice_payload` field to `TransactionPartnerUser` struct
+  - Add `PaidMediaInfo`, `PaidMedia`, `PaidMediaPreview`, `PaidMediaPhoto` and `PaidMediaVideo` structs
+  - Add `InputPaidMedia`, `InputPaidMediaPhoto` and `InputPaidMediaVideo` structs
+  - Add `sendPaidMedia` TBA method
+  - Add `can_send_paid_media` field to `ChatFullInfoPublicChannel` struct
+  - Add `PaidMedia` variant to `MediaKind` and `ExternalReplyInfoKind` enums
+  - Add `TelegramAds` variant to `TransactionPartner` enum
+  - Add `invoice_payload` field to `TransactionPartnerUser` struct
 
 - Support for TBA 7.7 ([#1357](https://github.com/teloxide/teloxide/pull/1357))
-    - Add `TelegramTransactionId` struct
-    - Add `RefundedPayment` struct and relevant `Message` variant
+  - Add `TelegramTransactionId` struct
+  - Add `RefundedPayment` struct and relevant `Message` variant
 
 - Support for TBA 7.8 ([#1360](https://github.com/teloxide/teloxide/pull/1360))
-    - Add `has_main_web_app` field to `Me` struct
-    - Add `business_connection_id` to `pin_chat_message` and `unpin_chat_message` methods
+  - Add `has_main_web_app` field to `Me` struct
+  - Add `business_connection_id` to `pin_chat_message` and `unpin_chat_message` methods
 
 - Support for TBA 7.9 ([#1361](https://github.com/teloxide/teloxide/pull/1361))
-    - Add `business_connection_id` field to `send_paid_media` method
-    - Add `paid_media` field to `TransactionPartnerUser` class
-    - Add `subscription_period` and `subscription_price` fields to `ChatInviteLink` class
-    - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
-    - Add `until_date` field to `ChatMemberKind::Member`
+  - Add `business_connection_id` field to `send_paid_media` method
+  - Add `paid_media` field to `TransactionPartnerUser` class
+  - Add `subscription_period` and `subscription_price` fields to `ChatInviteLink` class
+  - Add `create_chat_subscription_invite_link` and `edit_chat_subscription_invite_link` methods
+  - Add `until_date` field to `ChatMemberKind::Member`
 
 - Support for TBA 7.10 ([#1366](https://github.com/teloxide/teloxide/pull/1366))
-    - Add `purchased_paid_media` field to `Update` struct
-    - Add `PurchasedPaidMedia` variant to `AllowedUpdate` enum
-    - Add `PaidMediaPurchased` struct for `purchased_paid_media` field
-    - Add `prize_star_count` field to `GiveawayCreated`, `Giveaway`, `GiveawayWinners` and `ChatBoostSourceGiveaway` structs
-    - Add `is_star_giveaway` field to `GiveawayCompleted` struct
-    - Add `payload` field to `send_paid_media` method
-    - Add `paid_media_payload` field to `TransactionPartnerUser` struct
+  - Add `purchased_paid_media` field to `Update` struct
+  - Add `PurchasedPaidMedia` variant to `AllowedUpdate` enum
+  - Add `PaidMediaPurchased` struct for `purchased_paid_media` field
+  - Add `prize_star_count` field to `GiveawayCreated`, `Giveaway`, `GiveawayWinners` and `ChatBoostSourceGiveaway` structs
+  - Add `is_star_giveaway` field to `GiveawayCompleted` struct
+  - Add `payload` field to `send_paid_media` method
+  - Add `paid_media_payload` field to `TransactionPartnerUser` struct
 
 - Support for TBA 7.11 ([#1367](https://github.com/teloxide/teloxide/pull/1367))
-    - Add `CopyTextButton` struct and `CopyText` variant to `InlineKeyboardButtonKind`
-    - Add `copy_text_button` method impl to `InlineKeyboardButton`
-    - Add `allow_paid_broadcast` field to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_poll`, `send_dice`, `send_invoice`, `send_game`, `send_media_group` and `copy_message` methods
-    - Add `TransactionPartnerTelegramApi` struct and `TelegramApi` variant to `TransactionPartner` enum
+  - Add `CopyTextButton` struct and `CopyText` variant to `InlineKeyboardButtonKind`
+  - Add `copy_text_button` method impl to `InlineKeyboardButton`
+  - Add `allow_paid_broadcast` field to `send_message`, `send_photo`, `send_video`, `send_animation`, `send_audio`, `send_document`, `send_paid_media`, `send_sticker`, `send_video_note`, `send_voice`, `send_location`, `send_venue`, `send_contact`, `send_poll`, `send_dice`, `send_invoice`, `send_game`, `send_media_group` and `copy_message` methods
+  - Add `TransactionPartnerTelegramApi` struct and `TelegramApi` variant to `TransactionPartner` enum
 
 - Support for TBA 8.0 ([#1369](pr1369))
-    - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
-    - Add `subscription_expiration_date`, `is_recurring` and `is_first_recurring` fields to the `SuccessfulPayment` struct
-    - Add `editUserStarSubscription` TBA method
-    - Add `subscription_period` field to the `TransactionPartnerUser` struct
-    - Add `setUserEmojiStatus` TBA method
-    - Add `PreparedInlineMessage` struct
-    - Add `savePreparedInlineMessage` TBA method
-    - Add `GiftId`, `Gift` and `Gifts` structs
-    - Add `getAvailableGifts` and `sendGift` TBA methods
-    - Add `gift` field to `TransactionPartnerUser` struct
+  - Add `business_connection_id` and `subscription_period` parameters to the `createInvoiceLink` method
+  - Add `subscription_expiration_date`, `is_recurring` and `is_first_recurring` fields to the `SuccessfulPayment` struct
+  - Add `editUserStarSubscription` TBA method
+  - Add `subscription_period` field to the `TransactionPartnerUser` struct
+  - Add `setUserEmojiStatus` TBA method
+  - Add `PreparedInlineMessage` struct
+  - Add `savePreparedInlineMessage` TBA method
+  - Add `GiftId`, `Gift` and `Gifts` structs
+  - Add `getAvailableGifts` and `sendGift` TBA methods
+  - Add `gift` field to `TransactionPartnerUser` struct
 
 ### Changed
 
 - New id types ([#1153](https://github.com/teloxide/teloxide/pull/1153))
-    - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
-    - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
-    - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
-    - Changed `unique_id` field to `FileUniqueId` in `File`
-    - Changed `small_file_id` and `big_file_id` to `FileId` in `ChatPhoto`
-    - Changed `small_file_unique_id` and `big_file_unique_id` to `FileUniqueId` in `ChatPhoto`
-    - Changed `inline_query_result_cached_...` structs to use `FileId`
-    - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
-    - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
-    - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
-    - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
-    - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
-    - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
-    - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
-    - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
-    - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
-    - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
-    - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
-    - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
-    - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
-    - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
-    - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
+  - Changed `id` field to `PollId` in `PollAnswer` and in `Poll`
+  - Changed `id` field to `CallbackQueryId` in `CallbackQuery` and in `answer_callback_query` method
+  - Changed `id` field to `FileId` in `File`, `InputFile::file_id` method and in `get_file` method
+  - Changed `unique_id` field to `FileUniqueId` in `File`
+  - Changed `small_file_id` and `big_file_id` to `FileId` in `ChatPhoto`
+  - Changed `small_file_unique_id` and `big_file_unique_id` to `FileUniqueId` in `ChatPhoto`
+  - Changed `inline_query_result_cached_...` structs to use `FileId`
+  - Changed `id` field to `PreCheckoutQueryId` in `PreCheckoutQuery` and in `answer_pre_checkout_query` method
+  - Changed `id` field to `ShippingQueryId` in `ShippingQuery` and in `answer_shipping_query` method
+  - Changed `id` field to `InlineQueryId` in `InlineQuery` and in `answer_inline_query` method
+  - Changed `boost_id` field to `BoostId` in `ChatBoost` and in `ChatBoostRemoved`
+  - Changed `background_custom_emoji_id`, `profile_background_custom_emoji_id`, `emoji_status_custom_emoji_id` fields to `Option<CustomEmojiId>` in `ChatFullInfo`
+  - Changed `icon_custom_emoji_id` field to `Option<CustomEmojiId>` in `ForumTopic`, `ForumTopicEdited` and in `ForumTopicCreated`
+  - Changed `icon_custom_emoji_id` field to `CustomEmojiId` in `create_forum_topic` and `edit_forum_topic` methods
+  - Changed `custom_emoji_ids` field to `Vec<CustomEmojiId>` in `get_custom_emoji_stickers` method
+  - Changed `custom_emoji_id` field to `CustomEmojiId` in `set_custom_emoji_sticker_set_thumbnail` method
+  - Changed `custom_emoji_id` field and/or return type to `CustomEmojiId` in `MessageEntityKind::CustomEmoji` and `MessageEntity::custom_emoji` method, `ReactionType::CustomEmoji` and `ReactionType::custom_emoji_id` method, `StickerKind::CustomEmojiId` and `StickerKind::custom_emoji_id` method
+  - Changed `media_group_id` field to `MediaGroupId` in `MediaAudio`, `MediaVideo`, `MediaPhoto` and `MediaDocument`
+  - Changed return type of `Message::media_group_id` to `Option<&MediaGroupId>`
+  - Changed `message_effect_id` field to `EffectId` in `send_animation`, `send_audio`, `send_contact`, `send_dice`, `send_document`, `send_game`, `send_invoice`, `send_location`, `send_media_group`, `send_message`, `send_photo`, `send_sticker`, `send_venue`, `send_video`, `send_video_note` and `send_voice` methods
+  - Changed `message_effect_id` field to `EffectId` in `MessageCommon`
+  - Changed return type of `MessageCommon::effect_id` method to `Option<&EffectId>`
 
 - Support for TBA 7.6 ([#1356](pr1356))
-    - Update documentation of the `copyMessage` and `copyMessages` methods
-    - Update documentation of the `MenuButton::WebApp` enum variant
+  - Update documentation of the `copyMessage` and `copyMessages` methods
+  - Update documentation of the `MenuButton::WebApp` enum variant
 
 - MSRV (Minimal Supported Rust Version) was bumped from `1.80` to `1.82` ([#1358](https://github.com/teloxide/teloxide/pull/1358))
 
@@ -188,8 +188,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Fixed return type of `revoke_chat_invite_link` and `editChatInviteLink` from `String` to `ChatInviteLink`
 
 - Support for TBA 8.0 ([#1369](pr1369))
-    - `StickerKind`, `Sticker`, `MaskPoint` and `MaskPosition` now implement `Eq` and `Hash` traits
-    - Put `TransactionPartnerUser` in `TransactionPartner` behind the `Box`
+  - `StickerKind`, `Sticker`, `MaskPoint` and `MaskPosition` now implement `Eq` and `Hash` traits
+  - Put `TransactionPartnerUser` in `TransactionPartner` behind the `Box`
 
 [pr1356]: https://github.com/teloxide/teloxide/pull/1356
 [pr1369]: https://github.com/teloxide/teloxide/pull/1369
@@ -211,37 +211,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support for TBA 7.1 ([#1131](pr1131))
-    - Updated docs for `can_post_stories`, `can_edit_stories` and `can_delete_stories` admin privileges
-    - Add `ChatBoostAdded` and `StoryId` structs
-    - Add `ChatBoostAdded` variant to `MessageKind` enum
-    - Add `sender_boost_count` and `reply_to_story` fields to `MessageCommon` struct
-    - Add `chat` and `id` fields to `Story` struct
-    - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` fields to `PublicChatSupergroup` struct
-    - Add `boost_added` and `reply_to_story` getters to `Message` struct
-    - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` getters to `Chat` struct
+  - Updated docs for `can_post_stories`, `can_edit_stories` and `can_delete_stories` admin privileges
+  - Add `ChatBoostAdded` and `StoryId` structs
+  - Add `ChatBoostAdded` variant to `MessageKind` enum
+  - Add `sender_boost_count` and `reply_to_story` fields to `MessageCommon` struct
+  - Add `chat` and `id` fields to `Story` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` fields to `PublicChatSupergroup` struct
+  - Add `boost_added` and `reply_to_story` getters to `Message` struct
+  - Add `unrestrict_boost_count` and `custom_emoji_sticker_set_name` getters to `Chat` struct
 
 - Support for TBA 7.2 ([#1146](pr1146))
-    - Update documentation of `SendSticker` method
-    - Add `is_from_offline` field to `MessageCommon` struct
-    - Add `can_connect_to_business` field to `Me` struct
-    - Add `personal_chat` field to `ChatPrivate` struct
-    - Add `ReplaceStickerInSet` and `GetBusinessConnection` methods
-    - Add `Birthdate` struct and corresponding field `birthdate` in `ChatPrivate`
-    - Add `request_name`, `request_username` and `request_photo` fields to `KeyboardButtonRequestUsers` struct
-    - Add `request_title`, `request_username` and `request_photo` fields to `KeyboardButtonRequestChat` struct
-    - Add `SharedUser` struct
-    - Add `title`, `username` and `photo` fields to `ChatShared` struct
-    - Add `format` field to `InputSticker` struct
-    - Add `format` parameter to `SetStickerSetThumbnail` method
-    - Add `BusinessConnectionId` struct
-    - Add `business_connection_id` parameter to `SendMessage`, `SendPhoto`, `SendVideo`, `SendAnimation`, `SendAudio`, `SendDocument`, `SendSticker`, `SendVideoNote`, `SendVoice`, `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`, `SendGame`, and `SendMediaGroup` methods
-    - Add `sender_business_bot` and `business_connection_id` fields to `Message` struct
-    - Add `BusinessIntro` struct and corresponding field `business_intro` to `ChatPrivate` struct
-    - Add `BusinessLocation` struct and corresponding field `business_location` to `ChatPrivate` struct
-    - Add `BusinessOpeningHoursInterval` and `BusinessOpeningHours` structs and corresponding field `business_opening_hours` to `ChatPrivate` struct
-    - Add `BusinessConnection` struct
-    - Add `BusinessMessagesDeleted` struct
-    - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
+  - Update documentation of `SendSticker` method
+  - Add `is_from_offline` field to `MessageCommon` struct
+  - Add `can_connect_to_business` field to `Me` struct
+  - Add `personal_chat` field to `ChatPrivate` struct
+  - Add `ReplaceStickerInSet` and `GetBusinessConnection` methods
+  - Add `Birthdate` struct and corresponding field `birthdate` in `ChatPrivate`
+  - Add `request_name`, `request_username` and `request_photo` fields to `KeyboardButtonRequestUsers` struct
+  - Add `request_title`, `request_username` and `request_photo` fields to `KeyboardButtonRequestChat` struct
+  - Add `SharedUser` struct
+  - Add `title`, `username` and `photo` fields to `ChatShared` struct
+  - Add `format` field to `InputSticker` struct
+  - Add `format` parameter to `SetStickerSetThumbnail` method
+  - Add `BusinessConnectionId` struct
+  - Add `business_connection_id` parameter to `SendMessage`, `SendPhoto`, `SendVideo`, `SendAnimation`, `SendAudio`, `SendDocument`, `SendSticker`, `SendVideoNote`, `SendVoice`, `SendLocation`, `SendVenue`, `SendContact`, `SendPoll`, `SendDice`, `SendGame`, and `SendMediaGroup` methods
+  - Add `sender_business_bot` and `business_connection_id` fields to `Message` struct
+  - Add `BusinessIntro` struct and corresponding field `business_intro` to `ChatPrivate` struct
+  - Add `BusinessLocation` struct and corresponding field `business_location` to `ChatPrivate` struct
+  - Add `BusinessOpeningHoursInterval` and `BusinessOpeningHours` structs and corresponding field `business_opening_hours` to `ChatPrivate` struct
+  - Add `BusinessConnection` struct
+  - Add `BusinessMessagesDeleted` struct
+  - Add `BusinessConnection`, `BusinessMessage`, `EditedBusinessMessage` and `DeletedBusinessMessages` variants to `UpdateKind` enum
 
 - `ApiError::BotKickedFromChannel` ([#1157][pr1157])
 - `sender_boost_count` method to the `Message` struct ([#1264][pr1264])
@@ -249,33 +249,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `protect_content` parameter to the `sendVoice` method ([#1265][pr1265])
 
 - Support for TBA 7.3 ([#1159](pr1159))
-    - Add `via_join_request` field to `ChatMemberUpdated` struct
-    - Add `LivePeriod` enum and replace `u32` with it in all `live_period` fields
-    - Add `live_period` parameter to `editMessageLiveLocation` method
-    - Add `question_entities` field to `Poll` struct
-    - Add `text_entities` filed to `PollOption` struct
-    - Add `question_parse_mode` and `question_entities` parameters to `sendPoll` method
-    - Add `InputPollOption` struct
-    - Add `Percentage` struct
-    - Add `BackgroundFill` and `BackgroundType` enum
-    - Add `ChatBackground` variant to `MessageKind` enum
-    - Add `max_reaction_count` field to `ChatFullInfo` struct
-    - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
-    - Document that .MP3 and .M4A files can be used as voice messages
+  - Add `via_join_request` field to `ChatMemberUpdated` struct
+  - Add `LivePeriod` enum and replace `u32` with it in all `live_period` fields
+  - Add `live_period` parameter to `editMessageLiveLocation` method
+  - Add `question_entities` field to `Poll` struct
+  - Add `text_entities` filed to `PollOption` struct
+  - Add `question_parse_mode` and `question_entities` parameters to `sendPoll` method
+  - Add `InputPollOption` struct
+  - Add `Percentage` struct
+  - Add `BackgroundFill` and `BackgroundType` enum
+  - Add `ChatBackground` variant to `MessageKind` enum
+  - Add `max_reaction_count` field to `ChatFullInfo` struct
+  - Add `is_group_chat` syntax sugar for `ChatFullInfo` struct
+  - Document that .MP3 and .M4A files can be used as voice messages
 
 - Support for TBA 7.4 ([#1280](pr1280))
-    - Add `refundStarPayment` TBA method
-    - Add `effect_id` field to the `MessageCommon` struct
-    - Add `message_effect_id` parameter to `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, and `sendMediaGroup` methods
-    - Add `show_caption_above_media` field to `MediaAnimation`, `MediaPhoto`, `MediaVideo`, `InputMediaPhoto`, `InputMediaVideo`, `InputMediaAnimation`, `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif`, `InlineQueryResultPhoto`, `InlineQueryResultVideo`, `InlineQueryResultCachedGif`, `InlineQueryResultCachedMpeg4Gif`, `InlineQueryResultCachedPhoto` and `InlineQueryResultCachedVideo` structs
-    - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
-    - Add `ExpandableBlockquote` message entity
+  - Add `refundStarPayment` TBA method
+  - Add `effect_id` field to the `MessageCommon` struct
+  - Add `message_effect_id` parameter to `sendMessage`, `sendPhoto`, `sendVideo`, `sendAnimation`, `sendAudio`, `sendDocument`, `sendSticker`, `sendVideoNote`, `sendVoice`, `sendLocation`, `sendVenue`, `sendContact`, `sendPoll`, `sendDice`, `sendInvoice`, `sendGame`, and `sendMediaGroup` methods
+  - Add `show_caption_above_media` field to `MediaAnimation`, `MediaPhoto`, `MediaVideo`, `InputMediaPhoto`, `InputMediaVideo`, `InputMediaAnimation`, `InlineQueryResultGif`, `InlineQueryResultMpeg4Gif`, `InlineQueryResultPhoto`, `InlineQueryResultVideo`, `InlineQueryResultCachedGif`, `InlineQueryResultCachedMpeg4Gif`, `InlineQueryResultCachedPhoto` and `InlineQueryResultCachedVideo` structs
+  - Add `show_caption_above_media` parameter to `sendPhoto`, `sendVideo`, `sendAnimation`, `copyMessage` and `editMessageCaption` methods
+  - Add `ExpandableBlockquote` message entity
 
 - Support for TBA 7.5 ([#1281](pr1281))
-    - Add `StarTransactions`, `StarTransaction`, `TransactionPartner` and `RevenueWithdrawalState` structs
-    - Add `getStarTransactions` TBA method
-    - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
-    - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
+  - Add `StarTransactions`, `StarTransaction`, `TransactionPartner` and `RevenueWithdrawalState` structs
+  - Add `getStarTransactions` TBA method
+  - Add `iter_star_transactions` method to the `BotMessagesExt` trait. It allows to iterate over all StarTransactions automatically
+  - Add `business_connection_id` parameter to `editMessageText`, `editMessageMedia`, `editMessageCaption`, `editMessageLiveLocation`, `stopMessageLiveLocation`, `editMessageReplyMarkup` and `stopPoll` methods
 
 [pr1157]: https://github.com/teloxide/teloxide/pull/1157
 [pr1264]: https://github.com/teloxide/teloxide/pull/1264
@@ -286,34 +286,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `MaybeAnonymousUser` type introduced, which replaced `PollAnswer::voter: Voter` and `MessageReactionUpdated::{user, actor_chat}` in `MessageReactionUpdated`([#1134][pr1134])
 - Environment bumps: ([#1147][pr1147])
-    - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
-    - Some dependencies was bumped: `reqwest` to `0.12.7` and `ron` to `0.8.1`
-    - `tokio` version was explicitly specified as `1.39` and feature `io-util` was enabled for it
+  - MSRV (Minimal Supported Rust Version) was bumped from `1.70.0` to `1.80.0`
+  - Some dependencies was bumped: `reqwest` to `0.12.7` and `ron` to `0.8.1`
+  - `tokio` version was explicitly specified as `1.39` and feature `io-util` was enabled for it
 - `[u8; 3]` sometimes used for RGB values was replaced with dedicated `Rgb` struct: ([#1151][pr1151])
-    - `serde_rgb` module from `types.rs` file was removed
-    - `CreateForumTopic`, `ForumTopicCreated` and `ForumTopic` structs now use `Rgb` instead of `[u8; 3]` for `icon_color` field
-    - Added `rgb` crate dependency to Cargo.toml
-    - Added `Rgb` struct with `From` implementation for `RGB8` type from popular `rgb` crate
+  - `serde_rgb` module from `types.rs` file was removed
+  - `CreateForumTopic`, `ForumTopicCreated` and `ForumTopic` structs now use `Rgb` instead of `[u8; 3]` for `icon_color` field
+  - Added `rgb` crate dependency to Cargo.toml
+  - Added `Rgb` struct with `From` implementation for `RGB8` type from popular `rgb` crate
 
 - Support for TBA 7.2 ([#1146](pr1146))
-    - Remove `flags` field from `StickerSet` struct
-    - Remove `sticker_format` parameter from `CreateNewStickerSet` method
-    - Wrap `Public` variant of `ChatKind` in `Box`
-    - Replaced `user_ids` with `users` in `UsersShared` struct
+  - Remove `flags` field from `StickerSet` struct
+  - Remove `sticker_format` parameter from `CreateNewStickerSet` method
+  - Wrap `Public` variant of `ChatKind` in `Box`
+  - Replaced `user_ids` with `users` in `UsersShared` struct
 
 - Remove a useless generic type in the `KeyboardMarkup::selective` function ([#1176][pr1176])
 
 - Support for TBA 7.3 ([#1159](pr1159))
-    - Change `options` parameter type in method `sendPoll` to `InputPollOption`
-    - Move most of the fields and methods from `Chat` to `ChatFullInfo` struct
-    - Return `ChatFullInfo` struct from `getChat` method instead of `Chat`
+  - Change `options` parameter type in method `sendPoll` to `InputPollOption`
+  - Move most of the fields and methods from `Chat` to `ChatFullInfo` struct
+  - Return `ChatFullInfo` struct from `getChat` method instead of `Chat`
 
 - Support for TBA 7.4 ([#1280](pr1280))
-    - Update documentation on `provider_token` fields
-    - `provider_token` field in `InputMessageContentInvoice` struct and `sendInvoice` and `createInvoiceLink` methods is now optional ([#1306](pr1306))
+  - Update documentation on `provider_token` fields
+  - `provider_token` field in `InputMessageContentInvoice` struct and `sendInvoice` and `createInvoiceLink` methods is now optional ([#1306](pr1306))
 
 - Support for TBA 7.5 ([#1281](pr1281))
-    - Update documentation on `InlineKeyboardButton` struct
+  - Update documentation on `InlineKeyboardButton` struct
 
 [pr1131]: https://github.com/teloxide/teloxide/pull/1131
 [pr1134]: https://github.com/teloxide/teloxide/pull/1134
@@ -330,18 +330,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Currency` enum removed, its usages replaced with `String`.
 
 - Support for TBA 7.3 ([#1159](pr1159))
-    - Remove some degraded functionality (because of `Chat` to `ChatFullInfo` migration):
-        - `fn mentioned_users` from `chat_member_updated.rs` lost ability to track chat users
-        - `fn mentioned_users` from `chat_join_request.rs` was removed completely
-        - `fn mentioned_users` from `Message` lost ability to track chat users (e.g. from pins) and chat users from forward
-        - `fn mentioned_users_rec` was removed from `Chat` and not included in `ChatFullInfo` struct
+  - Remove some degraded functionality (because of `Chat` to `ChatFullInfo` migration):
+    - `fn mentioned_users` from `chat_member_updated.rs` lost ability to track chat users
+    - `fn mentioned_users` from `chat_join_request.rs` was removed completely
+    - `fn mentioned_users` from `Message` lost ability to track chat users (e.g. from pins) and chat users from forward
+    - `fn mentioned_users_rec` was removed from `Chat` and not included in `ChatFullInfo` struct
 
 [pr1159]: https://github.com/teloxide/teloxide/pull/1159
 
 ## 0.10.1 - 2024-08-17
 
 ### Fixed
-
 - Issue, when using `ReplyParameters` and multipart-requests involving file-sending it failed with `unimplemented error` ([#1136][pr1136], issue [#1135][issue1135])
 
 [pr1136]: https://github.com/teloxide/teloxide/pull/1136
@@ -362,106 +361,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement `PartialEq<ChatId> for UserId` and `PartialEq<UserId> for ChatId` ([#905][pr905])
 - `ChatId::{MIN, MAX}` ([#905][pr905])
 - Missing `Message` getters ([#982][pr982]):
-    - `message_auto_delete_timer_changed`
-    - `write_access_allowed`
-    - `forum_topic_created`
-    - `forum_topic_edited`
-    - `forum_topic_closed`
-    - `forum_topic_reopened`
-    - `general_forum_topic_hidden`
-    - `general_forum_topic_unhidden`
-    - `video_chat_scheduled`
-    - `video_chat_started`
-    - `video_chat_ended`
-    - `web_app_data`
+  - `message_auto_delete_timer_changed`
+  - `write_access_allowed`
+  - `forum_topic_created`
+  - `forum_topic_edited`
+  - `forum_topic_closed`
+  - `forum_topic_reopened`
+  - `general_forum_topic_hidden`
+  - `general_forum_topic_unhidden`
+  - `video_chat_scheduled`
+  - `video_chat_started`
+  - `video_chat_ended`
+  - `web_app_data`
 - `is_delete_chat_photo`, `is_group_chat_created`, `is_super_group_chat_created`, `is_channel_chat_created` functions to `Message` ([#982][pr982])
-- Support for TBA 6.5 ([#954][pr954])
-    - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
-    - Add `use_independent_chat_permissions` optional parameter to `restrict_chat_member` and `set_chat_permissions`
-    - Add `user_chat_id` field to `ChatJoinRequest`
-    - Add `KeyboardButtonRequestChat` and `ChatShared` types
-    - Add `RequestChat` variant to `ButtonRequest`
-    - Add `ChatShared` variant to `MessageKind`
-    - Add `shared_chat` method to `Message`
-    - Add `KeyboardButtonRequestUser` and `UserShared` types
-    - Add `RequestUser` variant to `ButtonRequest`
-    - Add `UserShared` variant to `MessageKind`
-    - Add `shared_user` method to `Message`
+- Support for TBA 6.5  ([#954][pr954])
+  - Add `can_send_audios`, `can_send_documents`, `can_send_photos`, `can_send_videos`, `can_send_video_notes`, and `can_send_voice_notes` to `ChatPermissions` and `Restricted`
+  - Add `use_independent_chat_permissions` optional parameter to `restrict_chat_member` and `set_chat_permissions`
+  - Add `user_chat_id` field to `ChatJoinRequest`
+  - Add `KeyboardButtonRequestChat` and `ChatShared` types
+  - Add `RequestChat` variant to `ButtonRequest`
+  - Add `ChatShared` variant to `MessageKind`
+  - Add `shared_chat` method to `Message`
+  - Add `KeyboardButtonRequestUser` and `UserShared` types
+  - Add `RequestUser` variant to `ButtonRequest`
+  - Add `UserShared` variant to `MessageKind`
+  - Add `shared_user` method to `Message`
 - Support for TBA 6.6 ([#1040](pr1040))
-    - Add methods for working with bot's description:
-        - `set_my_description`
-        - `get_my_description`
-        - `set_my_short_description`
-        - `get_my_short_description`
-    - Add methods for working with sticker sets:
-        - `set_custom_emoji_sticker_set_thumbnail`
-        - `set_sticker_set_title`
-        - `delete_sticker_set`
-        - `set_sticker_emoji_list`
-        - `set_sticker_keywords`
-        - `set_sticker_mask_position`
-    - Add parameter `emoji` to the `send_sticker` method to specify an emoji for just uploaded stickers
-    - Add support for the creation of custom emoji sticker sets in `create_new_sticker_set`
-    - Add parameter `needs_repainting` to the `create_new_sticker_set` methodto automatically change the color of emoji based on context (e.g., use text color in messages, accent color in statuses, etc.)
-    - Add field `needs_repainting` to the `Sticker` struct
-    - Add support for the creation of sticker sets with multiple initial stickers in `create_new_sticker_set` by replacing the parameters `sticker`, `emojis` and `mask_position` with the parameters `stickers` and `sticker_format`.
-    - Add support for .WEBP files in `create_new_sticker_set` and `add_sticker_to_set`
-    - Add support for .WEBP, .TGS, and .WEBM files in `upload_sticker_file` by replacing the parameter `png_sticker` with the parameters `sticker` and `sticker_format`
-    - Add the ability to specify search keywords for stickers added to sticker sets
-    - Add new type `StickerFormatFlags` with fields `is_animated` and `is_video`
-    - Add new method `Sticker::format` which returns the format of the sticker, the format is determined by the `StickerFormatFlags` of the `Sticker`
-    - Add missing fields `{InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumbnail_mime_type`
+  - Add methods for working with bot's description:
+    - `set_my_description`
+    - `get_my_description`
+    - `set_my_short_description`
+    - `get_my_short_description`
+  - Add methods for working with sticker sets:
+    - `set_custom_emoji_sticker_set_thumbnail`
+    - `set_sticker_set_title`
+    - `delete_sticker_set`
+    - `set_sticker_emoji_list`
+    - `set_sticker_keywords`
+    - `set_sticker_mask_position`
+  - Add parameter `emoji` to the `send_sticker` method to specify an emoji for just uploaded stickers
+  - Add support for the creation of custom emoji sticker sets in `create_new_sticker_set`
+  - Add parameter `needs_repainting` to the `create_new_sticker_set` methodto automatically change the color of emoji based on context (e.g., use text color in messages, accent color in statuses, etc.)
+  - Add field `needs_repainting` to the `Sticker` struct
+  - Add support for the creation of sticker sets with multiple initial stickers in `create_new_sticker_set` by replacing the parameters `sticker`, `emojis` and `mask_position` with the parameters `stickers` and `sticker_format`.
+  - Add support for .WEBP files in `create_new_sticker_set` and `add_sticker_to_set`
+  - Add support for .WEBP, .TGS, and .WEBM files in `upload_sticker_file` by replacing the parameter `png_sticker` with the parameters `sticker` and `sticker_format`
+  - Add the ability to specify search keywords for stickers added to sticker sets
+  - Add new type `StickerFormatFlags` with fields `is_animated` and `is_video`
+  - Add new method `Sticker::format` which returns the format of the sticker, the format is determined by the `StickerFormatFlags` of the `Sticker`
+  - Add missing fields `{InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumbnail_mime_type`
 - Support for TBA 6.7 ([#1086](pr1086))
-    - Add support for launching [Web Apps](https://core.telegram.org/bots/webapps) from inline query results by replacing the parameters `switch_pm_text` and `switch_pm_parameter` of the method `answer_inline_query` with the parameter `button` of type `InlineQueryResultsButton`
-    - Add new fields:
-        - `web_app_name` to `WriteAccessAllowed`
-        - `switch_inline_query_chosen_chat` of the type `SwitchInlineQueryChosenChat` to `InlineKeyboardButton`
-        - `via_chat_folder_invite_link` to `ChatMemberUpdated`
-    - Add methods for working with bot's name:
-        - `set_my_name`
-        - `get_my_name`
-    - Add the ability to specify custom emoji entities using `HTML` and `MarkdownV2` formatting options for bots that purchased additional usernames on [Fragment](https://fragment.com/)
+  - Add support for launching [Web Apps](https://core.telegram.org/bots/webapps) from inline query results by replacing the parameters `switch_pm_text` and `switch_pm_parameter` of the method `answer_inline_query` with the parameter `button` of type `InlineQueryResultsButton`
+  - Add new fields:
+    - `web_app_name` to `WriteAccessAllowed`
+    - `switch_inline_query_chosen_chat` of the type `SwitchInlineQueryChosenChat` to `InlineKeyboardButton`
+    - `via_chat_folder_invite_link` to `ChatMemberUpdated`
+  - Add methods for working with bot's name:
+    - `set_my_name`
+    - `get_my_name`
+  - Add the ability to specify custom emoji entities using `HTML` and `MarkdownV2` formatting options for bots that purchased additional usernames on [Fragment](https://fragment.com/)
 - Support for TBA 6.8 ([#1087](pr1087))
-    - Add the `MediaKind::Story`
-    - Add new fields
-        - `PollAnswer::voter` to support anonymous poll answers in chats
-        - `emoji_status_expiration_date` to `Chat` as part of the future `ChatFullInfo` type TBA type
-    - Add the `unpin_all_general_forum_topic_messages` method
+  - Add the `MediaKind::Story`
+  - Add new fields
+    - `PollAnswer::voter` to support anonymous poll answers in chats
+    - `emoji_status_expiration_date` to `Chat` as part of the future `ChatFullInfo` type TBA type
+  - Add the `unpin_all_general_forum_topic_messages` method
 - Support for TBA 6.9 ([#1095](pr1095))
-    - Add `can_post_stories`, `can_edit_stories` and `can_delete_stories` fields to `ChatMemberKind::Administrator`, `ChatAdministratorRights` and `PromoteChatMember`
-    - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
+  - Add `can_post_stories`, `can_edit_stories` and `can_delete_stories` fields to `ChatMemberKind::Administrator`, `ChatAdministratorRights` and `PromoteChatMember`
+  - Add `from_request` and `from_attachment_menu` fields to `WriteAccessAllowed`
 - Support for TBA 7.0 ([#1101](pr1101))
-    - Reactions:
-        - Add `ReactionType` enum
-        - Add `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
-        - Add `MessageReaction` and `MessageReactionCount` variants to `UpdateKind` enum
-        - Add `filter_message_reaction_updated` and `filter_message_reaction_count_updated` filters to `UpdateFilterExt` trait
-        - Add `set_message_reaction` TBA method to `Requester` trait
-        - Add `available_reactions` field to `Chat` struct
-    - Replies 2.0
-        - Add the fields `MessageCommon::{external_reply, quote}` of types `ExternalReplyInfo` and `TextQuote` respectively
-    - Link Preview Customization
-        - `disable_web_page_preview` replaced with `link_preview_options`:
-            - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
-            - Add `LinkPreviewOptions` struct
-            - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
-            - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
-    - Multiple Message Actions
-        - Add TBA methods `delete_messages`, `forward_messages` and `copy_messages` to `Requester` trait
-    - Chat Boost
-        - Add `ChatBoostSource` enum
-        - Add `ChatBoost`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
-        - Add `ChatBoost` and `RemovedChatBoost` variants to `UpdateKind` enum
-        - Add `filter_chat_boost` and `filter_removed_chat_boost` filters to `UpdateFilterExt` trait
-        - Add `get_user_chat_boosts` TBA method to `Requester` trait
-    - Giveaway:
-        - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` structs
-        - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` variants to `MessageKind` enum
-        - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message`
-    - Other Changes
-        - Add fields `ChafFullInfo::{has_visible_history, accent_color_id, background_custom_emoji_id, profile_accent_color_id, profile_background_custom_emoji_id}`
-    - Add `RequestId` type
-    - Add `CallbackQuery::regular_message` getter
+  - Reactions:
+    - Add `ReactionType` enum
+    - Add `MessageReactionUpdated` and `MessageReactionCountUpdated` structs
+    - Add `MessageReaction` and `MessageReactionCount` variants to `UpdateKind` enum
+    - Add `filter_message_reaction_updated` and `filter_message_reaction_count_updated` filters to `UpdateFilterExt` trait
+    - Add `set_message_reaction` TBA method to `Requester` trait
+    - Add `available_reactions` field to `Chat` struct
+  - Replies 2.0
+    - Add the fields `MessageCommon::{external_reply, quote}` of types `ExternalReplyInfo` and `TextQuote` respectively
+  - Link Preview Customization
+    - `disable_web_page_preview` replaced with `link_preview_options`:
+      - Remove `disable_web_page_preview` field from `send_message` and `send_message` TBA methods and `InputMessageContentText` struct
+      - Add `LinkPreviewOptions` struct
+      - Add `link_preview_options` field to `InputMessageContentText` and `Message` structs
+      - Add `link_preview_options` field to `send_message` and `send_message` TBA methods
+  - Multiple Message Actions
+    - Add TBA methods `delete_messages`, `forward_messages` and `copy_messages` to `Requester` trait
+  - Chat Boost
+    - Add `ChatBoostSource` enum
+    - Add `ChatBoost`, `ChatBoostUpdated`, `ChatBoostRemoved` and `UserChatBoosts` structs
+    - Add `ChatBoost` and `RemovedChatBoost` variants to `UpdateKind` enum
+    - Add `filter_chat_boost` and `filter_removed_chat_boost` filters to `UpdateFilterExt` trait
+    - Add `get_user_chat_boosts` TBA method to `Requester` trait
+  - Giveaway:
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` structs
+    - Add `Giveaway`, `GiveawayCreated`, `GiveawayWinners` and `GiveawayCompleted` variants to `MessageKind` enum
+    - Add `giveaway`, `giveaway_created`, `giveaway_winners` and `giveaway_completed` getters to `Message`
+  - Other Changes
+    - Add fields `ChafFullInfo::{has_visible_history, accent_color_id, background_custom_emoji_id, profile_accent_color_id, profile_background_custom_emoji_id}`
+  - Add `RequestId` type
+  - Add `CallbackQuery::regular_message` getter
 
 [pr851]: https://github.com/teloxide/teloxide/pull/851
 [pr887]: https://github.com/teloxide/teloxide/pull/887
@@ -502,17 +501,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Types of `Option<bool>` fields of `KeyboardMarkup`, `KeyboardRemove` and `ForceReply` to `bool` ([#853][pr853])
 - Type of `KeyboardMarkup::input_field_placeholder`: `Option<String>` => `String` ([#853][pr853])
 - The following fields now use `Seconds` type instead of `u32`, `u16` or `Duration` ([#859][pr859])
-    - `Animation::duration`
-    - `Audio::duration`
-    - `Chat::message_auto_delete_time`
-    - `Chat::slow_mode_delay`
-    - `InlineQueryResultLocation::live_period`
-    - `Location::live_period`
-    - `MessageAutoDeleteTimerChanged::message_auto_delete_time`
-    - `Poll::open_period`
-    - `Video::duration`
-    - `VideoNote::duration`
-    - `Voice::duration`
+  - `Animation::duration`
+  - `Audio::duration`
+  - `Chat::message_auto_delete_time`
+  - `Chat::slow_mode_delay`
+  - `InlineQueryResultLocation::live_period`
+  - `Location::live_period`
+  - `MessageAutoDeleteTimerChanged::message_auto_delete_time`
+  - `Poll::open_period`
+  - `Video::duration`
+  - `VideoNote::duration`
+  - `Voice::duration`
 - `RequestError::MigrateToChatId` single fields type to `ChatId` ([#859][pr859])
 - `RequestError::RetryAfter` single fields type to `Seconds` ([#859][pr859])
 - `CallbackGame`, `ForumTopicClosed`, `ForumTopicReopened`, `GeneralForumTopicHidden`, `GeneralForumTopicUnhidden` and `WriteAccessAllowed` structures
@@ -532,51 +531,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use `UpdateId` for `Update::id` ([#892][pr892])
 - MSRV (Minimal Supported Rust Version) was bumped from `1.64.0` to `1.68.0` ([#950][pr950])
 - Add proper support for `edit_message_caption_inline`, `copy_message`, `answer_inline_query`, `answer_web_app_query`, `send_media_group`, `edit_message_media`, and `edit_message_media_inline` to `DefaultParseMode` adaptor ([#961][pr961])
-    - Note that now `DefaultParseMode` sets the default on `send`, instead of request creation
-    - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
+  - Note that now `DefaultParseMode` sets the default on `send`, instead of request creation
+  - `DefaultParseMode` now also requires that the supported requests implement `Clone` (as a user you should not notice anything changing)
 - Methods of the Message type: `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created`, `chat_migration`, `migrate_to_chat_id`, `migrate_from_chat_id` now return shared reference instead of owned value inside `Option` ([#982][pr982])
 - Methods `delete_chat_photo`, `group_chat_created`, `super_group_chat_created`, `channel_chat_created` now return appropriate structs not `Option<True>` ([#982][pr982])
 - MSRV (Minimal Supported Rust Version) was bumped from `1.68.0` to `1.70.0` ([#996][pr996])
 - Changes in the existing API to support TBA6.6 ([#1040](pr1040))
-    - `InputSticker` was changed from enum to the struct
-    - `{Animation, Audio, Document, Sticker, Video, VideoNote, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaVideo, StickerSet}::thumb` has been renamed to `thumbnail`
-    - `{SendAnimation, SendAudio, SendDocument, SendSticker,  SendVideo, SendVideoNote}::thumb` has been renamed to`thumbnail`
-    - Now `StickerFormat` is defined as the enum with the variants: `Static`, `Video`, `Animated`, so the previous variant `Raster` has been renamed to `Static`
-    - Method `StickerFormat::is_raster` has been renamed to `StickerFormat::is_static`
-    - Methods `StickerSet::{format, is_static, is_animated, is_video}` are deprecated now, due to the breaking change in TBA 7.2 API (which removes `StickerFormatFlags::{is_video, is_animated}` from the `StickerSet` class)
-    - Method `set_sticker_set_thumb` and it's parameter `thumb` have been renamed to `set_sticker_set_thumbnail` and `thumbnail` respectively
-    - Fields `{InlineQueryResultArticle, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultLocation, InlineQueryResultVenue}::{thumb_url, thumb_width, thumb_height}` have been renamed to `{thumbnail_url, thumbnail_width, thumbnail_height}` respectively
-    - Field `{InlineQueryResultPhoto, InlineQueryResultVideo, InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumb_url` has been renamed to `thumbnail_url`
+  - `InputSticker` was changed from enum to the struct
+  - `{Animation, Audio, Document, Sticker, Video, VideoNote, InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaVideo, StickerSet}::thumb` has been renamed to `thumbnail`
+  - `{SendAnimation, SendAudio, SendDocument, SendSticker,  SendVideo, SendVideoNote}::thumb` has been renamed to`thumbnail`
+  - Now `StickerFormat` is defined as the enum with the variants: `Static`, `Video`, `Animated`, so the previous variant `Raster` has been renamed to `Static`
+  - Method `StickerFormat::is_raster` has been renamed to `StickerFormat::is_static`
+  - Methods `StickerSet::{format, is_static, is_animated, is_video}` are deprecated now, due to the breaking change in TBA 7.2 API (which removes `StickerFormatFlags::{is_video, is_animated}` from the `StickerSet` class)
+  - Method `set_sticker_set_thumb` and it's parameter `thumb` have been renamed to `set_sticker_set_thumbnail` and `thumbnail` respectively
+  - Fields `{InlineQueryResultArticle, InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultLocation, InlineQueryResultVenue}::{thumb_url, thumb_width, thumb_height}` have been renamed to `{thumbnail_url, thumbnail_width, thumbnail_height}` respectively
+  - Field `{InlineQueryResultPhoto, InlineQueryResultVideo, InlineQueryResultGif, InlineQueryResultMpeg4Gif}::thumb_url` has been renamed to `thumbnail_url`
 - Support for TBA 7.0 ([#1101](pr1101))
-    - Replies 2.0
-        - Parameter `reply_parameters` of type `ReplyParameters` replaces parameters `reply_to_message_id` and `allow_sending_without_reply` in the methods:
-            - `copy_message`
-            - `send_message`
-            - `send_photo`
-            - `send_video`
-            - `send_animation`
-            - `send_audio`
-            - `send_document`
-            - `send_sticker`
-            - `send_video_note`
-            - `send_voice`
-            - `send_location`
-            - `send_venue`
-            - `send_contact`
-            - `send_poll`
-            - `send_dice`
-            - `send_invoice`
-            - `send_game`
-            - `send_media_group`
-    - Request for multiple users
-        - Struct `KeyboardButtonRequestUser` was renamed to `KeyboardButtonRequestUsers` + added field `max_quantity` to it
-        - Field `KeyboardButton::request_user` was renamed to `request_users`
-        - `MessageUserShared` was renamed to `MessageUsersShared`
-    - Other Changes
-        - `Message::pinned_message` and `CallbackQuery::message` now have `MaybeInaccessibleMessage` type
-        - Field `emoji_status_custom_emoji_id` is allowed in non-private chats (moved to the `ChatFullInfo`)
-        - Struct `Forward` was replaced by `MessageOrigin` in `MessageCommon`
-    - `RequestId` replaces `i32` in `ChatShared` and `KeyboardButtonRequestChat` structs
+  - Replies 2.0
+    - Parameter `reply_parameters` of type `ReplyParameters` replaces parameters `reply_to_message_id` and `allow_sending_without_reply` in the methods:
+      - `copy_message`
+      - `send_message`
+      - `send_photo`
+      - `send_video`
+      - `send_animation`
+      - `send_audio`
+      - `send_document`
+      - `send_sticker`
+      - `send_video_note`
+      - `send_voice`
+      - `send_location`
+      - `send_venue`
+      - `send_contact`
+      - `send_poll`
+      - `send_dice`
+      - `send_invoice`
+      - `send_game`
+      - `send_media_group`
+  - Request for multiple users
+    - Struct `KeyboardButtonRequestUser` was renamed to `KeyboardButtonRequestUsers` + added field `max_quantity` to it
+    - Field `KeyboardButton::request_user` was renamed to `request_users`
+    - `MessageUserShared` was renamed to `MessageUsersShared`
+  - Other Changes
+    - `Message::pinned_message` and `CallbackQuery::message` now have `MaybeInaccessibleMessage` type
+    - Field `emoji_status_custom_emoji_id` is allowed in non-private chats (moved to the `ChatFullInfo`)
+    - Struct `Forward` was replaced by `MessageOrigin` in `MessageCommon`
+  - `RequestId` replaces `i32` in `ChatShared` and `KeyboardButtonRequestChat` structs
+
 
 [pr852]: https://github.com/teloxide/teloxide/pull/853
 [pr859]: https://github.com/teloxide/teloxide/pull/859
@@ -600,21 +600,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `can_send_media_messages` from `ChatPermissions` ([#954][pr954])
 - Remove `can_send_media_messages` field from `Restricted` ([#954][pr954])
 - Previously deprecated items ([#1013][pr1013])
-    - `AutoSend` bot adaptor
-    - `ChatMemberKind::is_kicked` (use `is_banned` instead)
-    - `ChatMemberKind::is_creator` (use `is_owner` instead)
-    - `ChatMemberKind::{can_change_info, can_pin_messages, can_invite_users, can_manage_topics, can_send_polls, can_add_web_page_previews, can_send_other_messages, can_send_media_messages, can_send_messages}` (match on `ChatMemberKind` yourself)
-    - `ChatMemberStatus::is_present` (use `ChatMemberKind::is_present` instead)
-    - `InlineKeyboardButton::{text, kind}`
-      `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
-    - `Dispatcher::setup_ctrlc_handler` (use `enable_ctrlc_handler` on the builder instead)
-    - `BotCommands::ty` and `repls::{commands_repl, commands_repl_with_listener}` (use `CommandsRepl::{repl, repl_with_listener}` instead)
-    - `Message::chat_id` (use `.chat.id`)
-    - `Update::user` (use `Update::from`)
-    - `update_listeners::polling` (use `Polling::builder` instead)
+  - `AutoSend` bot adaptor
+  - `ChatMemberKind::is_kicked` (use `is_banned` instead)
+  - `ChatMemberKind::is_creator` (use `is_owner` instead)
+  - `ChatMemberKind::{can_change_info, can_pin_messages, can_invite_users, can_manage_topics, can_send_polls, can_add_web_page_previews, can_send_other_messages, can_send_media_messages, can_send_messages}` (match on `ChatMemberKind` yourself)
+  - `ChatMemberStatus::is_present` (use `ChatMemberKind::is_present` instead)
+  - `InlineKeyboardButton::{text, kind}`
+  `teloxide::dispatching::{update_listeners, repls}` (use `reloxide::{update_listeners, repls}` instead)
+  - `Dispatcher::setup_ctrlc_handler` (use `enable_ctrlc_handler` on the builder instead)
+  - `BotCommands::ty` and `repls::{commands_repl, commands_repl_with_listener}` (use `CommandsRepl::{repl, repl_with_listener}` instead)
+  - `Message::chat_id` (use `.chat.id`)
+  - `Update::user` (use `Update::from`)
+  - `update_listeners::polling` (use `Polling::builder` instead)
 
 [pr954]: https://github.com/teloxide/teloxide/pull/954
 [pr1013]: https://github.com/teloxide/teloxide/pull/1013
+
 
 ## 0.9.1 - 2023-02-15
 
@@ -641,13 +642,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The methods `ChatMember::{can_pin_messages, can_invite_users, can_change_info}` now take into account the permissions of `Restricted` chat member kind ([#764][pr764])
 - The method `ChatMemberKind::is_present` now takes into account the value of `Restricted::is_member` field ([#764][pr764])
 - The following functions were made `#[must_use]`:
-    - `MaskPoint::{new, point}`
-    - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
+  - `MaskPoint::{new, point}`
+  - `StickerKind::{premium_animation, mask_position, custom_emoji_id}`
 - `Option<bool>` fields of `Administrator` are now `bool` ([#800][pr800]):
-    - `can_post_messages`
-    - `can_edit_messages`
-    - `can_pin_messages`
-    - `can_manage_topics`
+  - `can_post_messages`
+  - `can_edit_messages`
+  - `can_pin_messages`
+  - `can_manage_topics`
 - `ApiError::NotFound` is replaced with `ApiError::InvalidToken` which correctly parses all currently known errors caused by invalid bot tokens ([#998][pr998])
 
 [pr998]: https://github.com/teloxide/teloxide/pull/998
@@ -667,14 +668,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 - `ChatMemberKind` methods ([#800][pr800]):
-    - `can_change_info`
-    - `can_invite_users`
-    - `can_pin_messages`
-    - `can_send_messages`
-    - `can_send_media_messages`
-    - `can_send_other_messages`
-    - `can_send_polls`
-    - `can_add_web_page_previews`
+  - `can_change_info`
+  - `can_invite_users`
+  - `can_pin_messages`
+  - `can_send_messages`
+  - `can_send_media_messages`
+  - `can_send_other_messages`
+  - `can_send_polls`
+  - `can_add_web_page_previews`
 - `ChatMemberStatus::is_present` method ([#800][pr800])
 
 ### Fixed
@@ -693,10 +694,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Removed `file_` prefix from `File` and `FileMeta` fields [#255][pr255]
 - `Animation`, `Audio`, `Document`, `PassportFile`, `PhotoSize`, `Video`, `VideoNote` and `Voice` now contain `FileMeta` instead of its fields ([#253][pr253])
-    - Combined with `File` fields renaming, instead of `.file_size` you can write `.file.size` and similarly with other fields
+  - Combined with `File` fields renaming, instead of `.file_size` you can write `.file.size` and similarly with other fields
 - **You can now `.await` any `Request`!** ([#249][pr249])
-    - `Request` now requires `Self: IntoFuture`
-    - There is no need for `AutoSend` anymore
+  - `Request` now requires `Self: IntoFuture`
+  - There is no need for `AutoSend` anymore
 - MSRV (Minimal Supported Rust Version) was bumped from `1.58.0` to `1.64.0`
 - Message id parameters and fields now use `MessageId` type instead of `i32` ([#254][pr254])
 - Refactored `Sticker` and related types ([#251][pr251])
@@ -828,7 +829,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Support for Telegram Bot API [version 6.0](https://core.telegram.org/bots/api#april-16-2022) ([#206][pr206], [#211][pr211])
-    - Note that some field were renamed
+  - Note that some field were renamed
 - Shortcut methods for `MessageEntity` ([#208][pr208], [#210][pr210])
 
 [pr208]: https://github.com/teloxide/teloxide-core/pull/208
@@ -839,8 +840,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Make `KeyboardMarkup` creation more convenient ([#207][pr207])
-    - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
-    - Accept `Into<String>` instead of `String` in `InlineKeyboardButton::{url, callback, switch_inline_query, switch_inline_query_current_chat}`.
+  - Accept `IntoIterator` in `KeyboardMarkup::append_row`.
+  - Accept `Into<String>` instead of `String` in `InlineKeyboardButton::{url, callback, switch_inline_query, switch_inline_query_current_chat}`.
 
 [pr207]: https://github.com/teloxide/teloxide-core/pull/207
 
@@ -870,8 +871,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `user.id` now uses `UserId` type, `ChatId` now represents only _chat id_, not channel username, all `chat_id` function parameters now accept `Recipient` [**BC**]
 - Improve `Throttling` adaptor ([#130][pr130])
-    - Freeze when getting `RetryAfter(_)` error
-    - Retry requests that previously returned `RetryAfter(_)` error
+  - Freeze when getting `RetryAfter(_)` error
+  - Retry requests that previously returned `RetryAfter(_)` error
 - `RequestError::RetryAfter` now has a `Duration` field instead of `i32`
 
 ### Fixed
@@ -982,15 +983,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Refactor `InputFile` ([#167][pr167])
-    - Make it an opaque structure, instead of enum
-    - Add `read` constructor, that allows creating `InputFile` from `impl AsyncRead`
-    - Internal changes
+  - Make it an opaque structure, instead of enum
+  - Add `read` constructor, that allows creating `InputFile` from `impl AsyncRead`
+  - Internal changes
 - Refactor errors ([#134][pr134])
-    - Rename `DownloadError::NetworkError` to `Network`
-    - Rename `RequestError::ApiError` to `Api`
-    - Remove `RequestError::Api::status_code` and rename `RequestError::Api::kind` to `0` (struct to tuple struct)
-    - Rename `RequestError::NetworkError` to `Network`
-    - Implement `Error` for `ApiError`
+  - Rename `DownloadError::NetworkError` to `Network`
+  - Rename `RequestError::ApiError` to `Api`
+  - Remove `RequestError::Api::status_code` and rename `RequestError::Api::kind` to `0` (struct to tuple struct)
+  - Rename `RequestError::NetworkError` to `Network`
+  - Implement `Error` for `ApiError`
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates in types ([#115][pr115])
 - Mark `ApiError` as `non_exhaustive` ([#125][pr125])
 - `InputFile` and related structures now do **not** implement `PartialEq`, `Eq` and `Hash` ([#133][pr133])
@@ -1095,9 +1096,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Message::url` now returns links to messages in private groups too ([#80][pr80])
 - Refactor `ChatMember` methods ([#74][pr74])
-    - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callable directly on `ChatMember`
-    - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
-    - Refactor privilege getters
+  - impl `Deref<Target = ChatMemberKind>` to make `ChatMemberKind`'s methods callable directly on `ChatMember`
+  - Add `ChatMemberKind::is_{creator,administrator,member,restricted,left,kicked}` which check `kind` along with `is_privileged` and `is_in_chat` which combine some of the above.
+  - Refactor privilege getters
 - Rename `ChatAction::{RecordAudio => RecordVoice, UploadAudio => UploadVoice}` ([#86][pr86])
 - Use `url::Url` for urls, use `chrono::DateTime<Utc>` for dates ([#97][pr97])
 
@@ -1128,7 +1129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Typo: `ReplyMarkup::{keyboad => keyboard}` ([#69][pr69])
-    - Note: method with the old name was deprecated and hidden from docs
+  - Note: method with the old name was deprecated and hidden from docs
 
 [pr69]: https://github.com/teloxide/teloxide-core/pull/69
 
@@ -1137,10 +1138,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Types fields privacy (make fields of some types public) ([#68][pr68])
-    - `Dice::{emoji, value}`
-    - `MessageMessageAutoDeleteTimerChanged::message_auto_delete_timer_changed`
-    - `PassportElementError::{message, kind}`
-    - `StickerSet::thumb`
+  - `Dice::{emoji, value}`
+  - `MessageMessageAutoDeleteTimerChanged::message_auto_delete_timer_changed`
+  - `PassportElementError::{message, kind}`
+  - `StickerSet::thumb`
 
 [pr68]: https://github.com/teloxide/teloxide-core/pull/68
 
@@ -1149,12 +1150,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Refactor `ReplyMarkup` ([#pr65][pr65]) (**BC**)
-    - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
-    - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` constructors
-    - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
-    - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
-    - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
-    - Change parameters order in `ReplyKeyboardMarkup::append_to_row` and `InlineKeyboardMarkup::append_to_row`
+  - Rename `ReplyMarkup::{InlineKeyboardMarkup => InlineKeyboard, ReplyKeyboardMarkup => Keyboard, ReplyKeyboardRemove => KeyboardRemove}`
+  - Add `inline_kb`, `keyboad`, `kb_remove` and `force_reply` `ReplyMarkup` constructors
+  - Rename `ReplyKeyboardMarkup` => `KeyboardMarkup`
+  - Rename `ReplyKeyboardRemove` => `KeyboardRemove`
+  - Remove useless generic param from `ReplyKeyboardMarkup::new` and `InlineKeyboardMarkup::new`
+  - Change parameters order in `ReplyKeyboardMarkup::append_to_row` and `InlineKeyboardMarkup::append_to_row`
 - Support telegram bot API version 5.1 (see it's [changelog](https://core.telegram.org/bots/api#march-9-2021)) ([#pr63][pr63]) (**BC**)
 - Support telegram bot API version 5.0 (see it's [changelog](https://core.telegram.org/bots/api#november-4-2020)) ([#pr62][pr62]) (**BC**)
 
@@ -1174,8 +1175,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Make `MediaContact::contact` public ([#pr64][pr64])
 - `set_webhook` signature (make `allowed_updates` optional) ([#59][pr59])
 - Fix typos in payloads ([#57][pr57]):
-    - `get_updates`: `offset` `i64` -> `i32`
-    - `send_location`: make `live_period` optional
+  - `get_updates`: `offset` `i64` -> `i32`
+  - `send_location`: make `live_period` optional
 - `send_contact` signature (`phone_number` and `first_name` `f64` => `String`) ([#56][pr56])
 
 [pr56]: https://github.com/teloxide/teloxide-core/pull/56
@@ -1212,10 +1213,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `payloads` module
 - `RequesterExt` trait which is implemented for all `Requester`s and allows easily wrapping them in adaptors
 - `adaptors` module ([#14][pr14])
-    - `throttle`, `cache_me`, `auto_send` and `full` crate features
-    - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10], [#46][pr46], [#50][pr50])
-    - Request auto sending - ability to `.await` requests without need to call `.send()` (opt-in feature represented by `AutoSend` bot adapter, [#8][pr8])
-    - `get_me` caching (opt-in feature represented by `CacheMe` bot adapter)
+  - `throttle`, `cache_me`, `auto_send` and `full` crate features
+  - Request throttling - opt-in feature represented by `Throttle` bot adapter which allows automatically checking telegram limits ([#10][pr10], [#46][pr46], [#50][pr50])
+  - Request auto sending - ability to `.await` requests without need to call `.send()` (opt-in feature represented by `AutoSend` bot adapter, [#8][pr8])
+  - `get_me` caching (opt-in feature represented by `CacheMe` bot adapter)
 - `Requester` trait which represents bot-clients ([#7][pr7], [#12][pr12], [#27][pr27])
 - `{Json,Multipart}Request` the `Bot` requests types ([#6][pr6])
 - `Output<T>` alias to `<<T as HasPayload>::Payload as Payload>::Output`
@@ -1223,15 +1224,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GetUpdatesNonStrict` 'telegram' method, that behaves just like `GetUpdates` but doesn't [#2][pr2]
   fail if one of updates fails to be deserialized
 - Move core code here from the [`teloxide`] main repo, for older changes see it's [`CHANGELOG.md`].
-    - Following modules were moved:
-        - `bot`
-        - `requests` [except `requests::respond` function]
-        - `types`
-        - `errors`
-        - `net` [private]
-    - `client_from_env` was moved from `teloxide::utils` to crate root of `teloxide-core`
-    - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>`
-      (instead of `Vec<Result<Update, (Value, serde_json::Error)>>`)
+  - Following modules were moved:
+    - `bot`
+    - `requests` [except `requests::respond` function]
+    - `types`
+    - `errors`
+    - `net` [private]
+  - `client_from_env` was moved from `teloxide::utils` to crate root of `teloxide-core`
+  - To simplify `GetUpdates` request it was changed to simply return `Vec<Update>`
+    (instead of `Vec<Result<Update, (Value, serde_json::Error)>>`)
 
 [pr2]: https://github.com/teloxide/teloxide-core/pull/2
 [pr5]: https://github.com/teloxide/teloxide-core/pull/5
@@ -1258,24 +1259,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace `Into<Vec<_>>` by `IntoIterator<Item = _>` in function arguments ([#44][pr44])
 - Update dependencies (including tokio 1.0) ([#37][pr37])
 - Refactor file downloading ([#30][pr30]):
-    - Make `net` module public
-    - Move `Bot::download_file{,_stream}` methods to a new `Download` trait
-        - Impl `Download` for all bot adaptors & the `Bot` itself
-    - Change return type of `download_file_stream` — return `Stream<Result<Bytes>>``, instead of `Future<Result<Stream<Result<Bytes>>>>``
-    - Add `api_url` param to standalone versions of `download_file{,_stream}`
-    - Make `net::{TELEGRAM_API_URL, download_file{,_stream}}` pub
+  - Make `net` module public
+  - Move `Bot::download_file{,_stream}` methods to a new `Download` trait
+    - Impl `Download` for all bot adaptors & the `Bot` itself
+  - Change return type of `download_file_stream` — return ` Stream<Result<Bytes>>``, instead of  `Future<Result<Stream<Result<Bytes>>>>``
+  - Add `api_url` param to standalone versions of `download_file{,_stream}`
+  - Make `net::{TELEGRAM_API_URL, download_file{,_stream}}` pub
 - Refactor `Bot` ([#29][pr29]):
-    - Move default parse mode to an adaptor (`DefaultParseMode`)
-    - Remove bot builder (it's not useful anymore, since parse_mode is moved away)
-    - Undeprecate bot constructors (`Bot::{new, with_client, from_env_with_client}`)
+  - Move default parse mode to an adaptor (`DefaultParseMode`)
+  - Remove bot builder (it's not useful anymore, since parse_mode is moved away)
+  - Undeprecate bot constructors (`Bot::{new, with_client, from_env_with_client}`)
 - Rename `StickerType` => `InputSticker`, `{CreateNewStickerSet,AddStickerToSet}::sticker_type}` => `sticker` ([#23][pr23], [#43][pr43])
 - Use `_: IntoIterator<Item = T>` bound instead of `_: Into<Vec<T>>` in telegram methods which accept collections ([#21][pr21])
 - Make `MessageDice::dice` pub ([#20][pr20])
 - Merge `ApiErrorKind` and `KnownApiErrorKind` into `ApiError` ([#13][pr13])
 - Refactor ChatMember ([#9][pr9])
-    - Replace a bunch of `Option<_>` fields with `ChatMemberKind`
-    - Remove setters (users are not expected to create this struct)
-    - Add getters
+  - Replace a bunch of `Option<_>` fields with `ChatMemberKind`
+  - Remove setters (users are not expected to create this struct)
+  - Add getters
 - Changed internal mechanism of sending multipart requests ([#1][pr1])
 - Added `RequestError::Io(io::Error)` to wrap I/O error those can happen while sending files to telegram
 - Make all fields of all methods `pub` ([#3][pr3])
