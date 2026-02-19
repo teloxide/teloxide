@@ -13,12 +13,23 @@ pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
 
+    /// Button style
+    pub style: Option<ButtonStyle>,
+
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case")]
+pub enum ButtonStyle {
+    Primary,
+    Success,
+    Danger,
+}
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
     /// HTTP or `tg://` url to be opened when button is pressed.
@@ -113,7 +124,14 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), kind, style: None }
+    }
+
+    /// Set button style
+    pub fn style(mut self, style: ButtonStyle) -> Self {
+        self.style = Some(style);
+
+        self
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
