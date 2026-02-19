@@ -48,7 +48,10 @@ impl KeyboardButton {
     }
 
     /// Set custom emoji
-    pub fn icon_custom_emoji_id(mut self, icon_custom_emoji_id: &str) -> Self {
+    pub fn icon_custom_emoji_id<T>(mut self, icon_custom_emoji_id: T) -> Self
+    where
+        T: ToString,
+    {
         self.icon_custom_emoji_id = Some(icon_custom_emoji_id.to_string());
 
         self
