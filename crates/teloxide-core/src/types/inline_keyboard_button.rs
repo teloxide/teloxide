@@ -1,5 +1,6 @@
 use crate::types::{
-    CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True, WebAppInfo,
+    ButtonStyle, CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True,
+    WebAppInfo,
 };
 use serde::{Deserialize, Serialize};
 
@@ -17,14 +18,6 @@ pub struct InlineKeyboardButton {
 
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
-}
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum ButtonStyle {
-    Primary,
-    Success,
-    Danger,
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
