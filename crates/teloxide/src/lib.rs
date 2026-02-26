@@ -91,7 +91,7 @@
 //!        - User is provided by the (1)
 //!        - String is provided by the (2)
 //!     */
-//!     bot.send_message(user.id, format!("Hi! You sent: {message_text}"));
+//!     let _ = bot.send_message(user.id, format!("Hi! You sent: {message_text}")).await?;
 //!     Ok(())
 //! }
 //! ```

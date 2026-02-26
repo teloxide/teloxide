@@ -86,7 +86,7 @@ full = [
 [dependencies]
 # replace me by the actual version when release, and return path when it's time to make 0-day fixes
 teloxide-core = { path = "../teloxide-core", default-features = false }
-teloxide-macros = { version = "0.10", optional = true }
+teloxide-macros = { path = "../teloxide-macros", optional = true }
 
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -102,7 +102,7 @@ log = "0.4"
 bytes = "1.0"
 mime = "0.3"
 
-derive_more = { version = "1.0.0", features = ["display", "from", "deref"] }
+derive_more = { version = "2.0.1", features = ["display", "from", "deref"] }
 thiserror = "2.0.11"
 futures = "0.3.15"
 pin-project = "1.0"
@@ -114,7 +114,7 @@ sqlx = { version = "0.8.1", optional = true, default-features = false, features 
     "sqlite",
     "postgres",
 ] }
-deadpool-redis = { version = "0.20", features = [
+deadpool-redis = { version = "0.22", features = [
     "rt_tokio_1",
 ], optional = true }
 serde_cbor = { version = "0.11", optional = true }
