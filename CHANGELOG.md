@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Some dependencies was bumped: `derive_more` to `2.0.1`, `deadpool-redis` to `0.22.0` ([#1408](https://github.com/teloxide/teloxide/pull/1408))
+- Some dependencies were bumped: `derive_more` to `2.0.1`, `deadpool-redis` to `0.22.0` ([#1408](https://github.com/teloxide/teloxide/pull/1408))
 
 ## 0.17.0 - 2025-07-11
 
