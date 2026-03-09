@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - make sure `postgres-storage-rustls` feature actually enables rustls-based postgres storage ([#1400](https://github.com/teloxide/teloxide/pull/1400))
+- Fixed `Message::kind` being `Empty` when replying to text-only messages from other channels via `external_reply`
 
 ### Changed
 
