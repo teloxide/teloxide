@@ -45,7 +45,7 @@ pub use crate::payloads::{
     SendChatActionSetters as _, SendChecklistSetters as _, SendContactSetters as _,
     SendDiceSetters as _, SendDocumentSetters as _, SendGameSetters as _, SendGiftChatSetters as _,
     SendGiftSetters as _, SendInvoiceSetters as _, SendLocationSetters as _,
-    SendMediaGroupSetters as _, SendMessageSetters as _, SendPaidMediaSetters as _,
+    SendMediaGroupSetters as _, SendMessageDraftSetters as _, SendMessageSetters as _, SendPaidMediaSetters as _,
     SendPhotoSetters as _, SendPollSetters as _, SendStickerSetters as _, SendVenueSetters as _,
     SendVideoNoteSetters as _, SendVideoSetters as _, SendVoiceSetters as _,
     SetBusinessAccountBioSetters as _, SetBusinessAccountGiftSettingsSetters as _,

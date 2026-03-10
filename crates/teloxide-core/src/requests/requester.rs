@@ -190,6 +190,14 @@ pub trait Requester {
         C: Into<Recipient>,
         T: Into<String>;
 
+    type SendMessageDraft: Request<Payload = SendMessageDraft, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendMessageDraft`].
+    fn send_message_draft<C, T>(&self, chat_id: C, draft_id: i32, text: T) -> Self::SendMessageDraft
+    where
+        C: Into<Recipient>,
+        T: Into<String>;
+
     type ForwardMessage: Request<Payload = ForwardMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`ForwardMessage`].

@@ -305,6 +305,46 @@ Schema(
             ],
         ),
         Method(
+            names: ("sendMessageDraft", "SendMessageDraft", "send_message_draft"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send a message draft for native message streaming (Bot API 9.5+). On success, the sent [Message] is returned.\n\nThis method is used for real-time message streaming, allowing bots to show typing indicators and progressively update message content before the final message is sent.",
+                md_links: {"Message": "https://core.telegram.org/bots/api#message"},
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendmessagedraft",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "draft_id",
+                    ty: i32,
+                    descr: Doc(md: "Unique identifier for the draft message. Used to update the draft before final submission.")
+                ),
+                Param(
+                    name: "text",
+                    ty: String,
+                    descr: Doc(md: "Text of the message draft to be sent, 1-4096 characters after entities parsing")
+                ),
+                Param(
+                    name: "parse_mode",
+                    ty: Option(RawTy("ParseMode")),
+                    descr: Doc(
+                        md: "Mode for parsing entities in the message text. See [formatting options] for more details.",
+                        md_links: {"formatting options": "https://core.telegram.org/bots/api#formatting-options"}
+                    )
+                ),
+                Param(
+                    name: "entities",
+                    ty: Option(ArrayOf(RawTy("MessageEntity"))),
+                    descr: Doc(md: "List of special entities that appear in the message text, which can be specified instead of _parse\\_mode_"),
+                ),
+            ],
+        ),
+        Method(
             names: ("forwardMessage", "ForwardMessage", "forward_message"),
             return_ty: RawTy("Message"),
             doc: Doc(

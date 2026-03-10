@@ -8,7 +8,7 @@ use crate::{
         EditMessageCaptionInline, EditMessageChecklist, EditMessageMedia, EditMessageMediaInline,
         EditMessageText, EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
         SavePreparedInlineMessage, SendAnimation, SendAudio, SendChecklist, SendDocument, SendGift,
-        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
+        SendGiftChat, SendMediaGroup, SendMessage, SendMessageDraft, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
         SendVoice,
     },
     prelude::Requester,
@@ -136,6 +136,7 @@ impl<B> Requester for DefaultParseMode<B>
 where
     B: Requester,
     B::SendMessage: Clone,
+    B::SendMessageDraft: Clone,
     B::SendPhoto: Clone,
     B::SendVideo: Clone,
     B::SendAudio: Clone,
@@ -167,6 +168,7 @@ where
 
     requester_forward! {
         send_message,
+        send_message_draft,
         send_photo,
         send_video,
         send_audio,
@@ -375,6 +377,7 @@ macro_rules! impl_visit_parse_modes {
 
 impl_visit_parse_modes! {
     SendMessage => [parse_mode],
+    SendMessageDraft => [parse_mode],
     SendPhoto => [parse_mode],
     SendVideo => [parse_mode],
     SendAudio => [parse_mode],

@@ -58,6 +58,19 @@ impl Requester for Bot {
         Self::SendMessage::new(self.clone(), payloads::SendMessage::new(chat_id, text))
     }
 
+    type SendMessageDraft = JsonRequest<payloads::SendMessageDraft>;
+
+    fn send_message_draft<C, T>(&self, chat_id: C, draft_id: i32, text: T) -> Self::SendMessageDraft
+    where
+        C: Into<Recipient>,
+        T: Into<String>,
+    {
+        Self::SendMessageDraft::new(
+            self.clone(),
+            payloads::SendMessageDraft::new(chat_id, draft_id, text),
+        )
+    }
+
     type ForwardMessage = JsonRequest<payloads::ForwardMessage>;
 
     fn forward_message<C, F>(

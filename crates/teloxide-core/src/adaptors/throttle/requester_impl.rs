@@ -69,6 +69,7 @@ where
 
     requester_forward! {
         send_message,
+        send_message_draft,
         forward_message,
         forward_messages,
         copy_message,
