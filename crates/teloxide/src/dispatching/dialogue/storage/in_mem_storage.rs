@@ -1,6 +1,9 @@
 use super::Storage;
 use futures::future::BoxFuture;
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 use teloxide_core::types::ChatId;
 use thiserror::Error;
 use tokio::sync::Mutex;
@@ -73,5 +76,9 @@ where
         chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         Box::pin(async move { Ok(self.map.lock().await.get(&chat_id).map(ToOwned::to_owned)) })
+    }
+
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>> {
+        Box::pin(async move { Ok(self.map.lock().await.keys().cloned().collect()) })
     }
 }

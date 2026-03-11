@@ -4,6 +4,7 @@ use futures::future::BoxFuture;
 use redis::AsyncCommands;
 use serde::{de::DeserializeOwned, Serialize};
 use std::{
+    collections::HashSet,
     convert::Infallible,
     fmt::{Debug, Display},
     sync::Arc,
@@ -110,6 +111,22 @@ where
                 .await?
                 .map(|d| self.serializer.deserialize(&d).map_err(RedisStorageError::SerdeError))
                 .transpose()
+        })
+    }
+
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>> {
+        Box::pin(async move {
+            let keys = self
+                .pool
+                .get()
+                .await?
+                .keys::<_, Vec<i64>>("*")
+                .await?
+                .iter()
+                .map(|chat_id| ChatId(*chat_id))
+                .collect();
+
+            Ok(keys)
         })
     }
 }

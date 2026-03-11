@@ -1,0 +1,1 @@
+SELECT chat_id FROM teloxide_dialogues

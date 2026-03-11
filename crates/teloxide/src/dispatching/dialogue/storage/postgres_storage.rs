@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     convert::Infallible,
     fmt::{Debug, Display},
     str,
@@ -85,6 +86,23 @@ impl<S> PostgresStorage<S> {
 
         Ok(bytes)
     }
+
+    async fn keys(self: Arc<Self>) -> Result<HashSet<ChatId>, sqlx::Error> {
+        #[derive(sqlx::FromRow)]
+        struct DialogueDbRow {
+            chat_id: i64,
+        }
+
+        let keys =
+            sqlx::query_as::<_, DialogueDbRow>(include_str!("postgres_storage/queries/keys.sql"))
+                .fetch_all(&self.pool)
+                .await?
+                .iter()
+                .map(|r| ChatId(r.chat_id))
+                .collect();
+
+        Ok(keys)
+    }
 }
 
 // FIXME: these methods' bodies are almostly the same as SqliteStorage ones
@@ -152,5 +170,9 @@ where
                 .map(|d| self.serializer.deserialize(&d).map_err(PostgresStorageError::SerdeError))
                 .transpose()
         })
+    }
+
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>> {
+        Box::pin(async move { Ok(self.clone().keys().await?) })
     }
 }

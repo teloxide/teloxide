@@ -23,7 +23,7 @@ pub use self::{
 #[cfg(feature = "redis-storage")]
 pub use redis_storage::{RedisStorage, RedisStorageError};
 pub use serializer::Serializer;
-use std::sync::Arc;
+use std::{collections::HashSet, sync::Arc};
 
 #[cfg(any(feature = "sqlite-storage-nativetls", feature = "sqlite-storage-rustls"))]
 pub use sqlite_storage::{SqliteStorage, SqliteStorageError};
@@ -84,6 +84,10 @@ pub trait Storage<D> {
         chat_id: ChatId,
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>>;
 
+    /// Returns all stored chat IDs.
+    #[must_use = "Futures are lazy and do nothing unless polled with .await"]
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>>;
+
     /// Erases [`Self::Error`] to [`std::error::Error`].
     #[must_use]
     fn erase(self: Arc<Self>) -> Arc<ErasedStorage<D>>
@@ -136,6 +140,10 @@ where
         Box::pin(
             async move { Arc::clone(&self.0).get_dialogue(chat_id).await.map_err(|e| e.into()) },
         )
+    }
+
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>> {
+        Box::pin(async move { Arc::clone(&self.0).keys().await.map_err(|e| e.into()) })
     }
 }
 

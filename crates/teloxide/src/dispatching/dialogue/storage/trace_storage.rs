@@ -1,4 +1,4 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{collections::HashSet, fmt::Debug, sync::Arc};
 
 use futures::future::BoxFuture;
 use teloxide_core::types::ChatId;
@@ -65,5 +65,10 @@ where
     ) -> BoxFuture<'static, Result<Option<D>, Self::Error>> {
         log::trace!("Requested a dialogue #{chat_id}");
         <S as Storage<D>>::get_dialogue(self.inner.clone(), chat_id)
+    }
+
+    fn keys(self: Arc<Self>) -> BoxFuture<'static, Result<HashSet<ChatId>, Self::Error>> {
+        log::trace!("Requested keys");
+        <S as Storage<D>>::keys(self.inner.clone())
     }
 }

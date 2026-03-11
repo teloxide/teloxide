@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     fmt::{Debug, Display},
     sync::Arc,
 };
@@ -67,6 +68,7 @@ where
     <S as Serializer<Dialogue>>::Error: Debug + Display,
 {
     test_dialogues!(storage, None, None, None);
+    assert_eq!(Arc::clone(&storage).keys().await.unwrap(), HashSet::<ChatId>::new());
 
     Arc::clone(&storage).update_dialogue(ChatId(1), "ABC".to_owned()).await.unwrap();
     Arc::clone(&storage).update_dialogue(ChatId(11), "DEF".to_owned()).await.unwrap();
@@ -78,12 +80,17 @@ where
         Some("DEF".to_owned()),
         Some("GHI".to_owned())
     );
+    assert_eq!(
+        Arc::clone(&storage).keys().await.unwrap(),
+        vec![ChatId(1), ChatId(11), ChatId(256)].into_iter().collect()
+    );
 
     Arc::clone(&storage).remove_dialogue(ChatId(1)).await.unwrap();
     Arc::clone(&storage).remove_dialogue(ChatId(11)).await.unwrap();
     Arc::clone(&storage).remove_dialogue(ChatId(256)).await.unwrap();
 
     test_dialogues!(storage, None, None, None);
+    assert_eq!(Arc::clone(&storage).keys().await.unwrap(), HashSet::<ChatId>::new());
 
     // Check that a try to remove a non-existing dialogue results in an error.
     assert!(matches!(
