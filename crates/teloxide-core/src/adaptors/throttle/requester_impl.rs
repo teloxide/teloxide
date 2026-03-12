@@ -64,6 +64,20 @@ where
     B::SendSticker: Clone + Send + Sync + 'static,
     B::SendInvoice: Clone + Send + Sync + 'static,
     B::SendGame: Clone + Send + Sync + 'static,
+
+    // 中文注释：
+    // - 这些方法在业务中也非常高频（创建话题/编辑消息/删除消息）；
+    // - 如果它们不进入 throttle 队列，会绕开限流直接打到 Telegram，导致 429；
+    // - 因此这里显式让它们也走 `ThrottlingRequest`（按 chat_id 排队）。
+    B::CreateForumTopic: Clone + Send + Sync + 'static,
+    B::EditMessageText: Clone + Send + Sync + 'static,
+    B::EditMessageCaption: Clone + Send + Sync + 'static,
+    B::EditMessageMedia: Clone + Send + Sync + 'static,
+    B::DeleteMessage: Clone + Send + Sync + 'static,
+    B::DeleteMessages: Clone + Send + Sync + 'static,
+    B::PinChatMessage: Clone + Send + Sync + 'static,
+    B::EditForumTopic: Clone + Send + Sync + 'static,
+    B::DeleteForumTopic: Clone + Send + Sync + 'static,
 {
     type Err = B::Err;
 
@@ -91,6 +105,19 @@ where
         send_sticker,
         send_invoice,
         send_game
+        => f, fty
+    }
+
+    requester_forward! {
+        create_forum_topic,
+        edit_forum_topic,
+        delete_forum_topic,
+        pin_chat_message,
+        edit_message_text,
+        edit_message_caption,
+        edit_message_media,
+        delete_message,
+        delete_messages
         => f, fty
     }
 
@@ -131,7 +158,6 @@ where
         delete_chat_photo,
         set_chat_title,
         set_chat_description,
-        pin_chat_message,
         unpin_chat_message,
         unpin_all_chat_messages,
         leave_chat,
@@ -143,11 +169,8 @@ where
         set_chat_sticker_set,
         delete_chat_sticker_set,
         get_forum_topic_icon_stickers,
-        create_forum_topic,
-        edit_forum_topic,
         close_forum_topic,
         reopen_forum_topic,
-        delete_forum_topic,
         unpin_all_forum_topic_messages,
         edit_general_forum_topic,
         close_general_forum_topic,
@@ -174,17 +197,12 @@ where
         answer_inline_query,
         answer_web_app_query,
         save_prepared_inline_message,
-        edit_message_text,
         edit_message_text_inline,
-        edit_message_caption,
         edit_message_caption_inline,
-        edit_message_media,
         edit_message_media_inline,
         edit_message_reply_markup,
         edit_message_reply_markup_inline,
         stop_poll,
-        delete_message,
-        delete_messages,
         get_sticker_set,
         get_custom_emoji_stickers,
         upload_sticker_file,
