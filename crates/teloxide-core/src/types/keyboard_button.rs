@@ -1,8 +1,6 @@
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
 
-use crate::types::{
-    KeyboardButtonPollType, KeyboardButtonRequestChat, KeyboardButtonRequestUsers, True, WebAppInfo,
-};
+use crate::types::{KeyboardButtonPollType, KeyboardButtonRequestChat, KeyboardButtonRequestUsers, True, WebAppInfo};
 
 /// This object represents one button of the reply keyboard.
 ///
@@ -10,12 +8,25 @@ use crate::types::{
 /// text of the button.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#keyboardbutton).
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub enum KeyboardButtonStyle {
+    Danger,
+    Success,
+    Primary
+}
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct KeyboardButton {
     /// Text of the button. If none of the optional fields are used, it will
     /// be sent as a message when the button is pressed.
     pub text: String,
+
+    /// Icon Custom Emoji ID (telegram bot api 9.4)
+    pub icon_custom_emoji_id: Option<i64>,
+    /// Style (telegram bot api 9.4)
+    pub style: Option<KeyboardButtonStyle>,
 
     /// Request something from user. This is available in private chats only.
     ///
@@ -30,7 +41,19 @@ impl KeyboardButton {
     where
         T: Into<String>,
     {
-        Self { text: text.into(), request: None }
+        Self { text: text.into(), icon_custom_emoji_id: None, style: None, request: None }
+    }
+
+    /// Setter for `InlineKeyboardButtonStyle`
+    pub fn style<S>(mut self, style: S) -> Self where S: Into<KeyboardButtonStyle> {
+        self.style = Some(style.into());
+        self
+    }
+
+    /// Setter for `icon_custom_emoji_id`
+    pub fn icon_custom_emoji_id(mut self, id: i64) -> Self {
+        self.icon_custom_emoji_id = Some(id);
+        self
     }
 
     pub fn request<T>(mut self, val: T) -> Self
@@ -204,7 +227,7 @@ mod tests {
 
     #[test]
     fn serialize_no_request() {
-        let button = KeyboardButton { text: String::from(""), request: None };
+        let button = KeyboardButton { text: String::from(""), icon_custom_emoji_id: None, style: None, request: None };
         let expected = r#"{"text":""}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -213,7 +236,7 @@ mod tests {
     #[test]
     fn serialize_request_contact() {
         let button =
-            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
+            KeyboardButton { text: String::from(""), icon_custom_emoji_id: None, style: None, request: Some(ButtonRequest::Contact) };
         let expected = r#"{"text":"","request_contact":true}"#;
         let actual = serde_json::to_string(&button).unwrap();
         assert_eq!(expected, actual);
@@ -223,6 +246,8 @@ mod tests {
     fn serialize_chat_request() {
         let button = KeyboardButton {
             text: String::from(""),
+            icon_custom_emoji_id: None,
+            style: None,
             request: Some(ButtonRequest::RequestChat(KeyboardButtonRequestChat::new(
                 RequestId(0),
                 false,
@@ -236,7 +261,7 @@ mod tests {
     #[test]
     fn deserialize_no_request() {
         let json = r#"{"text":""}"#;
-        let expected = KeyboardButton { text: String::from(""), request: None };
+        let expected = KeyboardButton { text: String::from(""), icon_custom_emoji_id: None, style: None, request: None };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
@@ -245,7 +270,7 @@ mod tests {
     fn deserialize_request_contact() {
         let json = r#"{"text":"","request_contact":true}"#;
         let expected =
-            KeyboardButton { text: String::from(""), request: Some(ButtonRequest::Contact) };
+            KeyboardButton { text: String::from(""), icon_custom_emoji_id: None, style: None, request: Some(ButtonRequest::Contact) };
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
