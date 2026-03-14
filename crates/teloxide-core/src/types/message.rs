@@ -43,6 +43,10 @@ pub struct Message {
     /// forwarded to the discussion group
     pub sender_chat: Option<Chat>,
 
+    /// Tag or custom title of the sender of the message
+    /// for supergroups only
+    pub sender_tag: Option<String>,
+
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
@@ -2191,6 +2195,7 @@ mod tests {
                 thread_id: None,
                 from: None,
                 sender_chat: None,
+                sender_tag: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 is_topic_message: false,
                 chat: Chat {
@@ -2837,7 +2842,8 @@ mod tests {
                             prize_star_count: None,
                             premium_subscription_month_count: Some(6)
                         }
-                    })
+                    }),
+                    sender_tag: None,
                 })),
                 is_star_giveaway: false,
             }
