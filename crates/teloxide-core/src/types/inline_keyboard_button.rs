@@ -20,7 +20,7 @@ pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
     /// Icon Custom Emoji ID (telegram bot api 9.4)
-    pub icon_custom_emoji_id: Option<i32>,
+    pub icon_custom_emoji_id: Option<i64>,
     /// Style (telegram bot api 9.4)
     pub style: Option<InlineKeyboardButtonStyle>,
     #[serde(flatten)]
@@ -132,7 +132,7 @@ impl InlineKeyboardButton {
     }
 
     /// Setter for `icon_custom_emoji_id`
-    pub fn icon_custom_emoji_id(mut self, id: i32) -> Self {
+    pub fn icon_custom_emoji_id(mut self, id: i64) -> Self {
         self.icon_custom_emoji_id = Some(id);
         self
     }
