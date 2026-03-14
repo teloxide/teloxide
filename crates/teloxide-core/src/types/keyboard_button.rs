@@ -44,7 +44,7 @@ impl KeyboardButton {
         Self { text: text.into(), icon_custom_emoji_id: None, style: None, request: None }
     }
 
-    /// Setter for `InlineKeyboardButtonStyle`
+    /// Setter for `KeyboardButtonStyle`
     pub fn style<S>(mut self, style: S) -> Self where S: Into<KeyboardButtonStyle> {
         self.style = Some(style.into());
         self
