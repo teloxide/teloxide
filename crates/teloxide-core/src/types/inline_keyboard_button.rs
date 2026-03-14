@@ -6,12 +6,23 @@ use serde::{Deserialize, Serialize};
 /// This object represents one button of an inline keyboard.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardbutton).
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+pub enum InlineKeyboardButtonStyle {
+    Danger,
+    Success,
+    Primary
+}
+
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
-
+    /// Icon Custom Emoji ID (telegram bot api 9.4)
+    pub icon_custom_emoji_id: Option<u64>,
+    /// Style (telegram bot api 9.4)
+    pub style: Option<InlineKeyboardButtonStyle>,
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
 }
@@ -111,7 +122,19 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), icon_custom_emoji_id: None, style: None, kind }
+    }
+
+    /// Setter for `InlineKeyboardButtonStyle`
+    pub fn style<S>(mut self, style: S) -> Self where S: Into<InlineKeyboardButtonStyle> {
+        self.style = Some(style.into());
+        self
+    }
+
+    /// Setter for `icon_custom_emoji_id`
+    pub fn icon_custom_emoji_id(mut self, id: u64) -> Self {
+        self.icon_custom_emoji_id = Some(id);
+        self
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
