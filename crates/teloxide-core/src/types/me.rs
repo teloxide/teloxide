@@ -74,6 +74,7 @@ mod tests {
                 first_name: "First".to_owned(),
                 last_name: None,
                 username: Some("SomethingSomethingBot".to_owned()),
+                allows_users_to_create_topics: None,
                 language_code: None,
                 is_premium: false,
                 added_to_attachment_menu: false,
