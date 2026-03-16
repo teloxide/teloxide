@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
-  - Add `reply_to_checklist_id` field to `Message` struct
+  - Add `reply_to_checklist_task_id` field to `Message` struct
   - Add `publisher_chat` field to `Gift` and `UniqueGift` structs
   - Add `is_direct_messages` field to `PublicChatSupergroup` and `ChatFullInfoPublicSupergroup` structs
   - Add `parent_chat` field to `ChatFullInfoPublicSupergroup` struct
