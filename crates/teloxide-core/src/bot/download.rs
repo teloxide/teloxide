@@ -27,7 +27,7 @@ impl Download for Bot {
         destination: &'dst mut (dyn AsyncWrite + Unpin + Send),
     ) -> Self::Fut<'dst> {
         let is_localhost = match &self.api_url.host_str() {
-            Some(host) => ["localhost", "127.0.0.1"].contains(host),
+            Some(host) => ["localhost", "127.0.0.1", "::1"].contains(host),
             None => false,
         };
         // If path is absolute and api_url contains localhost, it is pretty clear there
@@ -68,7 +68,7 @@ where
 {
     let mut src_file = File::open(path).await?;
 
-    let mut buffer = [0; 1024];
+    let mut buffer = [0; 128 * 1024];
     loop {
         let n = src_file.read(&mut buffer).await?;
         if n == 0 {
