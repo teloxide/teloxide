@@ -14,8 +14,8 @@ pub struct SuggestedPostApproved {
     /// is a reply.
     pub suggested_post_message: Option<Box<Message>>,
 
-    /// Expected price of the post
-    pub price: SuggestedPostPrice,
+    /// Amount paid for the post
+    pub price: Option<SuggestedPostPrice>,
 
     /// Date when the post will be published
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
