@@ -3113,7 +3113,7 @@ mod tests {
             message.suggested_post_approved().unwrap(),
             &SuggestedPostApproved {
                 suggested_post_message: None,
-                price: SuggestedPostPrice { currency: "XTR".to_owned(), amount: 5 },
+                price: Some(SuggestedPostPrice { currency: "XTR".to_owned(), amount: 5 }),
                 send_date: DateTime::from_timestamp(0, 0).unwrap()
             }
         )
