@@ -75,6 +75,10 @@ pub struct PublicChatSupergroup {
     /// `true`, if the supergroup chat is a forum (has topics enabled).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_forum: bool,
+
+    /// `true`, if the chat is the direct messages chat of a channel
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_direct_messages: bool,
 }
 
 impl Chat {

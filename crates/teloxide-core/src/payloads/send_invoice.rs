@@ -4,7 +4,8 @@ use serde::Serialize;
 use url::Url;
 
 use crate::types::{
-    EffectId, InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ReplyParameters, ThreadId,
+    EffectId, InlineKeyboardMarkup, LabeledPrice, Message, Recipient, ReplyParameters,
+    SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -33,6 +34,8 @@ impl_payload! {
         optional {
             /// Unique identifier for the target message thread (topic) of the forum; for forum supergroups only
             pub message_thread_id: ThreadId,
+            /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
+            pub direct_messages_topic_id: TopicId,
             /// Payments provider token, obtained via [Botfather]. Pass `None` for payments in [Telegram Stars].
             ///
             /// [Botfather]: https://t.me/botfather
@@ -80,6 +83,8 @@ impl_payload! {
             pub allow_paid_broadcast: bool,
             /// Unique identifier of the message effect to be added to the message; for private chats only
             pub message_effect_id: EffectId,
+            /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
+            pub suggested_post_parameters: SuggestedPostParameters,
             /// Description of the message to reply to
             pub reply_parameters: ReplyParameters,
             /// A JSON-serialized object for an [inline keyboard]. If empty, one 'Pay `total price`' button will be shown. If not empty, the first button must be a Pay button.

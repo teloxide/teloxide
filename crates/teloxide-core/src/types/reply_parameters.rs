@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MessageEntity, MessageId, Recipient};
+use crate::types::{ChecklistTaskId, MessageEntity, MessageId, Recipient};
 
 /// Describes reply parameters for the message that is being sent.
 #[serde_with::skip_serializing_none]
@@ -38,6 +38,8 @@ pub struct ReplyParameters {
     pub quote_entities: Option<Vec<MessageEntity>>,
     /// Position of the quote in the original message in UTF-16 code units
     pub quote_position: Option<u32>,
+    /// Identifier of the specific checklist task to be replied to
+    pub checklist_task_id: Option<ChecklistTaskId>,
 }
 
 impl ReplyParameters {
@@ -60,6 +62,12 @@ impl ReplyParameters {
     /// Setter for the `quote` field
     pub fn quote(mut self, quote: String) -> Self {
         self.quote = Some(quote);
+        self
+    }
+
+    /// Setter for the `checklist_task_id` field
+    pub fn checklist_task_id(mut self, checklist_task_id: ChecklistTaskId) -> Self {
+        self.checklist_task_id = Some(checklist_task_id);
         self
     }
 }
