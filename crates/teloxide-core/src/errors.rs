@@ -762,6 +762,12 @@ impl From<reqwest::Error> for DownloadError {
     }
 }
 
+impl From<std::io::Error> for DownloadError {
+    fn from(error: std::io::Error) -> Self {
+        DownloadError::Io(Arc::new(error))
+    }
+}
+
 impl From<reqwest::Error> for RequestError {
     fn from(error: reqwest::Error) -> Self {
         RequestError::Network(Arc::new(hide_token(error)))
