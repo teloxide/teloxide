@@ -28,13 +28,13 @@ sqlite-storage-nativetls = [
     "sqlx/runtime-tokio-native-tls",
     "native-tls",
 ]
-sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
+sqlite-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls"]
 postgres-storage-nativetls = [
     "sqlx",
     "sqlx/runtime-tokio-native-tls",
     "native-tls",
 ]
-postgres-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls", "rustls"]
+postgres-storage-rustls = ["sqlx", "sqlx/runtime-tokio-rustls"]
 redis-storage = ["deadpool-redis"]
 
 cbor-serializer = ["serde_cbor"]
@@ -47,8 +47,6 @@ ctrlc_handler = ["tokio/signal"]
 tracing = ["dep:tracing"]
 
 native-tls = ["teloxide-core/native-tls"]
-rustls = ["teloxide-core/rustls"]
-rustls-native-roots = ["teloxide-core/rustls-native-roots"]
 throttle = ["teloxide-core/throttle"]
 cache-me = [
     "teloxide-core/cache_me",
@@ -74,7 +72,6 @@ full = [
     "ctrlc_handler",
     "teloxide-core/full",
     "native-tls",
-    "rustls",
     "throttle",
     "cache-me",
     "trace-adaptor",
@@ -135,7 +132,7 @@ pretty_env_logger = "0.5.0"
 serde = "1"
 serde_json = "1"
 tokio = { version = "1.39", features = ["fs", "rt-multi-thread", "macros"] }
-reqwest = "0.12.7"
+reqwest = "0.13"
 chrono = "0.4"
 tokio-stream = "0.1"
 
