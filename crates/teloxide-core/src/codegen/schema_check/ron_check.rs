@@ -251,6 +251,13 @@ fn check_ron_params(
     }
 }
 
+// Because webarchive links like https://web.archive.org/web/20250817052931/https://core.telegram.org/bots/api should work too
+fn extract_original_url(s: &str) -> &str {
+    s.find("https://core.telegram.org")
+        .map(|idx| &s[idx..])
+        .expect("Documentation link doesnt have https://core.telegram.org")
+}
+
 // Checks everything about the method that is not params
 fn check_ron_method_meta(
     ron_method: &schema::Method,
@@ -268,7 +275,9 @@ fn check_ron_method_meta(
     );
 
     // Some docs are for some reason like api/#something, not api#something.
-    if ron_method.tg_doc.replace("/#", "#") != method.documentation_link.replace("/#", "#") {
+    if ron_method.tg_doc.replace("/#", "#")
+        != extract_original_url(&method.documentation_link.replace("/#", "#"))
+    {
         errors.push(ApiCheckError::MethodDocLinkDoesNotMatch {
             method: ron_method.names.0.clone(),
             doc_link: ron_method.tg_doc.clone(),

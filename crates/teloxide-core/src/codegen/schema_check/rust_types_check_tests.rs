@@ -589,6 +589,41 @@ fn test_rust_objects() {
     );
     check_object(
         api_schema.clone(),
+        schema_for!(SuggestedPostApproved),
+        "SuggestedPostApproved".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostApprovalFailed),
+        "SuggestedPostApprovalFailed".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostDeclined),
+        "SuggestedPostDeclined".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostPaid),
+        "SuggestedPostPaid".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostRefunded),
+        "SuggestedPostRefunded".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
         schema_for!(GiveawayCreated),
         "GiveawayCreated".to_owned(),
         &mut errors,
@@ -619,6 +654,34 @@ fn test_rust_objects() {
         api_schema.clone(),
         schema_for!(LinkPreviewOptions),
         "LinkPreviewOptions".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostPrice),
+        "SuggestedPostPrice".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostInfo),
+        "SuggestedPostInfo".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(SuggestedPostParameters),
+        "SuggestedPostParameters".to_owned(),
+        &mut errors,
+        &exceptions,
+    );
+    check_object(
+        api_schema.clone(),
+        schema_for!(DirectMessagesTopic),
+        "DirectMessagesTopic".to_owned(),
         &mut errors,
         &exceptions,
     );

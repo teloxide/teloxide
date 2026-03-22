@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostprice).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostPrice {
     /// Currency in which the post will be paid. Currently, must be one of “XTR”
     /// for Telegram Stars or “TON” for toncoins
