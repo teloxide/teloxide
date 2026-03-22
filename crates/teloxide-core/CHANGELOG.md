@@ -39,6 +39,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for TBA 9.5
+  - Added the field `sender_tag` to the structs `Message`.
+  - Added the field `icon_custom_emoji_id` to the structs `KeyboardButton` and `InlineKeyboardButton`.
+  - Added the field `style` to the structs `KeyboardButton` and `InlineKeyboardButton`, allowing bots to change the color of buttons.
+
 - Support for TBA 8.1 ([#1377](https://github.com/teloxide/teloxide/pull/1377))
   - Add `nanostar_amount` field to `StarTransaction` struct
   - Add `AffiliateProgram` variant to `TransactionPartner` enum and `TransactionPartnerAffiliateProgram` struct

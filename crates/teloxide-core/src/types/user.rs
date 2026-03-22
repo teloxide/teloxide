@@ -23,6 +23,9 @@ pub struct User {
     /// User‘s or bot’s username.
     pub username: Option<String>,
 
+    /// True, if the bot allows users to create and delete topics in private chats.
+    pub allows_users_to_create_topics: Option<bool>,
+
     /// [IETF language tag] of the user's language.
     ///
     /// [IETF language tag]: https://en.wikipedia.org/wiki/IETF_language_tag
@@ -148,6 +151,7 @@ mod tests {
             first_name: "firstName".to_string(),
             last_name: Some("lastName".to_string()),
             username: Some("Username".to_string()),
+            allows_users_to_create_topics: None,
             language_code: Some(String::from("ru")),
             is_premium: false,
             added_to_attachment_menu: false,
@@ -164,6 +168,7 @@ mod tests {
             first_name: "First".to_owned(),
             last_name: Some("Last".to_owned()),
             username: Some("aaaaaaaaaaaaaaaa".to_owned()),
+            allows_users_to_create_topics: None,
             language_code: None,
             is_premium: false,
             added_to_attachment_menu: false,
@@ -175,6 +180,7 @@ mod tests {
             first_name: ".".to_owned(),
             last_name: None,
             username: None,
+            allows_users_to_create_topics: None,
             language_code: None,
             is_premium: false,
             added_to_attachment_menu: false,

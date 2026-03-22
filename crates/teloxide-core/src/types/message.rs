@@ -49,6 +49,10 @@ pub struct Message {
     /// forwarded to the discussion group
     pub sender_chat: Option<Chat>,
 
+    /// Tag or custom title of the sender of the message
+    /// for supergroups only
+    pub sender_tag: Option<String>,
+
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
     pub date: DateTime<Utc>,
@@ -2305,6 +2309,7 @@ mod tests {
                 direct_messages_topic: None,
                 from: None,
                 sender_chat: None,
+                sender_tag: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 is_topic_message: false,
                 is_paid_post: false,
@@ -2957,7 +2962,8 @@ mod tests {
                             prize_star_count: None,
                             premium_subscription_month_count: Some(6)
                         }
-                    })
+                    }),
+                    sender_tag: None,
                 })),
                 is_star_giveaway: false,
             }
@@ -3046,6 +3052,7 @@ mod tests {
                     first_name: "shadowchain".to_owned(),
                     last_name: None,
                     username: Some("shdwchn10".to_owned()),
+                    allows_users_to_create_topics: None,
                     language_code: None,
                     is_premium: false,
                     added_to_attachment_menu: false
