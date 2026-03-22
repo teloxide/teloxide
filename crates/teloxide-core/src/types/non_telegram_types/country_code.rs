@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 /// ISO 3166-1 alpha-2 language code.
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum CountryCode {
     /// Andorra
     AD,

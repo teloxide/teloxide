@@ -7,6 +7,7 @@ use crate::types::{ChatId, PhotoSize, RequestId};
 ///
 /// [`KeyboardButtonRequestChat`]: crate::types::KeyboardButtonRequestChat
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatShared {
     /// Identifier of the request.
     pub request_id: RequestId,

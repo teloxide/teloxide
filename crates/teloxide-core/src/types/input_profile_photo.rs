@@ -4,6 +4,7 @@ use crate::types::InputFile;
 
 /// This object describes a profile photo to set.
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum InputProfilePhoto {
@@ -13,6 +14,7 @@ pub enum InputProfilePhoto {
 
 /// A static profile photo in the .JPG format.
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputProfilePhotoStatic {
     /// The static profile photo. Profile photos can't be reused and can only be
     /// uploaded as a new file, so you can pass “attach://<file_attach_name>” if
@@ -26,6 +28,7 @@ pub struct InputProfilePhotoStatic {
 /// An animated profile photo in the MPEG4 format.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputProfilePhotoAnimated {
     /// The animated profile photo. Profile photos can't be reused and can only
     /// be uploaded as a new file, so you can pass “attach://<file_attach_name>”

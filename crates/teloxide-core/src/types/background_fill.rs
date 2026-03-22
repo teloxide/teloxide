@@ -7,6 +7,7 @@ use crate::types::Rgb;
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum BackgroundFill {
@@ -19,6 +20,7 @@ pub enum BackgroundFill {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundFillSolid {
     /// The color of the background fill in the RGB24 format
     pub color: Rgb,
@@ -28,6 +30,7 @@ pub struct BackgroundFillSolid {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundFillGradient {
     /// Top color of the gradient in the RGB24 format
     pub top_color: Rgb,
@@ -45,6 +48,7 @@ pub struct BackgroundFillGradient {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BackgroundFillFreeformGradient {
     /// A list of the 3 or 4 base colors that are used to generate the freeform
     /// gradient in the RGB24 format

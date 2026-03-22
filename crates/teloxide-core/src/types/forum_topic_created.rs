@@ -8,6 +8,7 @@ use crate::types::{CustomEmojiId, Rgb};
 /// [The official docs](https://core.telegram.org/bots/api#forumtopiccreated).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ForumTopicCreated {
     /// Name of the topic.
     pub name: String,

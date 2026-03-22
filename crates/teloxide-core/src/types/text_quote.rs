@@ -5,6 +5,7 @@ use crate::types::MessageEntity;
 /// This object contains information about the quoted part of a message that is
 /// replied to by the given message.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct TextQuote {
     /// Text of the quoted part of a message that is replied to by the given
     /// message

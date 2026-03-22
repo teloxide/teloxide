@@ -7,6 +7,7 @@ use crate::types::{RequestId, SharedUser};
 ///
 /// [KeyboardButtonRequestUsers]: crate::types::KeyboardButtonRequestUsers
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UsersShared {
     /// Identifier of the request
     pub request_id: RequestId,
