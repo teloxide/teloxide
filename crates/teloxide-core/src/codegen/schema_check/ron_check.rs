@@ -39,6 +39,11 @@ enum ApiCheckError {
         "Method `{method}` has a link to TBA {doc_link}, but the actual link is {actual_doc_link}"
     )]
     MethodDocLinkDoesNotMatch { method: String, doc_link: String, actual_doc_link: String },
+    #[display(
+        "Method `{method}` has two params `{param1}` and `{param2}` that are usually split up \
+         into siblings"
+    )]
+    ParamsShouldBeSiblings { method: String, param1: String, param2: String },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -72,6 +77,17 @@ impl Exceptions {
 
     fn is_sibling_param_exception(&self, param: String) -> bool {
         self.exceptions.contains(&Exception::SiblingParam { param })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+struct UsuallySiblings {
+    params: Vec<(String, String)>,
+}
+
+impl UsuallySiblings {
+    fn new(params: Vec<(String, String)>) -> Self {
+        Self { params }
     }
 }
 
@@ -197,8 +213,29 @@ fn check_ron_params(
     ron_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
+    usually_siblings: &UsuallySiblings,
     exceptions: &Exceptions,
 ) {
+    let all_params: Vec<&String> = ron_method.params.iter().map(|a| &a.name).collect();
+    for (param1, param2) in &usually_siblings.params {
+        if all_params.contains(&param1) && all_params.contains(&param2) {
+            if let Some(ron_param1) = find_ron_param_by_name(param1, ron_method) {
+                if let Some(ron_param2) = find_ron_param_by_name(param2, ron_method) {
+                    // If they arent optional then its like chat_id and user_id in getChatMember
+                    if let schema::Type::Option(_) = ron_param1.ty {
+                        if let schema::Type::Option(_) = ron_param2.ty {
+                            errors.push(ApiCheckError::ParamsShouldBeSiblings {
+                                method: ron_method.names.0.clone(),
+                                param1: param1.to_owned(),
+                                param2: param2.to_owned(),
+                            })
+                        }
+                    }
+                }
+            } // No need to error if they dont exist, it is checked next
+        }
+    }
+
     for param in &method.arguments {
         let mut param_name = param.name.clone();
         escape_kw(&mut param_name);
@@ -244,10 +281,11 @@ fn check_ron_method(
     ron_method: &schema::Method,
     method: &ApiMethod,
     errors: &mut Vec<ApiCheckError>,
+    usually_siblings: &UsuallySiblings,
     exceptions: &Exceptions,
 ) {
     check_ron_method_meta(ron_method, method, errors, exceptions);
-    check_ron_params(ron_method, method, errors, exceptions);
+    check_ron_params(ron_method, method, errors, usually_siblings, exceptions);
 }
 
 fn check_param(
@@ -441,6 +479,12 @@ mod tests {
             Exception::SiblingParam { param: "message_id".to_owned() },
         ]);
 
+        // Some params are usually siblings, and if they are not, its an error.
+        let usually_siblings = UsuallySiblings::new(vec![
+            ("inline_message_id".to_owned(), "message_id".to_owned()),
+            ("user_id".to_owned(), "chat_id".to_owned()),
+        ]);
+
         let api_version = format!("{}.{}", api_schema.version.major, api_schema.version.minor);
         let ron_version = ron_schema.api_version.ver.clone();
         if api_version != ron_version {
@@ -478,7 +522,13 @@ mod tests {
                         &exceptions,
                     );
                 } else {
-                    check_ron_method(&ron_method, &method, &mut errors, &exceptions);
+                    check_ron_method(
+                        &ron_method,
+                        &method,
+                        &mut errors,
+                        &usually_siblings,
+                        &exceptions,
+                    );
                 }
             } else {
                 errors.push(ApiCheckError::MethodDoesNotExist { method: method.name });
