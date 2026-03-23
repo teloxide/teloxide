@@ -311,7 +311,7 @@ If some new things broke too much, or are complex in general, they should be tes
 
 #### Step 6:
 
-You need to update the check schema. It is located in `teloxide-core/custom_v2.json`. To obtain it, you need to clone the repository https://github.com/ENCRYPTEDFOREVER/tg-bot-api/tree/bot_api_9_0 (update if there is a new version) and generate a new schema. Run `cargo run -- production` in the `gh-pages-generator` directory and copy the `public/custom_v2.json` to `teloxide-core/custom_v2.json`, then run the tests!
+You need to update the check schema. It is located in `teloxide-core/custom_v2.json`. To obtain it, you need to clone the repository https://github.com/teloxide/tba-parser and generate a new schema. Follow the repository README to get the schema and copy the `schema/custom_v2.json` to `teloxide-core/custom_v2.json`, then run the tests!
 
 #### Step 7:
 
