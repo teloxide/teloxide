@@ -381,7 +381,7 @@ macro_rules! download_forward {
 
             fn download_file<'dst>(
                 &self,
-                path: &str,
+                path: &'dst str,
                 destination: &'dst mut (dyn tokio::io::AsyncWrite
                                + core::marker::Unpin
                                + core::marker::Send),
@@ -1319,6 +1319,22 @@ macro_rules! requester_forward {
         fn stop_poll<C>(&self, chat_id: C, message_id: MessageId) -> Self::StopPoll where C: Into<Recipient> {
             let this = self;
             $body!(stop_poll this (chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method approve_suggested_post $body:ident $ty:ident) => {
+        type ApproveSuggestedPost = $ty![ApproveSuggestedPost];
+
+        fn approve_suggested_post<C>(&self, chat_id: C, message_id: MessageId) -> Self::ApproveSuggestedPost where C: Into<ChatId> {
+            let this = self;
+            $body!(approve_suggested_post this (chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method decline_suggested_post $body:ident $ty:ident) => {
+        type DeclineSuggestedPost = $ty![DeclineSuggestedPost];
+
+        fn decline_suggested_post<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeclineSuggestedPost where C: Into<ChatId> {
+            let this = self;
+            $body!(decline_suggested_post this (chat_id: C, message_id: MessageId))
         }
     };
     (@method delete_message $body:ident $ty:ident) => {

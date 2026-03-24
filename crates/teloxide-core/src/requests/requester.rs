@@ -1096,6 +1096,28 @@ pub trait Requester {
     where
         C: Into<Recipient>;
 
+    type ApproveSuggestedPost: Request<Payload = ApproveSuggestedPost, Err = Self::Err>;
+
+    /// For Telegram documentation see [`ApproveSuggestedPost`].
+    fn approve_suggested_post<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::ApproveSuggestedPost
+    where
+        C: Into<ChatId>;
+
+    type DeclineSuggestedPost: Request<Payload = DeclineSuggestedPost, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeclineSuggestedPost`].
+    fn decline_suggested_post<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::DeclineSuggestedPost
+    where
+        C: Into<ChatId>;
+
     type DeleteMessage: Request<Payload = DeleteMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`DeleteMessage`].
@@ -1749,6 +1771,8 @@ macro_rules! forward_all {
             edit_message_reply_markup,
             edit_message_reply_markup_inline,
             stop_poll,
+            approve_suggested_post,
+            decline_suggested_post,
             delete_message,
             delete_messages,
             send_sticker,

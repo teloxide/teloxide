@@ -224,6 +224,8 @@ where
         edit_message_reply_markup,
         edit_message_reply_markup_inline,
         stop_poll,
+        approve_suggested_post,
+        decline_suggested_post,
         delete_message,
         delete_messages,
         send_sticker,
