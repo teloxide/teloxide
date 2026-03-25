@@ -572,6 +572,24 @@ impl_api_error! {
         /// Messages" admin right.
         NotEnoughRightsToPostMessages = "Bad Request: need administrator rights in the channel chat",
 
+        /// Occurs when bot tries to get a chat member with an invalid
+        /// participant ID.
+        ///
+        /// May happen in methods:
+        /// 1. [`GetChatMember`]
+        ///
+        /// [`GetChatMember`]: crate::payloads::GetChatMember
+        ParticipantIdInvalid = "Bad Request: PARTICIPANT_ID_INVALID",
+
+        /// Occurs when bot tries to perform an action that requires admin
+        /// privileges in the chat.
+        ///
+        /// May happen in methods:
+        /// 1. [`GetChatMember`]
+        ///
+        /// [`GetChatMember`]: crate::payloads::GetChatMember
+        ChatAdminRequired = "Bad Request: CHAT_ADMIN_REQUIRED",
+
         /// Occurs when bot tries set webhook to protocol other than HTTPS.
         ///
         /// May happen in methods:
@@ -984,6 +1002,14 @@ mod tests {
             (
                 "{\"data\": \"Bad Request: need administrator rights in the channel chat\"}",
                 ApiError::NotEnoughRightsToPostMessages,
+            ),
+            (
+                "{\"data\": \"Bad Request: PARTICIPANT_ID_INVALID\"}",
+                ApiError::ParticipantIdInvalid,
+            ),
+            (
+                "{\"data\": \"Bad Request: CHAT_ADMIN_REQUIRED\"}",
+                ApiError::ChatAdminRequired,
             ),
             (
                 "{\"data\": \"Bad Request: bad webhook: HTTPS url must be provided for webhook\"}",
