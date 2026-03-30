@@ -13,7 +13,7 @@ pub enum Exception {
     RenameCheckingObject { api_object_name: String, rust_object_name: String },
     IgnoreFieldName { field_name: String },
     IgnoreObjectField { object: String, field_name: String },
-    ExpandTelegramReferece { reference: String },
+    ExpandTelegramReference { reference: String },
     IgnoreFieldRequiredName { field_name: String },
     IgnoreFieldRequiredObjectName { object: String, field_name: String },
 }
@@ -38,9 +38,9 @@ impl Exception {
                 "Exception::IgnoreObjectField {{ object: \"{object}\".to_owned(), field_name: \
                  \"{field_name}\".to_owned() }}"
             ),
-            Self::ExpandTelegramReferece { reference } => {
+            Self::ExpandTelegramReference { reference } => {
                 format!(
-                    "Exception::ExpandTelegramReferece {{ reference: \"{reference}\".to_owned() }}"
+                    "Exception::ExpandTelegramReference {{ reference: \"{reference}\".to_owned() }}"
                 )
             }
             Self::IgnoreFieldRequiredName { field_name } => format!(
@@ -84,8 +84,8 @@ impl Exceptions {
         self.exceptions.contains(&Exception::IgnoreFieldRequiredName { field_name })
     }
 
-    fn is_expand_refenence(&self, reference: String) -> bool {
-        self.exceptions.contains(&Exception::ExpandTelegramReferece { reference })
+    fn is_expand_reference(&self, reference: String) -> bool {
+        self.exceptions.contains(&Exception::ExpandTelegramReference { reference })
     }
 
     fn is_object_removed_from_checking(&self, object: String) -> bool {
@@ -456,7 +456,7 @@ fn extract_fields_from_properties_object(
             // type
             if !official_types.contains(reference)
                 // Some official types are still in need of being expanded, like InputFile
-                || exceptions.is_expand_refenence(reference.to_owned())
+                || exceptions.is_expand_reference(reference.to_owned())
             {
                 if let Some(reference_kind) = expand_reference(
                     references,
@@ -470,7 +470,7 @@ fn extract_fields_from_properties_object(
         } else if let Kind::Array { ref array } = kind {
             if let Kind::Reference { ref reference } = array.0 {
                 if !official_types.contains(reference)
-                    || exceptions.is_expand_refenence(reference.to_owned())
+                    || exceptions.is_expand_reference(reference.to_owned())
                 {
                     if let Some(reference_kind) = expand_reference(
                         references,
@@ -795,7 +795,7 @@ mod tests {
 
         // Fields that are usually problematic are better to skip completely
         let exceptions = Exceptions::new(vec![
-            Exception::ExpandTelegramReferece { reference: "InputFile".to_owned() },
+            Exception::ExpandTelegramReference { reference: "InputFile".to_owned() },
             Exception::IgnoreObjectField {
                 object: "ChatMember".to_owned(),
                 field_name: "status".to_owned(),
@@ -894,13 +894,13 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 errors_string = format!("{errors_string}\n\n{}. {error}", i + 1);
             }
-            panic!("schema.ron does not match the rust types. The errors are:\n\n{errors_string}",);
+            panic!("custom_v2.json does not match the rust types. The errors are:\n\n{errors_string}",);
         }
     }
 
     #[test]
     fn codegen_types_checking() {
-        let generator = "codegen_types_checking";
+        let generator = "codegen_schema_types_check";
         let codegen_path =
             project_root().join("src/codegen/schema_check/rust_types_check_tests.rs");
 
@@ -1009,7 +1009,7 @@ mod tests {
 
         // Some TBA types exist, but don't actually do anything
         exceptions
-            .extend(vec![Exception::ExpandTelegramReferece { reference: "InputFile".to_owned() }]);
+            .extend(vec![Exception::ExpandTelegramReference { reference: "InputFile".to_owned() }]);
 
         // These are exceptions that apply to codegen
         let mut objects_exceptions = Exceptions::new(vec![
@@ -1169,7 +1169,7 @@ fn test_rust_objects() {{
         for (i, error) in errors.iter().enumerate() {{
             errors_string = format!(\"{{errors_string}}\\n\\n{{}}. {{error}}\", i + 1);
         }}
-        panic!(\"schema.ron does not match the rust types. The errors \
+        panic!(\"custom_v2.json does not match the rust types. The errors \
              are:\\n\\n{{errors_string}}\",);
     }}
 }}
