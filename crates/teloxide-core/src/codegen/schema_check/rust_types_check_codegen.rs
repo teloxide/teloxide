@@ -40,7 +40,8 @@ impl Exception {
             ),
             Self::ExpandTelegramReference { reference } => {
                 format!(
-                    "Exception::ExpandTelegramReference {{ reference: \"{reference}\".to_owned() }}"
+                    "Exception::ExpandTelegramReference {{ reference: \"{reference}\".to_owned() \
+                     }}"
                 )
             }
             Self::IgnoreFieldRequiredName { field_name } => format!(
@@ -894,7 +895,9 @@ mod tests {
             for (i, error) in errors.iter().enumerate() {
                 errors_string = format!("{errors_string}\n\n{}. {error}", i + 1);
             }
-            panic!("custom_v2.json does not match the rust types. The errors are:\n\n{errors_string}",);
+            panic!(
+                "custom_v2.json does not match the rust types. The errors are:\n\n{errors_string}",
+            );
         }
     }
 
