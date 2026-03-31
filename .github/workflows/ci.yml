@@ -148,13 +148,13 @@ jobs:
 
       - name: Setup redis
         run: |
-          sudo apt install redis-server
+          sudo apt-get update && sudo apt-get install -y redis-server
           redis-server --port 7777 > /dev/null &
           redis-server --port 7778 > /dev/null &
           redis-server --port 7779 > /dev/null &
       - name: Install psql
         run: |
-          sudo apt install postgresql-client -y
+          sudo apt-get install -y postgresql-client
       - name: Create PostgreSQL databases
         run: |
           psql -h localhost -U teloxide -c "CREATE DATABASE test_postgres_json;"
