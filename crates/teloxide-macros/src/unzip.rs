@@ -17,23 +17,27 @@ where
     }
 }
 
-pub(crate) struct Unzip3<A, B, C>(pub A, pub B, pub C);
+pub(crate) struct Unzip5<A, B, C, D, E>(pub A, pub B, pub C, pub D, pub E);
 
-impl<A, B, C, T, U, V> FromIterator<(T, U, V)> for Unzip3<A, B, C>
+impl<A, B, C, D, E, T, U, V, W, X> FromIterator<(T, U, V, W, X)> for Unzip5<A, B, C, D, E>
 where
     A: Default + Extend<T>,
     B: Default + Extend<U>,
     C: Default + Extend<V>,
+    D: Default + Extend<W>,
+    E: Default + Extend<X>,
 {
-    fn from_iter<I: IntoIterator<Item = (T, U, V)>>(iter: I) -> Self {
-        let (mut a, mut b, mut c): (A, B, C) = Default::default();
+    fn from_iter<I: IntoIterator<Item = (T, U, V, W, X)>>(iter: I) -> Self {
+        let (mut a, mut b, mut c, mut d, mut e): (A, B, C, D, E) = Default::default();
 
-        for (t, u, v) in iter {
+        for (t, u, v, w, x) in iter {
             a.extend([t]);
             b.extend([u]);
             c.extend([v]);
+            d.extend([w]);
+            e.extend([x]);
         }
 
-        Unzip3(a, b, c)
+        Unzip5(a, b, c, d, e)
     }
 }

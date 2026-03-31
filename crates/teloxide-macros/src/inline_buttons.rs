@@ -3,20 +3,38 @@ use quote::quote;
 use syn::{spanned::Spanned, DeriveInput};
 
 use crate::{
-    button::Button, button_enum::ButtonEnum, compile_error, error::compile_error_at,
-    fields_parse::impl_parse_args, fields_stringify::impl_stringify_args, unzip::Unzip3, Result,
+    build_keyboard::impl_keyboard_args, button::Button, button_enum::ButtonEnum, compile_error,
+    error::compile_error_at, fields_parse::impl_parse_args, fields_stringify::impl_stringify_args,
+    unzip::Unzip5, Result,
 };
 
 pub(crate) fn inline_buttons_impl(input: DeriveInput) -> Result<TokenStream> {
     let data_enum = get_enum_data(&input)?;
     let button_enum = ButtonEnum::from_attributes(&input.attrs)?;
     let type_name = &input.ident;
+    let mut current_row = 1;
 
-    let Unzip3(var_init, var_info, var_stringify) = data_enum
+    let Unzip5(var_init, var_info, var_stringify, var_construct_variant, var_parameter) = data_enum
         .variants
         .iter()
         .map(|variant| {
-            let button = Button::new(&variant.ident.to_string(), &variant.attrs, &button_enum)?;
+            let button =
+                Button::new(&variant.ident.to_string(), current_row, &variant.attrs, &button_enum)?;
+
+            if button.row > current_row {
+                return Err(compile_error_at(
+                    &format!(
+                        "Entered row {} is bigger than the current max row {current_row}",
+                        button.row
+                    ),
+                    variant.span(),
+                ));
+            }
+            if button.row == current_row {
+                // This doesnt interfere if user wants to make some
+                // buttons with a row value and others without
+                current_row += 1;
+            }
 
             if button.data_name.len() > 64 {
                 return Err(compile_error_at(
@@ -39,22 +57,39 @@ pub(crate) fn inline_buttons_impl(input: DeriveInput) -> Result<TokenStream> {
             let parse = impl_parse_args(&variant.fields, self_variant.clone(), &button.parser);
             let stringify = impl_stringify_args(
                 &variant.fields,
-                self_variant,
+                self_variant.clone(),
                 self_string_name,
-                self_string_variant,
+                self_string_variant.clone(),
             );
 
-            Ok((parse, button, stringify))
+            let button_text = button.text.clone();
+            let button_url = button.url.clone();
+
+            let (construct_variant, parameter) = impl_keyboard_args(
+                &variant.fields,
+                variant.span(),
+                self_string_variant,
+                self_variant,
+                button_text,
+                button_url,
+            )?;
+
+            Ok((parse, button, stringify, construct_variant, parameter))
         })
-        .collect::<Result<Unzip3<Vec<_>, Vec<_>, Vec<_>>>>()?;
+        .collect::<Result<Unzip5<Vec<_>, Vec<_>, Vec<_>, Vec<_>, Vec<_>>>>()?;
 
     let fn_parse = impl_parse(&var_info, &var_init, &button_enum.fields_separator);
     let fn_stringify = impl_stringify(&var_stringify, &button_enum.fields_separator);
+    let fn_build_keyboard = impl_build_keyboard(&var_construct_variant, &var_parameter);
 
     let trait_impl = quote! {
         impl teloxide::utils::button::InlineButtons for #type_name {
             #fn_parse
             #fn_stringify
+        }
+
+        impl #type_name {
+            #fn_build_keyboard
         }
     };
 
@@ -104,6 +139,26 @@ fn impl_stringify(
             match self {
                 #(#stringify_return)*
             }
+        }
+    }
+}
+
+fn impl_build_keyboard(
+    construct_variants: &[proc_macro2::TokenStream],
+    parameters: &[Option<proc_macro2::TokenStream>],
+) -> proc_macro2::TokenStream {
+    let only_parameters: Vec<proc_macro2::TokenStream> =
+        parameters.iter().filter_map(|p| p.clone()).collect();
+    quote! {
+        fn build_keyboard( #(#only_parameters),* ) -> ::std::result::Result<teloxide::types::InlineKeyboardMarkup, teloxide::utils::button::StringifyError> {
+            let mut buttons = vec![];
+
+            #(
+                buttons.push(vec![#construct_variants?]);
+            )*
+
+            Ok(teloxide::types::InlineKeyboardMarkup::new(buttons))
+
         }
     }
 }

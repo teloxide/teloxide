@@ -2,6 +2,7 @@ extern crate proc_macro;
 
 mod attr;
 mod bot_commands;
+mod build_keyboard;
 mod button;
 mod button_attr;
 mod button_enum;
