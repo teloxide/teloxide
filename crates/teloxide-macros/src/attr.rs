@@ -191,6 +191,17 @@ impl AttrValue {
         }
     }
 
+    /// Unwraps this value if it's a u8 literal.
+    pub fn expect_u8(self) -> Result<u8> {
+        self.expect("a u8", |this| match this {
+            AttrValue::Lit(Lit::Int(ref i)) => match i.base10_parse() {
+                Ok(d) => Ok(d),
+                _ => Err(this),
+            },
+            _ => Err(this),
+        })
+    }
+
     /// Unwraps this value if it's a vector of `T`.
     /// ## Example
     /// ```text

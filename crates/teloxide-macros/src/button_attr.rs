@@ -10,6 +10,9 @@ use syn::Attribute;
 /// All attributes that can be used for `derive(InlineButtons)`
 pub(crate) struct ButtonAttrs {
     pub rename: Option<(String, Span)>,
+    pub text: Option<(String, Span)>,
+    pub row: Option<(u8, Span)>,
+    pub url: Option<(String, Span)>,
     pub fields_separator: Option<(String, Span)>,
 }
 
@@ -24,6 +27,9 @@ struct ButtonAttr {
 /// Kind of [`ButtonAttr`].
 enum ButtonAttrKind {
     Rename(String),
+    Text(String),
+    Row(u8),
+    Url(String),
     FieldsSeparator(String),
 }
 
@@ -35,7 +41,7 @@ impl ButtonAttrs {
             attributes,
             is_button_attribute,
             ButtonAttr::parse,
-            Self { rename: None, fields_separator: None },
+            Self { rename: None, text: None, row: None, url: None, fields_separator: None },
             |mut this, attr| {
                 fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
                     match opt {
@@ -50,6 +56,9 @@ impl ButtonAttrs {
                 match attr.kind {
                     Rename(r) => insert(&mut this.rename, r, attr.sp),
                     FieldsSeparator(s) => insert(&mut this.fields_separator, s, attr.sp),
+                    Text(t) => insert(&mut this.text, t, attr.sp),
+                    Row(r) => insert(&mut this.row, r, attr.sp),
+                    Url(u) => insert(&mut this.url, u, attr.sp),
                 }?;
 
                 Ok(this)
@@ -85,11 +94,14 @@ impl ButtonAttr {
 
                 match &*attr.to_string() {
                     "rename" => Rename(value.expect_string()?),
+                    "text" => Text(value.expect_string()?),
+                    "row" => Row(value.expect_u8()?),
+                    "url" => Url(value.expect_string()?),
                     "fields_separator" => FieldsSeparator(value.expect_string()?),
                     _ => {
                         return Err(compile_error_at(
-                            "unexpected attribute name (expected one of `rename` or \
-                             `fields_separator`)",
+                            "unexpected attribute name (expected one of `rename`, `text`, `row`, \
+                             `url` or `fields_separator`)",
                             attr.span(),
                         ))
                     }
