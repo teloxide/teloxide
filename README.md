@@ -172,6 +172,57 @@ async fn answer(bot: Bot, msg: Message, cmd: Command) -> ResponseResult<()> {
     <img src="https://github.com/teloxide/teloxide/blob/master/media/command.gif?raw=true" width="420" />
 </div>
 
+### Inline Keyboards
+Inline keyboards are strongly typed and defined declaratively using the `InlineButtons` derive macro. Buttons are organized into rows and can carry typed payloads — similar to how `BotCommands` works for text commands, but for callback queries.
+The following bot renders an inline keyboard and handles each button variant:
+
+- A static link button (no payload)
+- A button carrying the message ID
+- A button carrying the message date
+- A URL button linking to an external page
+
+[[`examples/inline_keyboard_enum.rs`](crates/teloxide/examples/inline_keyboard_enum.rs)]
+```rust,norun
+teloxide::{
+    dispatching::UpdateFilterExt, dptree::case, prelude::*, utils::button::InlineButtons,
+};
+
+#[derive(InlineButtons, Clone)]
+#[button(fields_separator = "|")]
+enum Keyboard {
+    #[button(text = "Teloxide github link", row = 1)]
+    GithubLink,
+    #[button(text = "Message id of my message", row = 1)]
+    MessageId(i32),
+    #[button(rename = "DoM", text = "Date of my message", row = 2)]
+    DateOfMessage { date: String },
+    #[button(text = "Bot API link", url = "https://core.telegram.org/bots/api", row = 3)]
+    BotAPILink,
+}
+```
+
+Each variant maps to a button. The `row` attribute controls layout, `rename` shortens the underlying callback data (Telegram enforces a 64-character limit), and `url` turns a button into an external link with no callback.
+Keyboards are built by calling `Keyboard::build_keyboard(...)`, passing any payload values as positional arguments in declaration order:
+
+```rust,norun
+keyboard = Keyboard::build_keyboard(msg.id.0, msg.date.to_string());
+bot.send_message(msg.chat.id, "What do you want to know?")
+    .reply_markup(keyboard.unwrap())
+    .await?;
+```
+
+Callback handling mirrors the `BotCommands` dispatch pattern — use `.filter_callback_data::<Keyboard>()` to parse and route incoming queries, then extract typed fields directly from `dptree` cases:
+
+```rust,norun
+Update::filter_callback_query()
+    .filter_callback_data::<Keyboard>()
+    .branch(case![Keyboard::GithubLink].endpoint(github_link))
+    .branch(case![Keyboard::MessageId(id)].endpoint(message_id))
+    .branch(case![Keyboard::DateOfMessage { date }].endpoint(date_of_message))
+```
+
+For further usage examples, see `examples/inline_buttons_enum.rs` and `examples/inline_keyboard_enum.rs`.
+
 ### Dialogues management
 
 A dialogue is typically described by an enumeration where each variant is one possible state of the dialogue. There are also _state handler functions_, which may turn a dialogue from one state to another, thereby forming an [FSM].
