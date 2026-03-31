@@ -182,8 +182,8 @@ The following bot renders an inline keyboard and handles each button variant:
 - A URL button linking to an external page
 
 [[`examples/inline_keyboard_enum.rs`](crates/teloxide/examples/inline_keyboard_enum.rs)]
-```rust,norun
-teloxide::{
+```rust,no_run
+use teloxide::{
     dispatching::UpdateFilterExt, dptree::case, prelude::*, utils::button::InlineButtons,
 };
 
@@ -204,7 +204,7 @@ enum Keyboard {
 Each variant maps to a button. The `row` attribute controls layout, `rename` shortens the underlying callback data (Telegram enforces a 64-character limit), and `url` turns a button into an external link with no callback.
 Keyboards are built by calling `Keyboard::build_keyboard(...)`, passing any payload values as positional arguments in declaration order:
 
-```rust,norun
+```rust,ignore
 keyboard = Keyboard::build_keyboard(msg.id.0, msg.date.to_string());
 bot.send_message(msg.chat.id, "What do you want to know?")
     .reply_markup(keyboard.unwrap())
@@ -213,7 +213,7 @@ bot.send_message(msg.chat.id, "What do you want to know?")
 
 Callback handling mirrors the `BotCommands` dispatch pattern — use `.filter_callback_data::<Keyboard>()` to parse and route incoming queries, then extract typed fields directly from `dptree` cases:
 
-```rust,norun
+```rust,ignore
 Update::filter_callback_query()
     .filter_callback_data::<Keyboard>()
     .branch(case![Keyboard::GithubLink].endpoint(github_link))
