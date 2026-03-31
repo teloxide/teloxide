@@ -42,6 +42,7 @@ use crate::types::{Recipient, UserId};
 /// [`ChatAdministrators`]: BotCommandScope::ChatAdministrators
 /// [`ChatMember`]: BotCommandScope::ChatMember
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum BotCommandScope {

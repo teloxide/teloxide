@@ -7,6 +7,7 @@ use crate::types::{PhotoSize, UserId};
 ///
 /// [`KeyboardButtonRequestUsers`]: crate::types::KeyboardButtonRequestUsers
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SharedUser {
     /// Identifier of the shared user
     pub user_id: UserId,

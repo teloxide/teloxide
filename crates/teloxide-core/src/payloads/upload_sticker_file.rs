@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{FileMeta, InputFile, StickerFormat, UserId};
+use crate::types::{File, InputFile, StickerFormat, UserId};
 
 impl_payload! {
     @[multipart = sticker]
@@ -13,7 +13,7 @@ impl_payload! {
     /// [ReplaceStickerInSet]: https://docs.rs/teloxide/latest/teloxide/payloads/struct.ReplaceStickerInSet.html
     /// [`File`]: crate::types::File
     #[derive(Debug, Clone, Serialize)]
-    pub UploadStickerFile (UploadStickerFileSetters) => FileMeta {
+    pub UploadStickerFile (UploadStickerFileSetters) => File {
         required {
             /// User identifier of sticker file owner
             pub user_id: UserId,

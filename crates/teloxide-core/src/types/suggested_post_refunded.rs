@@ -7,6 +7,7 @@ use crate::types::Message;
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostrefunded).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostRefunded {
     /// Message containing the suggested post. Note that the Message object in
     /// this field will not contain the reply_to_message field even if it itself
@@ -23,6 +24,7 @@ pub struct SuggestedPostRefunded {
 /// their payment.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum SuggestedPostRefundReason {
     PostDeleted,
     PaymentRefunded,

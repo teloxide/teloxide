@@ -36,6 +36,7 @@ bitflags::bitflags! {
     /// ```
     #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
     #[serde(from = "ChatPermissionsRaw", into = "ChatPermissionsRaw")]
+    #[cfg_attr(test, derive(schemars::JsonSchema))]
     pub struct ChatPermissions: u16 {
         /// Set if the user is allowed to send text messages, contacts,
         /// giveaways, giveaway winners, invoices, locations and venues
@@ -209,6 +210,7 @@ impl ChatPermissions {
 
 /// Helper for (de)serialization
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 struct ChatPermissionsRaw {
     #[serde(default, skip_serializing_if = "Not::not")]
     can_send_messages: bool,
