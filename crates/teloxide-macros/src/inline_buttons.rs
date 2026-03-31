@@ -80,7 +80,7 @@ pub(crate) fn inline_buttons_impl(input: DeriveInput) -> Result<TokenStream> {
 
     let fn_parse = impl_parse(&var_info, &var_init, &button_enum.fields_separator);
     let fn_stringify = impl_stringify(&var_stringify, &button_enum.fields_separator);
-    let fn_build_keyboard = impl_build_keyboard(&var_construct_variant, &var_parameter);
+    let fn_build_keyboard = impl_build_keyboard(&var_info, &var_construct_variant, &var_parameter);
 
     let trait_impl = quote! {
         impl teloxide::utils::button::InlineButtons for #type_name {
@@ -144,21 +144,34 @@ fn impl_stringify(
 }
 
 fn impl_build_keyboard(
+    infos: &[Button],
     construct_variants: &[proc_macro2::TokenStream],
     parameters: &[Option<proc_macro2::TokenStream>],
 ) -> proc_macro2::TokenStream {
+    let mut rows = vec![];
+
+    // First collect everything (user may have put rows out of order)
+    for (button, construct_button) in infos.iter().zip(construct_variants) {
+        if button.row as usize > rows.len() {
+            rows.push(vec![])
+        }
+        rows[(button.row - 1) as usize].push(construct_button)
+    }
+
+    let mut construct_rows = vec![];
+
+    for row in rows {
+        construct_rows.push(quote! { vec![#(#row),*] });
+    }
+
+    let construct_keyboard =
+        quote! {teloxide::types::InlineKeyboardMarkup::new(vec![#(#construct_rows),*])};
+
     let only_parameters: Vec<proc_macro2::TokenStream> =
         parameters.iter().filter_map(|p| p.clone()).collect();
     quote! {
         fn build_keyboard( #(#only_parameters),* ) -> ::std::result::Result<teloxide::types::InlineKeyboardMarkup, teloxide::utils::button::StringifyError> {
-            let mut buttons = vec![];
-
-            #(
-                buttons.push(vec![#construct_variants?]);
-            )*
-
-            Ok(teloxide::types::InlineKeyboardMarkup::new(buttons))
-
+            Ok(#construct_keyboard)
         }
     }
 }

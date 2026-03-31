@@ -17,11 +17,11 @@ pub(crate) fn impl_keyboard_args(
             if let Some(url) = button_url {
                 Ok((
                     // url is checked in button.rs
-                    quote! { Ok(teloxide::types::InlineKeyboardButton::url(#button_text, ::reqwest::Url::parse(#url).unwrap())) },
+                    quote! { teloxide::types::InlineKeyboardButton::url(#button_text, ::reqwest::Url::parse(#url).unwrap()) },
                     None,
                 ))
             } else {
-                Ok((quote! { #self_variant.build_button(#button_text) }, None))
+                Ok((quote! { #self_variant.build_button(#button_text)? }, None))
             }
         }
         Fields::Unnamed(fields) => impl_keyboard_args_unnamed(
@@ -66,7 +66,7 @@ pub(crate) fn impl_keyboard_args_unnamed(
     let all_names = quote! { #(#names),* };
     let all_types = quote! { #(#types),* };
 
-    let construct_variant = quote! { #variant( #all_names ).build_button(#button_text) };
+    let construct_variant = quote! { #variant( #all_names ).build_button(#button_text)? };
     let parameter = quote! { (#all_names): (#all_types) };
 
     Ok((construct_variant, Some(parameter)))
@@ -112,7 +112,7 @@ pub(crate) fn impl_keyboard_args_named(
     let all_types = quote! { #(#types),* };
 
     let construct_variant =
-        quote! { #variant { #all_names_construct_variant }.build_button(#button_text) };
+        quote! { #variant { #all_names_construct_variant }.build_button(#button_text)? };
     let parameter = quote! { (#all_names): (#all_types) };
 
     Ok((construct_variant, Some(parameter)))
