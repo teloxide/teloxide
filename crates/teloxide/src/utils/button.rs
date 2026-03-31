@@ -32,12 +32,43 @@ use teloxide_core::types::InlineKeyboardButton;
 #[cfg(feature = "macros")]
 pub use teloxide_macros::InlineButtons;
 
-/// An enumeration of keyboards buttons.
+/// An enumeration of inline keyboard buttons with automatic parsing,
+/// serialization, and keyboard generation.
 ///
-/// # Example
+/// This trait is implemented via the `#[derive(InlineButtons)]` macro.
+/// It allows defining inline keyboard buttons using enum variants.
+///
+/// Each enum variant represents a button. Variants may:
+/// - have no fields (unit variants),
+/// - contain unnamed fields (tuple variants),
+/// - contain named fields (struct variants).
+///
+/// The macro generates:
+/// - parsing from callback data (`parse`)
+/// - serialization into callback data (`stringify`)
+/// - button construction (`build_button`)
+/// - keyboard construction (`build_keyboard`)
+///
+/// For usage examples look to `examples/inline_buttons_enum.rs` and
+/// `examples/inline_keyboard_enum.rs`
+///
+/// ---
+///
+/// # Callback data format
+///
+/// Callback data is serialized as:
+///
+/// ```text
+/// VariantName<sep>arg1<sep>arg2...
+/// ```
+///
+/// where `<sep>` is `;` by default, or a custom separator.
+///
+/// ## Example
+///
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+/// use teloxide::utils::button::InlineButtons;
 ///
 /// #[derive(InlineButtons, Debug, PartialEq)]
 /// enum CallbackButtons {
@@ -46,86 +77,228 @@ pub use teloxide_macros::InlineButtons;
 /// }
 ///
 /// let data = "Fruit;apple";
-/// let expected = CallbackButtons::Fruit("apple".to_string());
-/// let actual = CallbackButtons::parse(data).unwrap();
-/// assert_eq!(actual, expected);
+/// let parsed = CallbackButtons::parse(data).unwrap();
+/// assert_eq!(parsed, CallbackButtons::Fruit("apple".into()));
+///
+/// assert_eq!(parsed.stringify().unwrap(), data);
 /// # }
 /// ```
+///
+/// ---
 ///
 /// # Building buttons
 ///
-/// Using this macro you can build buttons to achieve the same result you would
-/// with regular builders:
+/// Each enum variant can be turned into an [`InlineKeyboardButton`].
+///
 /// ```
 /// # #[cfg(feature = "macros")] {
 /// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
 ///
 /// #[derive(InlineButtons, Debug, PartialEq)]
-/// enum CallbackButtons {
-///     Button1,
-///     Button2,
+/// enum Buttons {
+///     A,
 /// }
 ///
-/// let text = "Text for button 1";
-/// let actual = CallbackButtons::Button1.build_button(text).unwrap();
-/// let expected = InlineKeyboardButton::callback(text, "Button1");
-/// assert_eq!(actual, expected);
+/// let button = Buttons::A.build_button("Click me").unwrap();
+/// let expected = InlineKeyboardButton::callback("Click me", "A");
+///
+/// assert_eq!(button, expected);
 /// # }
 /// ```
 ///
-/// # Enum attributes
-///  1. `#[button(fields_separator = "separator")]` change the separator of the
-///     fields (the default is `;`). Useful if the default separator can be in
-///     the data.
+/// ---
 ///
-/// ## Example
+/// # Building keyboards
+///
+/// The derive macro also generates a `build_keyboard` method on the enum.
+///
+/// This method:
+/// - constructs all buttons
+/// - arranges them into rows
+/// - returns [`InlineKeyboardMarkup`]
+///
+/// Arguments required by variants are passed as function parameters.
 ///
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+/// use teloxide::utils::button::InlineButtons;
+///
+/// #[derive(InlineButtons, Debug)]
+/// enum Buttons {
+///     #[button(row = 1)]
+///     A,
+///     #[button(row = 2)]
+///     B(i32),
+/// }
+///
+/// let keyboard = Buttons::build_keyboard(42).unwrap();
+/// assert_eq!(keyboard.inline_keyboard.len(), 2);
+/// # }
+/// ```
+///
+/// ## Row behavior
+///
+/// - Rows are 1-based (`row = 1` is the first row)
+/// - Multiple buttons can share the same row
+/// - Rows are grouped automatically
+///
+/// ---
+///
+/// # Enum attributes
+///
+/// ## `fields_separator`
+///
+/// Changes the separator used between fields.
+///
+/// Default: `;`
+///
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::utils::button::InlineButtons;
 ///
 /// #[derive(InlineButtons, Debug, PartialEq)]
 /// #[button(fields_separator = "|")]
-/// enum CallbackButtons {
-///     Fruit(String),
-///     Other,
+/// enum Buttons {
+///     A(i32),
 /// }
 ///
-/// let data = "Fruit|apple";
-/// let expected = CallbackButtons::Fruit("apple".to_string());
-/// let actual = CallbackButtons::parse(data).unwrap();
-/// assert_eq!(actual, expected);
+/// let data = "A|10";
+/// assert_eq!(Buttons::parse(data).unwrap(), Buttons::A(10));
 /// # }
 /// ```
 ///
+/// ---
+///
 /// # Variant attributes
-/// All variant attributes override the corresponding `enum` attributes.
-///  1. `#[button(fields_separator = "separator")]` change the separator of the
-///     field (the default is `;`). Useful if the default separator can be in
-///     the data.
-///  2. `#[button(rename = "rename")]` change the serialized name of the field.
-///     Useful if the enum variants name is long (64 character is the data limit
-///     in the TBA).
+///
+/// Variant attributes override enum-level settings.
+///
+/// ## `rename`
+///
+/// Overrides the serialized name of the variant.
+///
+/// Useful because Telegram limits callback data to **64 characters**.
+///
+/// ```
+/// # #[cfg(feature = "macros")] {
+/// use teloxide::utils::button::InlineButtons;
+///
+/// #[derive(InlineButtons, Debug, PartialEq)]
+/// enum Buttons {
+///     #[button(rename = "f")]
+///     Fruit(String),
+/// }
+///
+/// assert_eq!(Buttons::parse("f;apple").unwrap(), Buttons::Fruit("apple".into()));
+/// # }
+/// ```
+///
+/// ---
+///
+/// ## `row`
+///
+/// Assigns a button to a keyboard row.
+///
+/// ```
+/// #[button(row = 2)]
+/// ```
+///
+/// Constraints:
+/// - Must be ≥ 1
+/// - Rows must be incremental in order
+///
+/// ---
+///
+/// ## `text`
+///
+/// Sets the button display text.
+///
+/// ```
+/// #[button(text = "Click me")]
+/// ```
+///
+/// If not provided, defaults to variant name (or `rename` if present)
+///
+/// ---
+///
+/// # Special button types
+///
+/// The following attributes change button behavior instead of using callback
+/// data.
+///
+/// These are **mutually exclusive** and only valid on **unit variants**:
+///
+/// - `url = "..."` Creates a URL button
+///
+/// - `login_url = "..."` Creates a login button
+///
+/// - `webapp_url = "..."` Creates a WebApp button
+///
+/// - `switch_inline_query = "..."`
+///
+/// - `switch_inline_query_current_chat = "..."`
+///
+/// - `copy_text = "..."`
+///
+/// - `game = true`
+///
+/// - `pay = true`
 ///
 /// ## Example
 ///
 /// ```
 /// # #[cfg(feature = "macros")] {
-/// use teloxide::{types::InlineKeyboardButton, utils::button::InlineButtons};
+/// use teloxide::utils::button::InlineButtons;
 ///
-/// #[derive(InlineButtons, Debug, PartialEq)]
-/// enum CallbackButtons {
-///     #[button(rename = "f")]
-///     Fruit(String),
-///     Other,
+/// #[derive(InlineButtons)]
+/// enum Buttons {
+///     #[button(url = "https://example.com")]
+///     Link,
 /// }
-///
-/// let data = "f;apple";
-/// let expected = CallbackButtons::Fruit("apple".to_string());
-/// let actual = CallbackButtons::parse(data).unwrap();
-/// assert_eq!(actual, expected);
 /// # }
 /// ```
+///
+/// Constraints:
+/// - Only one of these may be specified per variant
+/// - Cannot be used on variants with fields
+///
+/// ---
+///
+/// # Notes
+///
+/// - Callback data must not exceed Telegram limits (64 characters)
+/// - Field values must not contain the separator
+/// - Argument order in build_keyboard must match variant definition
+///
+/// ---
+///
+/// # Trait methods
+///
+/// ## `parse`
+///
+/// Parses callback data into an enum variant.
+///
+/// ## `stringify`
+///
+/// Serializes the enum into callback data.
+///
+/// ## `build_button`
+///
+/// Builds a single [`InlineKeyboardButton`] using callback data.
+///
+/// ## `build_keyboard`
+///
+/// Generated by the derive macro. Builds a full keyboard.
+///
+/// ---
+///
+/// # See also
+///
+/// - [`InlineKeyboardButton`]
+/// - [`InlineKeyboardMarkup`]
+///
+/// [`InlineKeyboardButton`]: crate::types::InlineKeyboardButton
+/// [`InlineKeyboardMarkup`]: crate::types::InlineKeyboardMarkup
 pub trait InlineButtons: Sized {
     /// Parses the callback data.
     fn parse(s: &str) -> Result<Self, ParseError>;
@@ -133,9 +306,9 @@ pub trait InlineButtons: Sized {
     /// Stringifies the callback data.
     fn stringify(self) -> Result<String, StringifyError>;
 
-    /// Builds an [`InlineKeyboardButton`] from the enum variant
+    /// Builds an [`InlineKeyboardButton`] from the enum variant.
     ///
-    /// [`InlineKeyboardButton`]: crate::types::InlineKeyboardButton
+    /// This uses the serialized callback data internally.
     fn build_button<T>(self, text: T) -> Result<InlineKeyboardButton, StringifyError>
     where
         T: Into<String>,

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+- `InlineButtons` added for better callback and keyboard generation ([#1204](https://github.com/teloxide/teloxide/pull/1204/))
+
 ## 0.10.0 - 2025-06-19
 
 ### Changed

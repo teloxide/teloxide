@@ -1,4 +1,5 @@
 // An example to show how to use `InlineButtons` macro
+// For documentation reffer to teloxide::utils::button::InlineButtons docstring
 use teloxide::{
     dispatching::UpdateFilterExt, dptree::case, prelude::*, types::InlineKeyboardMarkup,
     utils::button::InlineButtons,
