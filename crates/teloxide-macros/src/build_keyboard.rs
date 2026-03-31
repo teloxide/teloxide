@@ -1,62 +1,129 @@
-use crate::{error::compile_error_at, Result};
+use crate::{button::Button, Result};
 use heck::ToSnakeCase;
-use proc_macro2::Span;
 use quote::quote;
 use syn::{spanned::Spanned, Fields, FieldsNamed, FieldsUnnamed};
 
 pub(crate) fn impl_keyboard_args(
     fields: &Fields,
-    variant_span: Span,
     self_string_variant: String,
     self_variant: proc_macro2::TokenStream,
-    button_text: String,
-    button_url: Option<String>,
+    button: &Button,
 ) -> Result<(proc_macro2::TokenStream, Option<proc_macro2::TokenStream>)> {
+    let button_text = &button.text;
     match fields {
-        Fields::Unit => {
-            if let Some(url) = button_url {
-                Ok((
-                    // url is checked in button.rs
-                    quote! { teloxide::types::InlineKeyboardButton::url(#button_text, ::reqwest::Url::parse(#url).unwrap()) },
-                    None,
-                ))
-            } else {
-                Ok((quote! { #self_variant.build_button(#button_text)? }, None))
-            }
+        Fields::Unit => impl_keyboard_args_unit(button_text, self_variant, button),
+        Fields::Unnamed(fields) => {
+            impl_keyboard_args_unnamed(fields, self_string_variant, self_variant, button_text)
         }
-        Fields::Unnamed(fields) => impl_keyboard_args_unnamed(
-            fields,
-            variant_span,
-            self_string_variant,
-            self_variant,
-            button_text,
-            button_url,
-        ),
-        Fields::Named(named) => impl_keyboard_args_named(
-            named,
-            variant_span,
-            self_string_variant,
-            self_variant,
-            button_text,
-            button_url,
-        ),
+        Fields::Named(named) => {
+            impl_keyboard_args_named(named, self_string_variant, self_variant, button_text)
+        }
+    }
+}
+
+pub(crate) fn impl_keyboard_args_unit(
+    button_text: &String,
+    variant: proc_macro2::TokenStream,
+    button: &Button,
+) -> Result<(proc_macro2::TokenStream, Option<proc_macro2::TokenStream>)> {
+    if let Some(url) = &button.url {
+        Ok((
+            // url is checked in button.rs
+            quote! { teloxide::types::InlineKeyboardButton::url(#button_text, ::reqwest::Url::parse(#url).unwrap()) },
+            None,
+        ))
+    } else if let Some(login_url) = &button.login_url {
+        Ok((
+            // url is checked in button.rs
+            quote! {
+                teloxide::types::InlineKeyboardButton::login(
+                    #button_text,
+                    teloxide::types::LoginUrl {
+                        url: ::reqwest::Url::parse(#login_url).unwrap(),
+                        forward_text: None,
+                        bot_username: None,
+                        request_write_access: None
+                    }
+                )
+            },
+            None,
+        ))
+    } else if let Some(webapp_url) = &button.webapp_url {
+        Ok((
+            // url is checked in button.rs
+            quote! {
+                teloxide::types::InlineKeyboardButton::web_app(
+                    #button_text,
+                    teloxide::types::WebAppInfo {
+                        url: ::reqwest::Url::parse(#webapp_url).unwrap(),
+                    }
+                )
+            },
+            None,
+        ))
+    } else if let Some(switch_inline_query) = &button.switch_inline_query {
+        Ok((
+            quote! {
+                teloxide::types::InlineKeyboardButton::switch_inline_query(
+                    #button_text,
+                    #switch_inline_query
+                )
+            },
+            None,
+        ))
+    } else if let Some(switch_inline_query_current_chat) = &button.switch_inline_query_current_chat
+    {
+        Ok((
+            quote! {
+                teloxide::types::InlineKeyboardButton::switch_inline_query_current_chat(
+                    #button_text,
+                    #switch_inline_query_current_chat
+                )
+            },
+            None,
+        ))
+    } else if let Some(copy_text) = &button.copy_text {
+        Ok((
+            quote! {
+                teloxide::types::InlineKeyboardButton::copy_text_button(
+                    #button_text,
+                    teloxide::types::CopyTextButton {
+                        text: #copy_text.to_owned()
+                    }
+                )
+            },
+            None,
+        ))
+    } else if button.game.is_some() && button.game.unwrap() {
+        Ok((
+            quote! {
+                teloxide::types::InlineKeyboardButton::callback_game(
+                    #button_text,
+                    teloxide::types::CallbackGame {}
+                )
+            },
+            None,
+        ))
+    } else if button.pay.is_some() && button.pay.unwrap() {
+        Ok((
+            quote! {
+                teloxide::types::InlineKeyboardButton::pay(
+                    #button_text,
+                )
+            },
+            None,
+        ))
+    } else {
+        Ok((quote! { #variant.build_button(#button_text)? }, None))
     }
 }
 
 pub(crate) fn impl_keyboard_args_unnamed(
     data: &FieldsUnnamed,
-    variant_span: Span,
     string_variant: String,
     variant: proc_macro2::TokenStream,
-    button_text: String,
-    button_url: Option<String>,
+    button_text: &String,
 ) -> Result<(proc_macro2::TokenStream, Option<proc_macro2::TokenStream>)> {
-    if button_url.is_some() {
-        return Err(compile_error_at(
-            "`url` can only exist on unit enum variants, please remove all fields.",
-            variant_span,
-        ));
-    }
     let names = (0..data.unnamed.len()).map(|i| {
         // This is needed to avoid the scenario where multiple variants are unnamed
         syn::Ident::new(&format!("{}_{i}", string_variant.to_snake_case()), variant.span())
@@ -74,18 +141,10 @@ pub(crate) fn impl_keyboard_args_unnamed(
 
 pub(crate) fn impl_keyboard_args_named(
     data: &FieldsNamed,
-    variant_span: Span,
     string_variant: String,
     variant: proc_macro2::TokenStream,
-    button_text: String,
-    button_url: Option<String>,
+    button_text: &String,
 ) -> Result<(proc_macro2::TokenStream, Option<proc_macro2::TokenStream>)> {
-    if button_url.is_some() {
-        return Err(compile_error_at(
-            "`url` can only exist on unit enum variants, please remove all fields.",
-            variant_span,
-        ));
-    }
     let names = data.named.iter().map(|f| {
         (
             f.ident.as_ref().unwrap(),

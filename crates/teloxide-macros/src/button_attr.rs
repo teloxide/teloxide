@@ -13,6 +13,13 @@ pub(crate) struct ButtonAttrs {
     pub text: Option<(String, Span)>,
     pub row: Option<(u8, Span)>,
     pub url: Option<(String, Span)>,
+    pub login_url: Option<(String, Span)>,
+    pub webapp_url: Option<(String, Span)>,
+    pub switch_inline_query: Option<(String, Span)>,
+    pub switch_inline_query_current_chat: Option<(String, Span)>,
+    pub copy_text: Option<(String, Span)>,
+    pub game: Option<(bool, Span)>,
+    pub pay: Option<(bool, Span)>,
     pub fields_separator: Option<(String, Span)>,
 }
 
@@ -30,6 +37,13 @@ enum ButtonAttrKind {
     Text(String),
     Row(u8),
     Url(String),
+    LoginUrl(String),
+    WebAppUrl(String),
+    SwitchInlineQuery(String),
+    SwitchInlineQueryCurrentChat(String),
+    CopyText(String),
+    Game(bool),
+    Pay(bool),
     FieldsSeparator(String),
 }
 
@@ -41,7 +55,20 @@ impl ButtonAttrs {
             attributes,
             is_button_attribute,
             ButtonAttr::parse,
-            Self { rename: None, text: None, row: None, url: None, fields_separator: None },
+            Self {
+                rename: None,
+                text: None,
+                row: None,
+                url: None,
+                login_url: None,
+                webapp_url: None,
+                switch_inline_query: None,
+                switch_inline_query_current_chat: None,
+                copy_text: None,
+                game: None,
+                pay: None,
+                fields_separator: None,
+            },
             |mut this, attr| {
                 fn insert<T>(opt: &mut Option<(T, Span)>, x: T, sp: Span) -> Result<()> {
                     match opt {
@@ -59,6 +86,15 @@ impl ButtonAttrs {
                     Text(t) => insert(&mut this.text, t, attr.sp),
                     Row(r) => insert(&mut this.row, r, attr.sp),
                     Url(u) => insert(&mut this.url, u, attr.sp),
+                    LoginUrl(l) => insert(&mut this.login_url, l, attr.sp),
+                    WebAppUrl(w) => insert(&mut this.webapp_url, w, attr.sp),
+                    SwitchInlineQuery(s) => insert(&mut this.switch_inline_query, s, attr.sp),
+                    SwitchInlineQueryCurrentChat(s) => {
+                        insert(&mut this.switch_inline_query_current_chat, s, attr.sp)
+                    }
+                    CopyText(c) => insert(&mut this.copy_text, c, attr.sp),
+                    Game(g) => insert(&mut this.game, g, attr.sp),
+                    Pay(p) => insert(&mut this.pay, p, attr.sp),
                 }?;
 
                 Ok(this)
@@ -97,11 +133,22 @@ impl ButtonAttr {
                     "text" => Text(value.expect_string()?),
                     "row" => Row(value.expect_u8()?),
                     "url" => Url(value.expect_string()?),
+                    "login_url" => LoginUrl(value.expect_string()?),
+                    "webapp_url" => WebAppUrl(value.expect_string()?),
+                    "switch_inline_query" => SwitchInlineQuery(value.expect_string()?),
+                    "switch_inline_query_current_chat" => {
+                        SwitchInlineQueryCurrentChat(value.expect_string()?)
+                    }
+                    "copy_text" => CopyText(value.expect_string()?),
+                    "game" => Game(value.expect_bool()?),
+                    "pay" => Pay(value.expect_bool()?),
                     "fields_separator" => FieldsSeparator(value.expect_string()?),
                     _ => {
                         return Err(compile_error_at(
                             "unexpected attribute name (expected one of `rename`, `text`, `row`, \
-                             `url` or `fields_separator`)",
+                             `url`, `login_url`, `webapp_url`, `switch_inline_query`, \
+                             `switch_inline_query_current_chat`, `copy_text`, `game`, `pay` or \
+                             `fields_separator`)",
                             attr.span(),
                         ))
                     }

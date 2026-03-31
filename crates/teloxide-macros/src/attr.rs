@@ -202,6 +202,13 @@ impl AttrValue {
         })
     }
 
+    pub fn expect_bool(self) -> Result<bool> {
+        self.expect("a bool", |this| match this {
+            AttrValue::Lit(Lit::Bool(s)) => Ok(s.value()),
+            _ => Err(this),
+        })
+    }
+
     /// Unwraps this value if it's a vector of `T`.
     /// ## Example
     /// ```text

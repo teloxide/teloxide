@@ -13,9 +13,34 @@ pub(crate) struct ButtonEnum {
 impl ButtonEnum {
     pub fn from_attributes(attributes: &[syn::Attribute]) -> Result<Self> {
         let attrs = ButtonAttrs::from_attributes(attributes)?;
-        let ButtonAttrs { rename, fields_separator, row, text, url } = attrs;
+        let ButtonAttrs {
+            rename,
+            fields_separator,
+            row,
+            text,
+            url,
+            login_url,
+            webapp_url,
+            switch_inline_query,
+            switch_inline_query_current_chat,
+            copy_text,
+            game,
+            pay,
+        } = attrs;
 
-        variants_only_attr![rename, row, text, url];
+        variants_only_attr![
+            rename,
+            row,
+            text,
+            url,
+            login_url,
+            webapp_url,
+            switch_inline_query,
+            switch_inline_query_current_chat,
+            copy_text,
+            game,
+            pay
+        ];
 
         let separator = match fields_separator {
             Some((separator, sp)) => {
