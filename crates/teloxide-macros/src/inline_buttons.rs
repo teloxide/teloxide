@@ -18,8 +18,13 @@ pub(crate) fn inline_buttons_impl(input: DeriveInput) -> Result<TokenStream> {
         .variants
         .iter()
         .map(|variant| {
-            let button =
-                Button::new(&variant.ident.to_string(), current_row, &variant.attrs, &button_enum)?;
+            let button = Button::new(
+                &variant.ident.to_string(),
+                current_row,
+                &variant.attrs,
+                &button_enum,
+                &variant.fields,
+            )?;
 
             if button.row > current_row {
                 return Err(compile_error_at(
@@ -62,17 +67,8 @@ pub(crate) fn inline_buttons_impl(input: DeriveInput) -> Result<TokenStream> {
                 self_string_variant.clone(),
             );
 
-            let button_text = button.text.clone();
-            let button_url = button.url.clone();
-
-            let (construct_variant, parameter) = impl_keyboard_args(
-                &variant.fields,
-                variant.span(),
-                self_string_variant,
-                self_variant,
-                button_text,
-                button_url,
-            )?;
+            let (construct_variant, parameter) =
+                impl_keyboard_args(&variant.fields, self_string_variant, self_variant, &button)?;
 
             Ok((parse, button, stringify, construct_variant, parameter))
         })
