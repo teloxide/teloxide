@@ -394,6 +394,27 @@ impl_api_error! {
         /// crate::payloads::GetUserProfilePhotos
         UserNotFound = "Bad Request: user not found",
 
+        /// Occurs when the supplied user identifier does not refer to a
+        /// valid participant of the target chat (for example, the user
+        /// has hidden membership or never joined).
+        ///
+        /// May happen in methods:
+        /// 1. [`GetChatMember`]
+        ///
+        /// [`GetChatMember`]: crate::payloads::GetChatMember
+        ParticipantIdInvalid = "Bad Request: PARTICIPANT_ID_INVALID",
+
+        /// Occurs when bot tries to perform an action that requires chat
+        /// administrator rights without having them. Telegram also returns
+        /// this for [`GetChatMember`] queries against members whose
+        /// information is only visible to chat administrators.
+        ///
+        /// May happen in methods:
+        /// 1. [`GetChatMember`]
+        ///
+        /// [`GetChatMember`]: crate::payloads::GetChatMember
+        ChatAdminRequired = "Bad Request: CHAT_ADMIN_REQUIRED",
+
         /// Occurs when bot tries to send [`SetChatDescription`] with same text as
         /// in the current description.
         ///
@@ -914,6 +935,14 @@ mod tests {
             ("{\"data\": \"Bad Request: message is not a poll\"}", ApiError::MessageIsNotAPoll),
             ("{\"data\": \"Bad Request: chat not found\"}", ApiError::ChatNotFound),
             ("{\"data\": \"Bad Request: user not found\"}", ApiError::UserNotFound),
+            (
+                "{\"data\": \"Bad Request: PARTICIPANT_ID_INVALID\"}",
+                ApiError::ParticipantIdInvalid,
+            ),
+            (
+                "{\"data\": \"Bad Request: CHAT_ADMIN_REQUIRED\"}",
+                ApiError::ChatAdminRequired,
+            ),
             (
                 "{\"data\": \"Bad Request: chat description is not modified\"}",
                 ApiError::ChatDescriptionIsNotModified,
