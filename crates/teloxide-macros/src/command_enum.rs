@@ -1,6 +1,9 @@
 use crate::{
-    command_attr::CommandAttrs, error::compile_error_at, fields_parse::ParserType,
-    rename_rules::RenameRule, Result,
+    command_attr::{match_separator, CommandAttrs},
+    error::compile_error_at,
+    fields_parse::ParserType,
+    rename_rules::RenameRule,
+    Result,
 };
 
 /// Create a if block that checks if the given attribute is applied to a enum
@@ -47,10 +50,7 @@ impl CommandEnum {
 
         let mut parser = parser.map(|(p, _)| p).unwrap_or(ParserType::Default);
 
-        // FIXME: Error on unused separator
-        if let (ParserType::Split { separator }, Some((s, _))) = (&mut parser, &separator) {
-            *separator = Some(s.clone())
-        }
+        match_separator(&mut parser, separator)?;
 
         Ok(Self {
             prefix: prefix.map(|(p, _)| p).unwrap_or_else(|| "/".to_owned()),

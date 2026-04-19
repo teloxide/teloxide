@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `premium_animation` field of `StickerKind::Regular` enum variant is now of type `Option<File>`, not `Option<FileMeta>`
   - `users` field of `VideoChatParticipantsInvited` struct now is of type `Vec<User>`, not `Option<Vec<User>>`
 
+- Don't ignore argument separator in CommandEnum and both separators in Command ([#1462](https://github.com/teloxide/teloxide/pull/1462))
+  - Now it's possible to specify `separator` in each command variant
+  - Usage of `command_separator` in a command variant now leads to a compile time error instead of silent ignoring
+  - Now usage of `separator` without `parse_with = "split"` both in the command enum and in the command variant gives a compile time error
+
 ### Changed
 
 - Some dependencies were bumped: `derive_more` to `2.0.1`, `deadpool-redis` to `0.22.0` ([#1408](https://github.com/teloxide/teloxide/pull/1408))

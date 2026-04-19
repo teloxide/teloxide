@@ -209,6 +209,30 @@ fn is_command_attribute(a: &Attribute) -> bool {
     matches!(a.path().get_ident(), Some(ident) if ident == "command")
 }
 
+pub(crate) fn match_separator(
+    parser: &mut ParserType,
+    separator: Option<(String, Span)>,
+) -> Result<()> {
+    match (parser, separator) {
+        (ParserType::Split { separator }, Some((s, _))) => *separator = Some(s),
+        (ParserType::Default, Some((_, sp))) => {
+            return Err(compile_error_at(
+                "`separator` can only be used with `parse_with = \"split\"`",
+                sp,
+            ))
+        }
+        (ParserType::Custom(_), Some((_, sp))) => {
+            return Err(compile_error_at(
+                "`separator` can only be used with `parse_with = \"split\"`",
+                sp,
+            ))
+        }
+        (_, None) => {}
+    }
+
+    Ok(())
+}
+
 fn is_doc_comment(a: &Attribute) -> bool {
     matches!(
         a.path().get_ident(),
