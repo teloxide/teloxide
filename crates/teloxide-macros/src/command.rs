@@ -1,8 +1,11 @@
 use proc_macro2::Span;
 
 use crate::{
-    command_attr::CommandAttrs, command_enum::CommandEnum, error::compile_error_at,
-    fields_parse::ParserType, Result,
+    command_attr::{match_separator, CommandAttrs},
+    command_enum::CommandEnum,
+    error::compile_error_at,
+    fields_parse::ParserType,
+    Result,
 };
 
 pub(crate) struct Command {
@@ -37,13 +40,18 @@ impl Command {
             rename,
             aliases,
             parser,
-            // FIXME: error on/do not ignore separator
-            separator: _,
-            // FIXME: error on/do not ignore command separator
-            command_separator: _,
+            separator,
+            command_separator,
             hide,
             hide_aliases,
         } = attrs;
+
+        if let Some((_, sp)) = command_separator {
+            return Err(compile_error_at(
+                "`command_separator` can only be applied to the enum, not to individual variants",
+                sp,
+            ));
+        }
 
         let name = match (rename, rename_rule) {
             (Some((rename, _)), None) => rename,
@@ -58,7 +66,9 @@ impl Command {
         };
 
         let prefix = prefix.map(|(p, _)| p).unwrap_or_else(|| global_options.prefix.clone());
-        let parser = parser.map(|(p, _)| p).unwrap_or_else(|| global_options.parser_type.clone());
+        let mut parser =
+            parser.map(|(p, _)| p).unwrap_or_else(|| global_options.parser_type.clone());
+        match_separator(&mut parser, separator)?;
         let hidden = hide.is_some();
         let hidden_aliases = hide_aliases.is_some();
 
