@@ -251,6 +251,7 @@ mod tests {
                 first_name: String::from("Laster"),
                 last_name: None,
                 username: Some(String::from("laster_alex")),
+                allows_users_to_create_topics: None,
                 language_code: Some(String::from("en")),
                 is_premium: false,
                 added_to_attachment_menu: false,
