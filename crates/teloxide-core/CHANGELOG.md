@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - `ChatFullInfoPublicKind::Supergroup` is now of type `Box<ChatFullInfoPublicSupergroup>` instead of `ChatFullInfoPublicSupergroup` [**BC**]
+- `ApiError::ParticipantIdInvalid` and `ApiError::ChatAdminRequired` variants (previously surfaced as `ApiError::Unknown`) ([#1349](https://github.com/teloxide/teloxide/issues/1349))
 
 ### Fixed 
 
