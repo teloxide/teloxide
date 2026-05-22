@@ -1,5 +1,3 @@
-use std::iter;
-
 use serde::Serialize;
 
 use crate::types::{InputFile, MessageEntity, ParseMode, Seconds};
@@ -17,6 +15,7 @@ pub enum InputMedia {
     Animation(InputMediaAnimation),
     Audio(InputMediaAudio),
     Document(InputMediaDocument),
+    LivePhoto(InputMediaLivePhoto),
 }
 
 /// Represents a photo to be sent.
@@ -103,6 +102,92 @@ impl InputMediaPhoto {
         self.has_spoiler = true;
         self
     }
+}
+
+/// Represents a live photo to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmedialivephoto).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputMediaLivePhoto {
+    /// Video of the live photo to send.
+    pub media: InputFile,
+
+    /// Static photo to send.
+    pub photo: InputFile,
+
+    /// Caption of the live photo to be sent, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// Mode for parsing entities in the live photo caption.
+    pub parse_mode: Option<ParseMode>,
+
+    /// List of special entities that appear in the caption.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
+    /// Pass `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
+    /// Pass `true` if the live photo needs to be covered with a spoiler
+    /// animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_spoiler: bool,
+}
+
+impl InputMediaLivePhoto {
+    pub const fn new(media: InputFile, photo: InputFile) -> Self {
+        Self {
+            media,
+            photo,
+            caption: None,
+            parse_mode: None,
+            caption_entities: None,
+            show_caption_above_media: false,
+            has_spoiler: false,
+        }
+    }
+}
+
+/// Represents a location to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmedialocation).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputMediaLocation {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub horizontal_accuracy: Option<f64>,
+}
+
+/// Represents a sticker file to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediasticker).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputMediaSticker {
+    pub media: InputFile,
+    pub emoji: Option<String>,
+}
+
+/// Represents a venue to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediavenue).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputMediaVenue {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub title: String,
+    pub address: String,
+    pub foursquare_id: Option<String>,
+    pub foursquare_type: Option<String>,
+    pub google_place_id: Option<String>,
+    pub google_place_type: Option<String>,
 }
 
 /// Represents a video to be sent.
@@ -588,7 +673,8 @@ impl From<InputMedia> for InputFile {
             | InputMedia::Document(InputMediaDocument { media, .. })
             | InputMedia::Audio(InputMediaAudio { media, .. })
             | InputMedia::Animation(InputMediaAnimation { media, .. })
-            | InputMedia::Video(InputMediaVideo { media, .. }) => media,
+            | InputMedia::Video(InputMediaVideo { media, .. })
+            | InputMedia::LivePhoto(InputMediaLivePhoto { media, .. }) => media,
         }
     }
 }
@@ -598,30 +684,38 @@ impl InputMedia {
     pub(crate) fn files(&self) -> impl Iterator<Item = &InputFile> {
         use InputMedia::*;
 
+        let mut files = Vec::new();
         let (media, thumbnail) = match self {
             Photo(InputMediaPhoto { media, .. }) => (media, None),
+            LivePhoto(InputMediaLivePhoto { media, photo, .. }) => (media, Some(photo)),
             Document(InputMediaDocument { media, thumbnail, .. })
             | Audio(InputMediaAudio { media, thumbnail, .. })
             | Animation(InputMediaAnimation { media, thumbnail, .. })
             | Video(InputMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_ref()),
         };
 
-        iter::once(media).chain(thumbnail)
+        files.push(media);
+        files.extend(thumbnail);
+        files.into_iter()
     }
 
     /// Returns an iterator of all files in this input media
     pub(crate) fn files_mut(&mut self) -> impl Iterator<Item = &mut InputFile> {
         use InputMedia::*;
 
+        let mut files = Vec::new();
         let (media, thumbnail) = match self {
             Photo(InputMediaPhoto { media, .. }) => (media, None),
+            LivePhoto(InputMediaLivePhoto { media, photo, .. }) => (media, Some(photo)),
             Document(InputMediaDocument { media, thumbnail, .. })
             | Audio(InputMediaAudio { media, thumbnail, .. })
             | Animation(InputMediaAnimation { media, thumbnail, .. })
             | Video(InputMediaVideo { media, thumbnail, .. }) => (media, thumbnail.as_mut()),
         };
 
-        iter::once(media).chain(thumbnail)
+        files.push(media);
+        files.extend(thumbnail);
+        files.into_iter()
     }
 }
 

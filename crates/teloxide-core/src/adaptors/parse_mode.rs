@@ -8,8 +8,8 @@ use crate::{
         EditMessageCaptionInline, EditMessageChecklist, EditMessageMedia, EditMessageMediaInline,
         EditMessageText, EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
         SavePreparedInlineMessage, SendAnimation, SendAudio, SendChecklist, SendDocument, SendGift,
-        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
-        SendVoice,
+        SendGiftChat, SendLivePhoto, SendMediaGroup, SendMessage, SendMessageDraft, SendPaidMedia,
+        SendPhoto, SendPoll, SendVideo, SendVoice,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -136,7 +136,9 @@ impl<B> Requester for DefaultParseMode<B>
 where
     B: Requester,
     B::SendMessage: Clone,
+    B::SendMessageDraft: Clone,
     B::SendPhoto: Clone,
+    B::SendLivePhoto: Clone,
     B::SendVideo: Clone,
     B::SendAudio: Clone,
     B::SendDocument: Clone,
@@ -167,7 +169,9 @@ where
 
     requester_forward! {
         send_message,
+        send_message_draft,
         send_photo,
+        send_live_photo,
         send_video,
         send_audio,
         send_document,
@@ -323,6 +327,22 @@ where
         upgrade_gift,
         transfer_gift,
         delete_story,
+        get_user_profile_audios,
+        set_chat_member_tag,
+        get_user_personal_chat_messages,
+        answer_guest_query,
+        get_managed_bot_token,
+        replace_managed_bot_token,
+        get_managed_bot_access_settings,
+        set_managed_bot_access_settings,
+        set_my_profile_photo,
+        remove_my_profile_photo,
+        get_user_gifts,
+        get_chat_gifts,
+        repost_story,
+        save_prepared_keyboard_button,
+        delete_message_reaction,
+        delete_all_message_reactions,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -377,7 +397,9 @@ macro_rules! impl_visit_parse_modes {
 
 impl_visit_parse_modes! {
     SendMessage => [parse_mode],
+    SendMessageDraft => [parse_mode],
     SendPhoto => [parse_mode],
+    SendLivePhoto => [parse_mode],
     SendVideo => [parse_mode],
     SendAudio => [parse_mode],
     SendDocument => [parse_mode],
@@ -515,6 +537,7 @@ fn visit_parse_modes_in_input_media(
         Animation(m) => &mut m.parse_mode,
         Audio(m) => &mut m.parse_mode,
         Document(m) => &mut m.parse_mode,
+        LivePhoto(m) => &mut m.parse_mode,
     };
 
     visitor(parse_mode);

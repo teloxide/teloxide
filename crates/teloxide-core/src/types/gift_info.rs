@@ -1,4 +1,4 @@
-use crate::types::{Gift, MessageEntity};
+use crate::types::{Gift, MessageEntity, True};
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 
@@ -35,6 +35,12 @@ pub struct GiftInfo {
     /// `true`, if the gift can be upgraded to a unique gift
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub can_be_upgraded: bool,
+
+    /// `true`, if the gift's upgrade was purchased after the gift was sent.
+    pub is_upgrade_separate: Option<True>,
+
+    /// Unique number reserved for this gift when upgraded.
+    pub unique_gift_number: Option<u64>,
 
     /// Text of the message that was added to the gift
     pub text: Option<String>,

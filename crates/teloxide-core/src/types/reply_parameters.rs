@@ -42,6 +42,9 @@ pub struct ReplyParameters {
     pub quote_position: Option<u32>,
     /// Identifier of the specific checklist task to be replied to
     pub checklist_task_id: Option<ChecklistTaskId>,
+
+    /// Persistent identifier of the specific poll option to be replied to.
+    pub poll_option_id: Option<String>,
 }
 
 impl ReplyParameters {
@@ -70,6 +73,12 @@ impl ReplyParameters {
     /// Setter for the `checklist_task_id` field
     pub fn checklist_task_id(mut self, checklist_task_id: ChecklistTaskId) -> Self {
         self.checklist_task_id = Some(checklist_task_id);
+        self
+    }
+
+    /// Setter for the `poll_option_id` field.
+    pub fn poll_option_id(mut self, poll_option_id: String) -> Self {
+        self.poll_option_id = Some(poll_option_id);
         self
     }
 }

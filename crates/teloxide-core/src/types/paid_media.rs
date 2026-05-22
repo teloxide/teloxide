@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{PhotoSize, Seconds, Video};
+use crate::types::{LivePhoto, PhotoSize, Seconds, Video};
 
 /// Describes the paid media added to a message.
 ///
@@ -30,6 +30,7 @@ pub struct PaidMediaInfo {
 pub enum PaidMedia {
     Preview(PaidMediaPreview),
     Photo(PaidMediaPhoto),
+    LivePhoto(PaidMediaLivePhoto),
     Video(Box<PaidMediaVideo>),
 }
 
@@ -63,6 +64,17 @@ pub struct PaidMediaPhoto {
     pub photo: Vec<PhotoSize>,
 }
 
+/// The paid media is a live photo.
+///
+/// [The official docs](https://core.telegram.org/bots/api#paidmedialivephoto).
+#[derive(Clone, Debug)]
+#[derive(PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct PaidMediaLivePhoto {
+    pub live_photo: LivePhoto,
+}
+
 /// The paid media is a video.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#paidmediavideo).
@@ -85,6 +97,13 @@ impl PaidMedia {
     pub fn photo(&self) -> Option<PhotoSize> {
         match self {
             Self::Photo(photo) => Some(photo.photo.last()?.clone()),
+            _ => None,
+        }
+    }
+
+    pub fn live_photo(&self) -> Option<&LivePhoto> {
+        match self {
+            Self::LivePhoto(live_photo) => Some(&live_photo.live_photo),
             _ => None,
         }
     }

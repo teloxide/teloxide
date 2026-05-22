@@ -268,6 +268,7 @@ pub enum MessageEntityKind {
     TextLink { url: reqwest::Url },
     TextMention { user: User },
     CustomEmoji { custom_emoji_id: CustomEmojiId },
+    DateTime { unix_time: Option<i64>, date_time_format: Option<String> },
 }
 
 #[cfg(test)]

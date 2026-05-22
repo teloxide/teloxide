@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::types::InputFile;
+use crate::types::{InputFile, InputFileLike};
 
 /// This object describes a profile photo to set.
 #[derive(Clone, Debug, Serialize)]
@@ -41,4 +41,20 @@ pub struct InputProfilePhotoAnimated {
     /// Timestamp in seconds of the frame that will be used as the static
     /// profile photo. Defaults to 0.0
     pub main_frame_timestamp: Option<f64>,
+}
+
+impl InputFileLike for InputProfilePhoto {
+    fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Static(photo) => photo.photo.copy_into(into),
+            Self::Animated(photo) => photo.animation.copy_into(into),
+        }
+    }
+
+    fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Static(photo) => photo.photo.move_into(into),
+            Self::Animated(photo) => photo.animation.move_into(into),
+        }
+    }
 }

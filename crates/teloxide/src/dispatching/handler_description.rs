@@ -72,6 +72,8 @@ impl EventKind for Kind {
             DeletedBusinessMessages,
             MessageReaction,
             MessageReactionCount,
+            GuestMessage,
+            ManagedBot,
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
@@ -177,6 +179,8 @@ mod tests {
                 | EditedChannelPost
                 | MessageReaction
                 | MessageReactionCount
+                | GuestMessage
+                | ManagedBot
                 | InlineQuery
                 | ChosenInlineResult
                 | CallbackQuery

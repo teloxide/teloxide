@@ -17,6 +17,7 @@ pub mod setters;
 
 mod add_sticker_to_set;
 mod answer_callback_query;
+mod answer_guest_query;
 mod answer_inline_query;
 mod answer_pre_checkout_query;
 mod answer_shipping_query;
@@ -38,11 +39,13 @@ mod create_invoice_link;
 mod create_new_sticker_set;
 mod decline_chat_join_request;
 mod decline_suggested_post;
+mod delete_all_message_reactions;
 mod delete_business_messages;
 mod delete_chat_photo;
 mod delete_chat_sticker_set;
 mod delete_forum_topic;
 mod delete_message;
+mod delete_message_reaction;
 mod delete_messages;
 mod delete_my_commands;
 mod delete_sticker_from_set;
@@ -75,6 +78,7 @@ mod get_business_account_star_balance;
 mod get_business_connection;
 mod get_chat;
 mod get_chat_administrators;
+mod get_chat_gifts;
 mod get_chat_member;
 mod get_chat_member_count;
 mod get_chat_members_count;
@@ -83,6 +87,8 @@ mod get_custom_emoji_stickers;
 mod get_file;
 mod get_forum_topic_icon_stickers;
 mod get_game_high_scores;
+mod get_managed_bot_access_settings;
+mod get_managed_bot_token;
 mod get_me;
 mod get_my_commands;
 mod get_my_default_administrator_rights;
@@ -94,6 +100,9 @@ mod get_star_transactions;
 mod get_sticker_set;
 mod get_updates;
 mod get_user_chat_boosts;
+mod get_user_gifts;
+mod get_user_personal_chat_messages;
+mod get_user_profile_audios;
 mod get_user_profile_photos;
 mod get_webhook_info;
 mod gift_premium_subscription;
@@ -108,13 +117,17 @@ mod read_business_message;
 mod refund_star_payment;
 mod remove_business_account_profile_photo;
 mod remove_chat_verification;
+mod remove_my_profile_photo;
 mod remove_user_verification;
 mod reopen_forum_topic;
 mod reopen_general_forum_topic;
+mod replace_managed_bot_token;
 mod replace_sticker_in_set;
+mod repost_story;
 mod restrict_chat_member;
 mod revoke_chat_invite_link;
 mod save_prepared_inline_message;
+mod save_prepared_keyboard_button;
 mod send_animation;
 mod send_audio;
 mod send_chat_action;
@@ -126,9 +139,11 @@ mod send_game;
 mod send_gift;
 mod send_gift_chat;
 mod send_invoice;
+mod send_live_photo;
 mod send_location;
 mod send_media_group;
 mod send_message;
+mod send_message_draft;
 mod send_paid_media;
 mod send_photo;
 mod send_poll;
@@ -144,6 +159,7 @@ mod set_business_account_profile_photo;
 mod set_business_account_username;
 mod set_chat_administrator_custom_title;
 mod set_chat_description;
+mod set_chat_member_tag;
 mod set_chat_menu_button;
 mod set_chat_permissions;
 mod set_chat_photo;
@@ -152,11 +168,13 @@ mod set_chat_title;
 mod set_custom_emoji_sticker_set_thumbnail;
 mod set_game_score;
 mod set_game_score_inline;
+mod set_managed_bot_access_settings;
 mod set_message_reaction;
 mod set_my_commands;
 mod set_my_default_administrator_rights;
 mod set_my_description;
 mod set_my_name;
+mod set_my_profile_photo;
 mod set_my_short_description;
 mod set_passport_data_errors;
 mod set_sticker_emoji_list;
@@ -186,6 +204,7 @@ mod verify_user;
 
 pub use add_sticker_to_set::{AddStickerToSet, AddStickerToSetSetters};
 pub use answer_callback_query::{AnswerCallbackQuery, AnswerCallbackQuerySetters};
+pub use answer_guest_query::{AnswerGuestQuery, AnswerGuestQuerySetters};
 pub use answer_inline_query::{AnswerInlineQuery, AnswerInlineQuerySetters};
 pub use answer_pre_checkout_query::{AnswerPreCheckoutQuery, AnswerPreCheckoutQuerySetters};
 pub use answer_shipping_query::{AnswerShippingQuery, AnswerShippingQuerySetters};
@@ -209,11 +228,15 @@ pub use create_invoice_link::{CreateInvoiceLink, CreateInvoiceLinkSetters};
 pub use create_new_sticker_set::{CreateNewStickerSet, CreateNewStickerSetSetters};
 pub use decline_chat_join_request::{DeclineChatJoinRequest, DeclineChatJoinRequestSetters};
 pub use decline_suggested_post::{DeclineSuggestedPost, DeclineSuggestedPostSetters};
+pub use delete_all_message_reactions::{
+    DeleteAllMessageReactions, DeleteAllMessageReactionsSetters,
+};
 pub use delete_business_messages::{DeleteBusinessMessages, DeleteBusinessMessagesSetters};
 pub use delete_chat_photo::{DeleteChatPhoto, DeleteChatPhotoSetters};
 pub use delete_chat_sticker_set::{DeleteChatStickerSet, DeleteChatStickerSetSetters};
 pub use delete_forum_topic::{DeleteForumTopic, DeleteForumTopicSetters};
 pub use delete_message::{DeleteMessage, DeleteMessageSetters};
+pub use delete_message_reaction::{DeleteMessageReaction, DeleteMessageReactionSetters};
 pub use delete_messages::{DeleteMessages, DeleteMessagesSetters};
 pub use delete_my_commands::{DeleteMyCommands, DeleteMyCommandsSetters};
 pub use delete_sticker_from_set::{DeleteStickerFromSet, DeleteStickerFromSetSetters};
@@ -254,6 +277,7 @@ pub use get_business_account_star_balance::{
 pub use get_business_connection::{GetBusinessConnection, GetBusinessConnectionSetters};
 pub use get_chat::{GetChat, GetChatSetters};
 pub use get_chat_administrators::{GetChatAdministrators, GetChatAdministratorsSetters};
+pub use get_chat_gifts::{GetChatGifts, GetChatGiftsSetters};
 pub use get_chat_member::{GetChatMember, GetChatMemberSetters};
 pub use get_chat_member_count::{GetChatMemberCount, GetChatMemberCountSetters};
 pub use get_chat_members_count::{GetChatMembersCount, GetChatMembersCountSetters};
@@ -264,6 +288,10 @@ pub use get_forum_topic_icon_stickers::{
     GetForumTopicIconStickers, GetForumTopicIconStickersSetters,
 };
 pub use get_game_high_scores::{GetGameHighScores, GetGameHighScoresSetters};
+pub use get_managed_bot_access_settings::{
+    GetManagedBotAccessSettings, GetManagedBotAccessSettingsSetters,
+};
+pub use get_managed_bot_token::{GetManagedBotToken, GetManagedBotTokenSetters};
 pub use get_me::{GetMe, GetMeSetters};
 pub use get_my_commands::{GetMyCommands, GetMyCommandsSetters};
 pub use get_my_default_administrator_rights::{
@@ -277,6 +305,11 @@ pub use get_star_transactions::{GetStarTransactions, GetStarTransactionsSetters}
 pub use get_sticker_set::{GetStickerSet, GetStickerSetSetters};
 pub use get_updates::{GetUpdates, GetUpdatesSetters};
 pub use get_user_chat_boosts::{GetUserChatBoosts, GetUserChatBoostsSetters};
+pub use get_user_gifts::{GetUserGifts, GetUserGiftsSetters};
+pub use get_user_personal_chat_messages::{
+    GetUserPersonalChatMessages, GetUserPersonalChatMessagesSetters,
+};
+pub use get_user_profile_audios::{GetUserProfileAudios, GetUserProfileAudiosSetters};
 pub use get_user_profile_photos::{GetUserProfilePhotos, GetUserProfilePhotosSetters};
 pub use get_webhook_info::{GetWebhookInfo, GetWebhookInfoSetters};
 pub use gift_premium_subscription::{GiftPremiumSubscription, GiftPremiumSubscriptionSetters};
@@ -293,14 +326,20 @@ pub use remove_business_account_profile_photo::{
     RemoveBusinessAccountProfilePhoto, RemoveBusinessAccountProfilePhotoSetters,
 };
 pub use remove_chat_verification::{RemoveChatVerification, RemoveChatVerificationSetters};
+pub use remove_my_profile_photo::{RemoveMyProfilePhoto, RemoveMyProfilePhotoSetters};
 pub use remove_user_verification::{RemoveUserVerification, RemoveUserVerificationSetters};
 pub use reopen_forum_topic::{ReopenForumTopic, ReopenForumTopicSetters};
 pub use reopen_general_forum_topic::{ReopenGeneralForumTopic, ReopenGeneralForumTopicSetters};
+pub use replace_managed_bot_token::{ReplaceManagedBotToken, ReplaceManagedBotTokenSetters};
 pub use replace_sticker_in_set::{ReplaceStickerInSet, ReplaceStickerInSetSetters};
+pub use repost_story::{RepostStory, RepostStorySetters};
 pub use restrict_chat_member::{RestrictChatMember, RestrictChatMemberSetters};
 pub use revoke_chat_invite_link::{RevokeChatInviteLink, RevokeChatInviteLinkSetters};
 pub use save_prepared_inline_message::{
     SavePreparedInlineMessage, SavePreparedInlineMessageSetters,
+};
+pub use save_prepared_keyboard_button::{
+    SavePreparedKeyboardButton, SavePreparedKeyboardButtonSetters,
 };
 pub use send_animation::{SendAnimation, SendAnimationSetters};
 pub use send_audio::{SendAudio, SendAudioSetters};
@@ -313,9 +352,11 @@ pub use send_game::{SendGame, SendGameSetters};
 pub use send_gift::{SendGift, SendGiftSetters};
 pub use send_gift_chat::{SendGiftChat, SendGiftChatSetters};
 pub use send_invoice::{SendInvoice, SendInvoiceSetters};
+pub use send_live_photo::{SendLivePhoto, SendLivePhotoSetters};
 pub use send_location::{SendLocation, SendLocationSetters};
 pub use send_media_group::{SendMediaGroup, SendMediaGroupSetters};
 pub use send_message::{SendMessage, SendMessageSetters};
+pub use send_message_draft::{SendMessageDraft, SendMessageDraftSetters};
 pub use send_paid_media::{SendPaidMedia, SendPaidMediaSetters};
 pub use send_photo::{SendPhoto, SendPhotoSetters};
 pub use send_poll::{SendPoll, SendPollSetters};
@@ -339,6 +380,7 @@ pub use set_chat_administrator_custom_title::{
     SetChatAdministratorCustomTitle, SetChatAdministratorCustomTitleSetters,
 };
 pub use set_chat_description::{SetChatDescription, SetChatDescriptionSetters};
+pub use set_chat_member_tag::{SetChatMemberTag, SetChatMemberTagSetters};
 pub use set_chat_menu_button::{SetChatMenuButton, SetChatMenuButtonSetters};
 pub use set_chat_permissions::{SetChatPermissions, SetChatPermissionsSetters};
 pub use set_chat_photo::{SetChatPhoto, SetChatPhotoSetters};
@@ -349,6 +391,9 @@ pub use set_custom_emoji_sticker_set_thumbnail::{
 };
 pub use set_game_score::{SetGameScore, SetGameScoreSetters};
 pub use set_game_score_inline::{SetGameScoreInline, SetGameScoreInlineSetters};
+pub use set_managed_bot_access_settings::{
+    SetManagedBotAccessSettings, SetManagedBotAccessSettingsSetters,
+};
 pub use set_message_reaction::{SetMessageReaction, SetMessageReactionSetters};
 pub use set_my_commands::{SetMyCommands, SetMyCommandsSetters};
 pub use set_my_default_administrator_rights::{
@@ -356,6 +401,7 @@ pub use set_my_default_administrator_rights::{
 };
 pub use set_my_description::{SetMyDescription, SetMyDescriptionSetters};
 pub use set_my_name::{SetMyName, SetMyNameSetters};
+pub use set_my_profile_photo::{SetMyProfilePhoto, SetMyProfilePhotoSetters};
 pub use set_my_short_description::{SetMyShortDescription, SetMyShortDescriptionSetters};
 pub use set_passport_data_errors::{SetPassportDataErrors, SetPassportDataErrorsSetters};
 pub use set_sticker_emoji_list::{SetStickerEmojiList, SetStickerEmojiListSetters};

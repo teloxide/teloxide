@@ -36,6 +36,26 @@ pub struct User {
     /// `true`, if this user added the bot to the attachment menu.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub added_to_attachment_menu: bool,
+
+    /// `true`, if the bot supports guest queries from chats it is not a member
+    /// of. Returned only in `getMe`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub supports_guest_queries: bool,
+
+    /// `true`, if the bot has forum topic mode enabled in private chats.
+    /// Returned only in `getMe`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_topics_enabled: bool,
+
+    /// `true`, if the bot allows users to create and delete topics in private
+    /// chats. Returned only in `getMe`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub allows_users_to_create_topics: bool,
+
+    /// `true`, if other bots can be created to be controlled by the bot.
+    /// Returned only in `getMe`.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub can_manage_bots: bool,
 }
 
 impl User {
@@ -152,6 +172,10 @@ mod tests {
             language_code: Some(String::from("ru")),
             is_premium: false,
             added_to_attachment_menu: false,
+            supports_guest_queries: false,
+            has_topics_enabled: false,
+            allows_users_to_create_topics: false,
+            can_manage_bots: false,
         };
         let actual = serde_json::from_str::<User>(json).unwrap();
         assert_eq!(actual, expected)
@@ -168,6 +192,10 @@ mod tests {
             language_code: None,
             is_premium: false,
             added_to_attachment_menu: false,
+            supports_guest_queries: false,
+            has_topics_enabled: false,
+            allows_users_to_create_topics: false,
+            can_manage_bots: false,
         };
 
         let user_b = User {
@@ -179,6 +207,10 @@ mod tests {
             language_code: None,
             is_premium: false,
             added_to_attachment_menu: false,
+            supports_guest_queries: false,
+            has_topics_enabled: false,
+            allows_users_to_create_topics: false,
+            can_manage_bots: false,
         };
 
         assert_eq!(user_a.full_name(), "First Last");
