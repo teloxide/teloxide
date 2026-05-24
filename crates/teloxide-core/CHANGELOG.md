@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for TBA 10.0
+  - Add `send_live_photo`, `send_message_draft`, `get_user_profile_audios`, `set_chat_member_tag`, `get_user_personal_chat_messages`, `answer_guest_query`, `get_managed_bot_token`, `replace_managed_bot_token`, `get_managed_bot_access_settings`, `set_managed_bot_access_settings`, `set_my_profile_photo`, `remove_my_profile_photo`, `get_user_gifts`, `get_chat_gifts`, `repost_story`, `save_prepared_keyboard_button`, `delete_message_reaction` and `delete_all_message_reactions` methods
+  - Add `GuestMessage` and `ManagedBot` update kinds
+  - Add live photo, managed bot, gift background, poll media, poll option change, profile audio and video quality types
+  - Add TBA 9.3 through 10.0 fields to users, messages, polls, chats, gifts, keyboards, chat members, media and related service-message types [**BC**]
+
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_task_id` field to `Message` struct

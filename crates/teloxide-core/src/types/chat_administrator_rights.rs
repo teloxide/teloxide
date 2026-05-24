@@ -61,6 +61,10 @@ pub struct ChatAdministratorRights {
     /// forum topics; supergroups only
     pub can_manage_topics: Option<bool>,
 
+    /// `true`, if the administrator can edit the tags of regular members; for
+    /// groups and supergroups only.
+    pub can_manage_tags: Option<bool>,
+
     /// `true`, if the administrator can manage direct messages of the channel
     /// and decline suggested posts; for channels only
     pub can_manage_direct_messages: bool,

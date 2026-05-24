@@ -3,8 +3,9 @@ use derive_more::derive::From;
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    AcceptedGiftTypes, Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat,
-    ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds, User,
+    AcceptedGiftTypes, Audio, Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours,
+    Chat, ChatId, ChatLocation, ChatPermissions, ChatPhoto, Message, ReactionType, Seconds,
+    UniqueGiftColors, User, UserRating,
 };
 
 /// Custom emoji identifier.
@@ -72,6 +73,10 @@ pub struct ChatFullInfo {
     /// header and link preview background
     pub background_custom_emoji_id: Option<CustomEmojiId>,
 
+    /// The color scheme based on a unique gift that must be used for the
+    /// chat's name, message replies and link previews.
+    pub unique_gift_colors: Option<UniqueGiftColors>,
+
     /// Identifier of the accent color for the chat's profile background. See
     /// [profile accent colors] for more details.
     ///
@@ -100,6 +105,10 @@ pub struct ChatFullInfo {
     /// The maximum number of reactions that can be set on a message in the
     /// chat
     pub max_reaction_count: u8,
+
+    /// The number of Telegram Stars a general user has to pay to send a
+    /// message to the chat.
+    pub paid_message_star_count: Option<u32>,
 }
 
 #[serde_with::skip_serializing_none]
@@ -173,6 +182,12 @@ pub struct ChatFullInfoPrivate {
 
     /// For private chats, the personal channel of the user.
     pub personal_chat: Option<Box<Chat>>,
+
+    /// For private chats, the rating of the user if any.
+    pub rating: Option<UserRating>,
+
+    /// For private chats, the first audio added to the profile of the user.
+    pub first_profile_audio: Option<Audio>,
 
     /// For private chats, the date of birth of the user.
     pub birthdate: Option<Birthdate>,
@@ -613,7 +628,9 @@ impl ChatFullInfo {
 }
 
 mod serde_helper {
-    use crate::types::{Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat};
+    use crate::types::{
+        Audio, Birthdate, BusinessIntro, BusinessLocation, BusinessOpeningHours, Chat, UserRating,
+    };
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize)]
@@ -640,6 +657,8 @@ mod serde_helper {
         #[serde(default, skip_serializing_if = "std::ops::Not::not")]
         has_restricted_voice_and_video_messages: bool,
         personal_chat: Option<Box<Chat>>,
+        rating: Option<UserRating>,
+        first_profile_audio: Option<Audio>,
         birthdate: Option<Birthdate>,
         business_intro: Option<BusinessIntro>,
         business_location: Option<BusinessLocation>,
@@ -657,6 +676,8 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                rating,
+                first_profile_audio,
                 birthdate,
                 business_intro,
                 business_location,
@@ -671,6 +692,8 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                rating,
+                first_profile_audio,
                 birthdate,
                 business_intro,
                 business_location,
@@ -693,6 +716,8 @@ mod serde_helper {
                 business_intro,
                 business_location,
                 business_opening_hours,
+                rating,
+                first_profile_audio,
             }: super::ChatFullInfoPrivate,
         ) -> Self {
             Self {
@@ -704,6 +729,8 @@ mod serde_helper {
                 has_private_forwards,
                 has_restricted_voice_and_video_messages,
                 personal_chat,
+                rating,
+                first_profile_audio,
                 birthdate,
                 business_intro,
                 business_location,
@@ -745,15 +772,18 @@ mod tests {
                 limited_gifts: true,
                 unique_gifts: true,
                 premium_subscription: true,
+                gifts_from_channels: false,
             },
             accent_color_id: 0,
             background_custom_emoji_id: None,
+            unique_gift_colors: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: DateTime::from_timestamp(1720708004, 0),
             has_visible_history: false,
             max_reaction_count: 0,
+            paid_message_star_count: None,
         };
         let actual = from_str(
             r#"{
@@ -792,6 +822,8 @@ mod tests {
                 has_private_forwards: false,
                 has_restricted_voice_and_video_messages: false,
                 personal_chat: None,
+                rating: None,
+                first_profile_audio: None,
                 birthdate: None,
                 business_intro: None,
                 business_location: None,
@@ -807,15 +839,18 @@ mod tests {
                 limited_gifts: true,
                 unique_gifts: true,
                 premium_subscription: true,
+                gifts_from_channels: false,
             },
             accent_color_id: 0,
             background_custom_emoji_id: None,
+            unique_gift_colors: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: DateTime::from_timestamp(1720708004, 0),
             has_visible_history: false,
             max_reaction_count: 0,
+            paid_message_star_count: None,
         };
         eprintln!("{}", to_string(&chat).unwrap());
         assert_eq!(
@@ -852,6 +887,8 @@ mod tests {
                 has_private_forwards: false,
                 has_restricted_voice_and_video_messages: false,
                 personal_chat: None,
+                rating: None,
+                first_profile_audio: None,
                 birthdate: None,
                 business_intro: None,
                 business_location: None,
@@ -867,15 +904,18 @@ mod tests {
                 limited_gifts: true,
                 unique_gifts: true,
                 premium_subscription: true,
+                gifts_from_channels: false,
             },
             accent_color_id: 0,
             background_custom_emoji_id: None,
+            unique_gift_colors: None,
             profile_accent_color_id: None,
             profile_background_custom_emoji_id: None,
             emoji_status_custom_emoji_id: None,
             emoji_status_expiration_date: None,
             has_visible_history: false,
             max_reaction_count: 0,
+            paid_message_star_count: None,
         };
 
         let json = to_string(&chat).unwrap();

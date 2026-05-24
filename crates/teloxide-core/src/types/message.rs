@@ -2,19 +2,20 @@
 
 use chrono::{DateTime, Utc};
 use derive_more::derive::From;
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize};
 use url::Url;
 
 use crate::types::{
     Animation, Audio, BareChatId, BusinessConnectionId, Chat, ChatBackground, ChatBoostAdded,
-    ChatId, ChatShared, Checklist, ChecklistTaskId, ChecklistTasksAdded, ChecklistTasksDone,
-    Contact, Dice, DirectMessagePriceChanged, DirectMessagesTopic, Document, ExternalReplyInfo,
-    ForumTopicClosed, ForumTopicCreated, ForumTopicEdited, ForumTopicReopened, Game,
-    GeneralForumTopicHidden, GeneralForumTopicUnhidden, GiftInfo, Giveaway, GiveawayCompleted,
-    GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
-    MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
-    MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
-    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment,
+    ChatId, ChatOwnerChanged, ChatOwnerLeft, ChatShared, Checklist, ChecklistTaskId,
+    ChecklistTasksAdded, ChecklistTasksDone, Contact, Dice, DirectMessagePriceChanged,
+    DirectMessagesTopic, Document, ExternalReplyInfo, ForumTopicClosed, ForumTopicCreated,
+    ForumTopicEdited, ForumTopicReopened, Game, GeneralForumTopicHidden, GeneralForumTopicUnhidden,
+    GiftInfo, Giveaway, GiveawayCompleted, GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup,
+    Invoice, LinkPreviewOptions, LivePhoto, Location, ManagedBotCreated, MaybeInaccessibleMessage,
+    MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef, MessageId, MessageOrigin,
+    PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize, Poll, PollOptionAdded,
+    PollOptionDeleted, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment,
     SuggestedPostApprovalFailed, SuggestedPostApproved, SuggestedPostDeclined, SuggestedPostInfo,
     SuggestedPostPaid, SuggestedPostRefunded, TextQuote, ThreadId, True, UniqueGiftInfo, User,
     UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
@@ -49,6 +50,9 @@ pub struct Message {
     /// group administrators. The linked channel for messages automatically
     /// forwarded to the discussion group
     pub sender_chat: Option<Chat>,
+
+    /// Tag or custom title of the sender of the message; for supergroups only.
+    pub sender_tag: Option<String>,
 
     /// Date the message was sent in Unix time.
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
@@ -87,11 +91,14 @@ pub struct Message {
 // FIXME: this could be a use-case for serde mixed-tags, some variants need to
 //        untagged (`MessageCommon` as an example), while other need to be
 //        tagged (e.g.: Forum*)
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum MessageKind {
-    Common(MessageCommon),
+    Giveaway(MessageGiveaway),
+    GiveawayCompleted(MessageGiveawayCompleted),
+    GiveawayCreated(MessageGiveawayCreated),
+    GiveawayWinners(MessageGiveawayWinners),
     NewChatMembers(MessageNewChatMembers),
     LeftChatMember(MessageLeftChatMember),
     NewChatTitle(MessageNewChatTitle),
@@ -123,10 +130,6 @@ pub enum MessageKind {
     ForumTopicReopened(MessageForumTopicReopened),
     GeneralForumTopicHidden(MessageGeneralForumTopicHidden),
     GeneralForumTopicUnhidden(MessageGeneralForumTopicUnhidden),
-    Giveaway(MessageGiveaway),
-    GiveawayCompleted(MessageGiveawayCompleted),
-    GiveawayCreated(MessageGiveawayCreated),
-    GiveawayWinners(MessageGiveawayWinners),
     PaidMessagePriceChanged(MessagePaidMessagePriceChanged),
     SuggestedPostApproved(MessageSuggestedPostApproved),
     SuggestedPostApprovalFailed(MessageSuggestedPostApprovalFailed),
@@ -135,14 +138,151 @@ pub enum MessageKind {
     SuggestedPostRefunded(MessageSuggestedPostRefunded),
     GiftInfo(MessageGiftInfo),
     UniqueGiftInfo(MessageUniqueGiftInfo),
+    ChatOwnerLeft(MessageChatOwnerLeft),
+    ChatOwnerChanged(MessageChatOwnerChanged),
+    ManagedBotCreated(MessageManagedBotCreated),
+    PollOptionAdded(MessagePollOptionAdded),
+    PollOptionDeleted(MessagePollOptionDeleted),
     VideoChatScheduled(MessageVideoChatScheduled),
     VideoChatStarted(MessageVideoChatStarted),
     VideoChatEnded(MessageVideoChatEnded),
     VideoChatParticipantsInvited(MessageVideoChatParticipantsInvited),
     WebAppData(MessageWebAppData),
+    Common(MessageCommon),
     /// An empty, content-less message, that can appear in callback queries
     /// attached to old messages.
     Empty {},
+}
+
+impl<'de> Deserialize<'de> for MessageKind {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = serde_json::Value::deserialize(deserializer)?;
+
+        macro_rules! deserialize_variant {
+            ($field:literal, $variant:ident, $ty:ty) => {
+                if value.get($field).is_some() {
+                    return serde_json::from_value::<$ty>(value)
+                        .map(Self::$variant)
+                        .map_err(de::Error::custom);
+                }
+            };
+        }
+
+        deserialize_variant!("new_chat_members", NewChatMembers, MessageNewChatMembers);
+        deserialize_variant!("left_chat_member", LeftChatMember, MessageLeftChatMember);
+        deserialize_variant!("new_chat_title", NewChatTitle, MessageNewChatTitle);
+        deserialize_variant!("new_chat_photo", NewChatPhoto, MessageNewChatPhoto);
+        deserialize_variant!("delete_chat_photo", DeleteChatPhoto, MessageDeleteChatPhoto);
+        deserialize_variant!("group_chat_created", GroupChatCreated, MessageGroupChatCreated);
+        deserialize_variant!(
+            "supergroup_chat_created",
+            SupergroupChatCreated,
+            MessageSupergroupChatCreated
+        );
+        deserialize_variant!("channel_chat_created", ChannelChatCreated, MessageChannelChatCreated);
+        deserialize_variant!(
+            "message_auto_delete_timer_changed",
+            MessageAutoDeleteTimerChanged,
+            MessageMessageAutoDeleteTimerChanged
+        );
+        deserialize_variant!("pinned_message", Pinned, MessagePinned);
+        deserialize_variant!("chat_shared", ChatShared, MessageChatShared);
+        deserialize_variant!("users_shared", UsersShared, MessageUsersShared);
+        deserialize_variant!("invoice", Invoice, MessageInvoice);
+        deserialize_variant!("successful_payment", SuccessfulPayment, MessageSuccessfulPayment);
+        deserialize_variant!("refunded_payment", RefundedPayment, MessageRefundedPayment);
+        deserialize_variant!("connected_website", ConnectedWebsite, MessageConnectedWebsite);
+        deserialize_variant!("write_access_allowed", WriteAccessAllowed, MessageWriteAccessAllowed);
+        deserialize_variant!("passport_data", PassportData, MessagePassportData);
+        deserialize_variant!("dice", Dice, MessageDice);
+        deserialize_variant!(
+            "proximity_alert_triggered",
+            ProximityAlertTriggered,
+            MessageProximityAlertTriggered
+        );
+        deserialize_variant!("boost_added", ChatBoostAdded, MessageChatBoostAdded);
+        deserialize_variant!("chat_background_set", ChatBackground, MessageChatBackground);
+        deserialize_variant!("checklist_tasks_done", ChecklistTasksDone, MessageChecklistTasksDone);
+        deserialize_variant!(
+            "checklist_tasks_added",
+            ChecklistTasksAdded,
+            MessageChecklistTasksAdded
+        );
+        deserialize_variant!(
+            "direct_message_price_changed",
+            DirectMessagePriceChanged,
+            MessageDirectMessagePriceChanged
+        );
+        deserialize_variant!("forum_topic_created", ForumTopicCreated, MessageForumTopicCreated);
+        deserialize_variant!("forum_topic_edited", ForumTopicEdited, MessageForumTopicEdited);
+        deserialize_variant!("forum_topic_closed", ForumTopicClosed, MessageForumTopicClosed);
+        deserialize_variant!("forum_topic_reopened", ForumTopicReopened, MessageForumTopicReopened);
+        deserialize_variant!(
+            "general_forum_topic_hidden",
+            GeneralForumTopicHidden,
+            MessageGeneralForumTopicHidden
+        );
+        deserialize_variant!(
+            "general_forum_topic_unhidden",
+            GeneralForumTopicUnhidden,
+            MessageGeneralForumTopicUnhidden
+        );
+        deserialize_variant!("giveaway", Giveaway, MessageGiveaway);
+        deserialize_variant!("giveaway_completed", GiveawayCompleted, MessageGiveawayCompleted);
+        deserialize_variant!("giveaway_created", GiveawayCreated, MessageGiveawayCreated);
+        deserialize_variant!("giveaway_winners", GiveawayWinners, MessageGiveawayWinners);
+        deserialize_variant!(
+            "paid_message_price_changed",
+            PaidMessagePriceChanged,
+            MessagePaidMessagePriceChanged
+        );
+        deserialize_variant!(
+            "suggested_post_approved",
+            SuggestedPostApproved,
+            MessageSuggestedPostApproved
+        );
+        deserialize_variant!(
+            "suggested_post_approval_failed",
+            SuggestedPostApprovalFailed,
+            MessageSuggestedPostApprovalFailed
+        );
+        deserialize_variant!(
+            "suggested_post_declined",
+            SuggestedPostDeclined,
+            MessageSuggestedPostDeclined
+        );
+        deserialize_variant!("suggested_post_paid", SuggestedPostPaid, MessageSuggestedPostPaid);
+        deserialize_variant!(
+            "suggested_post_refunded",
+            SuggestedPostRefunded,
+            MessageSuggestedPostRefunded
+        );
+        deserialize_variant!("gift", GiftInfo, MessageGiftInfo);
+        deserialize_variant!("unique_gift", UniqueGiftInfo, MessageUniqueGiftInfo);
+        deserialize_variant!("chat_owner_left", ChatOwnerLeft, MessageChatOwnerLeft);
+        deserialize_variant!("chat_owner_changed", ChatOwnerChanged, MessageChatOwnerChanged);
+        deserialize_variant!("managed_bot_created", ManagedBotCreated, MessageManagedBotCreated);
+        deserialize_variant!("poll_option_added", PollOptionAdded, MessagePollOptionAdded);
+        deserialize_variant!("poll_option_deleted", PollOptionDeleted, MessagePollOptionDeleted);
+        deserialize_variant!("video_chat_scheduled", VideoChatScheduled, MessageVideoChatScheduled);
+        deserialize_variant!("video_chat_started", VideoChatStarted, MessageVideoChatStarted);
+        deserialize_variant!("video_chat_ended", VideoChatEnded, MessageVideoChatEnded);
+        deserialize_variant!(
+            "video_chat_participants_invited",
+            VideoChatParticipantsInvited,
+            MessageVideoChatParticipantsInvited
+        );
+        deserialize_variant!("web_app_data", WebAppData, MessageWebAppData);
+
+        if value.as_object().is_some_and(serde_json::Map::is_empty) {
+            return Ok(Self::Empty {});
+        }
+
+        serde_json::from_value::<MessageCommon>(value).map(Self::Common).map_err(de::Error::custom)
+    }
 }
 
 /// Unique identifier of the message effect added to the message
@@ -199,6 +339,21 @@ pub struct MessageCommon {
 
     /// Identifier of the specific checklist task that is being replied to
     pub reply_to_checklist_task_id: Option<ChecklistTaskId>,
+
+    /// Persistent identifier of the specific poll option that is being replied
+    /// to.
+    pub reply_to_poll_option_id: Option<String>,
+
+    /// Unique identifier for a guest query.
+    pub guest_query_id: Option<String>,
+
+    /// For a message sent by a guest bot, this is the user whose original
+    /// message triggered the bot's response.
+    pub guest_bot_caller_user: Option<User>,
+
+    /// For a message sent by a guest bot, this is the chat whose original
+    /// message triggered the bot's response.
+    pub guest_bot_caller_chat: Option<Chat>,
 
     /// If the sender of the message boosted the chat, the number of boosts
     /// added by the user
@@ -448,6 +603,7 @@ pub enum MediaKind {
     Venue(MediaVenue),
     Location(MediaLocation),
     Photo(MediaPhoto),
+    LivePhoto(MediaLivePhoto),
     Poll(MediaPoll),
     Checklist(MediaChecklist),
     Sticker(MediaSticker),
@@ -604,6 +760,33 @@ pub struct MediaPhoto {
     /// The unique identifier of a media message group this message belongs
     /// to.
     pub media_group_id: Option<MediaGroupId>,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MediaLivePhoto {
+    /// Message is a live photo.
+    pub live_photo: LivePhoto,
+
+    /// Caption for the live photo, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// For messages with a caption, special entities like usernames, URLs,
+    /// bot commands, etc. that appear in the caption.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub caption_entities: Vec<MessageEntity>,
+
+    /// The unique identifier of a media message group this message belongs to.
+    pub media_group_id: Option<MediaGroupId>,
+
+    /// `true`, if the caption must be shown above the message media.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
+
+    /// `true`, if the message media is covered by a spoiler animation.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub has_media_spoiler: bool,
 }
 
 #[serde_with::skip_serializing_none]
@@ -937,6 +1120,47 @@ pub struct MessageGiftInfo {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MessageChatOwnerLeft {
+    /// Service message: chat owner has left.
+    pub chat_owner_left: ChatOwnerLeft,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MessageChatOwnerChanged {
+    /// Service message: chat owner has changed.
+    pub chat_owner_changed: ChatOwnerChanged,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MessageManagedBotCreated {
+    /// Service message: user created a bot that will be managed by the current
+    /// bot.
+    pub managed_bot_created: ManagedBotCreated,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MessagePollOptionAdded {
+    /// Service message: answer option was added to a poll.
+    pub poll_option_added: PollOptionAdded,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MessagePollOptionDeleted {
+    /// Service message: answer option was deleted from a poll.
+    pub poll_option_deleted: PollOptionDeleted,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MessageUniqueGiftInfo {
     /// Service message: a unique gift was sent or received
     pub unique_gift: UniqueGiftInfo,
@@ -989,14 +1213,15 @@ mod getters {
     use crate::types::{
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaChecklist, MediaContact,
-        MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll,
-        MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
-        Message, MessageChannelChatCreated, MessageChatShared, MessageChecklistTasksAdded,
-        MessageChecklistTasksDone, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
-        MessageDice, MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated,
-        MessageId, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
-        MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin, MessagePassportData,
-        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MediaDocument, MediaGame, MediaKind, MediaLivePhoto, MediaLocation, MediaPaid, MediaPhoto,
+        MediaPoll, MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote,
+        MediaVoice, Message, MessageChannelChatCreated, MessageChatShared,
+        MessageChecklistTasksAdded, MessageChecklistTasksDone, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice,
+        MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated, MessageId,
+        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
+        MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
+        MessageProximityAlertTriggered, MessageSuccessfulPayment,
         MessageSuggestedPostApprovalFailed, MessageSuggestedPostApproved,
         MessageSuggestedPostDeclined, MessageSuggestedPostPaid, MessageSuggestedPostRefunded,
         MessageSupergroupChatCreated, MessageUsersShared, MessageVideoChatParticipantsInvited,
@@ -1156,6 +1381,10 @@ mod getters {
                     ..
                 })
                 | Common(MessageCommon {
+                    media_kind: MediaKind::LivePhoto(MediaLivePhoto { media_group_id, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
                     media_kind: MediaKind::Document(MediaDocument { media_group_id, .. }),
                     ..
                 })
@@ -1244,6 +1473,10 @@ mod getters {
                     ..
                 })
                 | Common(MessageCommon {
+                    media_kind: MediaKind::LivePhoto(MediaLivePhoto { caption_entities, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
                     media_kind: MediaKind::Video(MediaVideo { caption_entities, .. }),
                     ..
                 })
@@ -1265,6 +1498,7 @@ mod getters {
             self.common()
                 .map(|m| match m.media_kind {
                     MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
+                    | MediaKind::LivePhoto(MediaLivePhoto { show_caption_above_media, .. })
                     | MediaKind::Photo(MediaPhoto { show_caption_above_media, .. })
                     | MediaKind::Video(MediaVideo { show_caption_above_media, .. }) => {
                         show_caption_above_media
@@ -1299,6 +1533,7 @@ mod getters {
             self.common()
                 .map(|m| match m.media_kind {
                     MediaKind::Animation(MediaAnimation { has_media_spoiler, .. })
+                    | MediaKind::LivePhoto(MediaLivePhoto { has_media_spoiler, .. })
                     | MediaKind::Photo(MediaPhoto { has_media_spoiler, .. })
                     | MediaKind::Video(MediaVideo { has_media_spoiler, .. }) => has_media_spoiler,
                     MediaKind::Audio(_)
@@ -1387,6 +1622,17 @@ mod getters {
         }
 
         #[must_use]
+        pub fn live_photo(&self) -> Option<&types::LivePhoto> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::LivePhoto(MediaLivePhoto { live_photo, .. }),
+                    ..
+                }) => Some(live_photo),
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn sticker(&self) -> Option<&types::Sticker> {
             match &self.kind {
                 Common(MessageCommon {
@@ -1449,6 +1695,7 @@ mod getters {
                         MediaKind::Animation(MediaAnimation { caption, .. })
                         | MediaKind::Audio(MediaAudio { caption, .. })
                         | MediaKind::Document(MediaDocument { caption, .. })
+                        | MediaKind::LivePhoto(MediaLivePhoto { caption, .. })
                         | MediaKind::Photo(MediaPhoto { caption, .. })
                         | MediaKind::Video(MediaVideo { caption, .. })
                         | MediaKind::Voice(MediaVoice { caption, .. }),
@@ -2379,6 +2626,7 @@ mod tests {
                 direct_messages_topic: None,
                 from: None,
                 sender_chat: None,
+                sender_tag: None,
                 date: chrono::DateTime::from_timestamp(1567927221, 0).unwrap(),
                 is_topic_message: false,
                 is_paid_post: false,
@@ -2980,62 +3228,20 @@ mod tests {
             }
         }"#;
         let message: Message = from_str(json).unwrap();
-        assert_eq!(
-            message.giveaway_completed().unwrap(),
-            &GiveawayCompleted {
-                winner_count: 0,
-                unclaimed_prize_count: Some(1),
-                giveaway_message: Some(Box::new(Message {
-                    id: MessageId(24),
-                    thread_id: None,
-                    direct_messages_topic: None,
-                    is_paid_post: false,
-                    from: None,
-                    sender_chat: Some(Chat {
-                        id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
-                            title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
-                        }),
-                    }),
-                    is_topic_message: false,
-                    date: DateTime::from_timestamp(1721161230, 0).unwrap(),
-                    chat: Chat {
-                        id: ChatId(-1002236736395),
-                        kind: ChatKind::Public(ChatPublic {
-                            title: Some("Test".to_owned()),
-                            kind: PublicChatKind::Channel(PublicChatChannel { username: None }),
-                        }),
-                    },
-                    via_bot: None,
-                    sender_business_bot: None,
-                    suggested_post_info: None,
-                    kind: MessageKind::Giveaway(MessageGiveaway {
-                        giveaway: Giveaway {
-                            chats: vec![Chat {
-                                id: ChatId(-1002236736395),
-                                kind: ChatKind::Public(ChatPublic {
-                                    title: Some("Test".to_owned()),
-                                    kind: PublicChatKind::Channel(PublicChatChannel {
-                                        username: None,
-                                    }),
-                                }),
-                            }],
-                            winners_selection_date: DateTime::from_timestamp(1721162701, 0)
-                                .unwrap(),
-                            winner_count: 1,
-                            only_new_members: false,
-                            has_public_winners: true,
-                            prize_description: None,
-                            country_codes: None,
-                            prize_star_count: None,
-                            premium_subscription_month_count: Some(6)
-                        }
-                    })
-                })),
-                is_star_giveaway: false,
-            }
-        )
+        let completed = message.giveaway_completed().unwrap();
+        assert_eq!(completed.winner_count, 0);
+        assert_eq!(completed.unclaimed_prize_count, Some(1));
+        assert!(!completed.is_star_giveaway);
+
+        let giveaway_message = completed.giveaway_message.as_ref().unwrap();
+        assert_eq!(giveaway_message.id, MessageId(24));
+        assert_eq!(giveaway_message.date, DateTime::from_timestamp(1721161230, 0).unwrap());
+        assert_eq!(giveaway_message.chat.id, ChatId(-1002236736395));
+
+        let giveaway = giveaway_message.giveaway().unwrap();
+        assert_eq!(giveaway.winner_count, 1);
+        assert!(giveaway.has_public_winners);
+        assert_eq!(giveaway.premium_subscription_month_count, Some(6));
     }
 
     #[test]
@@ -3122,7 +3328,11 @@ mod tests {
                     username: Some("shdwchn10".to_owned()),
                     language_code: None,
                     is_premium: false,
-                    added_to_attachment_menu: false
+                    added_to_attachment_menu: false,
+                    supports_guest_queries: false,
+                    has_topics_enabled: false,
+                    allows_users_to_create_topics: false,
+                    can_manage_bots: false,
                 }],
                 additional_chat_count: None,
                 premium_subscription_month_count: Some(6),

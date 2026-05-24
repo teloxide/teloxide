@@ -5,6 +5,7 @@ use serde::Serialize;
 use crate::types::{BusinessConnectionId, InputProfilePhoto, True};
 
 impl_payload! {
+    @[multipart = photo]
     /// Changes the profile photo of a managed business account. Requires the _can_edit_profile_photo_ business bot right. Returns _true_ on success.
     #[derive(Debug, Clone, Serialize)]
     pub SetBusinessAccountProfilePhoto (SetBusinessAccountProfilePhotoSetters) => True {

@@ -1,5 +1,6 @@
 use crate::types::{
-    CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True, WebAppInfo,
+    CallbackGame, CopyTextButton, CustomEmojiId, LoginUrl, SwitchInlineQueryChosenChat, True,
+    WebAppInfo,
 };
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +16,13 @@ pub struct InlineKeyboardButton {
 
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
+
+    /// Unique identifier of the custom emoji shown before the text of the
+    /// button.
+    pub icon_custom_emoji_id: Option<CustomEmojiId>,
+
+    /// Style of the button.
+    pub style: Option<String>,
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
@@ -113,7 +121,7 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), kind, icon_custom_emoji_id: None, style: None }
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.

@@ -1,12 +1,13 @@
+use std::hash::{Hash, Hasher};
+
 use serde::{Deserialize, Serialize};
 
-use crate::types::{MessageEntity, ParseMode};
+use crate::types::{InputPollOptionMedia, MessageEntity, ParseMode};
 
 /// This object contains information about one answer option in a poll to send.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputpolloption).
 #[derive(Clone, Debug)]
-#[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputPollOption {
@@ -15,6 +16,25 @@ pub struct InputPollOption {
 
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
     pub formatting: Option<InputPollOptionFormatting>,
+
+    /// Media added to the poll option.
+    #[serde(skip_deserializing, skip_serializing_if = "Option::is_none")]
+    pub media: Option<InputPollOptionMedia>,
+}
+
+impl PartialEq for InputPollOption {
+    fn eq(&self, other: &Self) -> bool {
+        self.text == other.text && self.formatting == other.formatting
+    }
+}
+
+impl Eq for InputPollOption {}
+
+impl Hash for InputPollOption {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.text.hash(state);
+        self.formatting.hash(state);
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -39,7 +59,7 @@ impl InputPollOption {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), formatting: None }
+        Self { text: text.into(), formatting: None, media: None }
     }
 
     pub fn text_parse_mode(self, text_parse_mode: ParseMode) -> Self {

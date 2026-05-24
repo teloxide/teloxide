@@ -265,6 +265,6 @@ fn multipart_input_file_fields(m: &Method) -> Option<Vec<&str>> {
 }
 
 fn ty_is_multiparty(ty: &Type) -> bool {
-    matches!(ty, Type::RawTy(x) if x == "InputFile" || x == "InputSticker")
+    matches!(ty, Type::RawTy(x) if x == "InputFile" || x == "InputSticker" || x == "InputProfilePhoto")
         || matches!(ty, Type::Option(inner) if ty_is_multiparty(inner))
 }

@@ -201,6 +201,7 @@ where
         copy_messages,
         send_message,
         send_photo,
+        send_live_photo,
         send_audio,
         send_document,
         send_video,
@@ -341,6 +342,23 @@ where
         post_story,
         edit_story,
         delete_story,
+        send_message_draft,
+        get_user_profile_audios,
+        set_chat_member_tag,
+        get_user_personal_chat_messages,
+        answer_guest_query,
+        get_managed_bot_token,
+        replace_managed_bot_token,
+        get_managed_bot_access_settings,
+        set_managed_bot_access_settings,
+        set_my_profile_photo,
+        remove_my_profile_photo,
+        get_user_gifts,
+        get_chat_gifts,
+        repost_story,
+        save_prepared_keyboard_button,
+        delete_message_reaction,
+        delete_all_message_reactions,
         send_invoice,
         create_invoice_link,
         answer_shipping_query,
@@ -1237,6 +1255,99 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         errors: Vec<PassportElementError>,
     ) -> ErasedRequest<'a, SetPassportDataErrors, Self::Err>;
+
+    fn send_live_photo(
+        &self,
+        chat_id: Recipient,
+        live_photo: InputFile,
+        photo: InputFile,
+    ) -> ErasedRequest<'a, SendLivePhoto, Self::Err>;
+
+    fn send_message_draft(
+        &self,
+        chat_id: UserId,
+        draft_id: i32,
+    ) -> ErasedRequest<'a, SendMessageDraft, Self::Err>;
+
+    fn get_user_profile_audios(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserProfileAudios, Self::Err>;
+
+    fn set_chat_member_tag(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetChatMemberTag, Self::Err>;
+
+    fn get_user_personal_chat_messages(
+        &self,
+        user_id: UserId,
+        limit: u8,
+    ) -> ErasedRequest<'a, GetUserPersonalChatMessages, Self::Err>;
+
+    fn answer_guest_query(
+        &self,
+        guest_query_id: String,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, AnswerGuestQuery, Self::Err>;
+
+    fn get_managed_bot_token(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetManagedBotToken, Self::Err>;
+
+    fn replace_managed_bot_token(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, ReplaceManagedBotToken, Self::Err>;
+
+    fn get_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetManagedBotAccessSettings, Self::Err>;
+
+    fn set_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+        is_access_restricted: bool,
+    ) -> ErasedRequest<'a, SetManagedBotAccessSettings, Self::Err>;
+
+    fn set_my_profile_photo(
+        &self,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetMyProfilePhoto, Self::Err>;
+
+    fn remove_my_profile_photo(&self) -> ErasedRequest<'a, RemoveMyProfilePhoto, Self::Err>;
+
+    fn get_user_gifts(&self, user_id: UserId) -> ErasedRequest<'a, GetUserGifts, Self::Err>;
+
+    fn get_chat_gifts(&self, chat_id: Recipient) -> ErasedRequest<'a, GetChatGifts, Self::Err>;
+
+    fn repost_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        from_chat_id: ChatId,
+        from_story_id: StoryId,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, RepostStory, Self::Err>;
+
+    fn save_prepared_keyboard_button(
+        &self,
+        user_id: UserId,
+        button: KeyboardButton,
+    ) -> ErasedRequest<'a, SavePreparedKeyboardButton, Self::Err>;
+
+    fn delete_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeleteMessageReaction, Self::Err>;
+
+    fn delete_all_message_reactions(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteAllMessageReactions, Self::Err>;
 
     fn send_game(
         &self,
@@ -2503,6 +2614,142 @@ where
         errors: Vec<PassportElementError>,
     ) -> ErasedRequest<'a, SetPassportDataErrors, Self::Err> {
         Requester::set_passport_data_errors(self, user_id, errors).erase()
+    }
+
+    fn send_live_photo(
+        &self,
+        chat_id: Recipient,
+        live_photo: InputFile,
+        photo: InputFile,
+    ) -> ErasedRequest<'a, SendLivePhoto, Self::Err> {
+        Requester::send_live_photo(self, chat_id, live_photo, photo).erase()
+    }
+
+    fn send_message_draft(
+        &self,
+        chat_id: UserId,
+        draft_id: i32,
+    ) -> ErasedRequest<'a, SendMessageDraft, Self::Err> {
+        Requester::send_message_draft(self, chat_id, draft_id).erase()
+    }
+
+    fn get_user_profile_audios(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetUserProfileAudios, Self::Err> {
+        Requester::get_user_profile_audios(self, user_id).erase()
+    }
+
+    fn set_chat_member_tag(
+        &self,
+        chat_id: Recipient,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, SetChatMemberTag, Self::Err> {
+        Requester::set_chat_member_tag(self, chat_id, user_id).erase()
+    }
+
+    fn get_user_personal_chat_messages(
+        &self,
+        user_id: UserId,
+        limit: u8,
+    ) -> ErasedRequest<'a, GetUserPersonalChatMessages, Self::Err> {
+        Requester::get_user_personal_chat_messages(self, user_id, limit).erase()
+    }
+
+    fn answer_guest_query(
+        &self,
+        guest_query_id: String,
+        result: InlineQueryResult,
+    ) -> ErasedRequest<'a, AnswerGuestQuery, Self::Err> {
+        Requester::answer_guest_query(self, guest_query_id, result).erase()
+    }
+
+    fn get_managed_bot_token(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetManagedBotToken, Self::Err> {
+        Requester::get_managed_bot_token(self, user_id).erase()
+    }
+
+    fn replace_managed_bot_token(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, ReplaceManagedBotToken, Self::Err> {
+        Requester::replace_managed_bot_token(self, user_id).erase()
+    }
+
+    fn get_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+    ) -> ErasedRequest<'a, GetManagedBotAccessSettings, Self::Err> {
+        Requester::get_managed_bot_access_settings(self, user_id).erase()
+    }
+
+    fn set_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+        is_access_restricted: bool,
+    ) -> ErasedRequest<'a, SetManagedBotAccessSettings, Self::Err> {
+        Requester::set_managed_bot_access_settings(self, user_id, is_access_restricted).erase()
+    }
+
+    fn set_my_profile_photo(
+        &self,
+        photo: InputProfilePhoto,
+    ) -> ErasedRequest<'a, SetMyProfilePhoto, Self::Err> {
+        Requester::set_my_profile_photo(self, photo).erase()
+    }
+
+    fn remove_my_profile_photo(&self) -> ErasedRequest<'a, RemoveMyProfilePhoto, Self::Err> {
+        Requester::remove_my_profile_photo(self).erase()
+    }
+
+    fn get_user_gifts(&self, user_id: UserId) -> ErasedRequest<'a, GetUserGifts, Self::Err> {
+        Requester::get_user_gifts(self, user_id).erase()
+    }
+
+    fn get_chat_gifts(&self, chat_id: Recipient) -> ErasedRequest<'a, GetChatGifts, Self::Err> {
+        Requester::get_chat_gifts(self, chat_id).erase()
+    }
+
+    fn repost_story(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        from_chat_id: ChatId,
+        from_story_id: StoryId,
+        active_period: Seconds,
+    ) -> ErasedRequest<'a, RepostStory, Self::Err> {
+        Requester::repost_story(
+            self,
+            business_connection_id,
+            from_chat_id,
+            from_story_id,
+            active_period,
+        )
+        .erase()
+    }
+
+    fn save_prepared_keyboard_button(
+        &self,
+        user_id: UserId,
+        button: KeyboardButton,
+    ) -> ErasedRequest<'a, SavePreparedKeyboardButton, Self::Err> {
+        Requester::save_prepared_keyboard_button(self, user_id, button).erase()
+    }
+
+    fn delete_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeleteMessageReaction, Self::Err> {
+        Requester::delete_message_reaction(self, chat_id, message_id).erase()
+    }
+
+    fn delete_all_message_reactions(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteAllMessageReactions, Self::Err> {
+        Requester::delete_all_message_reactions(self, chat_id).erase()
     }
 
     fn send_game(

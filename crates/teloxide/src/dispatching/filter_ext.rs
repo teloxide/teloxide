@@ -173,6 +173,8 @@ define_update_ext! {
     (filter_business_message, UpdateKind::BusinessMessage, BusinessMessage),
     (filter_edited_business_message, UpdateKind::EditedBusinessMessage, EditedBusinessMessage),
     (filter_deleted_business_messages, UpdateKind::DeletedBusinessMessages, DeletedBusinessMessages),
+    (filter_guest_message, UpdateKind::GuestMessage, GuestMessage),
+    (filter_managed_bot, UpdateKind::ManagedBot, ManagedBot),
     (filter_message_reaction_updated, UpdateKind::MessageReaction, MessageReaction),
     (filter_message_reaction_count_updated, UpdateKind::MessageReactionCount, MessageReactionCount),
     (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),

@@ -18,6 +18,14 @@ pub struct UniqueGiftInfo {
     /// For gifts bought from other users, the price paid for the gift
     pub last_resale_star_count: Option<u32>,
 
+    /// For gifts bought from other users, the currency in which the payment
+    /// for the gift was done.
+    pub last_resale_currency: Option<String>,
+
+    /// For gifts bought from other users, the price paid for the gift in
+    /// either Telegram Stars or nanotoncoins.
+    pub last_resale_amount: Option<u64>,
+
     /// Unique identifier of the received gift for the bot; only present for
     /// gifts received on behalf of business accounts
     pub owned_gift_id: Option<OwnedGiftId>,

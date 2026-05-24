@@ -1,7 +1,7 @@
 use mime::Mime;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{FileMeta, PhotoSize, Seconds};
+use crate::types::{FileMeta, PhotoSize, Seconds, VideoQuality};
 
 /// This object represents a video file.
 ///
@@ -31,6 +31,9 @@ pub struct Video {
 
     /// Timestamp in seconds from which the video will play in the message
     pub start_timestamp: Option<Seconds>,
+
+    /// List of available qualities of the video.
+    pub qualities: Option<Vec<VideoQuality>>,
 
     /// Original filename as defined by sender
     pub file_name: Option<String>,

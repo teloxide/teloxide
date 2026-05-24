@@ -8,9 +8,9 @@ use crate::{
         AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
         ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
         InputChecklist, InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto,
-        InputSticker, InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId,
-        Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId,
-        ThreadId, UserId,
+        InputSticker, InputStoryContent, KeyboardButton, LabeledPrice, MessageId, OwnedGiftId,
+        PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId,
+        TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -1645,7 +1645,8 @@ impl Requester for Bot {
         )
     }
 
-    type SetBusinessAccountProfilePhoto = JsonRequest<payloads::SetBusinessAccountProfilePhoto>;
+    type SetBusinessAccountProfilePhoto =
+        MultipartRequest<payloads::SetBusinessAccountProfilePhoto>;
 
     fn set_business_account_profile_photo(
         &self,
@@ -1807,6 +1808,207 @@ impl Requester for Bot {
         Self::DeleteStory::new(
             self.clone(),
             payloads::DeleteStory::new(business_connection_id, story_id),
+        )
+    }
+
+    type SendLivePhoto = MultipartRequest<payloads::SendLivePhoto>;
+
+    fn send_live_photo<C>(
+        &self,
+        chat_id: C,
+        live_photo: InputFile,
+        photo: InputFile,
+    ) -> Self::SendLivePhoto
+    where
+        C: Into<Recipient>,
+    {
+        Self::SendLivePhoto::new(
+            self.clone(),
+            payloads::SendLivePhoto::new(chat_id, live_photo, photo),
+        )
+    }
+
+    type SendMessageDraft = JsonRequest<payloads::SendMessageDraft>;
+
+    fn send_message_draft(&self, chat_id: UserId, draft_id: i32) -> Self::SendMessageDraft {
+        Self::SendMessageDraft::new(
+            self.clone(),
+            payloads::SendMessageDraft::new(chat_id, draft_id),
+        )
+    }
+
+    type GetUserProfileAudios = JsonRequest<payloads::GetUserProfileAudios>;
+
+    fn get_user_profile_audios(&self, user_id: UserId) -> Self::GetUserProfileAudios {
+        Self::GetUserProfileAudios::new(self.clone(), payloads::GetUserProfileAudios::new(user_id))
+    }
+
+    type SetChatMemberTag = JsonRequest<payloads::SetChatMemberTag>;
+
+    fn set_chat_member_tag<C>(&self, chat_id: C, user_id: UserId) -> Self::SetChatMemberTag
+    where
+        C: Into<Recipient>,
+    {
+        Self::SetChatMemberTag::new(self.clone(), payloads::SetChatMemberTag::new(chat_id, user_id))
+    }
+
+    type GetUserPersonalChatMessages = JsonRequest<payloads::GetUserPersonalChatMessages>;
+
+    fn get_user_personal_chat_messages(
+        &self,
+        user_id: UserId,
+        limit: u8,
+    ) -> Self::GetUserPersonalChatMessages {
+        Self::GetUserPersonalChatMessages::new(
+            self.clone(),
+            payloads::GetUserPersonalChatMessages::new(user_id, limit),
+        )
+    }
+
+    type AnswerGuestQuery = JsonRequest<payloads::AnswerGuestQuery>;
+
+    fn answer_guest_query<G>(
+        &self,
+        guest_query_id: G,
+        result: InlineQueryResult,
+    ) -> Self::AnswerGuestQuery
+    where
+        G: Into<String>,
+    {
+        Self::AnswerGuestQuery::new(
+            self.clone(),
+            payloads::AnswerGuestQuery::new(guest_query_id, result),
+        )
+    }
+
+    type GetManagedBotToken = JsonRequest<payloads::GetManagedBotToken>;
+
+    fn get_managed_bot_token(&self, user_id: UserId) -> Self::GetManagedBotToken {
+        Self::GetManagedBotToken::new(self.clone(), payloads::GetManagedBotToken::new(user_id))
+    }
+
+    type ReplaceManagedBotToken = JsonRequest<payloads::ReplaceManagedBotToken>;
+
+    fn replace_managed_bot_token(&self, user_id: UserId) -> Self::ReplaceManagedBotToken {
+        Self::ReplaceManagedBotToken::new(
+            self.clone(),
+            payloads::ReplaceManagedBotToken::new(user_id),
+        )
+    }
+
+    type GetManagedBotAccessSettings = JsonRequest<payloads::GetManagedBotAccessSettings>;
+
+    fn get_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+    ) -> Self::GetManagedBotAccessSettings {
+        Self::GetManagedBotAccessSettings::new(
+            self.clone(),
+            payloads::GetManagedBotAccessSettings::new(user_id),
+        )
+    }
+
+    type SetManagedBotAccessSettings = JsonRequest<payloads::SetManagedBotAccessSettings>;
+
+    fn set_managed_bot_access_settings(
+        &self,
+        user_id: UserId,
+        is_access_restricted: bool,
+    ) -> Self::SetManagedBotAccessSettings {
+        Self::SetManagedBotAccessSettings::new(
+            self.clone(),
+            payloads::SetManagedBotAccessSettings::new(user_id, is_access_restricted),
+        )
+    }
+
+    type SetMyProfilePhoto = MultipartRequest<payloads::SetMyProfilePhoto>;
+
+    fn set_my_profile_photo(&self, photo: InputProfilePhoto) -> Self::SetMyProfilePhoto {
+        Self::SetMyProfilePhoto::new(self.clone(), payloads::SetMyProfilePhoto::new(photo))
+    }
+
+    type RemoveMyProfilePhoto = JsonRequest<payloads::RemoveMyProfilePhoto>;
+
+    fn remove_my_profile_photo(&self) -> Self::RemoveMyProfilePhoto {
+        Self::RemoveMyProfilePhoto::new(self.clone(), payloads::RemoveMyProfilePhoto::new())
+    }
+
+    type GetUserGifts = JsonRequest<payloads::GetUserGifts>;
+
+    fn get_user_gifts(&self, user_id: UserId) -> Self::GetUserGifts {
+        Self::GetUserGifts::new(self.clone(), payloads::GetUserGifts::new(user_id))
+    }
+
+    type GetChatGifts = JsonRequest<payloads::GetChatGifts>;
+
+    fn get_chat_gifts<C>(&self, chat_id: C) -> Self::GetChatGifts
+    where
+        C: Into<Recipient>,
+    {
+        Self::GetChatGifts::new(self.clone(), payloads::GetChatGifts::new(chat_id))
+    }
+
+    type RepostStory = JsonRequest<payloads::RepostStory>;
+
+    fn repost_story<F>(
+        &self,
+        business_connection_id: BusinessConnectionId,
+        from_chat_id: F,
+        from_story_id: StoryId,
+        active_period: Seconds,
+    ) -> Self::RepostStory
+    where
+        F: Into<ChatId>,
+    {
+        Self::RepostStory::new(
+            self.clone(),
+            payloads::RepostStory::new(
+                business_connection_id,
+                from_chat_id,
+                from_story_id,
+                active_period,
+            ),
+        )
+    }
+
+    type SavePreparedKeyboardButton = JsonRequest<payloads::SavePreparedKeyboardButton>;
+
+    fn save_prepared_keyboard_button(
+        &self,
+        user_id: UserId,
+        button: KeyboardButton,
+    ) -> Self::SavePreparedKeyboardButton {
+        Self::SavePreparedKeyboardButton::new(
+            self.clone(),
+            payloads::SavePreparedKeyboardButton::new(user_id, button),
+        )
+    }
+
+    type DeleteMessageReaction = JsonRequest<payloads::DeleteMessageReaction>;
+
+    fn delete_message_reaction<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::DeleteMessageReaction
+    where
+        C: Into<Recipient>,
+    {
+        Self::DeleteMessageReaction::new(
+            self.clone(),
+            payloads::DeleteMessageReaction::new(chat_id, message_id),
+        )
+    }
+
+    type DeleteAllMessageReactions = JsonRequest<payloads::DeleteAllMessageReactions>;
+
+    fn delete_all_message_reactions<C>(&self, chat_id: C) -> Self::DeleteAllMessageReactions
+    where
+        C: Into<Recipient>,
+    {
+        Self::DeleteAllMessageReactions::new(
+            self.clone(),
+            payloads::DeleteAllMessageReactions::new(chat_id),
         )
     }
 
