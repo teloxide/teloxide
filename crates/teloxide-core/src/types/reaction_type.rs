@@ -4,6 +4,7 @@ use crate::types::CustomEmojiId;
 
 /// The reaction type is based on an emoji or custom emoji.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(tag = "type")]
 #[serde(rename_all = "snake_case")]
 pub enum ReactionType {

@@ -8,6 +8,7 @@ use crate::types::OrderInfo;
 #[derive(Clone, Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize, From)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct TelegramTransactionId(pub String);
@@ -17,6 +18,7 @@ pub struct TelegramTransactionId(pub String);
 /// [The official docs](https://core.telegram.org/bots/api#successfulpayment).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuccessfulPayment {
     /// Three-letter ISO 4217 currency code, see [more on currencies]. Pass
     /// `XTR` for payments in [Telegram Stars].
@@ -40,6 +42,7 @@ pub struct SuccessfulPayment {
     /// Expiration date of the subscription, in Unix time; for recurring
     /// payments only.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub subscription_expiration_date: Option<DateTime<Utc>>,
 
     /// True, if the payment is a recurring payment for a subscription.

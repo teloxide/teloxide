@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{TargetMessage, True, UserId};
+use crate::types::{GameHighScore, TargetMessage, UserId};
 
 impl_payload! {
     /// Use this method to get data for high score tables. Will return the score of the specified user and several of their neighbors in a game. On success, returns an Array of [`GameHighScore`] objects.
@@ -11,7 +11,7 @@ impl_payload! {
     ///
     /// [`GameHighScore`]: crate::types::GameHighScore
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
-    pub GetGameHighScores (GetGameHighScoresSetters) => True {
+    pub GetGameHighScores (GetGameHighScoresSetters) => Vec<GameHighScore> {
         required {
             /// User identifier
             pub user_id: UserId,

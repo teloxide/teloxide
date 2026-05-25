@@ -6,6 +6,8 @@ use crate::types::serde_timestamp;
 /// A range of time, before some date (for example a time before a restrictions
 /// will be lifted from a member of a chat).
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+#[cfg_attr(test, schemars(with = "i64"))]
 pub enum UntilDate {
     /// The range is bound by a given date and time.
     Date(DateTime<Utc>),

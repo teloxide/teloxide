@@ -7,6 +7,7 @@ use crate::types::{ChatId, MAX_USER_ID, MIN_USER_ID};
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct UserId(pub u64);
 

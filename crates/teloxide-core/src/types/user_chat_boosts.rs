@@ -5,6 +5,7 @@ use crate::types::ChatBoost;
 /// This object represents a list of boosts added to a chat by a user.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct UserChatBoosts {
     /// The list of boosts added to the chat by the user.
     pub boosts: Vec<ChatBoost>,

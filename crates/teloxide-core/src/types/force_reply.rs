@@ -14,6 +14,7 @@ use crate::types::True;
 /// [privacy mode]: https://core.telegram.org/bots#privacy-mode
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Default, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ForceReply {
     /// Shows reply interface to the user, as if they manually selected the
     /// bot‘s message and tapped ’Reply'.

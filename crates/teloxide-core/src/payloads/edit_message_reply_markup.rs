@@ -7,7 +7,7 @@ use crate::types::{BusinessConnectionId, InlineKeyboardMarkup, Message, MessageI
 impl_payload! {
     /// Use this method to edit only the reply markup of messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.
     ///
-    /// See also: [`EditMessageMediaInline`](crate::payloads::EditMessageMediaInline)
+    /// See also: [`EditMessageReplyMarkupInline`](crate::payloads::EditMessageReplyMarkupInline)
     #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
     pub EditMessageReplyMarkup (EditMessageReplyMarkupSetters) => Message {
         required {

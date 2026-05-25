@@ -8,6 +8,7 @@ use crate::types::{Message, SuggestedPostPrice};
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostapprovalfailed).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostApprovalFailed {
     /// Message containing the suggested post whose approval has failed. Note
     /// that the Message object in this field will not contain the

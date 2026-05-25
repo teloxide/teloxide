@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 /// This object describes the types of gifts that can be gifted to a user or a
 /// chat.
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct AcceptedGiftTypes {
     /// `true`, if unlimited regular gifts are accepted
     pub unlimited_gifts: bool,

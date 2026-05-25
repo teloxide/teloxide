@@ -7,6 +7,7 @@ use crate::types::{Gift, MessageEntity, OwnedGiftId, UniqueGift, User};
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum OwnedGift {
@@ -19,6 +20,7 @@ pub enum OwnedGift {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct OwnedGifts {
     /// The total number of gifts owned by the user or the chat
     pub total_count: u32,
@@ -35,6 +37,7 @@ pub struct OwnedGifts {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct OwnedGiftRegular {
     /// Information about the regular gift
     pub gift: Gift,
@@ -48,6 +51,7 @@ pub struct OwnedGiftRegular {
 
     /// Date the gift was sent in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub send_date: DateTime<Utc>,
 
     /// Text of the message that was added to the gift
@@ -89,6 +93,7 @@ pub struct OwnedGiftRegular {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct OwnedGiftUnique {
     /// Information about the unique gift
     pub gift: UniqueGift,
@@ -102,6 +107,7 @@ pub struct OwnedGiftUnique {
 
     /// Date the gift was sent in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub send_date: DateTime<Utc>,
 
     /// `true`, if the gift is displayed on the account's profile page; for
@@ -121,5 +127,6 @@ pub struct OwnedGiftUnique {
     /// Point in time (Unix timestamp) when the gift can be transferred. If it
     /// is in the past, then the gift can be transferred now
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub next_transfer_date: Option<DateTime<Utc>>,
 }

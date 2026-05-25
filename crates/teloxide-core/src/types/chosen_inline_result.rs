@@ -10,6 +10,7 @@ use crate::types::{Location, User};
 /// [result]: https://core.telegram.org/bots/api#inlinequeryresult
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChosenInlineResult {
     /// The unique identifier for the result that was chosen.
     pub result_id: String,

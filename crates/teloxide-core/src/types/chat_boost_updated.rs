@@ -5,6 +5,7 @@ use crate::types::{Chat, ChatBoost};
 /// This object represents a boost added to a chat or changed.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoostUpdated {
     /// Chat which was boosted
     pub chat: Chat,

@@ -8,6 +8,7 @@ use crate::types::{Message, SuggestedPostPrice};
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostapproved).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostApproved {
     /// Message containing the suggested post. Note that the Message object in
     /// this field will not contain the reply_to_message field even if it itself
@@ -19,5 +20,6 @@ pub struct SuggestedPostApproved {
 
     /// Date when the post will be published
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub send_date: DateTime<Utc>,
 }

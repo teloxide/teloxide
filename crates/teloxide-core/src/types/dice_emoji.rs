@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Debug, Clone, PartialEq, Eq, Hash, Deserialize, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum DiceEmoji {
     /// "🎲" emoji. Values from 1-6. Defaults to this variant.
     #[serde(rename = "🎲")]

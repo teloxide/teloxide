@@ -7,6 +7,7 @@ use crate::types::{FileId, FileUniqueId};
 /// [The official docs](https://core.telegram.org/bots/api#chatphoto).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatPhoto {
     /// A file identifier of small (160x160) chat photo. This file_id can be
     /// used only for photo download and only for as long as the photo is

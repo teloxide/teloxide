@@ -16,6 +16,7 @@ use crate::types::{OrderInfo, User};
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct PreCheckoutQueryId(pub String);
@@ -25,6 +26,7 @@ pub struct PreCheckoutQueryId(pub String);
 /// [The official docs](https://core.telegram.org/bots/api#precheckoutquery).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PreCheckoutQuery {
     /// Unique query identifier.
     pub id: PreCheckoutQueryId,

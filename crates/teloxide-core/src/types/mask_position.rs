@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Copy, Debug)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct MaskPosition {
     /// The part of the face relative to which the mask should be placed. One
     /// of `forehead`, `eyes`, `mouth`, or `chin`.
@@ -60,6 +61,7 @@ impl Hash for MaskPosition {
 #[derive(Clone, Copy, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum MaskPoint {
     Forehead,

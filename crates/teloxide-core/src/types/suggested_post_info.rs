@@ -8,6 +8,7 @@ use crate::types::SuggestedPostPrice;
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostinfo).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostInfo {
     /// State of the suggested post
     pub state: SuggestedPostState,
@@ -20,12 +21,14 @@ pub struct SuggestedPostInfo {
     /// can be published at any time within 30 days at the sole discretion of
     /// the user or administrator who approves it.
     #[serde(with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub send_date: Option<DateTime<Utc>>,
 }
 
 /// State of the suggested post
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub enum SuggestedPostState {
     Pending,
     Approved,

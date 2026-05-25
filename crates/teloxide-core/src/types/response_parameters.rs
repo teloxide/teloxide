@@ -6,6 +6,7 @@ use crate::types::{ChatId, Seconds};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#responseparameters).
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum ResponseParameters {
     /// The group has been migrated to a supergroup with the specified

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct ChecklistTaskId(pub i32);
 
@@ -16,6 +17,7 @@ pub struct ChecklistTaskId(pub i32);
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChecklistTask {
     /// Unique identifier of the task
     pub id: ChecklistTaskId,
@@ -32,6 +34,7 @@ pub struct ChecklistTask {
     /// Point in time (Unix timestamp) when the task was completed; 0 if the
     /// task wasn't completed
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub completion_date: Option<DateTime<Utc>>,
 }
 
@@ -49,6 +52,7 @@ impl ChecklistTask {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Checklist {
     /// Title of the checklist
     pub title: String,
@@ -75,6 +79,7 @@ pub struct Checklist {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputChecklistTask {
     /// Unique identifier of the task; must be positive and unique among all
     /// task identifiers currently present in the checklist
@@ -100,6 +105,7 @@ pub struct InputChecklistTask {
 #[derive(Clone, Debug)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputChecklist {
     /// Title of the checklist; 1-255 characters after entities parsing
     pub title: String,
@@ -134,6 +140,7 @@ pub struct InputChecklist {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChecklistTasksDone {
     /// Message containing the checklist whose tasks were marked as done or not
     /// done. Note that the Message object in this field will not contain the
@@ -151,6 +158,7 @@ pub struct ChecklistTasksDone {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChecklistTasksAdded {
     /// Message containing the checklist to which the tasks were added. Note
     /// that the Message object in this field will not contain the

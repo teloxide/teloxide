@@ -10,4 +10,5 @@ use serde::{Deserialize, Serialize};
 /// [@Botfather]:  https://t.me/botfather
 #[serde_with::skip_serializing_none]
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct CallbackGame {}

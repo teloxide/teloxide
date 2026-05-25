@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 /// Describes the options used for link preview generation.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct LinkPreviewOptions {
     /// `true`, if the link preview is disabled
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]

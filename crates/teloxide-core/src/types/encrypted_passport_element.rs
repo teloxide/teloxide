@@ -8,6 +8,7 @@ use super::PassportFile;
 /// [The official docs](https://core.telegram.org/bots/api#encryptedpassportelement).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElement {
     /// Base64-encoded element hash for using in
     /// [`PassportElementErrorKind::Unspecified`].
@@ -21,7 +22,8 @@ pub struct EncryptedPassportElement {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+#[serde(rename_all = "snake_case", untagged)]
 #[allow(clippy::large_enum_variant)]
 pub enum EncryptedPassportElementKind {
     PersonalDetails(EncryptedPassportElementPersonalDetails),
@@ -41,6 +43,7 @@ pub enum EncryptedPassportElementKind {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementPersonalDetails {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -55,6 +58,7 @@ pub struct EncryptedPassportElementPersonalDetails {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementPassport {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -99,6 +103,7 @@ pub struct EncryptedPassportElementPassport {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementDriverLicense {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -152,6 +157,7 @@ pub struct EncryptedPassportElementDriverLicense {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementIdentityCard {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -205,6 +211,7 @@ pub struct EncryptedPassportElementIdentityCard {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementInternalPassport {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -249,6 +256,7 @@ pub struct EncryptedPassportElementInternalPassport {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementAddress {
     ///  Base64-encoded encrypted Telegram Passport element data provided
     /// by the user, available for `personal_details`, `passport`,
@@ -263,6 +271,7 @@ pub struct EncryptedPassportElementAddress {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementUtilityBill {
     /// Array of encrypted files with documents provided by the user,
     /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
@@ -289,6 +298,7 @@ pub struct EncryptedPassportElementUtilityBill {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementBankStatement {
     /// Array of encrypted files with documents provided by the user,
     /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
@@ -315,6 +325,7 @@ pub struct EncryptedPassportElementBankStatement {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementRentalAgreement {
     /// Array of encrypted files with documents provided by the user,
     /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
@@ -341,6 +352,7 @@ pub struct EncryptedPassportElementRentalAgreement {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementPassportRegistration {
     /// Array of encrypted files with documents provided by the user,
     /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
@@ -367,6 +379,7 @@ pub struct EncryptedPassportElementPassportRegistration {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementTemporaryRegistration {
     /// Array of encrypted files with documents provided by the user,
     /// available for `utility_bill`, `bank_statement`, `rental_agreement`,
@@ -393,6 +406,7 @@ pub struct EncryptedPassportElementTemporaryRegistration {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementPhoneNumber {
     /// User's verified phone number, available only for `phone_number`
     /// type.
@@ -401,7 +415,27 @@ pub struct EncryptedPassportElementPhoneNumber {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct EncryptedPassportElementEmail {
     /// User's verified email address, available only for `email` type.
     pub email: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn deserialize_encrypted_passport_element_email() {
+        let json = r#"{"type":"email", "hash": "123456", "email": "test@gmail.com"}"#;
+        let actual = serde_json::from_str(json).unwrap();
+
+        let expected = EncryptedPassportElement {
+            hash: "123456".to_owned(),
+            kind: EncryptedPassportElementKind::Email(EncryptedPassportElementEmail {
+                email: "test@gmail.com".to_owned(),
+            }),
+        };
+        assert_eq!(expected, actual);
+    }
 }

@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, Hash)]
 #[derive(Serialize, Deserialize, From)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct OwnedGiftId(pub String);
@@ -13,6 +14,7 @@ pub struct OwnedGiftId(pub String);
 /// Describes a service message about a regular gift that was sent or received.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct GiftInfo {
     /// Information about the gift
     pub gift: Gift,

@@ -13,6 +13,7 @@ use crate::types::{InlineKeyboardMarkup, InputMessageContent, MessageEntity, Par
 /// [The official docs](https://core.telegram.org/bots/api#inlinequeryresultvideo).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineQueryResultVideo {
     /// Unique identifier for this result, 1-64 bytes.
     pub id: String,
@@ -22,6 +23,7 @@ pub struct InlineQueryResultVideo {
 
     /// Mime type of the content of video url, `text/html` or `video/mp4`.
     #[serde(with = "crate::types::non_telegram_types::mime::deser")]
+    #[cfg_attr(test, schemars(with = "String"))]
     pub mime_type: Mime,
 
     /// URL of the thumbnail (jpeg only) for the video.

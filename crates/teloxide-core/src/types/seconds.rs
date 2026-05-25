@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, derive_more::Display)]
 #[display("{_0}s")]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct Seconds(u32);
 

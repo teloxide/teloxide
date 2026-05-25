@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Fixed
+
+- Don't ignore argument separator in CommandEnum and both separators in Command ([#1462](https://github.com/teloxide/teloxide/pull/1462))
+  - Now it's possible to specify `separator` in each command variant
+  - Usage of `command_separator` in a command variant now leads to a compile time error instead of silent ignoring
+  - Now usage of `separator` without `parse_with = "split"` both in the command enum and in the command variant gives a compile time error
+
 ## 0.10.0 - 2025-06-19
 
 ### Changed

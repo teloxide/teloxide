@@ -9,6 +9,7 @@ use crate::types::{
 /// This object contains information about a message that is being replied to,
 /// which may come from another chat or forum topic.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ExternalReplyInfo {
     /// Origin of the message replied to by the given message.
     pub origin: MessageOrigin,
@@ -18,6 +19,7 @@ pub struct ExternalReplyInfo {
     /// Unique message identifier inside the original chat. Available only if
     /// the original chat is a supergroup or a channel.
     #[serde(with = "crate::types::option_msg_id_as_int")]
+    #[cfg_attr(test, schemars(with = "Option<i32>"))]
     pub message_id: Option<MessageId>,
     /// Options used for link preview generation for the original message, if it
     /// is a text message.
@@ -31,6 +33,7 @@ pub struct ExternalReplyInfo {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum ExternalReplyInfoKind {
     // Note:

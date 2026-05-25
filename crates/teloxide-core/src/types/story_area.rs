@@ -5,6 +5,7 @@ use crate::types::{Argb, CountryCode, ReactionType};
 /// Describes a clickable area on a story media.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryArea {
     /// Position of the area
     pub position: StoryAreaPosition,
@@ -16,6 +17,7 @@ pub struct StoryArea {
 /// Describes the position of a clickable area within a story.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaPosition {
     /// The abscissa of the area's center, as a percentage of the media width
     pub x_percentage: f64,
@@ -41,6 +43,7 @@ pub struct StoryAreaPosition {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct LocationAddress {
     /// The two-letter ISO 3166-1 alpha-2 country code of the country where the
     /// location is located
@@ -59,6 +62,7 @@ pub struct LocationAddress {
 /// Describes the type of a clickable area on a story.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum StoryAreaType {
@@ -74,6 +78,7 @@ pub enum StoryAreaType {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaTypeLocation {
     /// Location latitude in degrees
     pub latitude: f64,
@@ -90,6 +95,7 @@ pub struct StoryAreaTypeLocation {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaTypeSuggestedReaction {
     /// Type of the reaction
     pub reaction_type: ReactionType,
@@ -105,6 +111,7 @@ pub struct StoryAreaTypeSuggestedReaction {
 /// can have up to 3 link areas.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaTypeLink {
     /// HTTP or tg:// URL to be opened when the area is clicked
     pub url: reqwest::Url,
@@ -114,6 +121,7 @@ pub struct StoryAreaTypeLink {
 /// can have up to 3 weather areas.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaTypeWeather {
     /// Temperature, in degree Celsius
     pub temperature: f64,
@@ -129,6 +137,7 @@ pub struct StoryAreaTypeWeather {
 /// have at most 1 unique gift area.
 #[derive(Clone, Debug, PartialEq)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct StoryAreaTypeUniqueGift {
     /// Unique name of the gift
     pub name: String,

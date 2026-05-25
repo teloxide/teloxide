@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 /// within a chat.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PaidMessagePriceChanged {
     /// The new number of Telegram Stars that must be paid by non-administrator
     /// users of the supergroup chat for each sent message

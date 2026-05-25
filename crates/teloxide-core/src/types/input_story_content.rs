@@ -4,6 +4,7 @@ use crate::types::InputFile;
 
 /// This object describes the content of a story to post.
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum InputStoryContent {
@@ -13,6 +14,7 @@ pub enum InputStoryContent {
 
 /// Describes a regular gift owned by a user or a chat.
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputStoryContentPhoto {
     /// The photo to post as a story. The photo must be of the size 1080x1920
     /// and must not exceed 10 MB. The photo can't be reused and can only be
@@ -27,6 +29,7 @@ pub struct InputStoryContentPhoto {
 /// Describes a unique gift received and owned by a user or a chat.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InputStoryContentVideo {
     /// The video to post as a story. The video must be of the size 720x1280,
     /// streamable, encoded with H.265 codec, with key frames added each second

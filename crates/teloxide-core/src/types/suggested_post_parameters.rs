@@ -8,6 +8,7 @@ use crate::types::SuggestedPostPrice;
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostparameters).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostParameters {
     /// Proposed price for the post. If the field is omitted, then the post is
     /// unpaid.
@@ -18,5 +19,6 @@ pub struct SuggestedPostParameters {
     /// field is omitted, then the post can be published at any time within 30
     /// days at the sole discretion of the user who approves it.
     #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
     pub send_date: Option<DateTime<Utc>>,
 }

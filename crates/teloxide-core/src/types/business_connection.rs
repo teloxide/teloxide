@@ -6,6 +6,7 @@ use crate::types::{BusinessBotRights, BusinessConnectionId, User, UserId};
 /// Describes the connection of the bot with a business account.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BusinessConnection {
     /// Unique identifier of the business connection
     pub id: BusinessConnectionId,
@@ -19,6 +20,7 @@ pub struct BusinessConnection {
 
     /// Date the connection was established in Unix time
     #[serde(with = "crate::types::serde_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "i64"))]
     pub date: DateTime<Utc>,
 
     /// Rights of the business bot

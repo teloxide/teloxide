@@ -7,6 +7,7 @@ use crate::types::User;
 #[derive(Debug, derive_more::Display)]
 #[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[derive(Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 pub struct TopicId(pub i32);
 
@@ -15,6 +16,7 @@ pub struct TopicId(pub i32);
 /// [The official docs](https://core.telegram.org/bots/api#directmessagestopic).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct DirectMessagesTopic {
     /// Unique identifier of the topic
     pub topic_id: TopicId,

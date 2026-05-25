@@ -16,6 +16,7 @@ use crate::types::{ChatType, Location, User};
     Deserialize,
     From
 )]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(transparent)]
 #[from(&'static str, String)]
 pub struct InlineQueryId(pub String);
@@ -28,6 +29,7 @@ pub struct InlineQueryId(pub String);
 /// [The official docs](https://core.telegram.org/bots/api#inlinequery).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineQuery {
     /// Unique identifier for this query.
     pub id: InlineQueryId,

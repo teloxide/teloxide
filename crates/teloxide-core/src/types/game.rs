@@ -10,6 +10,7 @@ use crate::types::{Animation, MessageEntity, PhotoSize, User};
 /// [@Botfather]: https://t.me/botfather
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Game {
     /// Title of the game.
     pub title: String,

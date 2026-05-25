@@ -8,6 +8,7 @@ use crate::types::WebAppInfo;
 /// then it is applied in the chat. Otherwise the default menu button is
 /// applied. By default, the menu button opens the list of bot commands.
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "type")]
 pub enum MenuButton {

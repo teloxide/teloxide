@@ -5,6 +5,7 @@ use crate::types::{MessageId, User};
 /// This object describes the source of a chat boost.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 #[serde(tag = "source")]
 pub enum ChatBoostSource {
@@ -17,6 +18,7 @@ pub enum ChatBoostSource {
 /// Telegram Premium subscription to another user.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoostSourcePremium {
     /// User that boosted the chat.
     pub user: User,
@@ -27,6 +29,7 @@ pub struct ChatBoostSourcePremium {
 /// corresponding Telegram Premium subscription.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoostSourceGiftCode {
     /// User for which the gift code was created.
     pub user: User,
@@ -37,10 +40,12 @@ pub struct ChatBoostSourceGiftCode {
 /// Premium subscription.
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct ChatBoostSourceGiveaway {
     /// Identifier of a message in the chat with the giveaway; the message could
     /// have been deleted already. May be 0 if the message isn't sent yet.
     #[serde(flatten, with = "crate::types::prefix_giveaway_message_id")]
+    #[cfg_attr(test, schemars(!flatten, with = "i32"))]
     pub giveaway_message_id: MessageId,
 
     /// User that won the prize in the giveaway if any.

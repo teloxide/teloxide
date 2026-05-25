@@ -9,6 +9,7 @@ use crate::types::{FileMeta, PhotoSize, Seconds};
 /// [The official docs](https://core.telegram.org/bots/api#animation).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Animation {
     /// Metadata of the animation file.
     #[serde(flatten)]
@@ -31,6 +32,7 @@ pub struct Animation {
 
     /// A MIME type of the file as defined by a sender.
     #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 }
 

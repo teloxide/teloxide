@@ -8,6 +8,7 @@ use crate::types::{Message, StarAmount};
 /// [The official docs](https://core.telegram.org/bots/api#suggestedpostpaid).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct SuggestedPostPaid {
     /// Message containing the suggested post. Note that the Message object in
     /// this field will not contain the reply_to_message field even if it itself

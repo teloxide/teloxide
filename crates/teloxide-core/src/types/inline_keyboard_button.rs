@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 /// [The official docs](https://core.telegram.org/bots/api#inlinekeyboardbutton).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
@@ -17,6 +18,7 @@ pub struct InlineKeyboardButton {
 }
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(rename_all = "snake_case")]
 pub enum InlineKeyboardButtonKind {
     /// HTTP or `tg://` url to be opened when button is pressed.
