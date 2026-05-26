@@ -48,6 +48,7 @@ tracing = ["dep:tracing"]
 
 native-tls = ["teloxide-core/native-tls"]
 rustls = ["teloxide-core/rustls"]
+rustls-ring = ["teloxide-core/rustls-ring"]
 rustls-native-roots = ["teloxide-core/rustls-native-roots"]
 throttle = ["teloxide-core/throttle"]
 cache-me = [
@@ -93,7 +94,7 @@ serde = { version = "1.0", features = ["derive"] }
 
 dptree = "0.5.1"
 
-tokio = { version = "1.39", features = ["fs", "rt-multi-thread"] }
+tokio = { version = "1.39", features = ["fs", "rt-multi-thread", "macros"] }
 tokio-util = "0.7"
 tokio-stream = "0.1.8"
 
@@ -245,6 +246,9 @@ required-features = ["ctrlc_handler"]
 [[example]]
 name = "throw_dice"
 required-features = ["ctrlc_handler"]
+
+[[example]]
+name = "update_stream"
 
 [[example]]
 name = "middlewares"

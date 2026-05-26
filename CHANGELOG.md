@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `Bot::update_stream()` API as a simpler, compile-time-safe alternative to `Dispatcher`/`dptree` for consuming Telegram updates as a plain `Stream` ([#871](https://github.com/teloxide/teloxide/issues/871))
+  - Builder pattern with `.timeout()`, `.limit()`, `.allowed_updates()`, `.webhook()` support
+  - `UpdateStream::shutdown()` for graceful shutdown
+  - Guards against multiple concurrent streams for the same bot token
 - `ParticipantIdInvalid` and `ChatAdminRequired` variants to `ApiError` ([#1349](https://github.com/teloxide/teloxide/issues/1349))
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `filter_suggested_post_approved`, `filter_suggested_post_approval_failed`, `filter_suggested_post_declined`, `filter_suggested_post_paid`, `filter_suggested_post_refunded` filters to the `MessageFilterExt` trait

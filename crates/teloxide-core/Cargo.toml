@@ -22,6 +22,7 @@ categories = ["api-bindings", "asynchronous"]
 default = ["native-tls"]
 
 rustls = ["reqwest/rustls"]
+rustls-ring = ["reqwest/rustls-no-provider", "dep:rustls"]
 rustls-native-roots = ["reqwest/rustls"]
 native-tls = ["reqwest/native-tls"]
 
@@ -82,6 +83,7 @@ bitflags = "2"
 rgb = "0.8.48"
 
 vecrem = { version = "0.1", optional = true }
+rustls = { version = "0.23", default-features = false, features = ["ring", "logging", "std", "tls12"], optional = true }
 
 
 [dev-dependencies]
