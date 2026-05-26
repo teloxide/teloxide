@@ -247,5 +247,8 @@ name = "throw_dice"
 required-features = ["ctrlc_handler"]
 
 [[example]]
+name = "update_stream"
+
+[[example]]
 name = "middlewares"
 required-features = ["ctrlc_handler"]

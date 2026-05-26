@@ -11,6 +11,7 @@ use crate::{
 use std::net::SocketAddr;
 
 #[cfg(feature = "webhooks-axum")]
+#[allow(unused_imports)]
 use crate::update_listeners::webhooks;
 
 pub struct UpdateStreamBuilder {
