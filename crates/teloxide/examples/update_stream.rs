@@ -20,7 +20,7 @@ async fn main() {
         cancel.cancel();
     });
 
-    let mut stream = bot.update_stream().token(token).build().await;
+    let mut stream = bot.update_stream().token(token).build().await.expect("Failed to start update stream");
 
     while let Some(result) = stream.next().await {
         let update = match result {

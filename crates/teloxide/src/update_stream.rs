@@ -1,6 +1,8 @@
 use std::{
     collections::HashSet,
-    sync::Mutex,
+    pin::Pin,
+    sync::{LazyLock, Mutex},
+    task::{Context, Poll},
     time::Duration,
 };
 
@@ -17,8 +19,8 @@ use crate::{
 #[cfg(feature = "webhooks-axum")]
 use std::net::SocketAddr;
 
-static ACTIVE_TOKENS: std::sync::LazyLock<Mutex<HashSet<String>>> =
-    std::sync::LazyLock::new(|| Mutex::new(HashSet::new()));
+static ACTIVE_TOKENS: LazyLock<Mutex<HashSet<String>>> =
+    LazyLock::new(|| Mutex::new(HashSet::new()));
 
 pub struct UpdateStreamBuilder {
     bot: teloxide_core::Bot,
@@ -119,25 +121,19 @@ impl UpdateStreamBuilder {
     /// Only one stream can poll a given bot at a time — multiple streams would
     /// race for updates and lose messages.
     ///
-    /// ```ignore
-    /// let mut stream = bot.update_stream().build().await;
+    /// Panics in webhook mode if `.address()` was not called.
     ///
-    /// while let Some(Ok(update)) = stream.next().await {
-    ///     match update.kind {
-    ///         UpdateKind::Message(msg) => { /* ... */ },
-    ///         _ => {}
-    ///     }
-    /// }
-    /// ```
-    pub async fn build(self) -> UpdateStream {
+    /// # Errors
+    ///
+    /// In webhook mode, returns an error if `set_webhook` fails.
+    #[allow(unused_mut)]
+    pub async fn build(mut self) -> Result<UpdateStream, teloxide_core::RequestError> {
         #[cfg(feature = "webhooks-axum")]
-        if self.webhook_url.is_some() {
-            log::warn!(
-                "webhook mode for update_stream is not yet implemented, falling back to polling"
-            );
+        if let Some(url) = self.webhook_url.take() {
+            return self.build_webhook(url).await;
         }
 
-        self.build_polling().await
+        Ok(self.build_polling().await)
     }
 
     async fn build_polling(self) -> UpdateStream {
@@ -198,10 +194,78 @@ impl UpdateStreamBuilder {
             }
         });
 
-        UpdateStream {
+        UpdateStream { inner: UnboundedReceiverStream::new(rx), _guard: StreamGuard { bot_token } }
+    }
+
+    #[cfg(feature = "webhooks-axum")]
+    async fn build_webhook(
+        self,
+        url: url::Url,
+    ) -> Result<UpdateStream, teloxide_core::RequestError> {
+        use crate::update_listeners::webhooks;
+
+        let bot_token = self.bot.token().to_owned();
+
+        {
+            let mut active = ACTIVE_TOKENS.lock().unwrap();
+            assert!(
+                active.insert(bot_token.clone()),
+                "another update stream is already active for this bot token — only one stream can \
+                 poll a given bot at a time"
+            );
+        }
+
+        let address = self
+            .webhook_address
+            .expect("webhook address is required — call .address() on the builder");
+
+        let mut options = webhooks::Options::new(address, url);
+
+        if self.drop_pending_updates {
+            options = options.drop_pending_updates();
+        }
+
+        if let Some(secret) = self.webhook_secret {
+            options = options.secret_token(secret);
+        }
+
+        if let Some(max) = self.webhook_max_connections {
+            options = options.max_connections(max);
+        }
+
+        let mut listener = webhooks::axum(self.bot, options).await?;
+
+        let cancel = self.token;
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        tokio::spawn(async move {
+            let mut stream = std::pin::pin!(listener.as_stream());
+            loop {
+                let item = if let Some(ref cancel) = cancel {
+                    tokio::select! {
+                        item = stream.next() => item,
+                        _ = cancel.cancelled() => break,
+                    }
+                } else {
+                    stream.next().await
+                };
+
+                match item {
+                    Some(Ok(update)) => {
+                        if tx.send(Ok(update)).is_err() {
+                            break;
+                        }
+                    }
+                    Some(Err(infallible)) => match infallible {},
+                    None => break,
+                }
+            }
+        });
+
+        Ok(UpdateStream {
             inner: UnboundedReceiverStream::new(rx),
             _guard: StreamGuard { bot_token },
-        }
+        })
     }
 }
 
@@ -230,10 +294,7 @@ pub struct UpdateStream {
 impl futures::Stream for UpdateStream {
     type Item = Result<Update, teloxide_core::RequestError>;
 
-    fn poll_next(
-        mut self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Option<Self::Item>> {
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         self.inner.poll_next_unpin(cx)
     }
 

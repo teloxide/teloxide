@@ -93,7 +93,7 @@ serde = { version = "1.0", features = ["derive"] }
 
 dptree = "0.5.1"
 
-tokio = { version = "1.39", features = ["fs", "rt-multi-thread"] }
+tokio = { version = "1.39", features = ["fs", "rt-multi-thread", "macros"] }
 tokio-util = "0.7"
 tokio-stream = "0.1.8"
 
