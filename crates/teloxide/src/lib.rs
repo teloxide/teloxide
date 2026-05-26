@@ -98,6 +98,34 @@
 //!
 //! For more info about dptree, please check out [_this guide_] on it!
 //!
+//! ## Stream-based alternative
+//!
+//! If you prefer working with a raw [`futures::Stream`] instead of dptree
+//! handlers, the [`update_stream`] module provides a simpler approach with
+//! full compile-time type safety:
+//!
+//! ```no_run
+//! use futures::StreamExt;
+//! use teloxide::{prelude::*, types::UpdateKind};
+//!
+//! #[tokio::main]
+//! async fn main() {
+//!     let bot = Bot::from_env();
+//!     let mut stream = bot.update_stream().build().await.expect("failed to start");
+//!
+//!     while let Some(Ok(update)) = stream.next().await {
+//!         if let UpdateKind::Message(msg) = update.kind {
+//!             if let Some(text) = msg.text() {
+//!                 let _ = bot.send_message(msg.chat.id, text).await;
+//!             }
+//!         }
+//!     }
+//! }
+//! ```
+//!
+//! See the [`update_stream`] module for configuration options, graceful
+//! shutdown, and webhook support.
+//!
 //! [update kinds]: crate::types::UpdateKind
 //! [message kinds]: crate::types::MessageKind
 //! [`Update`]: crate::types::Update
@@ -108,6 +136,7 @@
 //! [`Update::filter_message`]: crate::dispatching::UpdateFilterExt::filter_message
 //! [`filter_map`]: crate::prelude::Handler::filter_map
 //! [_this guide_]: https://github.com/teloxide/teloxide/blob/master/DPTREE_GUIDE.md
+//! [`update_stream`]: crate::update_stream
 
 // This hack is used to cancel formatting for a Markdown table. See [1], [2], and [3].
 //

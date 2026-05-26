@@ -1,3 +1,79 @@
+//! A simple, stream-based alternative to [`Dispatcher`] for receiving
+//! Telegram updates.
+//!
+//! Instead of routing updates through dptree handlers, this module gives you a
+//! raw [`futures::Stream`] of [`Update`]s that you can match on directly. This
+//! provides full compile-time type safety with no dependency injection.
+//!
+//! # Quick start
+//!
+//! ```no_run
+//! use futures::StreamExt;
+//! use teloxide::{prelude::*, types::UpdateKind};
+//!
+//! # #[tokio::main]
+//! # async fn main() {
+//! let bot = Bot::from_env();
+//! let mut stream = bot.update_stream().build().await.expect("failed to start");
+//!
+//! while let Some(Ok(update)) = stream.next().await {
+//!     if let UpdateKind::Message(msg) = update.kind {
+//!         if let Some(text) = msg.text() {
+//!             let _ = bot.send_message(msg.chat.id, text).await;
+//!         }
+//!     }
+//! }
+//! # }
+//! ```
+//!
+//! # Graceful shutdown
+//!
+//! Call [`UpdateStream::shutdown`] to stop the background polling task. The
+//! stream will yield `None` on the next poll. This pairs well with
+//! [`tokio::signal::ctrl_c`]:
+//!
+//! ```no_run
+//! # use futures::StreamExt;
+//! # use teloxide::{prelude::*, types::UpdateKind};
+//! # #[tokio::main]
+//! # async fn main() {
+//! # let bot = Bot::from_env();
+//! # let mut stream = bot.update_stream().build().await.unwrap();
+//! loop {
+//!     let update = tokio::select! {
+//!         item = stream.next() => match item {
+//!             Some(Ok(update)) => update,
+//!             Some(Err(e)) => { log::error!("{e}"); continue; }
+//!             None => break,
+//!         },
+//!         _ = tokio::signal::ctrl_c() => {
+//!             stream.shutdown();
+//!             break;
+//!         }
+//!     };
+//!
+//!     // handle update ...
+//!     # let _ = update;
+//! }
+//! # }
+//! ```
+//!
+//! # Webhook mode
+//!
+//! Enable the `webhooks-axum` feature, then call `.webhook(url).address(addr)`
+//! on the builder before `.build().await`:
+//!
+//! ```ignore
+//! let stream = bot
+//!     .update_stream()
+//!     .webhook("https://example.com/webhook".parse().unwrap())
+//!     .address(([0, 0, 0, 0], 8443))
+//!     .build()
+//!     .await?;
+//! ```
+//!
+//! [`Dispatcher`]: crate::dispatching::Dispatcher
+
 use std::{
     collections::HashSet,
     pin::Pin,
@@ -22,6 +98,27 @@ use std::net::SocketAddr;
 static ACTIVE_TOKENS: LazyLock<Mutex<HashSet<String>>> =
     LazyLock::new(|| Mutex::new(HashSet::new()));
 
+/// Builder for configuring and starting an [`UpdateStream`].
+///
+/// Created by [`UpdateStreamExt::update_stream`]. Call `.build().await` to
+/// start polling (or listening for webhooks) and get the stream.
+///
+/// # Example
+///
+/// ```no_run
+/// use teloxide::prelude::*;
+///
+/// # #[tokio::main]
+/// # async fn main() {
+/// let stream = Bot::from_env()
+///     .update_stream()
+///     .timeout(std::time::Duration::from_secs(30))
+///     .drop_pending_updates()
+///     .build()
+///     .await
+///     .expect("failed to start update stream");
+/// # }
+/// ```
 pub struct UpdateStreamBuilder {
     bot: teloxide_core::Bot,
     timeout: Option<Duration>,
@@ -287,6 +384,11 @@ impl Drop for StreamGuard {
 /// Created by [`UpdateStreamBuilder::build`]. Implements
 /// [`Stream<Item = Result<Update, RequestError>>`](futures::Stream).
 ///
+/// A background task handles the actual polling (or webhook listening) and
+/// forwards updates through an internal channel, so this stream is `Unpin`
+/// and cheap to poll.
+///
+/// Only one `UpdateStream` can be active per bot token at a time.
 /// Dropping this stream releases the bot token so a new stream can be created.
 pub struct UpdateStream {
     inner: UnboundedReceiverStream<Result<Update, teloxide_core::RequestError>>,
@@ -330,6 +432,30 @@ pub trait UpdateStreamExt {
     ///
     /// Only one update stream can be active per bot token at a time.
     /// Attempting to create a second one will panic.
+    ///
+    /// # Example
+    ///
+    /// ```no_run
+    /// use futures::StreamExt;
+    /// use teloxide::{prelude::*, types::UpdateKind};
+    ///
+    /// # #[tokio::main]
+    /// # async fn main() {
+    /// let bot = Bot::from_env();
+    /// let mut stream = bot.update_stream().build().await.unwrap();
+    ///
+    /// while let Some(Ok(update)) = stream.next().await {
+    ///     match update.kind {
+    ///         UpdateKind::Message(msg) => {
+    ///             if let Some(text) = msg.text() {
+    ///                 let _ = bot.send_message(msg.chat.id, text).await;
+    ///             }
+    ///         }
+    ///         _ => {}
+    ///     }
+    /// }
+    /// # }
+    /// ```
     ///
     /// [`Dispatcher`]: crate::dispatching::Dispatcher
     /// [`Update`]: crate::types::Update
