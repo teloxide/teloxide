@@ -11,11 +11,7 @@ async fn main() {
 
     let bot = Bot::from_env();
 
-    let mut stream = bot
-        .update_stream()
-        .build()
-        .await
-        .expect("Failed to start update stream");
+    let mut stream = bot.update_stream().build().await.expect("Failed to start update stream");
 
     loop {
         let update = tokio::select! {
