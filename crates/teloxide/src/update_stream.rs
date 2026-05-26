@@ -325,6 +325,9 @@ pub trait UpdateStreamExt {
     /// stream of [`Update`]s to match on directly, with full compile-time
     /// type safety and no dependency injection.
     ///
+    /// See [issue #871](https://github.com/teloxide/teloxide/issues/871) for
+    /// the motivation behind this API.
+    ///
     /// Only one update stream can be active per bot token at a time.
     /// Attempting to create a second one will panic.
     ///
