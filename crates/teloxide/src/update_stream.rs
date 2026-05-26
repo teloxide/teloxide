@@ -11,7 +11,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::{
     types::{AllowedUpdate, Update},
-    update_listeners::{AsUpdateStream, Polling, UpdateListener},
+    update_listeners::{AsUpdateStream, Polling},
 };
 
 #[cfg(feature = "webhooks-axum")]
@@ -172,21 +172,28 @@ impl UpdateStreamBuilder {
 
         let mut polling = builder.build();
 
-        if let Some(cancel) = self.token.clone() {
-            let stop_token = polling.stop_token();
-            tokio::spawn(async move {
-                cancel.cancelled().await;
-                stop_token.stop();
-            });
-        }
-
+        let cancel = self.token;
         let (tx, rx) = mpsc::unbounded_channel();
 
         tokio::spawn(async move {
             let mut stream = std::pin::pin!(polling.as_stream());
-            while let Some(item) = stream.next().await {
-                if tx.send(item).is_err() {
-                    break;
+            loop {
+                let item = if let Some(ref cancel) = cancel {
+                    tokio::select! {
+                        item = stream.next() => item,
+                        _ = cancel.cancelled() => break,
+                    }
+                } else {
+                    stream.next().await
+                };
+
+                match item {
+                    Some(item) => {
+                        if tx.send(item).is_err() {
+                            break;
+                        }
+                    }
+                    None => break,
                 }
             }
         });
