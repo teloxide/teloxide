@@ -1,10 +1,13 @@
 use std::time::Duration;
 
+use futures::StreamExt;
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::UnboundedReceiverStream;
 use tokio_util::sync::CancellationToken;
 
 use crate::{
-    types::AllowedUpdate,
-    update_listeners::{Polling, UpdateListener},
+    types::{AllowedUpdate, Update},
+    update_listeners::{AsUpdateStream, Polling, UpdateListener},
 };
 
 #[cfg(feature = "webhooks-axum")]
@@ -101,26 +104,21 @@ impl UpdateStreamBuilder {
         self
     }
 
-    /// Build the update stream.
-    ///
-    /// Returns a [`Polling`] listener. Use [`AsUpdateStream::as_stream`] to
-    /// get the actual stream, then iterate with [`StreamExt::next`]:
+    /// Build and return the update stream.
     ///
     /// ```ignore
-    /// use futures::StreamExt;
-    /// use teloxide::update_listeners::AsUpdateStream;
-    ///
-    /// let mut polling = bot.update_stream().build().await;
-    /// let mut stream = std::pin::pin!(polling.as_stream());
+    /// let mut stream = bot.update_stream().build().await;
     ///
     /// while let Some(Ok(update)) = stream.next().await {
-    ///     // handle update
+    ///     match update.kind {
+    ///         UpdateKind::Message(msg) => { /* ... */ },
+    ///         _ => {}
+    ///     }
     /// }
     /// ```
-    ///
-    /// [`AsUpdateStream::as_stream`]: crate::update_listeners::AsUpdateStream::as_stream
-    /// [`StreamExt::next`]: futures::StreamExt::next
-    pub async fn build(self) -> Polling<teloxide_core::Bot> {
+    pub async fn build(
+        self,
+    ) -> impl futures::Stream<Item = Result<Update, teloxide_core::RequestError>> {
         #[cfg(feature = "webhooks-axum")]
         if self.webhook_url.is_some() {
             log::warn!("webhook mode for update_stream is not yet implemented, falling back to polling");
@@ -129,7 +127,9 @@ impl UpdateStreamBuilder {
         self.build_polling().await
     }
 
-    async fn build_polling(self) -> Polling<teloxide_core::Bot> {
+    async fn build_polling(
+        self,
+    ) -> impl futures::Stream<Item = Result<Update, teloxide_core::RequestError>> {
         let mut builder = Polling::builder(self.bot);
 
         builder = builder.timeout(self.timeout.unwrap_or(Duration::from_secs(10)));
@@ -150,7 +150,7 @@ impl UpdateStreamBuilder {
 
         let mut polling = builder.build();
 
-        if let Some(cancel) = self.token {
+        if let Some(cancel) = self.token.clone() {
             let stop_token = polling.stop_token();
             tokio::spawn(async move {
                 cancel.cancelled().await;
@@ -158,7 +158,18 @@ impl UpdateStreamBuilder {
             });
         }
 
-        polling
+        let (tx, rx) = mpsc::unbounded_channel();
+
+        tokio::spawn(async move {
+            let mut stream = std::pin::pin!(polling.as_stream());
+            while let Some(item) = stream.next().await {
+                if tx.send(item).is_err() {
+                    break;
+                }
+            }
+        });
+
+        UnboundedReceiverStream::new(rx)
     }
 }
 

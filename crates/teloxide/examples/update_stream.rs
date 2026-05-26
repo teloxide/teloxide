@@ -20,8 +20,7 @@ async fn main() {
         cancel.cancel();
     });
 
-    let mut polling = bot.update_stream().token(token).build().await;
-    let mut stream = std::pin::pin!(polling.as_stream());
+    let mut stream = bot.update_stream().token(token).build().await;
 
     while let Some(result) = stream.next().await {
         let update = match result {

@@ -5,7 +5,6 @@ pub use crate::error_handlers::{LoggingErrorHandler, OnError};
 pub use crate::respond;
 
 pub use crate::update_stream::UpdateStreamExt as _;
-pub use crate::update_listeners::AsUpdateStream as _;
 
 pub use crate::dispatching::{
     dialogue::Dialogue, Dispatcher, HandlerExt as _, MessageFilterExt as _, UpdateFilterExt as _,
