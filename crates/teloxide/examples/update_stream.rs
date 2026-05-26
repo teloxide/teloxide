@@ -3,7 +3,6 @@
 
 use futures::StreamExt;
 use teloxide::{prelude::*, types::UpdateKind};
-use tokio_util::sync::CancellationToken;
 
 #[tokio::main]
 async fn main() {
@@ -11,24 +10,27 @@ async fn main() {
     log::info!("Starting update_stream echo bot...");
 
     let bot = Bot::from_env();
-    let token = CancellationToken::new();
 
-    let cancel = token.clone();
-    tokio::spawn(async move {
-        tokio::signal::ctrl_c().await.ok();
-        log::info!("Shutting down...");
-        cancel.cancel();
-    });
+    let mut stream = bot
+        .update_stream()
+        .build()
+        .await
+        .expect("Failed to start update stream");
 
-    let mut stream =
-        bot.update_stream().token(token).build().await.expect("Failed to start update stream");
-
-    while let Some(result) = stream.next().await {
-        let update = match result {
-            Ok(update) => update,
-            Err(e) => {
-                log::error!("Error receiving update: {e}");
-                continue;
+    loop {
+        let update = tokio::select! {
+            item = stream.next() => match item {
+                Some(Ok(update)) => update,
+                Some(Err(e)) => {
+                    log::error!("Error receiving update: {e}");
+                    continue;
+                }
+                None => break,
+            },
+            _ = tokio::signal::ctrl_c() => {
+                log::info!("Shutting down...");
+                stream.shutdown();
+                break;
             }
         };
 

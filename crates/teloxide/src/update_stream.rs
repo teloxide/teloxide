@@ -83,7 +83,10 @@ impl UpdateStreamBuilder {
         self
     }
 
-    /// Cancellation token for graceful shutdown.
+    /// Provide an external cancellation token for graceful shutdown.
+    ///
+    /// If not set, an internal token is created automatically. You can
+    /// always call [`UpdateStream::shutdown`] to stop the stream regardless.
     pub fn token(mut self, token: CancellationToken) -> Self {
         self.token = Some(token);
         self
@@ -168,19 +171,16 @@ impl UpdateStreamBuilder {
 
         let mut polling = builder.build();
 
-        let cancel = self.token;
+        let cancel = self.token.unwrap_or_default();
         let (tx, rx) = mpsc::unbounded_channel();
 
+        let task_cancel = cancel.clone();
         tokio::spawn(async move {
             let mut stream = std::pin::pin!(polling.as_stream());
             loop {
-                let item = if let Some(ref cancel) = cancel {
-                    tokio::select! {
-                        item = stream.next() => item,
-                        _ = cancel.cancelled() => break,
-                    }
-                } else {
-                    stream.next().await
+                let item = tokio::select! {
+                    item = stream.next() => item,
+                    _ = task_cancel.cancelled() => break,
                 };
 
                 match item {
@@ -194,7 +194,11 @@ impl UpdateStreamBuilder {
             }
         });
 
-        UpdateStream { inner: UnboundedReceiverStream::new(rx), _guard: StreamGuard { bot_token } }
+        UpdateStream {
+            inner: UnboundedReceiverStream::new(rx),
+            cancel,
+            _guard: StreamGuard { bot_token },
+        }
     }
 
     #[cfg(feature = "webhooks-axum")]
@@ -235,19 +239,16 @@ impl UpdateStreamBuilder {
 
         let mut listener = webhooks::axum(self.bot, options).await?;
 
-        let cancel = self.token;
+        let cancel = self.token.unwrap_or_default();
         let (tx, rx) = mpsc::unbounded_channel();
 
+        let task_cancel = cancel.clone();
         tokio::spawn(async move {
             let mut stream = std::pin::pin!(listener.as_stream());
             loop {
-                let item = if let Some(ref cancel) = cancel {
-                    tokio::select! {
-                        item = stream.next() => item,
-                        _ = cancel.cancelled() => break,
-                    }
-                } else {
-                    stream.next().await
+                let item = tokio::select! {
+                    item = stream.next() => item,
+                    _ = task_cancel.cancelled() => break,
                 };
 
                 match item {
@@ -264,6 +265,7 @@ impl UpdateStreamBuilder {
 
         Ok(UpdateStream {
             inner: UnboundedReceiverStream::new(rx),
+            cancel,
             _guard: StreamGuard { bot_token },
         })
     }
@@ -288,7 +290,18 @@ impl Drop for StreamGuard {
 /// Dropping this stream releases the bot token so a new stream can be created.
 pub struct UpdateStream {
     inner: UnboundedReceiverStream<Result<Update, teloxide_core::RequestError>>,
+    cancel: CancellationToken,
     _guard: StreamGuard,
+}
+
+impl UpdateStream {
+    /// Gracefully stop the update stream.
+    ///
+    /// The background polling/webhook task will finish its current request
+    /// and stop. The stream will yield `None` on the next poll.
+    pub fn shutdown(&self) {
+        self.cancel.cancel();
+    }
 }
 
 impl futures::Stream for UpdateStream {
