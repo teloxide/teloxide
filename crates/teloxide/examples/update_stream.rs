@@ -2,7 +2,7 @@
 // Echoes any text message back to the sender.
 
 use futures::StreamExt;
-use teloxide::{prelude::*, types::UpdateKind, update_listeners::AsUpdateStream};
+use teloxide::{prelude::*, types::UpdateKind};
 use tokio_util::sync::CancellationToken;
 
 #[tokio::main]
@@ -13,7 +13,6 @@ async fn main() {
     let bot = Bot::from_env();
     let token = CancellationToken::new();
 
-    // Ctrl+C cancellation
     let cancel = token.clone();
     tokio::spawn(async move {
         tokio::signal::ctrl_c().await.ok();
