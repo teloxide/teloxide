@@ -121,7 +121,7 @@ impl UpdateStreamBuilder {
     /// # Panics
     ///
     /// Panics if another update stream is already active for this bot token.
-    /// Only one stream can poll a given bot at a time — multiple streams would
+    /// Only one stream can poll a given bot at a time. Multiple streams would
     /// race for updates and lose messages.
     ///
     /// Panics in webhook mode if `.address()` was not called.
@@ -146,7 +146,7 @@ impl UpdateStreamBuilder {
             let mut active = ACTIVE_TOKENS.lock().unwrap();
             assert!(
                 active.insert(bot_token.clone()),
-                "another update stream is already active for this bot token — only one stream can \
+                "another update stream is already active for this bot token, only one stream can \
                  poll a given bot at a time"
             );
         }
@@ -214,14 +214,14 @@ impl UpdateStreamBuilder {
             let mut active = ACTIVE_TOKENS.lock().unwrap();
             assert!(
                 active.insert(bot_token.clone()),
-                "another update stream is already active for this bot token — only one stream can \
+                "another update stream is already active for this bot token, only one stream can \
                  poll a given bot at a time"
             );
         }
 
         let address = self
             .webhook_address
-            .expect("webhook address is required — call .address() on the builder");
+            .expect("webhook address is required, call .address() on the builder");
 
         let mut options = webhooks::Options::new(address, url);
 

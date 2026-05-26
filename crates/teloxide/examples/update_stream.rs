@@ -1,4 +1,4 @@
-// Demonstrates the update_stream API — a simpler alternative to
+// Demonstrates the update_stream API, a simpler alternative to
 // Dispatcher/dptree. Echoes any text message back to the sender.
 
 use futures::StreamExt;
