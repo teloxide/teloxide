@@ -1,6 +1,6 @@
 use std::{
     collections::HashSet,
-    sync::{Arc, Mutex},
+    sync::Mutex,
     time::Duration,
 };
 
@@ -132,7 +132,9 @@ impl UpdateStreamBuilder {
     pub async fn build(self) -> UpdateStream {
         #[cfg(feature = "webhooks-axum")]
         if self.webhook_url.is_some() {
-            log::warn!("webhook mode for update_stream is not yet implemented, falling back to polling");
+            log::warn!(
+                "webhook mode for update_stream is not yet implemented, falling back to polling"
+            );
         }
 
         self.build_polling().await
@@ -145,8 +147,8 @@ impl UpdateStreamBuilder {
             let mut active = ACTIVE_TOKENS.lock().unwrap();
             assert!(
                 active.insert(bot_token.clone()),
-                "another update stream is already active for this bot token — \
-                 only one stream can poll a given bot at a time"
+                "another update stream is already active for this bot token — only one stream can \
+                 poll a given bot at a time"
             );
         }
 
@@ -189,11 +191,9 @@ impl UpdateStreamBuilder {
             }
         });
 
-        let guard = Arc::new(StreamGuard { bot_token });
-
         UpdateStream {
             inner: UnboundedReceiverStream::new(rx),
-            _guard: guard,
+            _guard: StreamGuard { bot_token },
         }
     }
 }
@@ -217,7 +217,7 @@ impl Drop for StreamGuard {
 /// Dropping this stream releases the bot token so a new stream can be created.
 pub struct UpdateStream {
     inner: UnboundedReceiverStream<Result<Update, teloxide_core::RequestError>>,
-    _guard: Arc<StreamGuard>,
+    _guard: StreamGuard,
 }
 
 impl futures::Stream for UpdateStream {
