@@ -1,5 +1,5 @@
-// Demonstrates the update_stream API — a simpler alternative to Dispatcher/dptree.
-// Echoes any text message back to the sender.
+// Demonstrates the update_stream API — a simpler alternative to
+// Dispatcher/dptree. Echoes any text message back to the sender.
 
 use futures::StreamExt;
 use teloxide::{prelude::*, types::UpdateKind};
@@ -20,7 +20,8 @@ async fn main() {
         cancel.cancel();
     });
 
-    let mut stream = bot.update_stream().token(token).build().await.expect("Failed to start update stream");
+    let mut stream =
+        bot.update_stream().token(token).build().await.expect("Failed to start update stream");
 
     while let Some(result) = stream.next().await {
         let update = match result {
@@ -31,20 +32,17 @@ async fn main() {
             }
         };
 
-        match update.kind {
-            UpdateKind::Message(msg) => {
-                if let Some(text) = msg.text() {
-                    let bot = bot.clone();
-                    let chat_id = msg.chat.id;
-                    let text = text.to_owned();
-                    tokio::spawn(async move {
-                        if let Err(e) = bot.send_message(chat_id, text).await {
-                            log::error!("Failed to send message: {e}");
-                        }
-                    });
-                }
+        if let UpdateKind::Message(msg) = update.kind {
+            if let Some(text) = msg.text() {
+                let bot = bot.clone();
+                let chat_id = msg.chat.id;
+                let text = text.to_owned();
+                tokio::spawn(async move {
+                    if let Err(e) = bot.send_message(chat_id, text).await {
+                        log::error!("Failed to send message: {e}");
+                    }
+                });
             }
-            _ => {}
         }
     }
 
