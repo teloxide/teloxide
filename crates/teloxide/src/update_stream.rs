@@ -1,4 +1,8 @@
-use std::time::Duration;
+use std::{
+    collections::HashSet,
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 
 use futures::StreamExt;
 use tokio::sync::mpsc;
@@ -12,6 +16,9 @@ use crate::{
 
 #[cfg(feature = "webhooks-axum")]
 use std::net::SocketAddr;
+
+static ACTIVE_TOKENS: std::sync::LazyLock<Mutex<HashSet<String>>> =
+    std::sync::LazyLock::new(|| Mutex::new(HashSet::new()));
 
 pub struct UpdateStreamBuilder {
     bot: teloxide_core::Bot,
@@ -106,6 +113,12 @@ impl UpdateStreamBuilder {
 
     /// Build and return the update stream.
     ///
+    /// # Panics
+    ///
+    /// Panics if another update stream is already active for this bot token.
+    /// Only one stream can poll a given bot at a time — multiple streams would
+    /// race for updates and lose messages.
+    ///
     /// ```ignore
     /// let mut stream = bot.update_stream().build().await;
     ///
@@ -116,9 +129,7 @@ impl UpdateStreamBuilder {
     ///     }
     /// }
     /// ```
-    pub async fn build(
-        self,
-    ) -> impl futures::Stream<Item = Result<Update, teloxide_core::RequestError>> {
+    pub async fn build(self) -> UpdateStream {
         #[cfg(feature = "webhooks-axum")]
         if self.webhook_url.is_some() {
             log::warn!("webhook mode for update_stream is not yet implemented, falling back to polling");
@@ -127,9 +138,18 @@ impl UpdateStreamBuilder {
         self.build_polling().await
     }
 
-    async fn build_polling(
-        self,
-    ) -> impl futures::Stream<Item = Result<Update, teloxide_core::RequestError>> {
+    async fn build_polling(self) -> UpdateStream {
+        let bot_token = self.bot.token().to_owned();
+
+        {
+            let mut active = ACTIVE_TOKENS.lock().unwrap();
+            assert!(
+                active.insert(bot_token.clone()),
+                "another update stream is already active for this bot token — \
+                 only one stream can poll a given bot at a time"
+            );
+        }
+
         let mut builder = Polling::builder(self.bot);
 
         builder = builder.timeout(self.timeout.unwrap_or(Duration::from_secs(10)));
@@ -169,7 +189,49 @@ impl UpdateStreamBuilder {
             }
         });
 
-        UnboundedReceiverStream::new(rx)
+        let guard = Arc::new(StreamGuard { bot_token });
+
+        UpdateStream {
+            inner: UnboundedReceiverStream::new(rx),
+            _guard: guard,
+        }
+    }
+}
+
+struct StreamGuard {
+    bot_token: String,
+}
+
+impl Drop for StreamGuard {
+    fn drop(&mut self) {
+        let mut active = ACTIVE_TOKENS.lock().unwrap();
+        active.remove(&self.bot_token);
+    }
+}
+
+/// A stream of updates from Telegram.
+///
+/// Created by [`UpdateStreamBuilder::build`]. Implements
+/// [`Stream<Item = Result<Update, RequestError>>`](futures::Stream).
+///
+/// Dropping this stream releases the bot token so a new stream can be created.
+pub struct UpdateStream {
+    inner: UnboundedReceiverStream<Result<Update, teloxide_core::RequestError>>,
+    _guard: Arc<StreamGuard>,
+}
+
+impl futures::Stream for UpdateStream {
+    type Item = Result<Update, teloxide_core::RequestError>;
+
+    fn poll_next(
+        mut self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Option<Self::Item>> {
+        self.inner.poll_next_unpin(cx)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.inner.size_hint()
     }
 }
 
@@ -181,6 +243,9 @@ pub trait UpdateStreamExt {
     /// This is a simpler alternative to [`Dispatcher`] that gives you a raw
     /// stream of [`Update`]s to match on directly, with full compile-time
     /// type safety and no dependency injection.
+    ///
+    /// Only one update stream can be active per bot token at a time.
+    /// Attempting to create a second one will panic.
     ///
     /// [`Dispatcher`]: crate::dispatching::Dispatcher
     /// [`Update`]: crate::types::Update
