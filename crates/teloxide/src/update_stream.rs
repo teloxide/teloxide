@@ -10,10 +10,6 @@ use crate::{
 #[cfg(feature = "webhooks-axum")]
 use std::net::SocketAddr;
 
-#[cfg(feature = "webhooks-axum")]
-#[allow(unused_imports)]
-use crate::update_listeners::webhooks;
-
 pub struct UpdateStreamBuilder {
     bot: teloxide_core::Bot,
     timeout: Option<Duration>,
@@ -51,26 +47,31 @@ impl UpdateStreamBuilder {
         }
     }
 
+    /// Long polling timeout. Defaults to 10 seconds.
     pub fn timeout(mut self, timeout: Duration) -> Self {
         self.timeout = Some(timeout);
         self
     }
 
+    /// Maximum number of updates per poll (1-100).
     pub fn limit(mut self, limit: u8) -> Self {
         self.limit = Some(limit);
         self
     }
 
+    /// Filter which update types to receive.
     pub fn allowed_updates(mut self, allowed: Vec<AllowedUpdate>) -> Self {
         self.allowed_updates = Some(allowed);
         self
     }
 
+    /// Drop all pending updates on start.
     pub fn drop_pending_updates(mut self) -> Self {
         self.drop_pending_updates = true;
         self
     }
 
+    /// Cancellation token for graceful shutdown.
     pub fn token(mut self, token: CancellationToken) -> Self {
         self.token = Some(token);
         self
@@ -100,6 +101,25 @@ impl UpdateStreamBuilder {
         self
     }
 
+    /// Build the update stream.
+    ///
+    /// Returns a [`Polling`] listener. Use [`AsUpdateStream::as_stream`] to
+    /// get the actual stream, then iterate with [`StreamExt::next`]:
+    ///
+    /// ```ignore
+    /// use futures::StreamExt;
+    /// use teloxide::update_listeners::AsUpdateStream;
+    ///
+    /// let mut polling = bot.update_stream().build().await;
+    /// let mut stream = std::pin::pin!(polling.as_stream());
+    ///
+    /// while let Some(Ok(update)) = stream.next().await {
+    ///     // handle update
+    /// }
+    /// ```
+    ///
+    /// [`AsUpdateStream::as_stream`]: crate::update_listeners::AsUpdateStream::as_stream
+    /// [`StreamExt::next`]: futures::StreamExt::next
     pub async fn build(self) -> Polling<teloxide_core::Bot> {
         #[cfg(feature = "webhooks-axum")]
         if self.webhook_url.is_some() {
@@ -142,7 +162,17 @@ impl UpdateStreamBuilder {
     }
 }
 
+/// Extension trait that adds [`update_stream`](UpdateStreamExt::update_stream)
+/// to [`Bot`](teloxide_core::Bot).
 pub trait UpdateStreamExt {
+    /// Start building an update stream.
+    ///
+    /// This is a simpler alternative to [`Dispatcher`] that gives you a raw
+    /// stream of [`Update`]s to match on directly, with full compile-time
+    /// type safety and no dependency injection.
+    ///
+    /// [`Dispatcher`]: crate::dispatching::Dispatcher
+    /// [`Update`]: crate::types::Update
     fn update_stream(&self) -> UpdateStreamBuilder;
 }
 
