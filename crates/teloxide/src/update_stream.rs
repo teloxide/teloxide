@@ -1,0 +1,152 @@
+use std::time::Duration;
+
+use tokio_util::sync::CancellationToken;
+
+use crate::{
+    types::AllowedUpdate,
+    update_listeners::{Polling, UpdateListener},
+};
+
+#[cfg(feature = "webhooks-axum")]
+use std::net::SocketAddr;
+
+#[cfg(feature = "webhooks-axum")]
+use crate::update_listeners::webhooks;
+
+pub struct UpdateStreamBuilder {
+    bot: teloxide_core::Bot,
+    timeout: Option<Duration>,
+    limit: Option<u8>,
+    allowed_updates: Option<Vec<AllowedUpdate>>,
+    drop_pending_updates: bool,
+    token: Option<CancellationToken>,
+    #[cfg(feature = "webhooks-axum")]
+    webhook_url: Option<url::Url>,
+    #[cfg(feature = "webhooks-axum")]
+    webhook_address: Option<SocketAddr>,
+    #[cfg(feature = "webhooks-axum")]
+    webhook_secret: Option<String>,
+    #[cfg(feature = "webhooks-axum")]
+    webhook_max_connections: Option<u8>,
+}
+
+impl UpdateStreamBuilder {
+    fn new(bot: teloxide_core::Bot) -> Self {
+        Self {
+            bot,
+            timeout: None,
+            limit: None,
+            allowed_updates: None,
+            drop_pending_updates: false,
+            token: None,
+            #[cfg(feature = "webhooks-axum")]
+            webhook_url: None,
+            #[cfg(feature = "webhooks-axum")]
+            webhook_address: None,
+            #[cfg(feature = "webhooks-axum")]
+            webhook_secret: None,
+            #[cfg(feature = "webhooks-axum")]
+            webhook_max_connections: None,
+        }
+    }
+
+    pub fn timeout(mut self, timeout: Duration) -> Self {
+        self.timeout = Some(timeout);
+        self
+    }
+
+    pub fn limit(mut self, limit: u8) -> Self {
+        self.limit = Some(limit);
+        self
+    }
+
+    pub fn allowed_updates(mut self, allowed: Vec<AllowedUpdate>) -> Self {
+        self.allowed_updates = Some(allowed);
+        self
+    }
+
+    pub fn drop_pending_updates(mut self) -> Self {
+        self.drop_pending_updates = true;
+        self
+    }
+
+    pub fn token(mut self, token: CancellationToken) -> Self {
+        self.token = Some(token);
+        self
+    }
+
+    #[cfg(feature = "webhooks-axum")]
+    pub fn webhook(mut self, url: url::Url) -> Self {
+        self.webhook_url = Some(url);
+        self
+    }
+
+    #[cfg(feature = "webhooks-axum")]
+    pub fn address(mut self, address: impl Into<SocketAddr>) -> Self {
+        self.webhook_address = Some(address.into());
+        self
+    }
+
+    #[cfg(feature = "webhooks-axum")]
+    pub fn secret_token(mut self, secret: impl Into<String>) -> Self {
+        self.webhook_secret = Some(secret.into());
+        self
+    }
+
+    #[cfg(feature = "webhooks-axum")]
+    pub fn max_connections(mut self, max: u8) -> Self {
+        self.webhook_max_connections = Some(max);
+        self
+    }
+
+    pub async fn build(self) -> Polling<teloxide_core::Bot> {
+        #[cfg(feature = "webhooks-axum")]
+        if self.webhook_url.is_some() {
+            log::warn!("webhook mode for update_stream is not yet implemented, falling back to polling");
+        }
+
+        self.build_polling().await
+    }
+
+    async fn build_polling(self) -> Polling<teloxide_core::Bot> {
+        let mut builder = Polling::builder(self.bot);
+
+        builder = builder.timeout(self.timeout.unwrap_or(Duration::from_secs(10)));
+
+        if let Some(limit) = self.limit {
+            builder = builder.limit(limit);
+        }
+
+        if let Some(allowed) = self.allowed_updates {
+            builder = builder.allowed_updates(allowed);
+        }
+
+        if self.drop_pending_updates {
+            builder = builder.drop_pending_updates();
+        }
+
+        builder = builder.delete_webhook().await;
+
+        let mut polling = builder.build();
+
+        if let Some(cancel) = self.token {
+            let stop_token = polling.stop_token();
+            tokio::spawn(async move {
+                cancel.cancelled().await;
+                stop_token.stop();
+            });
+        }
+
+        polling
+    }
+}
+
+pub trait UpdateStreamExt {
+    fn update_stream(&self) -> UpdateStreamBuilder;
+}
+
+impl UpdateStreamExt for teloxide_core::Bot {
+    fn update_stream(&self) -> UpdateStreamBuilder {
+        UpdateStreamBuilder::new(self.clone())
+    }
+}

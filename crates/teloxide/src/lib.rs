@@ -145,6 +145,7 @@ pub mod repls;
 pub mod stop;
 pub mod sugar;
 pub mod update_listeners;
+pub mod update_stream;
 pub mod utils;
 
 #[doc(inline)]
