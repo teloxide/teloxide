@@ -248,6 +248,16 @@ impl_api_error! {
         /// [`EditMessageText`]: crate::payloads::EditMessageText
         MessageToEditNotFound = "Bad Request: message to edit not found",
 
+        /// Occurs when bot tries to edit a message which has no text.
+        ///
+        /// May happen in methods:
+        /// 1. [`EditMessageText`]
+        /// 2. [`EditMessageTextInline`]
+        ///
+        /// [`EditMessageText`]: crate::payloads::EditMessageText
+        /// [`EditMessageTextInline`]: crate::payloads::EditMessageTextInline
+        MessageToEditHasNoText = "Bad Request: there is no text in the message to edit",
+
         /// Occurs when bot tries to reply to a message which does not exists.
         ///
         /// May happen in methods:
@@ -881,6 +891,10 @@ mod tests {
             (
                 "{\"data\": \"Bad Request: message to edit not found\"}",
                 ApiError::MessageToEditNotFound,
+            ),
+            (
+                "{\"data\": \"Bad Request: there is no text in the message to edit\"}",
+                ApiError::MessageToEditHasNoText,
             ),
             (
                 "{\"data\": \"Bad Request: message to be replied not found\"}",
