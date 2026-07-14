@@ -13,6 +13,11 @@ pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
 
+    /// Unique identifier of the custom emoji shown on the button before the text.
+    /// Available since Bot API 7.3+ / 9.4+
+    #[serde(default)]
+    pub icon_custom_emoji_id: Option<String>,
+
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
 }
@@ -113,7 +118,21 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), icon_custom_emoji_id: None, kind }
+    }
+
+    /// Builder method to attach a custom emoji icon to compatible button kinds.
+    pub fn with_icon<S>(mut self, icon_id: S) -> Self
+    where
+        S: Into<String>,
+    {
+        match &self.kind {
+            InlineKeyboardButtonKind::CallbackGame(_) | InlineKeyboardButtonKind::Pay(_) => {}
+            _ => {
+                self.icon_custom_emoji_id = Some(icon_id.into());
+            }
+        }
+        self
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
