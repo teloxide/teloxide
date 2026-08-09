@@ -39,6 +39,38 @@ pub(crate) fn compile_error_at(msg: &str, sp: Span) -> Error {
     Error(ts)
 }
 
+pub(crate) fn compile_error_multiple(msg: &str, spans: Vec<Span>) -> Error {
+    use proc_macro2::{Delimiter, Group, Ident, Literal, Punct, Spacing, TokenStream, TokenTree};
+
+    let mut tokens = TokenStream::new();
+
+    for sp in spans {
+        let ts = TokenStream::from_iter(vec![
+            TokenTree::Ident(Ident::new("compile_error", sp)),
+            TokenTree::Punct({
+                let mut punct = Punct::new('!', Spacing::Alone);
+                punct.set_span(sp);
+                punct
+            }),
+            TokenTree::Group({
+                let mut group = Group::new(Delimiter::Brace, {
+                    TokenStream::from_iter(vec![TokenTree::Literal({
+                        let mut string = Literal::string(msg);
+                        string.set_span(sp);
+                        string
+                    })])
+                });
+                group.set_span(sp);
+                group
+            }),
+        ]);
+
+        tokens.extend(ts);
+    }
+
+    Error(tokens)
+}
+
 impl From<Error> for proc_macro2::TokenStream {
     fn from(Error(e): Error) -> Self {
         e

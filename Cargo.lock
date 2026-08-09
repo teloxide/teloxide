@@ -2884,6 +2884,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
+ "reqwest",
  "syn",
 ]
 
