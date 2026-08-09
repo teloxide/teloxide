@@ -120,6 +120,7 @@ mod tests {
                 first_name: "firstName".to_string(),
                 last_name: None,
                 username: None,
+                allows_users_to_create_topics: None,
                 language_code: None,
                 is_premium: false,
                 added_to_attachment_menu: false,
