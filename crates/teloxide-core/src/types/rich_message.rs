@@ -11,11 +11,10 @@ use crate::types::PhotoSize;
 ///
 /// Block and text node kinds that teloxide doesn't (yet) know about are
 /// preserved as [`RichBlock::Other`]/[`RichText::Other`] instead of failing
-/// deserialization of the whole [`Message`], so bots keep working even as
+/// deserialization of the whole `Message`, so bots keep working even as
 /// Telegram adds new rich content kinds.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#richmessage).
-/// [`Message`]: crate::types::Message
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RichMessage {
