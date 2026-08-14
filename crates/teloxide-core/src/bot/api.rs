@@ -8,9 +8,9 @@ use crate::{
         AcceptedGiftTypes, BotCommand, BusinessConnectionId, CallbackQueryId, ChatId,
         ChatPermissions, CustomEmojiId, FileId, GiftId, InlineQueryId, InlineQueryResult,
         InputChecklist, InputFile, InputMedia, InputPaidMedia, InputPollOption, InputProfilePhoto,
-        InputSticker, InputStoryContent, LabeledPrice, MessageId, OwnedGiftId, PreCheckoutQueryId,
-        Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId, TelegramTransactionId,
-        ThreadId, UserId,
+        InputRichMessage, InputSticker, InputStoryContent, LabeledPrice, MessageId, OwnedGiftId,
+        PreCheckoutQueryId, Recipient, Seconds, ShippingQueryId, StickerFormat, StoryId,
+        TelegramTransactionId, ThreadId, UserId,
     },
     Bot,
 };
@@ -56,6 +56,22 @@ impl Requester for Bot {
         T: Into<String>,
     {
         Self::SendMessage::new(self.clone(), payloads::SendMessage::new(chat_id, text))
+    }
+
+    type SendRichMessage = JsonRequest<payloads::SendRichMessage>;
+
+    fn send_rich_message<C>(
+        &self,
+        chat_id: C,
+        rich_message: InputRichMessage,
+    ) -> Self::SendRichMessage
+    where
+        C: Into<Recipient>,
+    {
+        Self::SendRichMessage::new(
+            self.clone(),
+            payloads::SendRichMessage::new(chat_id, rich_message),
+        )
     }
 
     type ForwardMessage = JsonRequest<payloads::ForwardMessage>;

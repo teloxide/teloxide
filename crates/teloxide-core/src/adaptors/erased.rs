@@ -200,6 +200,7 @@ where
         copy_message,
         copy_messages,
         send_message,
+        send_rich_message,
         send_photo,
         send_audio,
         send_document,
@@ -384,6 +385,12 @@ trait ErasableRequester<'a> {
         chat_id: Recipient,
         text: String,
     ) -> ErasedRequest<'a, SendMessage, Self::Err>;
+
+    fn send_rich_message(
+        &self,
+        chat_id: Recipient,
+        rich_message: InputRichMessage,
+    ) -> ErasedRequest<'a, SendRichMessage, Self::Err>;
 
     fn forward_message(
         &self,
@@ -1306,6 +1313,14 @@ where
         text: String,
     ) -> ErasedRequest<'a, SendMessage, Self::Err> {
         Requester::send_message(self, chat_id, text).erase()
+    }
+
+    fn send_rich_message(
+        &self,
+        chat_id: Recipient,
+        rich_message: InputRichMessage,
+    ) -> ErasedRequest<'a, SendRichMessage, Self::Err> {
+        Requester::send_rich_message(self, chat_id, rich_message).erase()
     }
 
     fn forward_message(

@@ -479,6 +479,14 @@ macro_rules! requester_forward {
             $body!(send_message this (chat_id: C, text: T))
         }
     };
+    (@method send_rich_message $body:ident $ty:ident) => {
+        type SendRichMessage = $ty![SendRichMessage];
+
+        fn send_rich_message<C>(&self, chat_id: C, rich_message: InputRichMessage) -> Self::SendRichMessage where C: Into<Recipient> {
+            let this = self;
+            $body!(send_rich_message this (chat_id: C, rich_message: InputRichMessage))
+        }
+    };
     (@method forward_message $body:ident $ty:ident) => {
         type ForwardMessage = $ty![ForwardMessage];
 
