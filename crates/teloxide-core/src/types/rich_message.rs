@@ -32,9 +32,22 @@ impl RichMessage {
         Self { blocks: blocks.into_iter().collect() }
     }
 
-    /// Renders the rich message as Telegram [HTML formatted] text.
+    /// Renders the rich message as full HTML markup: inline formatting uses
+    /// the same tags as Telegram's [HTML formatted] messages (`<b>`, `<i>`,
+    /// `<a>`, ...), while structural blocks use ordinary HTML elements
+    /// (`<h1>`-`<h6>`, `<ul>`/`<ol>`/`<li>`, `<table>`, `<hr>`,
+    /// `<details>`, ...).
+    ///
+    /// Note: because of the structural tags, this output is meant for
+    /// display (e.g. a web page or log viewer), not for sending back to
+    /// Telegram via `parse_mode: Html` — Telegram's HTML parser only
+    /// accepts a small whitelist of inline tags and will reject `<table>`,
+    /// `<ul>`, `<hr>`, etc. Use [`plain_text`] or [`to_markdown`] for
+    /// Telegram-safe rendering instead.
     ///
     /// [HTML formatted]: https://core.telegram.org/bots/api#html-style
+    /// [`plain_text`]: RichMessage::plain_text
+    /// [`to_markdown`]: RichMessage::to_markdown
     pub fn to_html(&self) -> String {
         let mut out = String::new();
         for block in &self.blocks {
@@ -184,82 +197,103 @@ impl RichBlock {
     fn write_html(&self, out: &mut String) {
         match self {
             RichBlock::Paragraph(b) => {
+                out.push_str("<p>");
                 b.text.write_html(out);
-                out.push_str("\n\n");
+                out.push_str("</p>\n");
             }
             RichBlock::Heading(b) => {
-                out.push_str("<b>");
+                let level = b.size.clamp(1, 6);
+                out.push_str(&format!("<h{level}>"));
                 b.text.write_html(out);
-                out.push_str("</b>\n\n");
+                out.push_str(&format!("</h{level}>\n"));
             }
             RichBlock::Blockquote(b) => {
                 out.push_str("<blockquote>\n");
                 for inner in &b.blocks {
                     inner.write_html(out);
                 }
-                out.push_str("</blockquote>\n\n");
+                if let Some(credit) = &b.credit {
+                    out.push_str("<cite>");
+                    out.push_str(&escape_html(credit));
+                    out.push_str("</cite>\n");
+                }
+                out.push_str("</blockquote>\n");
             }
             RichBlock::Pullquote(b) => {
-                out.push_str("<blockquote>");
+                out.push_str("<blockquote><p>");
                 b.text.write_html(out);
-                out.push_str("</blockquote>\n\n");
+                out.push_str("</p>");
+                if let Some(credit) = &b.credit {
+                    out.push_str("<cite>");
+                    out.push_str(&escape_html(credit));
+                    out.push_str("</cite>");
+                }
+                out.push_str("</blockquote>\n");
             }
             RichBlock::Pre(b) => {
-                out.push_str("<pre>");
-                if let Some(lang) = &b.language {
-                    out.push_str("<code class=\"language-");
-                    out.push_str(&escape_html(lang));
-                    out.push_str("\">");
-                    b.text.write_html(out);
-                    out.push_str("</code>");
-                } else {
-                    b.text.write_html(out);
-                }
-                out.push_str("</pre>\n\n");
+                out.push_str("<pre><code>");
+                b.text.write_html(out);
+                out.push_str("</code></pre>\n");
             }
             RichBlock::Footer(b) => {
-                out.push_str("<i>");
+                out.push_str("<footer><small>");
                 b.text.write_html(out);
-                out.push_str("</i>\n\n");
+                out.push_str("</small></footer>\n");
             }
-            RichBlock::Divider => out.push_str("\n----------\n\n"),
+            RichBlock::Divider => out.push_str("<hr>\n"),
             RichBlock::List(b) => {
+                let ordered = b.items.first().is_some_and(|item| item.kind.is_some());
+                let tag = if ordered { "ol" } else { "ul" };
+                out.push_str(&format!("<{tag}>\n"));
                 for item in &b.items {
-                    out.push_str(&escape_html(&item.label));
-                    out.push(' ');
-                    for (i, inner) in item.blocks.iter().enumerate() {
-                        if i == 0 {
-                            let mut buf = String::new();
-                            inner.write_html(&mut buf);
-                            out.push_str(buf.trim_end());
-                            out.push('\n');
-                        } else {
-                            inner.write_html(out);
+                    out.push_str("<li>");
+                    if item.has_checkbox {
+                        out.push_str("<input type=\"checkbox\" disabled");
+                        if item.is_checked {
+                            out.push_str(" checked");
                         }
+                        out.push('>');
                     }
+                    for inner in &item.blocks {
+                        inner.write_html(out);
+                    }
+                    out.push_str("</li>\n");
                 }
-                out.push('\n');
+                out.push_str(&format!("</{tag}>\n"));
             }
             RichBlock::Details(b) => {
-                out.push_str("<b>");
+                out.push_str("<details><summary>");
                 out.push_str(&escape_html(&b.summary));
-                out.push_str("</b>\n");
+                out.push_str("</summary>\n");
                 for inner in &b.blocks {
                     inner.write_html(out);
                 }
+                out.push_str("</details>\n");
             }
             RichBlock::Table(b) => {
-                for row in &b.cells {
-                    let rendered: Vec<_> = row.iter().map(|c| escape_html(&c.text)).collect();
-                    out.push_str(&rendered.join(" | "));
-                    out.push('\n');
+                out.push_str("<table>\n");
+                if let Some(caption) = &b.caption {
+                    out.push_str("<caption>");
+                    out.push_str(&escape_html(caption));
+                    out.push_str("</caption>\n");
                 }
-                out.push('\n');
+                for row in &b.cells {
+                    out.push_str("<tr>");
+                    for cell in row {
+                        let tag = if cell.is_header { "th" } else { "td" };
+                        out.push_str(&format!("<{tag}>"));
+                        out.push_str(&escape_html(&cell.text));
+                        out.push_str(&format!("</{tag}>"));
+                    }
+                    out.push_str("</tr>\n");
+                }
+                out.push_str("</table>\n");
             }
             RichBlock::Photo(b) => {
                 if let Some(caption) = &b.caption {
+                    out.push_str("<figure><figcaption>");
                     caption.text.write_html(out);
-                    out.push_str("\n\n");
+                    out.push_str("</figcaption></figure>\n");
                 }
             }
             RichBlock::Other { .. } => {}
