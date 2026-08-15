@@ -36,7 +36,7 @@ pub struct Video {
     pub file_name: Option<String>,
 
     /// Mime type of a file as defined by sender.
-    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[serde(default, with = "crate::types::non_telegram_types::mime::opt_deser")]
     #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 }

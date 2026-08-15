@@ -959,6 +959,89 @@ mod tests {
 
         // Some fields in objects need to be ignored
         exceptions.extend(vec![
+            // `kind` is `Option<ExternalReplyInfoKind>` flattened, and schemars can't generate
+            // a proper schema for a flattened `Option<enum>`, so it drops these fields
+            // entirely. Deserialization of each variant is covered by unit tests instead.
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "animation".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "audio".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "document".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "paid_media".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "photo".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "sticker".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "story".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "video".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "video_note".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "voice".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "checklist".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "contact".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "dice".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "game".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "giveaway".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "giveaway_winners".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "invoice".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "location".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "poll".to_owned(),
+            },
+            Exception::IgnoreObjectField {
+                object: "ExternalReplyInfo".to_owned(),
+                field_name: "venue".to_owned(),
+            },
             // `User` has a separation with `Me`
             Exception::IgnoreObjectField {
                 object: "User".to_owned(),

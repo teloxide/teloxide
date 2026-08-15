@@ -98,6 +98,7 @@ where
         copy_message,
         copy_messages,
         send_message,
+        send_rich_message,
         send_photo,
         send_audio,
         send_document,

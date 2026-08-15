@@ -18,7 +18,7 @@ pub struct Voice {
     pub duration: Seconds,
 
     /// MIME type of the file as defined by sender.
-    #[serde(with = "crate::types::non_telegram_types::mime::opt_deser")]
+    #[serde(default, with = "crate::types::non_telegram_types::mime::opt_deser")]
     #[cfg_attr(test, schemars(with = "Option<String>"))]
     pub mime_type: Option<Mime>,
 }
