@@ -17,9 +17,11 @@ use crate::types::PhotoSize;
 /// [The official docs](https://core.telegram.org/bots/api#richmessage).
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct RichMessage {
     /// The blocks that make up the rich message.
     #[serde(default)]
+    #[cfg_attr(test, schemars(with = "serde_json::Value"))]
     pub blocks: Vec<RichBlock>,
 }
 
