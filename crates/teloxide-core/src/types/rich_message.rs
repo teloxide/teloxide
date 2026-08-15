@@ -294,11 +294,33 @@ impl RichBlock {
                 out.push_str("</table>\n");
             }
             RichBlock::Photo(b) => {
-                if let Some(caption) = &b.caption {
-                    out.push_str("<figure><figcaption>");
-                    caption.text.write_html(out);
-                    out.push_str("</figcaption></figure>\n");
+                // `src` carries the Telegram `file_id` rather than an http(s)
+                // URL — that is what identifies a photo in the Bot API.
+                out.push_str("<figure>");
+                if let Some(size) = b.largest() {
+                    out.push_str("<img src=\"");
+                    out.push_str(&escape_html_attr(&size.file.id.0));
+                    out.push('"');
+                    let alt = b.alt_text();
+                    if !alt.is_empty() {
+                        out.push_str(" alt=\"");
+                        out.push_str(&escape_html_attr(&alt));
+                        out.push('"');
+                    }
+                    if size.width != 0 {
+                        out.push_str(&format!(" width=\"{}\"", size.width));
+                    }
+                    if size.height != 0 {
+                        out.push_str(&format!(" height=\"{}\"", size.height));
+                    }
+                    out.push('>');
                 }
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_html(out);
+                    out.push_str("</figcaption>");
+                }
+                out.push_str("</figure>\n");
             }
             RichBlock::Other { .. } => {}
         }
@@ -414,9 +436,24 @@ impl RichBlock {
                 out.push('\n');
             }
             RichBlock::Photo(b) => {
-                if let Some(caption) = &b.caption {
-                    caption.text.write_markdown(out);
-                    out.push_str("\n\n");
+                // Markdown image syntax only has room for plain alternative
+                // text, so a formatted caption is flattened here (unlike the
+                // HTML rendering, which keeps it in `<figcaption>`).
+                match b.largest() {
+                    Some(size) => {
+                        out.push_str("![");
+                        out.push_str(&escape_markdown(&b.alt_text()));
+                        out.push_str("](");
+                        out.push_str(&size.file.id.0);
+                        out.push(')');
+                        out.push_str("\n\n");
+                    }
+                    None => {
+                        if let Some(caption) = &b.caption {
+                            caption.text.write_markdown(out);
+                            out.push_str("\n\n");
+                        }
+                    }
                 }
             }
             RichBlock::Other { .. } => {}
@@ -591,8 +628,27 @@ pub struct RichTableCell {
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RichBlockPhoto {
+    /// Available sizes of the photo.
     pub photo: Vec<PhotoSize>,
     pub caption: Option<RichCaption>,
+}
+
+impl RichBlockPhoto {
+    /// The largest available [`PhotoSize`], i.e. the one used when rendering
+    /// the block to HTML or Markdown.
+    pub fn largest(&self) -> Option<&PhotoSize> {
+        self.photo.iter().max_by_key(|p| (p.width as u64) * (p.height as u64))
+    }
+
+    /// The caption rendered as plain text, used as the image's alternative
+    /// text (`alt`) when rendering.
+    fn alt_text(&self) -> String {
+        let mut alt = String::new();
+        if let Some(caption) = &self.caption {
+            caption.text.write_plain(&mut alt);
+        }
+        alt.trim().to_owned()
+    }
 }
 
 /// Caption text attached to a media [`RichBlock`] (e.g. [`RichBlockPhoto`]).
@@ -1009,10 +1065,36 @@ pub enum RichParseMode {
 mod parse {
     use super::{
         RichBlock, RichBlockBlockquote, RichBlockDetails, RichBlockHeading, RichBlockList,
-        RichBlockParagraph, RichBlockPre, RichBlockPullquote, RichBlockTable, RichListItem,
-        RichTableCell, RichText, RichTextCustomEmoji, RichTextMathematicalExpression,
-        RichTextSimple, RichTextUrl,
+        RichBlockParagraph, RichBlockPhoto, RichBlockPre, RichBlockPullquote, RichBlockTable,
+        RichCaption, RichListItem, RichTableCell, RichText, RichTextCustomEmoji,
+        RichTextMathematicalExpression, RichTextSimple, RichTextUrl,
     };
+    use crate::types::{FileId, FileMeta, FileUniqueId, PhotoSize};
+
+    /// The pseudo-URL a custom (Premium) emoji uses inside Markdown's image
+    /// syntax, `![fallback](tg://emoji?id=...)`.
+    const CUSTOM_EMOJI_SCHEME: &str = "tg://emoji?id=";
+
+    /// Builds a [`RichBlock::Photo`] out of the parts an HTML `<img>` or a
+    /// Markdown `![alt](src)` can carry.
+    ///
+    /// `src` is taken to be a Telegram `file_id`; the remaining [`FileMeta`]
+    /// fields have no representation in HTML/Markdown and are left empty.
+    fn photo_block(src: String, width: u32, height: u32, caption: Option<RichText>) -> RichBlock {
+        RichBlock::Photo(RichBlockPhoto {
+            photo: vec![PhotoSize {
+                file: FileMeta { id: FileId(src), unique_id: FileUniqueId(String::new()), size: 0 },
+                width,
+                height,
+            }],
+            caption: caption.map(|text| RichCaption { text }),
+        })
+    }
+
+    /// A non-empty `alt` attribute as a caption.
+    fn alt_caption(alt: String) -> Option<RichText> {
+        (!alt.is_empty()).then_some(RichText::Plain(alt))
+    }
 
     // ---------------------------------------------------------------------
     // Markdown
@@ -1095,6 +1177,13 @@ mod parse {
                 continue;
             }
 
+            // Image: ![alt](file_id) on a line of its own.
+            if let Some((alt, src)) = parse_image_line(line) {
+                blocks.push(photo_block(src, 0, 0, alt_caption(alt)));
+                i += 1;
+                continue;
+            }
+
             // Divider: ---, ***, or ___ (3+ of the same char).
             if is_divider(line.trim()) {
                 blocks.push(RichBlock::Divider);
@@ -1171,6 +1260,7 @@ mod parse {
                     || is_divider(l.trim())
                     || l.trim_start().starts_with('>')
                     || parse_list_marker(l).is_some()
+                    || parse_image_line(l).is_some()
                 {
                     break;
                 }
@@ -1183,6 +1273,40 @@ mod parse {
         }
 
         blocks
+    }
+
+    /// Matches a line consisting solely of a Markdown image, `![alt](src)`,
+    /// returning its alternative text and source.
+    ///
+    /// Images are only recognised as whole blocks, since
+    /// [`RichBlock::Photo`] is a block — an image sitting inside a sentence
+    /// stays part of that paragraph's text. Custom emoji share the image
+    /// syntax (`![fallback](tg://emoji?id=...)`) but are inline text, so they
+    /// are left to [`parse_inline`].
+    fn parse_image_line(line: &str) -> Option<(String, String)> {
+        let chars: Vec<char> = line.trim().strip_prefix("![")?.chars().collect();
+        let mut alt = String::new();
+        let mut i = 0;
+        loop {
+            match *chars.get(i)? {
+                // An escape produced by `escape_markdown`.
+                '\\' => {
+                    i += 1;
+                    alt.push(*chars.get(i)?);
+                }
+                ']' => break,
+                c => alt.push(c),
+            }
+            i += 1;
+        }
+        let src = chars[i + 1..]
+            .iter()
+            .collect::<String>()
+            .strip_prefix('(')?
+            .strip_suffix(')')?
+            .to_owned();
+
+        (!src.contains(')') && !src.starts_with(CUSTOM_EMOJI_SCHEME)).then_some((alt, src))
     }
 
     /// Strips a trailing `— credit` attribution line (and any blank lines
@@ -1348,7 +1472,7 @@ mod parse {
             }
             let close_paren = find_char(chars, close_bracket + 2, end, ')')?;
             let url: String = chars[close_bracket + 2..close_paren].iter().collect();
-            let id = url.strip_prefix("tg://emoji?id=")?;
+            let id = url.strip_prefix(CUSTOM_EMOJI_SCHEME)?;
             let alternative_text: String = chars[i + 2..close_bracket].iter().collect();
             return Some((
                 RichText::CustomEmoji(RichTextCustomEmoji {
@@ -1530,10 +1654,22 @@ mod parse {
             .replace("&amp;", "&")
     }
 
+    /// Extracts `(src, alt, width, height)` from an `<img>`'s attributes.
+    fn img_parts(attrs: &[(String, String)]) -> (String, String, u32, u32) {
+        let attr = |key: &str| {
+            attrs.iter().find(|(k, _)| k == key).map(|(_, v)| v.clone()).unwrap_or_default()
+        };
+        let dimension = |key: &str| attr(key).parse().unwrap_or(0);
+
+        (attr("src"), attr("alt"), dimension("width"), dimension("height"))
+    }
+
     fn is_block_tag(name: &str) -> bool {
         matches!(
             name,
-            "p" | "h1"
+            "img"
+                | "p"
+                | "h1"
                 | "h2"
                 | "h3"
                 | "h4"
@@ -1568,6 +1704,14 @@ mod parse {
     impl<'a> HtmlParser<'a> {
         fn peek(&self) -> Option<&HtmlToken> {
             self.tokens.get(self.pos)
+        }
+
+        /// The attributes of the token at the cursor, if it is an opening tag.
+        fn current_attrs(&self) -> &[(String, String)] {
+            match self.peek() {
+                Some(HtmlToken::Open { attrs, .. }) => attrs,
+                _ => &[],
+            }
         }
 
         /// Parses blocks until EOF or a closing tag matching `stop`
@@ -1722,15 +1866,27 @@ mod parse {
                                 let text = self.parse_inline(Some("footer"));
                                 blocks.push(RichBlock::Footer(super::RichBlockFooter { text }));
                             }
+                            "img" => {
+                                let (src, alt, width, height) = img_parts(self.current_attrs());
+                                self.pos += 1;
+                                blocks.push(photo_block(src, width, height, alt_caption(alt)));
+                            }
                             "figure" => {
                                 self.pos += 1;
                                 let mut caption = None;
+                                let mut image = None;
                                 loop {
                                     match self.tokens.get(self.pos) {
                                         None => break,
                                         Some(HtmlToken::Close { name }) if name == "figure" => {
                                             self.pos += 1;
                                             break;
+                                        }
+                                        Some(HtmlToken::Open { name, attrs, .. })
+                                            if name == "img" =>
+                                        {
+                                            image = Some(img_parts(attrs));
+                                            self.pos += 1;
                                         }
                                         Some(HtmlToken::Open { name, .. })
                                             if name == "figcaption" =>
@@ -1741,8 +1897,22 @@ mod parse {
                                         _ => self.pos += 1,
                                     }
                                 }
-                                if let Some(text) = caption {
-                                    blocks.push(RichBlock::Paragraph(RichBlockParagraph { text }));
+                                match image {
+                                    // `<figcaption>` keeps the caption's formatting, so it
+                                    // wins over the plain-text `alt` attribute.
+                                    Some((src, alt, width, height)) => blocks.push(photo_block(
+                                        src,
+                                        width,
+                                        height,
+                                        caption.or_else(|| alt_caption(alt)),
+                                    )),
+                                    None => {
+                                        if let Some(text) = caption {
+                                            blocks.push(RichBlock::Paragraph(RichBlockParagraph {
+                                                text,
+                                            }));
+                                        }
+                                    }
                                 }
                             }
                             _ => {
@@ -1992,6 +2162,7 @@ mod parse {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{FileId, FileMeta, FileUniqueId};
 
     #[test]
     fn blockquote_credit_renders_and_roundtrips() {
@@ -2331,6 +2502,114 @@ fn main() {}
         );
     }
 
+    fn photo(width: u32, height: u32) -> PhotoSize {
+        PhotoSize {
+            file: FileMeta {
+                id: FileId("AgACAgIAAx".to_owned()),
+                unique_id: FileUniqueId(String::new()),
+                size: 0,
+            },
+            width,
+            height,
+        }
+    }
+
+    #[test]
+    fn photo_renders_to_html_and_parses_back() {
+        let msg = RichMessage::new(vec![RichBlock::Photo(RichBlockPhoto {
+            photo: vec![photo(320, 240), photo(800, 600)],
+            caption: Some(RichCaption {
+                text: RichText::Array(vec![
+                    RichText::from("a "),
+                    RichText::Bold(RichTextSimple::new("cat")),
+                ]),
+            }),
+        })]);
+
+        let html = msg.to_html();
+        assert_eq!(
+            html,
+            "<figure><img src=\"AgACAgIAAx\" alt=\"a cat\" width=\"800\" \
+             height=\"600\"><figcaption>a <b>cat</b></figcaption></figure>"
+        );
+
+        let blocks = InputRichMessage::parse(&html, RichParseMode::Html).blocks;
+        let RichBlock::Photo(parsed) = &blocks[0] else { panic!("expected a photo block") };
+        let size = parsed.largest().unwrap();
+        assert_eq!(size.file.id.0, "AgACAgIAAx");
+        assert_eq!((size.width, size.height), (800, 600));
+        // `<figcaption>` preserves the caption's formatting, unlike `alt`.
+        assert_eq!(
+            parsed.caption,
+            Some(RichCaption {
+                text: RichText::Array(vec![
+                    RichText::from("a "),
+                    RichText::Bold(RichTextSimple::new("cat")),
+                ]),
+            })
+        );
+    }
+
+    #[test]
+    fn photo_renders_to_markdown_and_parses_back() {
+        let msg = RichMessage::new(vec![RichBlock::Photo(RichBlockPhoto {
+            photo: vec![photo(800, 600)],
+            caption: Some(RichCaption { text: RichText::from("a cat (striped)") }),
+        })]);
+
+        let markdown = msg.to_markdown();
+        assert_eq!(markdown, "![a cat \\(striped\\)](AgACAgIAAx)");
+
+        let blocks = InputRichMessage::parse(&markdown, RichParseMode::Markdown).blocks;
+        let RichBlock::Photo(parsed) = &blocks[0] else { panic!("expected a photo block") };
+        assert_eq!(parsed.largest().unwrap().file.id.0, "AgACAgIAAx");
+        assert_eq!(parsed.caption, Some(RichCaption { text: RichText::from("a cat (striped)") }));
+    }
+
+    #[test]
+    fn photo_without_caption_roundtrips() {
+        let msg = RichMessage::new(vec![RichBlock::Photo(RichBlockPhoto {
+            photo: vec![photo(800, 600)],
+            caption: None,
+        })]);
+
+        for (rendered, mode) in
+            [(msg.to_html(), RichParseMode::Html), (msg.to_markdown(), RichParseMode::Markdown)]
+        {
+            let blocks = InputRichMessage::parse(&rendered, mode).blocks;
+            let RichBlock::Photo(parsed) = &blocks[0] else {
+                panic!("expected a photo block, got {blocks:?}")
+            };
+            assert_eq!(parsed.largest().unwrap().file.id.0, "AgACAgIAAx");
+            assert_eq!(parsed.caption, None);
+        }
+    }
+
+    #[test]
+    fn bare_img_and_image_among_other_blocks_parse() {
+        let blocks = InputRichMessage::parse(
+            "<p>before</p><img src=\"file-id\" alt=\"pic\"><p>after</p>",
+            RichParseMode::Html,
+        )
+        .blocks;
+        assert_eq!(blocks.len(), 3);
+        assert!(
+            matches!(&blocks[1], RichBlock::Photo(p) if p.largest().unwrap().file.id.0 == "file-id")
+        );
+
+        let blocks =
+            InputRichMessage::parse("before\n![pic](file-id)\nafter", RichParseMode::Markdown)
+                .blocks;
+        assert_eq!(blocks.len(), 3);
+        assert!(
+            matches!(&blocks[1], RichBlock::Photo(p) if p.largest().unwrap().file.id.0 == "file-id")
+        );
+        // An image inside a sentence stays part of the paragraph.
+        let blocks =
+            InputRichMessage::parse("look ![pic](file-id) here", RichParseMode::Markdown).blocks;
+        assert!(matches!(&blocks[0], RichBlock::Paragraph(_)));
+    }
+
     fn sample_message() -> RichMessage {
         RichMessage::new(vec![
             RichBlock::heading("Title", 2),
@@ -2354,6 +2633,10 @@ fn main() {}
                 }],
             }),
             RichBlock::divider(),
+            RichBlock::Photo(RichBlockPhoto {
+                photo: vec![photo(800, 600)],
+                caption: Some(RichCaption { text: RichText::from("a cat") }),
+            }),
             RichBlock::Table(RichBlockTable {
                 cells: vec![
                     vec![RichTableCell {
