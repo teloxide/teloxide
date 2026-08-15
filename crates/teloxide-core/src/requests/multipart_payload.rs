@@ -32,6 +32,16 @@ impl MultipartPayload for payloads::SendMediaGroup {
     }
 }
 
+impl MultipartPayload for payloads::SendRichMessage {
+    fn copy_files(&self, into: &mut dyn FnMut(InputFile)) {
+        self.rich_message.copy_files(into)
+    }
+
+    fn move_files(&mut self, into: &mut dyn FnMut(InputFile)) {
+        self.rich_message.move_files(into)
+    }
+}
+
 impl MultipartPayload for payloads::EditMessageMedia {
     fn copy_files(&self, into: &mut dyn FnMut(InputFile)) {
         self.media.files().for_each(|f| f.copy_into(into))

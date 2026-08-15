@@ -581,6 +581,72 @@ impl InputMediaDocument {
     }
 }
 
+/// Represents a voice note to be sent.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputmediavoicenote).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputMediaVoiceNote {
+    /// File to send.
+    pub media: InputFile,
+
+    /// Caption of the voice note to be sent, 0-1024 characters.
+    pub caption: Option<String>,
+
+    /// Send [Markdown] or [HTML], if you want Telegram apps to show [bold,
+    /// italic, fixed-width text or inline URLs] in the media caption.
+    ///
+    /// [Markdown]: https://core.telegram.org/bots/api#markdown-style
+    /// [HTML]: https://core.telegram.org/bots/api#html-style
+    /// [bold, italic, fixed-width text or inline URLs]: https://core.telegram.org/bots/api#formatting-options
+    pub parse_mode: Option<ParseMode>,
+
+    /// List of special entities that appear in the caption, which can be
+    /// specified instead of `parse_mode`.
+    pub caption_entities: Option<Vec<MessageEntity>>,
+
+    /// Duration of the voice note in seconds.
+    pub duration: Option<Seconds>,
+}
+
+impl InputMediaVoiceNote {
+    pub const fn new(media: InputFile) -> Self {
+        Self { media, caption: None, parse_mode: None, caption_entities: None, duration: None }
+    }
+
+    pub fn media(mut self, val: InputFile) -> Self {
+        self.media = val;
+        self
+    }
+
+    pub fn caption<S>(mut self, val: S) -> Self
+    where
+        S: Into<String>,
+    {
+        self.caption = Some(val.into());
+        self
+    }
+
+    pub const fn parse_mode(mut self, val: ParseMode) -> Self {
+        self.parse_mode = Some(val);
+        self
+    }
+
+    pub fn caption_entities<C>(mut self, val: C) -> Self
+    where
+        C: IntoIterator<Item = MessageEntity>,
+    {
+        self.caption_entities = Some(val.into_iter().collect());
+        self
+    }
+
+    pub const fn duration(mut self, val: Seconds) -> Self {
+        self.duration = Some(val);
+        self
+    }
+}
+
 impl From<InputMedia> for InputFile {
     fn from(media: InputMedia) -> InputFile {
         match media {
