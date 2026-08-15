@@ -128,6 +128,7 @@ where
         copy_message,
         copy_messages,
         send_message,
+        send_rich_message,
         send_photo,
         send_audio,
         send_document,
@@ -283,7 +284,9 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        delete_message_reaction,
+        delete_all_message_reactions
         => fwd_inner, fty
     }
 }

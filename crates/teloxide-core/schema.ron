@@ -315,6 +315,80 @@ Schema(
             ],
         ),
         Method(
+            names: ("sendRichMessage", "SendRichMessage", "send_rich_message"),
+            return_ty: RawTy("Message"),
+            doc: Doc(
+                md: "Use this method to send a [rich message] built from structured blocks (paragraphs, headings, lists, tables, media, ...). On success, the sent [Message] is returned.",
+                md_links: {
+                    "rich message": "https://core.telegram.org/bots/api#richmessage",
+                    "Message": "https://core.telegram.org/bots/api#message",
+                },
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#sendrichmessage",
+            tg_category: "Available methods",
+            params: [
+                Param(
+                    name: "business_connection_id",
+                    ty: Option(RawTy("BusinessConnectionId")),
+                    descr: Doc(md: "Unique identifier of the business connection on behalf of which the message will be sent"),
+                ),
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)")
+                ),
+                Param(
+                    name: "message_thread_id",
+                    ty: Option(RawTy("ThreadId")),
+                    descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
+                ),
+                Param(
+                    name: "rich_message",
+                    ty: RawTy("InputRichMessage"),
+                    descr: Doc(md: "The rich message content to send"),
+                ),
+                Param(
+                    name: "link_preview_options",
+                    ty: Option(RawTy("LinkPreviewOptions")),
+                    descr: Doc(md: "Link preview generation options for the message"),
+                ),
+                Param(
+                    name: "disable_notification",
+                    ty: Option(bool),
+                    descr: Doc(
+                        md: "Sends the message [silently]. Users will receive a notification with no sound.",
+                        md_links: {"silently": "https://telegram.org/blog/channels-2-0#silent-messages"}
+                    )
+                ),
+                Param(
+                    name: "protect_content",
+                    ty: Option(bool),
+                    descr: Doc(md: "Protects the contents of sent messages from forwarding and saving"),
+                ),
+                Param(
+                    name: "message_effect_id",
+                    ty: Option(RawTy("EffectId")),
+                    descr: Doc(md: "Unique identifier of the message effect to be added to the message; for private chats only"),
+                ),
+                Param(
+                    name: "reply_parameters",
+                    ty: Option(RawTy("ReplyParameters")),
+                    descr: Doc(md: "Description of the message to reply to"),
+                ),
+                Param(
+                    name: "reply_markup",
+                    ty: Option(RawTy("ReplyMarkup")),
+                    descr: Doc(
+                        md: "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
+                        md_links: {
+                            "inline keyboard": "https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating",
+                            "custom reply keyboard": "https://core.telegram.org/bots#keyboards",
+                        }
+                    ),
+                ),
+            ],
+        ),
+        Method(
             names: ("forwardMessage", "ForwardMessage", "forward_message"),
             return_ty: RawTy("Message"),
             doc: Doc(
@@ -333,7 +407,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -393,7 +467,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -447,7 +521,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -555,7 +629,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -1588,7 +1662,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2003,7 +2077,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2122,7 +2196,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2415,7 +2489,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -5726,7 +5800,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -6355,6 +6429,63 @@ Schema(
                     ty: RawTy("TargetMessage"),
                     descr: Doc(md: "Target message")
                 )
+            ],
+        ),
+        Method(
+            names: ("deleteMessageReaction", "DeleteMessageReaction", "delete_message_reaction"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to remove a reaction from a message in a group or a supergroup chat. The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletemessagereaction",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target supergroup in the format @username"),
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of the target message"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: Option(RawTy("UserId")),
+                    descr: Doc(md: "Identifier of the user whose reaction will be removed, if the reaction was added by a user")
+                ),
+                Param(
+                    name: "actor_chat_id",
+                    ty: Option(RawTy("ChatId")),
+                    descr: Doc(md: "Identifier of the chat whose reaction will be removed, if the reaction was added by a chat")
+                ),
+            ],
+        ),
+        Method(
+            names: ("deleteAllMessageReactions", "DeleteAllMessageReactions", "delete_all_message_reactions"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to remove up to 10000 recent reactions in a group or a supergroup chat added by a given user or chat. The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deleteallmessagereactions",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target supergroup in the format @username"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: Option(RawTy("UserId")),
+                    descr: Doc(md: "Identifier of the user whose reactions will be removed, if the reactions were added by a user")
+                ),
+                Param(
+                    name: "actor_chat_id",
+                    ty: Option(RawTy("ChatId")),
+                    descr: Doc(md: "Identifier of the chat whose reactions will be removed, if the reactions were added by a chat")
+                ),
             ],
         ),
     ],

@@ -14,7 +14,7 @@ use crate::types::{
     GiveawayCreated, GiveawayWinners, InlineKeyboardMarkup, Invoice, LinkPreviewOptions, Location,
     MaybeInaccessibleMessage, MessageAutoDeleteTimerChanged, MessageEntity, MessageEntityRef,
     MessageId, MessageOrigin, PaidMediaInfo, PaidMessagePriceChanged, PassportData, PhotoSize,
-    Poll, ProximityAlertTriggered, RefundedPayment, Sticker, Story, SuccessfulPayment,
+    Poll, ProximityAlertTriggered, RefundedPayment, RichMessage, Sticker, Story, SuccessfulPayment,
     SuggestedPostApprovalFailed, SuggestedPostApproved, SuggestedPostDeclined, SuggestedPostInfo,
     SuggestedPostPaid, SuggestedPostRefunded, TextQuote, ThreadId, True, UniqueGiftInfo, User,
     UsersShared, Venue, Video, VideoChatEnded, VideoChatParticipantsInvited, VideoChatScheduled,
@@ -453,6 +453,7 @@ pub enum MediaKind {
     Sticker(MediaSticker),
     Story(MediaStory),
     Text(MediaText),
+    Rich(MediaRich),
     Video(MediaVideo),
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
@@ -654,6 +655,16 @@ pub struct MediaText {
     /// Options used for link preview generation for the message, if it is a
     /// text message and link preview options were changed
     pub link_preview_options: Option<LinkPreviewOptions>,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MediaRich {
+    /// Message is a [rich message], its block-structured content.
+    ///
+    /// [rich message]: https://core.telegram.org/bots/api#richmessage
+    pub rich_message: RichMessage,
 }
 
 #[serde_with::skip_serializing_none]
@@ -990,17 +1001,18 @@ mod getters {
         self, message::MessageKind::*, Chat, ChatId, ChatMigration, EffectId, LinkPreviewOptions,
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaChecklist, MediaContact,
         MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll,
-        MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
-        Message, MessageChannelChatCreated, MessageChatShared, MessageChecklistTasksAdded,
-        MessageChecklistTasksDone, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
-        MessageDice, MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated,
-        MessageId, MessageInvoice, MessageLeftChatMember, MessageNewChatMembers,
-        MessageNewChatPhoto, MessageNewChatTitle, MessageOrigin, MessagePassportData,
-        MessagePinned, MessageProximityAlertTriggered, MessageSuccessfulPayment,
+        MediaRich, MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote,
+        MediaVoice, Message, MessageChannelChatCreated, MessageChatShared,
+        MessageChecklistTasksAdded, MessageChecklistTasksDone, MessageCommon,
+        MessageConnectedWebsite, MessageDeleteChatPhoto, MessageDice,
+        MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated, MessageId,
+        MessageInvoice, MessageLeftChatMember, MessageNewChatMembers, MessageNewChatPhoto,
+        MessageNewChatTitle, MessageOrigin, MessagePassportData, MessagePinned,
+        MessageProximityAlertTriggered, MessageSuccessfulPayment,
         MessageSuggestedPostApprovalFailed, MessageSuggestedPostApproved,
         MessageSuggestedPostDeclined, MessageSuggestedPostPaid, MessageSuggestedPostRefunded,
         MessageSupergroupChatCreated, MessageUsersShared, MessageVideoChatParticipantsInvited,
-        PhotoSize, Story, TextQuote, User,
+        PhotoSize, RichMessage, Story, TextQuote, User,
     };
 
     use super::{
@@ -1178,6 +1190,21 @@ mod getters {
             }
         }
 
+        /// Returns the block-structured content of a [rich message], if this
+        /// message is one.
+        ///
+        /// [rich message]: https://core.telegram.org/bots/api#richmessage
+        #[must_use]
+        pub fn rich_text(&self) -> Option<&RichMessage> {
+            match &self.kind {
+                Common(MessageCommon {
+                    media_kind: MediaKind::Rich(MediaRich { rich_message, .. }),
+                    ..
+                }) => Some(rich_message),
+                _ => None,
+            }
+        }
+
         /// Returns message entities that represent text formatting.
         ///
         /// **Note:** you probably want to use [`parse_entities`] instead.
@@ -1281,6 +1308,7 @@ mod getters {
                     | MediaKind::Sticker(_)
                     | MediaKind::Story(_)
                     | MediaKind::Text(_)
+                    | MediaKind::Rich(_)
                     | MediaKind::VideoNote(_)
                     | MediaKind::Voice(_)
                     | MediaKind::Migration(_) => false,
@@ -1313,6 +1341,7 @@ mod getters {
                     | MediaKind::Sticker(_)
                     | MediaKind::Story(_)
                     | MediaKind::Text(_)
+                    | MediaKind::Rich(_)
                     | MediaKind::VideoNote(_)
                     | MediaKind::Voice(_)
                     | MediaKind::Migration(_) => false,

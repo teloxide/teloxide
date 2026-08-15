@@ -479,6 +479,14 @@ macro_rules! requester_forward {
             $body!(send_message this (chat_id: C, text: T))
         }
     };
+    (@method send_rich_message $body:ident $ty:ident) => {
+        type SendRichMessage = $ty![SendRichMessage];
+
+        fn send_rich_message<C>(&self, chat_id: C, rich_message: InputRichMessage) -> Self::SendRichMessage where C: Into<Recipient> {
+            let this = self;
+            $body!(send_rich_message this (chat_id: C, rich_message: InputRichMessage))
+        }
+    };
     (@method forward_message $body:ident $ty:ident) => {
         type ForwardMessage = $ty![ForwardMessage];
 
@@ -1799,6 +1807,22 @@ macro_rules! requester_forward {
         fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores where T: Into<TargetMessage> {
             let this = self;
             $body!(get_game_high_scores this (user_id: UserId, target: T))
+        }
+    };
+    (@method delete_message_reaction $body:ident $ty:ident) => {
+        type DeleteMessageReaction = $ty![DeleteMessageReaction];
+
+        fn delete_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_message_reaction this (chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_all_message_reactions $body:ident $ty:ident) => {
+        type DeleteAllMessageReactions = $ty![DeleteAllMessageReactions];
+
+        fn delete_all_message_reactions<C>(&self, chat_id: C) -> Self::DeleteAllMessageReactions where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_all_message_reactions this (chat_id: C))
         }
     };// END BLOCK requester_forward_at_method
 }

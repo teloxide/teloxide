@@ -63,6 +63,9 @@ fn codegen_payloads() {
                 &*method.names.1,
                 "SendPaidMedia"
                     | "SendMediaGroup"
+                    // `InputRichMessage` can carry `InputMedia*`, which is
+                    // neither `Eq` nor `Hash`.
+                    | "SendRichMessage"
                     | "SetBusinessAccountProfilePhoto"
                     | "PostStory"
                     | "EditStory"

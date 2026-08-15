@@ -190,6 +190,17 @@ pub trait Requester {
         C: Into<Recipient>,
         T: Into<String>;
 
+    type SendRichMessage: Request<Payload = SendRichMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendRichMessage`].
+    fn send_rich_message<C>(
+        &self,
+        chat_id: C,
+        rich_message: InputRichMessage,
+    ) -> Self::SendRichMessage
+    where
+        C: Into<Recipient>;
+
     type ForwardMessage: Request<Payload = ForwardMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`ForwardMessage`].
@@ -1645,6 +1656,24 @@ pub trait Requester {
     fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores
     where
         T: Into<TargetMessage>;
+
+    type DeleteMessageReaction: Request<Payload = DeleteMessageReaction, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteMessageReaction`].
+    fn delete_message_reaction<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::DeleteMessageReaction
+    where
+        C: Into<Recipient>;
+
+    type DeleteAllMessageReactions: Request<Payload = DeleteAllMessageReactions, Err = Self::Err>;
+
+    /// For Telegram documentation see [`DeleteAllMessageReactions`].
+    fn delete_all_message_reactions<C>(&self, chat_id: C) -> Self::DeleteAllMessageReactions
+    where
+        C: Into<Recipient>;
     // END BLOCK requester_methods
 }
 
@@ -1675,6 +1704,7 @@ macro_rules! forward_all {
             copy_message,
             copy_messages,
             send_message,
+            send_rich_message,
             send_photo,
             send_audio,
             send_document,
@@ -1830,7 +1860,9 @@ macro_rules! forward_all {
             set_game_score_inline,
             get_game_high_scores,
             approve_chat_join_request,
-            decline_chat_join_request
+            decline_chat_join_request,
+            delete_message_reaction,
+            delete_all_message_reactions
             => $body, $ty
         }
     };
