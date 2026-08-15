@@ -56,6 +56,86 @@ fn test_rust_objects() {
             object: "User".to_owned(),
             field_name: "can_join_groups".to_owned(),
         },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "venue".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "poll".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "location".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "invoice".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "giveaway_winners".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "giveaway".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "game".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "dice".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "contact".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "checklist".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "voice".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "video_note".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "video".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "story".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "sticker".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "photo".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "paid_media".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "document".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "audio".to_owned(),
+        },
+        Exception::IgnoreObjectField {
+            object: "ExternalReplyInfo".to_owned(),
+            field_name: "animation".to_owned(),
+        },
         Exception::IgnoreFieldRequiredObjectName {
             object: "File".to_owned(),
             field_name: "file_path".to_owned(),
