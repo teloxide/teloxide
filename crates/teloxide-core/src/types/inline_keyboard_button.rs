@@ -243,3 +243,34 @@ impl InlineKeyboardButton {
         Self::new(text, InlineKeyboardButtonKind::Pay(True))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serialize_style_and_icon() {
+        let button = InlineKeyboardButton {
+            text: String::from("Buy"),
+            style: Some(ButtonStyle::Primary),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+            kind: InlineKeyboardButtonKind::CallbackData(String::from("buy")),
+        };
+        let expected = r#"{"text":"Buy","style":"primary","icon_custom_emoji_id":"5368324170671202286","callback_data":"buy"}"#;
+        let actual = serde_json::to_string(&button).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn deserialize_style_and_icon() {
+        let json = r#"{"text":"Buy","style":"primary","icon_custom_emoji_id":"5368324170671202286","callback_data":"buy"}"#;
+        let expected = InlineKeyboardButton {
+            text: String::from("Buy"),
+            style: Some(ButtonStyle::Primary),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+            kind: InlineKeyboardButtonKind::CallbackData(String::from("buy")),
+        };
+        let actual: InlineKeyboardButton = serde_json::from_str(json).unwrap();
+        assert_eq!(expected, actual);
+    }
+}

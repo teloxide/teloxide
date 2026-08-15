@@ -302,4 +302,32 @@ mod tests {
         let actual = serde_json::from_str(json).unwrap();
         assert_eq!(expected, actual);
     }
+
+    #[test]
+    fn serialize_style_and_icon() {
+        let button = KeyboardButton {
+            text: String::from("Buy"),
+            request: None,
+            style: Some(ButtonStyle::Success),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+        };
+        let expected =
+            r#"{"text":"Buy","style":"success","icon_custom_emoji_id":"5368324170671202286"}"#;
+        let actual = serde_json::to_string(&button).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn deserialize_style_and_icon() {
+        let json =
+            r#"{"text":"Buy","style":"danger","icon_custom_emoji_id":"5368324170671202286"}"#;
+        let expected = KeyboardButton {
+            text: String::from("Buy"),
+            request: None,
+            style: Some(ButtonStyle::Danger),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+        };
+        let actual = serde_json::from_str(json).unwrap();
+        assert_eq!(expected, actual);
+    }
 }
