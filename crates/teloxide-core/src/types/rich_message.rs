@@ -1,8 +1,8 @@
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
 
 use crate::types::{
-    InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote,
-    Location, PhotoSize,
+    Animation, Audio, InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo,
+    InputMediaVoiceNote, Location, PhotoSize, User, Video, Voice,
 };
 
 /// The pseudo-URL a custom (Premium) emoji occupies inside Markdown's image
@@ -31,6 +31,10 @@ pub struct RichMessage {
     #[serde(default)]
     #[cfg_attr(test, schemars(with = "serde_json::Value"))]
     pub blocks: Vec<RichBlock>,
+
+    /// `true`, if the rich message must be shown right-to-left.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub is_rtl: bool,
 }
 
 impl RichMessage {
@@ -38,7 +42,7 @@ impl RichMessage {
     where
         B: IntoIterator<Item = RichBlock>,
     {
-        Self { blocks: blocks.into_iter().collect() }
+        Self { blocks: blocks.into_iter().collect(), is_rtl: false }
     }
 
     /// Renders the rich message as full HTML markup: inline formatting uses
@@ -95,23 +99,49 @@ impl RichMessage {
 }
 
 /// A single structural block of a [`RichMessage`].
+///
+/// The outgoing counterpart is [`InputRichBlock`], which the variants here
+/// are named to match.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 #[serde(into = "serde_json::Value")]
 pub enum RichBlock {
     Paragraph(RichBlockParagraph),
-    Heading(RichBlockHeading),
-    Blockquote(RichBlockBlockquote),
-    Pullquote(RichBlockPullquote),
-    Pre(RichBlockPre),
+    SectionHeading(RichBlockSectionHeading),
+    Preformatted(RichBlockPreformatted),
     Footer(RichBlockFooter),
     Divider,
+    /// A block with a mathematical expression in LaTeX format, corresponding
+    /// to the custom HTML tag `<tg-math-block>`. Distinct from
+    /// [`RichText::MathematicalExpression`], which is inline.
+    MathematicalExpression(RichBlockMathematicalExpression),
+    /// A block with an anchor, corresponding to the HTML tag `<a>` with the
+    /// attribute `name`.
+    Anchor(RichBlockAnchor),
     List(RichBlockList),
-    Details(RichBlockDetails),
+    BlockQuotation(RichBlockBlockQuotation),
+    PullQuotation(RichBlockPullQuotation),
+    /// A collage, corresponding to the custom HTML tag `<tg-collage>`.
+    Collage(RichBlockCollage),
+    /// A slideshow, corresponding to the custom HTML tag `<tg-slideshow>`.
+    Slideshow(RichBlockSlideshow),
     Table(RichBlockTable),
+    Details(RichBlockDetails),
+    /// A block with a map, corresponding to the custom HTML tag `<tg-map>`.
+    Map(RichBlockMap),
+    /// A block with an animation, corresponding to the HTML tag `<video>`.
+    Animation(RichBlockAnimation),
+    /// A block with a music file, corresponding to the HTML tag `<audio>`.
+    Audio(RichBlockAudio),
     Photo(RichBlockPhoto),
-    /// A block `type` not (yet) understood by teloxide (e.g. `audio`,
-    /// `video`, `map`, `collage`, `slideshow`, `thinking`, ...). The raw
-    /// JSON fields (other than `type`) are preserved verbatim.
+    /// A block with a video, corresponding to the HTML tag `<video>`.
+    Video(RichBlockVideo),
+    /// A block with a voice note, corresponding to the HTML tag `<audio>`.
+    VoiceNote(RichBlockVoiceNote),
+    /// A block with a "Thinking..." placeholder, corresponding to the custom
+    /// HTML tag `<tg-thinking>`. Only used by `sendRichMessageDraft`.
+    Thinking(RichBlockThinking),
+    /// A block `type` not (yet) understood by teloxide. The raw JSON fields
+    /// (other than `type`) are preserved verbatim.
     Other {
         kind: String,
         raw: serde_json::Value,
@@ -126,18 +156,34 @@ impl<'de> Deserialize<'de> for RichBlock {
         let value = serde_json::Value::deserialize(deserializer)?;
         let kind = value.get("type").and_then(|t| t.as_str()).unwrap_or_default().to_owned();
 
+        macro_rules! variant {
+            ($Variant:ident) => {
+                serde_json::from_value(value.clone()).ok().map(RichBlock::$Variant)
+            };
+        }
+
         let parsed = match kind.as_str() {
-            "paragraph" => serde_json::from_value(value.clone()).ok().map(RichBlock::Paragraph),
-            "heading" => serde_json::from_value(value.clone()).ok().map(RichBlock::Heading),
-            "blockquote" => serde_json::from_value(value.clone()).ok().map(RichBlock::Blockquote),
-            "pullquote" => serde_json::from_value(value.clone()).ok().map(RichBlock::Pullquote),
-            "pre" => serde_json::from_value(value.clone()).ok().map(RichBlock::Pre),
-            "footer" => serde_json::from_value(value.clone()).ok().map(RichBlock::Footer),
+            "paragraph" => variant!(Paragraph),
+            "heading" => variant!(SectionHeading),
+            "pre" => variant!(Preformatted),
+            "footer" => variant!(Footer),
             "divider" => Some(RichBlock::Divider),
-            "list" => serde_json::from_value(value.clone()).ok().map(RichBlock::List),
-            "details" => serde_json::from_value(value.clone()).ok().map(RichBlock::Details),
-            "table" => serde_json::from_value(value.clone()).ok().map(RichBlock::Table),
-            "photo" => serde_json::from_value(value.clone()).ok().map(RichBlock::Photo),
+            "mathematical_expression" => variant!(MathematicalExpression),
+            "anchor" => variant!(Anchor),
+            "list" => variant!(List),
+            "blockquote" => variant!(BlockQuotation),
+            "pullquote" => variant!(PullQuotation),
+            "collage" => variant!(Collage),
+            "slideshow" => variant!(Slideshow),
+            "table" => variant!(Table),
+            "details" => variant!(Details),
+            "map" => variant!(Map),
+            "animation" => variant!(Animation),
+            "audio" => variant!(Audio),
+            "photo" => variant!(Photo),
+            "video" => variant!(Video),
+            "voice_note" => variant!(VoiceNote),
+            "thinking" => variant!(Thinking),
             _ => None,
         };
 
@@ -165,18 +211,28 @@ impl From<RichBlock> for serde_json::Value {
 
         match block {
             RichBlock::Paragraph(b) => tagged("paragraph", &b),
-            RichBlock::Heading(b) => tagged("heading", &b),
-            RichBlock::Blockquote(b) => tagged("blockquote", &b),
-            RichBlock::Pullquote(b) => tagged("pullquote", &b),
-            RichBlock::Pre(b) => tagged("pre", &b),
+            RichBlock::SectionHeading(b) => tagged("heading", &b),
+            RichBlock::Preformatted(b) => tagged("pre", &b),
             RichBlock::Footer(b) => tagged("footer", &b),
             RichBlock::Divider => {
                 serde_json::json!({ "type": "divider" })
             }
+            RichBlock::MathematicalExpression(b) => tagged("mathematical_expression", &b),
+            RichBlock::Anchor(b) => tagged("anchor", &b),
             RichBlock::List(b) => tagged("list", &b),
-            RichBlock::Details(b) => tagged("details", &b),
+            RichBlock::BlockQuotation(b) => tagged("blockquote", &b),
+            RichBlock::PullQuotation(b) => tagged("pullquote", &b),
+            RichBlock::Collage(b) => tagged("collage", &b),
+            RichBlock::Slideshow(b) => tagged("slideshow", &b),
             RichBlock::Table(b) => tagged("table", &b),
+            RichBlock::Details(b) => tagged("details", &b),
+            RichBlock::Map(b) => tagged("map", &b),
+            RichBlock::Animation(b) => tagged("animation", &b),
+            RichBlock::Audio(b) => tagged("audio", &b),
             RichBlock::Photo(b) => tagged("photo", &b),
+            RichBlock::Video(b) => tagged("video", &b),
+            RichBlock::VoiceNote(b) => tagged("voice_note", &b),
+            RichBlock::Thinking(b) => tagged("thinking", &b),
             RichBlock::Other { kind, raw } => {
                 let mut raw = raw;
                 if let Some(obj) = raw.as_object_mut() {
@@ -204,7 +260,7 @@ impl RichBlock {
     }
 
     pub fn heading<T: Into<RichText>>(text: T, size: u8) -> Self {
-        Self::Heading(RichBlockHeading { text: text.into(), size })
+        Self::SectionHeading(RichBlockSectionHeading { text: text.into(), size })
     }
 
     pub fn divider() -> Self {
@@ -218,25 +274,25 @@ impl RichBlock {
                 b.text.write_html(out);
                 out.push_str("</p>\n");
             }
-            RichBlock::Heading(b) => {
+            RichBlock::SectionHeading(b) => {
                 let level = b.size.clamp(1, 6);
                 out.push_str(&format!("<h{level}>"));
                 b.text.write_html(out);
                 out.push_str(&format!("</h{level}>\n"));
             }
-            RichBlock::Blockquote(b) => {
+            RichBlock::BlockQuotation(b) => {
                 out.push_str("<blockquote>\n");
                 for inner in &b.blocks {
                     inner.write_html(out);
                 }
                 if let Some(credit) = &b.credit {
                     out.push_str("<cite>");
-                    out.push_str(&escape_html(credit));
+                    credit.write_html(out);
                     out.push_str("</cite>\n");
                 }
                 out.push_str("</blockquote>\n");
             }
-            RichBlock::Pullquote(b) => {
+            RichBlock::PullQuotation(b) => {
                 // `<aside>` (not `<blockquote>`) because a pull quote is a
                 // separate, decorative excerpt, not the same thing as a
                 // regular quote block.
@@ -244,12 +300,12 @@ impl RichBlock {
                 b.text.write_html(out);
                 if let Some(credit) = &b.credit {
                     out.push_str("<cite>");
-                    out.push_str(&escape_html(credit));
+                    credit.write_html(out);
                     out.push_str("</cite>");
                 }
                 out.push_str("</aside>\n");
             }
-            RichBlock::Pre(b) => {
+            RichBlock::Preformatted(b) => {
                 out.push_str("<pre><code");
                 if let Some(language) = &b.language {
                     out.push_str(" class=\"language-");
@@ -266,6 +322,16 @@ impl RichBlock {
                 out.push_str("</footer>\n");
             }
             RichBlock::Divider => out.push_str("<hr/>\n"),
+            RichBlock::MathematicalExpression(b) => {
+                out.push_str("<tg-math-block>");
+                out.push_str(&escape_html(&b.expression));
+                out.push_str("</tg-math-block>\n");
+            }
+            RichBlock::Anchor(b) => {
+                out.push_str("<a name=\"");
+                out.push_str(&escape_html_attr(&b.name));
+                out.push_str("\"></a>\n");
+            }
             RichBlock::List(b) => {
                 let ordered = b.items.first().is_some_and(|item| item.kind.is_some());
                 let tag = if ordered { "ol" } else { "ul" };
@@ -286,24 +352,90 @@ impl RichBlock {
                 }
                 out.push_str(&format!("</{tag}>\n"));
             }
+            RichBlock::Collage(b) => {
+                out.push_str("<tg-collage>");
+                for inner in &b.blocks {
+                    inner.write_html(out);
+                }
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_html(out);
+                    if let Some(credit) = &caption.credit {
+                        out.push_str("<cite>");
+                        credit.write_html(out);
+                        out.push_str("</cite>");
+                    }
+                    out.push_str("</figcaption>");
+                }
+                out.push_str("</tg-collage>\n");
+            }
+            RichBlock::Slideshow(b) => {
+                out.push_str("<tg-slideshow>");
+                for inner in &b.blocks {
+                    inner.write_html(out);
+                }
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_html(out);
+                    if let Some(credit) = &caption.credit {
+                        out.push_str("<cite>");
+                        credit.write_html(out);
+                        out.push_str("</cite>");
+                    }
+                    out.push_str("</figcaption>");
+                }
+                out.push_str("</tg-slideshow>\n");
+            }
             RichBlock::Details(b) => {
                 out.push_str("<details><summary>");
-                out.push_str(&escape_html(&b.summary));
+                b.summary.write_html(out);
                 out.push_str("</summary>\n");
                 for inner in &b.blocks {
                     inner.write_html(out);
                 }
                 out.push_str("</details>\n");
             }
+            RichBlock::Map(b) => {
+                // `width`/`height` size the static map image the API
+                // renders server-side — the docs' own example only puts
+                // `lat`/`long`/`zoom` on the tag itself.
+                out.push_str(&format!(
+                    "<figure><tg-map lat=\"{}\" long=\"{}\" zoom=\"{}\"/>",
+                    b.location.latitude, b.location.longitude, b.zoom
+                ));
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_html(out);
+                    if let Some(credit) = &caption.credit {
+                        out.push_str("<cite>");
+                        credit.write_html(out);
+                        out.push_str("</cite>");
+                    }
+                    out.push_str("</figcaption>");
+                }
+                out.push_str("</figure>\n");
+            }
+            RichBlock::Animation(b) => write_media_caption_html(out, b.caption.as_ref()),
+            RichBlock::Audio(b) => write_media_caption_html(out, b.caption.as_ref()),
+            RichBlock::Video(b) => write_media_caption_html(out, b.caption.as_ref()),
+            RichBlock::VoiceNote(b) => write_media_caption_html(out, b.caption.as_ref()),
+            RichBlock::Thinking(b) => {
+                out.push_str("<tg-thinking>");
+                b.text.write_html(out);
+                out.push_str("</tg-thinking>\n");
+            }
             RichBlock::Table(b) => {
                 out.push_str("<table");
                 if b.is_bordered {
                     out.push_str(" bordered");
                 }
+                if b.is_striped {
+                    out.push_str(" striped");
+                }
                 out.push_str(">\n");
                 if let Some(caption) = &b.caption {
                     out.push_str("<caption>");
-                    out.push_str(&escape_html(caption));
+                    caption.write_html(out);
                     out.push_str("</caption>\n");
                 }
                 for row in &b.cells {
@@ -331,20 +463,7 @@ impl RichBlock {
                 }
                 out.push_str("</table>\n");
             }
-            RichBlock::Photo(b) => {
-                // Display-only, like the rest of `to_html`: the photo itself
-                // has no representation here, only its caption.
-                if let Some(caption) = &b.caption {
-                    out.push_str("<figure><figcaption>");
-                    caption.text.write_html(out);
-                    if let Some(credit) = &caption.credit {
-                        out.push_str("<cite>");
-                        credit.write_html(out);
-                        out.push_str("</cite>");
-                    }
-                    out.push_str("</figcaption></figure>\n");
-                }
-            }
+            RichBlock::Photo(b) => write_media_caption_html(out, b.caption.as_ref()),
             RichBlock::Other { .. } => {}
         }
     }
@@ -355,13 +474,13 @@ impl RichBlock {
                 b.text.write_markdown(out);
                 out.push_str("\n\n");
             }
-            RichBlock::Heading(b) => {
+            RichBlock::SectionHeading(b) => {
                 out.push_str(&"#".repeat(b.size.clamp(1, 6) as usize));
                 out.push(' ');
                 b.text.write_markdown(out);
                 out.push_str("\n\n");
             }
-            RichBlock::Blockquote(b) => {
+            RichBlock::BlockQuotation(b) => {
                 for inner in &b.blocks {
                     let mut buf = String::new();
                     inner.write_markdown(&mut buf);
@@ -375,24 +494,24 @@ impl RichBlock {
                 // the `<cite>` a block quotation's credit maps to.
                 if let Some(credit) = &b.credit {
                     out.push_str("> <cite>");
-                    out.push_str(&escape_html(credit));
+                    credit.write_html(out);
                     out.push_str("</cite>\n");
                 }
                 out.push('\n');
             }
-            RichBlock::Pullquote(b) => {
+            RichBlock::PullQuotation(b) => {
                 // Rich Markdown has no pull-quote syntax at all — `<aside>` is
                 // the documented way to write one.
                 out.push_str("<aside>");
                 b.text.write_markdown(out);
                 if let Some(credit) = &b.credit {
                     out.push_str("<cite>");
-                    out.push_str(&escape_html(credit));
+                    credit.write_html(out);
                     out.push_str("</cite>");
                 }
                 out.push_str("</aside>\n\n");
             }
-            RichBlock::Pre(b) => {
+            RichBlock::Preformatted(b) => {
                 out.push_str("```");
                 out.push_str(b.language.as_deref().unwrap_or(""));
                 out.push('\n');
@@ -407,6 +526,21 @@ impl RichBlock {
                 out.push_str("</footer>\n\n");
             }
             RichBlock::Divider => out.push_str("\n---\n\n"),
+            RichBlock::MathematicalExpression(b) => {
+                // `$$...$$`: the documented block-formula convention (the
+                // other, ` ```math `, needs fence-conflict handling `Pre`
+                // doesn't need, since a formula can't itself contain a fence).
+                out.push_str("$$");
+                out.push_str(&b.expression);
+                out.push_str("$$\n\n");
+            }
+            RichBlock::Anchor(b) => {
+                // No Markdown syntax for this either — same HTML fallback as
+                // `to_html`.
+                out.push_str("<a name=\"");
+                out.push_str(&escape_html_attr(&b.name));
+                out.push_str("\"></a>\n\n");
+            }
             RichBlock::List(b) => {
                 for item in &b.items {
                     out.push_str(&item.label);
@@ -424,16 +558,71 @@ impl RichBlock {
                 }
                 out.push('\n');
             }
+            // `<tg-collage>`/`<tg-slideshow>`, like `<details>`, keep parsing
+            // Markdown inside them.
+            RichBlock::Collage(b) => {
+                out.push_str("<tg-collage>\n\n");
+                for inner in &b.blocks {
+                    inner.write_markdown(out);
+                }
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_markdown(out);
+                    if let Some(credit) = &caption.credit {
+                        out.push_str("<cite>");
+                        credit.write_html(out);
+                        out.push_str("</cite>");
+                    }
+                    out.push_str("</figcaption>\n\n");
+                }
+                out.push_str("</tg-collage>\n\n");
+            }
+            RichBlock::Slideshow(b) => {
+                out.push_str("<tg-slideshow>\n\n");
+                for inner in &b.blocks {
+                    inner.write_markdown(out);
+                }
+                if let Some(caption) = &b.caption {
+                    out.push_str("<figcaption>");
+                    caption.text.write_markdown(out);
+                    if let Some(credit) = &caption.credit {
+                        out.push_str("<cite>");
+                        credit.write_html(out);
+                        out.push_str("</cite>");
+                    }
+                    out.push_str("</figcaption>\n\n");
+                }
+                out.push_str("</tg-slideshow>\n\n");
+            }
             RichBlock::Details(b) => {
                 // `<details>` is one of the few block tags rich Markdown keeps
                 // parsing Markdown inside of.
                 out.push_str("<details><summary>");
-                out.push_str(&escape_html(&b.summary));
+                b.summary.write_markdown(out);
                 out.push_str("</summary>\n\n");
                 for inner in &b.blocks {
                     inner.write_markdown(out);
                 }
                 out.push_str("</details>\n\n");
+            }
+            RichBlock::Map(b) => {
+                out.push_str(&format!(
+                    "<tg-map lat=\"{}\" long=\"{}\" zoom=\"{}\"/>\n\n",
+                    b.location.latitude, b.location.longitude, b.zoom
+                ));
+                if let Some(caption) = &b.caption {
+                    caption.text.write_markdown(out);
+                    out.push_str("\n\n");
+                }
+            }
+            RichBlock::Animation(b) => write_media_caption_markdown(out, b.caption.as_ref()),
+            RichBlock::Audio(b) => write_media_caption_markdown(out, b.caption.as_ref()),
+            RichBlock::Video(b) => write_media_caption_markdown(out, b.caption.as_ref()),
+            RichBlock::VoiceNote(b) => write_media_caption_markdown(out, b.caption.as_ref()),
+            RichBlock::Thinking(b) => {
+                out.push_str("<tg-thinking>");
+                b.text.write_markdown(out);
+                out.push_str("</tg-thinking>\n\n");
             }
             RichBlock::Table(b) => {
                 for (i, row) in b.cells.iter().enumerate() {
@@ -458,14 +647,7 @@ impl RichBlock {
                 }
                 out.push('\n');
             }
-            RichBlock::Photo(b) => {
-                // Display-only, like the rest of `to_markdown`: the photo
-                // itself has no representation here, only its caption.
-                if let Some(caption) = &b.caption {
-                    caption.text.write_markdown(out);
-                    out.push_str("\n\n");
-                }
-            }
+            RichBlock::Photo(b) => write_media_caption_markdown(out, b.caption.as_ref()),
             RichBlock::Other { .. } => {}
         }
     }
@@ -480,24 +662,29 @@ impl RichBlock {
                 b.text.write_plain(out);
                 out.push_str("\n\n");
             }
-            RichBlock::Heading(b) => {
+            RichBlock::SectionHeading(b) => {
                 b.text.write_plain(out);
                 out.push_str("\n\n");
             }
-            RichBlock::Blockquote(b) => {
+            RichBlock::BlockQuotation(b) => {
                 for inner in &b.blocks {
                     inner.write_plain(out);
                 }
             }
-            RichBlock::Pullquote(b) => {
+            RichBlock::PullQuotation(b) => {
                 b.text.write_plain(out);
                 out.push_str("\n\n");
             }
-            RichBlock::Pre(b) => {
+            RichBlock::Preformatted(b) => {
                 b.text.write_plain(out);
                 out.push_str("\n\n");
             }
             RichBlock::Divider => out.push('\n'),
+            RichBlock::MathematicalExpression(b) => {
+                out.push_str(&b.expression);
+                out.push_str("\n\n");
+            }
+            RichBlock::Anchor(_) => {}
             RichBlock::List(b) => {
                 for item in &b.items {
                     for inner in &item.blocks {
@@ -505,12 +692,33 @@ impl RichBlock {
                     }
                 }
             }
+            RichBlock::Collage(b) => {
+                for inner in &b.blocks {
+                    inner.write_plain(out);
+                }
+                write_media_caption_plain(out, b.caption.as_ref());
+            }
+            RichBlock::Slideshow(b) => {
+                for inner in &b.blocks {
+                    inner.write_plain(out);
+                }
+                write_media_caption_plain(out, b.caption.as_ref());
+            }
             RichBlock::Details(b) => {
-                out.push_str(&b.summary);
+                b.summary.write_plain(out);
                 out.push('\n');
                 for inner in &b.blocks {
                     inner.write_plain(out);
                 }
+            }
+            RichBlock::Map(b) => write_media_caption_plain(out, b.caption.as_ref()),
+            RichBlock::Animation(b) => write_media_caption_plain(out, b.caption.as_ref()),
+            RichBlock::Audio(b) => write_media_caption_plain(out, b.caption.as_ref()),
+            RichBlock::Video(b) => write_media_caption_plain(out, b.caption.as_ref()),
+            RichBlock::VoiceNote(b) => write_media_caption_plain(out, b.caption.as_ref()),
+            RichBlock::Thinking(b) => {
+                b.text.write_plain(out);
+                out.push_str("\n\n");
             }
             RichBlock::Table(b) => {
                 for row in &b.cells {
@@ -528,12 +736,7 @@ impl RichBlock {
                     out.push('\n');
                 }
             }
-            RichBlock::Photo(b) => {
-                if let Some(caption) = &b.caption {
-                    caption.text.write_plain(out);
-                    out.push_str("\n\n");
-                }
-            }
+            RichBlock::Photo(b) => write_media_caption_plain(out, b.caption.as_ref()),
             RichBlock::Other { .. } => {}
         }
     }
@@ -547,29 +750,29 @@ pub struct RichBlockParagraph {
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichBlockHeading {
+pub struct RichBlockSectionHeading {
     pub text: RichText,
     pub size: u8,
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichBlockBlockquote {
+pub struct RichBlockBlockQuotation {
     #[serde(default)]
     pub blocks: Vec<RichBlock>,
-    pub credit: Option<String>,
+    pub credit: Option<RichText>,
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichBlockPullquote {
+pub struct RichBlockPullQuotation {
     pub text: RichText,
-    pub credit: Option<String>,
+    pub credit: Option<RichText>,
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichBlockPre {
+pub struct RichBlockPreformatted {
     pub text: RichText,
     pub language: Option<String>,
 }
@@ -579,15 +782,35 @@ pub struct RichBlockFooter {
     pub text: RichText,
 }
 
+/// A block with a mathematical expression in LaTeX format, corresponding to
+/// the custom HTML tag `<tg-math-block>`.
+///
+/// Distinct from [`RichTextMathematicalExpression`], which is inline.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockmathematicalexpression).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockMathematicalExpression {
+    pub expression: String,
+}
+
+/// A block with an anchor, corresponding to the HTML tag `<a>` with the
+/// attribute `name`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockanchor).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockAnchor {
+    pub name: String,
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct RichBlockList {
     #[serde(default)]
-    pub items: Vec<RichListItem>,
+    pub items: Vec<RichBlockListItem>,
 }
 
 #[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichListItem {
+pub struct RichBlockListItem {
     /// The rendered bullet/number of the item (e.g. `"1."`, `"•"`).
     pub label: String,
 
@@ -610,11 +833,37 @@ pub struct RichListItem {
     pub is_checked: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct RichBlockDetails {
-    pub summary: String,
+/// A collage, corresponding to the custom HTML tag `<tg-collage>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockcollage).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockCollage {
     #[serde(default)]
     pub blocks: Vec<RichBlock>,
+    pub caption: Option<RichBlockCaption>,
+}
+
+/// A slideshow, corresponding to the custom HTML tag `<tg-slideshow>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockslideshow).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockSlideshow {
+    #[serde(default)]
+    pub blocks: Vec<RichBlock>,
+    pub caption: Option<RichBlockCaption>,
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockDetails {
+    pub summary: RichText,
+    #[serde(default)]
+    pub blocks: Vec<RichBlock>,
+    /// `true` if the block is expanded by default.
+    #[serde(default)]
+    pub is_open: bool,
 }
 
 #[serde_with::skip_serializing_none]
@@ -622,9 +871,87 @@ pub struct RichBlockDetails {
 pub struct RichBlockTable {
     #[serde(default)]
     pub cells: Vec<Vec<RichBlockTableCell>>,
-    pub caption: Option<String>,
+    pub caption: Option<RichText>,
     #[serde(default)]
     pub is_bordered: bool,
+    #[serde(default)]
+    pub is_striped: bool,
+}
+
+/// A block with a map, corresponding to the custom HTML tag `<tg-map>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockmap).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct RichBlockMap {
+    pub location: Location,
+    pub zoom: u8,
+    pub width: u32,
+    pub height: u32,
+    pub caption: Option<RichBlockCaption>,
+}
+
+// `Location` holds `f64`s, so this hashes its serialized form instead of
+// deriving (like `RichBlock`'s `Hash` impl does for the same reason).
+impl std::hash::Hash for RichBlockMap {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        serde_json::to_string(self).unwrap_or_default().hash(state);
+    }
+}
+
+impl Eq for RichBlockMap {}
+
+/// A block with an animation, corresponding to the HTML tag `<video>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockanimation).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockAnimation {
+    pub animation: Animation,
+    #[serde(default)]
+    pub has_spoiler: bool,
+    pub caption: Option<RichBlockCaption>,
+}
+
+/// A block with a music file, corresponding to the HTML tag `<audio>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockaudio).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockAudio {
+    pub audio: Audio,
+    pub caption: Option<RichBlockCaption>,
+}
+
+/// A block with a video, corresponding to the HTML tag `<video>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockvideo).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockVideo {
+    pub video: Video,
+    #[serde(default)]
+    pub has_spoiler: bool,
+    pub caption: Option<RichBlockCaption>,
+}
+
+/// A block with a voice note, corresponding to the HTML tag `<audio>`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockvoicenote).
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockVoiceNote {
+    pub voice_note: Voice,
+    pub caption: Option<RichBlockCaption>,
+}
+
+/// A block with a "Thinking..." placeholder, corresponding to the custom
+/// HTML tag `<tg-thinking>`. Only used by `sendRichMessageDraft`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richblockthinking).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichBlockThinking {
+    pub text: RichText,
 }
 
 /// Cell in a [`RichBlockTable`].
@@ -703,6 +1030,9 @@ impl RichBlockTableCellVerticalAlign {
 pub struct RichBlockPhoto {
     /// Available sizes of the photo.
     pub photo: Vec<PhotoSize>,
+    /// `true`, if the media preview is covered by a spoiler animation.
+    #[serde(default)]
+    pub has_spoiler: bool,
     pub caption: Option<RichBlockCaption>,
 }
 
@@ -752,6 +1082,38 @@ pub enum RichText {
     Url(RichTextUrl),
     MathematicalExpression(RichTextMathematicalExpression),
     CustomEmoji(RichTextCustomEmoji),
+    /// Formatted date and time, corresponding to the custom HTML tag
+    /// `<tg-time>`.
+    DateTime(RichTextDateTime),
+    /// A mention of a Telegram user by their identifier, corresponding to a
+    /// `tg://user?id=...` link.
+    TextMention(RichTextTextMention),
+    /// An automatically detected e-mail address, corresponding to a
+    /// `mailto:...` link.
+    EmailAddress(RichTextEmailAddress),
+    /// An automatically detected phone number, corresponding to a `tel:...`
+    /// link.
+    PhoneNumber(RichTextPhoneNumber),
+    /// An automatically detected bank card number.
+    BankCardNumber(RichTextBankCardNumber),
+    /// An automatically detected `@username` mention.
+    Mention(RichTextMention),
+    /// An automatically detected `#hashtag`.
+    Hashtag(RichTextHashtag),
+    /// An automatically detected `$cashtag`.
+    Cashtag(RichTextCashtag),
+    /// An automatically detected `/bot_command`.
+    BotCommand(RichTextBotCommand),
+    /// An anchor, corresponding to the HTML tag `<a name="...">`.
+    Anchor(RichTextAnchor),
+    /// A link to an anchor, corresponding to `<a href="#...">`.
+    AnchorLink(RichTextAnchorLink),
+    /// A reference (footnote), corresponding to the custom HTML tag
+    /// `<tg-reference>`.
+    Reference(RichTextReference),
+    /// A link to a [`Reference`](RichText::Reference), corresponding to
+    /// `<a href="#...">`.
+    ReferenceLink(RichTextReferenceLink),
     /// A `type` not (yet) understood by teloxide (e.g. `mention`,
     /// `hashtag`, `email_address`, ...). The raw JSON fields (other than
     /// `type`) are preserved verbatim.
@@ -827,6 +1189,19 @@ impl From<RichText> for serde_json::Value {
             RichText::Url(t) => tagged("url", &t),
             RichText::MathematicalExpression(t) => tagged("mathematical_expression", &t),
             RichText::CustomEmoji(t) => tagged("custom_emoji", &t),
+            RichText::DateTime(t) => tagged("date_time", &t),
+            RichText::TextMention(t) => tagged("text_mention", &t),
+            RichText::EmailAddress(t) => tagged("email_address", &t),
+            RichText::PhoneNumber(t) => tagged("phone_number", &t),
+            RichText::BankCardNumber(t) => tagged("bank_card_number", &t),
+            RichText::Mention(t) => tagged("mention", &t),
+            RichText::Hashtag(t) => tagged("hashtag", &t),
+            RichText::Cashtag(t) => tagged("cashtag", &t),
+            RichText::BotCommand(t) => tagged("bot_command", &t),
+            RichText::Anchor(t) => tagged("anchor", &t),
+            RichText::AnchorLink(t) => tagged("anchor_link", &t),
+            RichText::Reference(t) => tagged("reference", &t),
+            RichText::ReferenceLink(t) => tagged("reference_link", &t),
             RichText::Other { kind, raw } => {
                 let mut raw = raw;
                 if let Some(obj) = raw.as_object_mut() {
@@ -859,29 +1234,40 @@ impl RichText {
                 let kind =
                     value.get("type").and_then(|t| t.as_str()).unwrap_or_default().to_owned();
 
-                macro_rules! simple {
+                // Every variant's payload is `#[derive(Deserialize)]`, so
+                // this covers them all identically regardless of shape.
+                macro_rules! variant {
                     ($Variant:ident) => {
                         serde_json::from_value(value.clone()).ok().map(RichText::$Variant)
                     };
                 }
 
                 let parsed = match kind.as_str() {
-                    "bold" => simple!(Bold),
-                    "italic" => simple!(Italic),
-                    "underline" => simple!(Underline),
-                    "strikethrough" => simple!(Strikethrough),
-                    "spoiler" => simple!(Spoiler),
-                    "subscript" => simple!(Subscript),
-                    "superscript" => simple!(Superscript),
-                    "marked" => simple!(Marked),
-                    "code" => simple!(Code),
-                    "url" => serde_json::from_value(value.clone()).ok().map(RichText::Url),
-                    "mathematical_expression" => serde_json::from_value(value.clone())
-                        .ok()
-                        .map(RichText::MathematicalExpression),
-                    "custom_emoji" => {
-                        serde_json::from_value(value.clone()).ok().map(RichText::CustomEmoji)
-                    }
+                    "bold" => variant!(Bold),
+                    "italic" => variant!(Italic),
+                    "underline" => variant!(Underline),
+                    "strikethrough" => variant!(Strikethrough),
+                    "spoiler" => variant!(Spoiler),
+                    "subscript" => variant!(Subscript),
+                    "superscript" => variant!(Superscript),
+                    "marked" => variant!(Marked),
+                    "code" => variant!(Code),
+                    "url" => variant!(Url),
+                    "mathematical_expression" => variant!(MathematicalExpression),
+                    "custom_emoji" => variant!(CustomEmoji),
+                    "date_time" => variant!(DateTime),
+                    "text_mention" => variant!(TextMention),
+                    "email_address" => variant!(EmailAddress),
+                    "phone_number" => variant!(PhoneNumber),
+                    "bank_card_number" => variant!(BankCardNumber),
+                    "mention" => variant!(Mention),
+                    "hashtag" => variant!(Hashtag),
+                    "cashtag" => variant!(Cashtag),
+                    "bot_command" => variant!(BotCommand),
+                    "anchor" => variant!(Anchor),
+                    "anchor_link" => variant!(AnchorLink),
+                    "reference" => variant!(Reference),
+                    "reference_link" => variant!(ReferenceLink),
                     _ => None,
                 };
 
@@ -931,6 +1317,72 @@ impl RichText {
                 out.push_str(&escape_html(&t.alternative_text));
                 out.push_str("</tg-emoji>");
             }
+            // "Links `mailto:...`, `tel:...`, and `tg://user?id=...` are
+            // rendered as e-mail links, phone links, and inline mentions
+            // respectively."
+            RichText::TextMention(t) => {
+                out.push_str(&format!("<a href=\"tg://user?id={}\">", t.user.id.0));
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
+            RichText::EmailAddress(t) => {
+                out.push_str("<a href=\"mailto:");
+                out.push_str(&escape_html_attr(&t.email_address));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
+            RichText::PhoneNumber(t) => {
+                out.push_str("<a href=\"tel:");
+                out.push_str(&escape_html_attr(&t.phone_number));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
+            // No dedicated tag is documented for these — they're products of
+            // automatic entity detection, not something a bot author wraps
+            // in special markup, so only their (already-formatted) text is
+            // rendered.
+            RichText::BankCardNumber(t) => t.text.write_html(out),
+            RichText::Mention(t) => t.text.write_html(out),
+            RichText::Hashtag(t) => t.text.write_html(out),
+            RichText::Cashtag(t) => t.text.write_html(out),
+            RichText::BotCommand(t) => t.text.write_html(out),
+            RichText::DateTime(t) => {
+                out.push_str(&format!(
+                    "<tg-time unix=\"{}\" format=\"{}\">",
+                    t.unix_time,
+                    escape_html_attr(&t.date_time_format)
+                ));
+                t.text.write_html(out);
+                out.push_str("</tg-time>");
+            }
+            RichText::Anchor(t) => {
+                out.push_str("<a name=\"");
+                out.push_str(&escape_html_attr(&t.name));
+                out.push_str("\"></a>");
+            }
+            RichText::AnchorLink(t) => {
+                out.push_str("<a href=\"#");
+                out.push_str(&escape_html_attr(&t.anchor_name));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
+            RichText::Reference(t) => {
+                out.push_str("<tg-reference name=\"");
+                out.push_str(&escape_html_attr(&t.name));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</tg-reference>");
+            }
+            RichText::ReferenceLink(t) => {
+                out.push_str("<a href=\"#");
+                out.push_str(&escape_html_attr(&t.reference_name));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
             RichText::Other { raw, .. } => out.push_str(&escape_html(&other_plain_text(raw))),
         }
     }
@@ -975,6 +1427,67 @@ impl RichText {
                 out.push_str(&t.custom_emoji_id);
                 out.push(')');
             }
+            // Rich Markdown documents these three explicitly: `[inline
+            // e-mail](mailto:user@example.com)`, `[inline phone
+            // number](tel:+123456789)`, `[inline mention of a
+            // user](tg://user?id=123456789)`.
+            RichText::TextMention(t) => {
+                out.push('[');
+                t.text.write_markdown(out);
+                out.push_str(&format!("](tg://user?id={})", t.user.id.0));
+            }
+            RichText::EmailAddress(t) => {
+                out.push('[');
+                t.text.write_markdown(out);
+                out.push_str("](mailto:");
+                out.push_str(&t.email_address);
+                out.push(')');
+            }
+            RichText::PhoneNumber(t) => {
+                out.push('[');
+                t.text.write_markdown(out);
+                out.push_str("](tel:");
+                out.push_str(&t.phone_number);
+                out.push(')');
+            }
+            // Same reasoning as in `write_html`: no dedicated syntax, so only
+            // the already-formatted text is rendered.
+            RichText::BankCardNumber(t) => t.text.write_markdown(out),
+            RichText::Mention(t) => t.text.write_markdown(out),
+            RichText::Hashtag(t) => t.text.write_markdown(out),
+            RichText::Cashtag(t) => t.text.write_markdown(out),
+            RichText::BotCommand(t) => t.text.write_markdown(out),
+            // `![fallback](tg://time?unix=...&format=...)`, matching the
+            // documented example exactly.
+            RichText::DateTime(t) => {
+                out.push_str("![");
+                t.text.write_markdown(out);
+                out.push_str(&format!(
+                    "](tg://time?unix={}&format={})",
+                    t.unix_time, t.date_time_format
+                ));
+            }
+            // No Markdown syntax for anchors — same HTML fallback as
+            // `to_html`.
+            RichText::Anchor(t) => {
+                out.push_str("<a name=\"");
+                out.push_str(&escape_html_attr(&t.name));
+                out.push_str("\"></a>");
+            }
+            RichText::AnchorLink(t) => {
+                out.push_str("<a href=\"#");
+                out.push_str(&escape_html_attr(&t.anchor_name));
+                out.push_str("\">");
+                t.text.write_html(out);
+                out.push_str("</a>");
+            }
+            // `[^name]: text` / `[^name]`: the GitHub-Flavored-Markdown
+            // footnote syntax rich Markdown is explicitly compatible with.
+            RichText::Reference(t) => {
+                out.push_str(&format!("[^{}]: ", t.name));
+                t.text.write_markdown(out);
+            }
+            RichText::ReferenceLink(t) => out.push_str(&format!("[^{}]", t.reference_name)),
             RichText::Other { raw, .. } => out.push_str(&escape_markdown(&other_plain_text(raw))),
         }
     }
@@ -993,10 +1506,61 @@ impl RichText {
             | RichText::Marked(t)
             | RichText::Code(t) => t.text.write_plain(out),
             RichText::Url(t) => t.text.write_plain(out),
+            RichText::TextMention(t) => t.text.write_plain(out),
+            RichText::EmailAddress(t) => t.text.write_plain(out),
+            RichText::PhoneNumber(t) => t.text.write_plain(out),
+            RichText::BankCardNumber(t) => t.text.write_plain(out),
+            RichText::Mention(t) => t.text.write_plain(out),
+            RichText::Hashtag(t) => t.text.write_plain(out),
+            RichText::Cashtag(t) => t.text.write_plain(out),
+            RichText::BotCommand(t) => t.text.write_plain(out),
+            RichText::AnchorLink(t) => t.text.write_plain(out),
+            RichText::Reference(t) => t.text.write_plain(out),
+            RichText::ReferenceLink(t) => t.text.write_plain(out),
             RichText::MathematicalExpression(t) => out.push_str(&t.expression),
             RichText::CustomEmoji(t) => out.push_str(&t.alternative_text),
+            RichText::DateTime(t) => t.text.write_plain(out),
+            RichText::Anchor(_) => {}
             RichText::Other { raw, .. } => out.push_str(&other_plain_text(raw)),
         }
+    }
+}
+
+/// Renders a media block's caption for `to_html` — the media itself is
+/// never rendered (see [`RichMessage::to_html`] for why), so this is the
+/// entire output for [`RichBlock::Photo`], [`Animation`], [`Audio`],
+/// [`Video`] and [`VoiceNote`].
+///
+/// [`Animation`]: RichBlock::Animation
+/// [`Audio`]: RichBlock::Audio
+/// [`Video`]: RichBlock::Video
+/// [`VoiceNote`]: RichBlock::VoiceNote
+fn write_media_caption_html(out: &mut String, caption: Option<&RichBlockCaption>) {
+    if let Some(caption) = caption {
+        out.push_str("<figure><figcaption>");
+        caption.text.write_html(out);
+        if let Some(credit) = &caption.credit {
+            out.push_str("<cite>");
+            credit.write_html(out);
+            out.push_str("</cite>");
+        }
+        out.push_str("</figcaption></figure>\n");
+    }
+}
+
+/// The Markdown counterpart of [`write_media_caption_html`].
+fn write_media_caption_markdown(out: &mut String, caption: Option<&RichBlockCaption>) {
+    if let Some(caption) = caption {
+        caption.text.write_markdown(out);
+        out.push_str("\n\n");
+    }
+}
+
+/// The plain-text counterpart of [`write_media_caption_html`].
+fn write_media_caption_plain(out: &mut String, caption: Option<&RichBlockCaption>) {
+    if let Some(caption) = caption {
+        caption.text.write_plain(out);
+        out.push_str("\n\n");
     }
 }
 
@@ -1089,6 +1653,128 @@ pub struct RichTextMathematicalExpression {
 pub struct RichTextCustomEmoji {
     pub custom_emoji_id: String,
     pub alternative_text: String,
+}
+
+/// Formatted date and time.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextdatetime).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextDateTime {
+    pub text: Box<RichText>,
+    pub unix_time: i64,
+    /// See [date-time entity formatting] for the accepted values.
+    ///
+    /// [date-time entity formatting]: https://core.telegram.org/bots/api#date-time-entity-formatting
+    pub date_time_format: String,
+}
+
+/// A mention of a Telegram user by their identifier.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtexttextmention).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextTextMention {
+    pub text: Box<RichText>,
+    pub user: User,
+}
+
+/// A text with an e-mail address.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextemailaddress).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextEmailAddress {
+    pub text: Box<RichText>,
+    pub email_address: String,
+}
+
+/// A text with a phone number.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextphonenumber).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextPhoneNumber {
+    pub text: Box<RichText>,
+    pub phone_number: String,
+}
+
+/// A text with a bank card number.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextbankcardnumber).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextBankCardNumber {
+    pub text: Box<RichText>,
+    pub bank_card_number: String,
+}
+
+/// A mention by a username.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextmention).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextMention {
+    pub text: Box<RichText>,
+    pub username: String,
+}
+
+/// A hashtag.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtexthashtag).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextHashtag {
+    pub text: Box<RichText>,
+    pub hashtag: String,
+}
+
+/// A cashtag.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextcashtag).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextCashtag {
+    pub text: Box<RichText>,
+    pub cashtag: String,
+}
+
+/// A bot command.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextbotcommand).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextBotCommand {
+    pub text: Box<RichText>,
+    pub bot_command: String,
+}
+
+/// An anchor. Unlike the other `RichText` variants, this carries no `text` —
+/// it marks a point in the message, corresponding to the HTML tag
+/// `<a name="...">`.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextanchor).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextAnchor {
+    pub name: String,
+}
+
+/// A link to an anchor.
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextanchorlink).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextAnchorLink {
+    pub text: Box<RichText>,
+    pub anchor_name: String,
+}
+
+/// A reference (footnote).
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextreference).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextReference {
+    pub text: Box<RichText>,
+    pub name: String,
+}
+
+/// A link to a [`RichTextReference`].
+///
+/// [The official docs](https://core.telegram.org/bots/api#richtextreferencelink).
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RichTextReferenceLink {
+    pub text: Box<RichText>,
+    pub reference_name: String,
 }
 
 /// Media embedded in an outgoing rich message.
@@ -1448,7 +2134,7 @@ impl InputRichBlockListItem {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{FileId, FileMeta, FileUniqueId, InputFile};
+    use crate::types::{FileId, FileMeta, FileUniqueId, InputFile, Seconds, UserId};
 
     #[test]
     fn deserializes_table_with_rich_cell_text() {
@@ -1528,9 +2214,40 @@ mod tests {
                 },
                 {
                     "type": "table",
-                    "cells": [[{ "text": "1", "is_header": true }]],
+                    "cells": [[{ "text": "1", "is_header": true, "align": "left", "valign": "top" }]],
                     "caption": "test (table",
-                    "is_bordered": true
+                    "is_bordered": true,
+                    "is_striped": true
+                },
+                { "type": "mathematical_expression", "expression": "test (block expression)" },
+                { "type": "anchor", "name": "test-anchor" },
+                {
+                    "type": "map",
+                    "location": { "latitude": 41.9, "longitude": 12.5 },
+                    "zoom": 14,
+                    "width": 400,
+                    "height": 300
+                },
+                {
+                    "type": "paragraph",
+                    "text": [
+                        {
+                            "type": "text_mention",
+                            "text": "test (mention)",
+                            "user": { "id": 123456789, "is_bot": false, "first_name": "Test" }
+                        },
+                        { "type": "email_address", "text": "test@example.com", "email_address": "test@example.com" },
+                        { "type": "phone_number", "text": "+123456789", "phone_number": "+123456789" },
+                        { "type": "mention", "text": "@username", "username": "username" },
+                        { "type": "hashtag", "text": "#hashtag", "hashtag": "hashtag" },
+                        { "type": "cashtag", "text": "$USD", "cashtag": "USD" },
+                        { "type": "bot_command", "text": "/command", "bot_command": "command" },
+                        { "type": "bank_card_number", "text": "4242 4242 4242 4242", "bank_card_number": "4242424242424242" },
+                        { "type": "date_time", "text": "tomorrow", "unix_time": 1647531900, "date_time_format": "wDT" },
+                        { "type": "anchor_link", "text": "test (anchor link)", "anchor_name": "test-anchor" },
+                        { "type": "reference", "text": "test (reference)", "name": "note-1" },
+                        { "type": "reference_link", "text": "test (reference link)", "reference_name": "note-1" }
+                    ]
                 },
                 {
                     "type": "paragraph",
@@ -1548,31 +2265,81 @@ mod tests {
                         "alternative_text": "🙂"
                     }
                 },
+                { "type": "thinking", "text": "..." },
                 // A block type teloxide doesn't know about yet must not break parsing.
-                { "type": "thinking", "text": "..." }
+                { "type": "some_future_block", "surprise": true }
             ]
         });
 
         let rich: RichMessage = serde_json::from_value(json).expect("should deserialize");
-        assert_eq!(rich.blocks.len(), 15);
+        assert_eq!(rich.blocks.len(), 20);
+        assert!(matches!(&rich.blocks[11], RichBlock::MathematicalExpression(_)));
+        assert!(matches!(&rich.blocks[12], RichBlock::Anchor(b) if b.name == "test-anchor"));
+        assert!(matches!(&rich.blocks[13], RichBlock::Map(b) if b.zoom == 14));
+        let RichBlock::Paragraph(new_texts) = &rich.blocks[14] else {
+            panic!("expected a paragraph, got {:?}", rich.blocks[14])
+        };
+        let RichText::Array(nodes) = &new_texts.text else { panic!("expected an array") };
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::TextMention(t) if t.user.id.0 == 123456789)));
+        assert!(nodes.iter().any(
+            |n| matches!(n, RichText::EmailAddress(t) if t.email_address == "test@example.com")
+        ));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::PhoneNumber(t) if t.phone_number == "+123456789")));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::Mention(t) if t.username == "username")));
+        assert!(nodes.iter().any(|n| matches!(n, RichText::Hashtag(t) if t.hashtag == "hashtag")));
+        assert!(nodes.iter().any(|n| matches!(n, RichText::Cashtag(t) if t.cashtag == "USD")));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::BotCommand(t) if t.bot_command == "command")));
+        assert!(nodes.iter().any(|n| matches!(n, RichText::BankCardNumber(_))));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::DateTime(t) if t.unix_time == 1647531900)));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::AnchorLink(t) if t.anchor_name == "test-anchor")));
+        assert!(nodes.iter().any(|n| matches!(n, RichText::Reference(t) if t.name == "note-1")));
+        assert!(nodes
+            .iter()
+            .any(|n| matches!(n, RichText::ReferenceLink(t) if t.reference_name == "note-1")));
+
         assert!(
-            matches!(rich.blocks.last(), Some(RichBlock::Other { kind, .. }) if kind == "thinking")
+            matches!(&rich.blocks[18], RichBlock::Thinking(t) if matches!(&t.text, RichText::Plain(s) if s == "..."))
+        );
+        assert!(
+            matches!(rich.blocks.last(), Some(RichBlock::Other { kind, .. }) if kind == "some_future_block")
         );
 
         let html = rich.to_html();
         assert!(html.contains("<b>test (bold)</b>"));
         assert!(html.contains("<a href=\"https://example.com/\">test (link)</a>"));
+        assert!(html.contains("<tg-math-block>test (block expression)</tg-math-block>"));
+        assert!(html.contains("<a name=\"test-anchor\"></a>"));
+        assert!(html.contains("<tg-map lat=\"41.9\" long=\"12.5\" zoom=\"14\"/>"));
+        assert!(html.contains("<a href=\"tg://user?id=123456789\">"));
+        assert!(html.contains("<a href=\"mailto:test@example.com\">"));
+        assert!(html.contains("<a href=\"tel:+123456789\">"));
+        assert!(html.contains("<tg-time unix=\"1647531900\" format=\"wDT\">"));
+        assert!(html.contains("<a href=\"#test-anchor\">test (anchor link)</a>"));
+        assert!(html.contains("<tg-reference name=\"note-1\">test (reference)</tg-reference>"));
 
         let plain = rich.plain_text();
         assert!(plain.contains("test (plain)"));
         assert!(plain.contains("test (expression)"));
+        assert!(plain.contains("test (block expression)"));
     }
 
     #[test]
     fn renders_blockquote_credit() {
-        let msg = RichMessage::new(vec![RichBlock::Blockquote(RichBlockBlockquote {
+        let msg = RichMessage::new(vec![RichBlock::BlockQuotation(RichBlockBlockQuotation {
             blocks: vec![RichBlock::paragraph("цитата")],
-            credit: Some("тест автор".to_owned()),
+            credit: Some("тест автор".into()),
         })]);
 
         assert!(msg.to_html().contains("<cite>тест автор</cite>"));
@@ -1599,18 +2366,18 @@ mod tests {
                 RichText::Spoiler(RichTextSimple::new("sp")),
                 RichText::Code(RichTextSimple::new("c")),
             ])),
-            RichBlock::Pre(RichBlockPre {
+            RichBlock::Preformatted(RichBlockPreformatted {
                 text: "code".into(),
                 language: Some("python".to_owned()),
             }),
             RichBlock::Footer(RichBlockFooter { text: "f".into() }),
             RichBlock::divider(),
-            RichBlock::Pullquote(RichBlockPullquote {
+            RichBlock::PullQuotation(RichBlockPullQuotation {
                 text: "q".into(),
-                credit: Some("author".to_owned()),
+                credit: Some("author".into()),
             }),
             RichBlock::List(RichBlockList {
-                items: vec![RichListItem {
+                items: vec![RichBlockListItem {
                     label: "•".into(),
                     blocks: vec![RichBlock::paragraph("i")],
                     kind: None,
@@ -1619,6 +2386,74 @@ mod tests {
                     is_checked: true,
                 }],
             }),
+            RichBlock::MathematicalExpression(RichBlockMathematicalExpression {
+                expression: "x".into(),
+            }),
+            RichBlock::Anchor(RichBlockAnchor { name: "a".into() }),
+            RichBlock::Collage(RichBlockCollage {
+                blocks: vec![RichBlock::Photo(RichBlockPhoto {
+                    photo: vec![],
+                    has_spoiler: false,
+                    caption: None,
+                })],
+                caption: Some(RichBlockCaption { text: "cap".into(), credit: Some("cr".into()) }),
+            }),
+            RichBlock::Map(RichBlockMap {
+                location: Location {
+                    longitude: 1.0,
+                    latitude: 2.0,
+                    horizontal_accuracy: None,
+                    live_period: None,
+                    heading: None,
+                    proximity_alert_radius: None,
+                },
+                zoom: 10,
+                width: 100,
+                height: 100,
+                caption: Some(RichBlockCaption { text: "map".into(), credit: None }),
+            }),
+            RichBlock::Thinking(RichBlockThinking { text: "t".into() }),
+            RichBlock::paragraph(RichText::Array(vec![
+                RichText::TextMention(RichTextTextMention {
+                    text: Box::new("u".into()),
+                    user: User {
+                        id: crate::types::UserId(1),
+                        is_bot: false,
+                        first_name: "T".into(),
+                        last_name: None,
+                        username: None,
+                        language_code: None,
+                        is_premium: false,
+                        added_to_attachment_menu: false,
+                    },
+                }),
+                RichText::EmailAddress(RichTextEmailAddress {
+                    text: Box::new("e".into()),
+                    email_address: "e@example.com".into(),
+                }),
+                RichText::PhoneNumber(RichTextPhoneNumber {
+                    text: Box::new("p".into()),
+                    phone_number: "+1".into(),
+                }),
+                RichText::DateTime(RichTextDateTime {
+                    text: Box::new("d".into()),
+                    unix_time: 0,
+                    date_time_format: "wDT".into(),
+                }),
+                RichText::Anchor(RichTextAnchor { name: "a".into() }),
+                RichText::AnchorLink(RichTextAnchorLink {
+                    text: Box::new("al".into()),
+                    anchor_name: "a".into(),
+                }),
+                RichText::Reference(RichTextReference {
+                    text: Box::new("r".into()),
+                    name: "n".into(),
+                }),
+                RichText::ReferenceLink(RichTextReferenceLink {
+                    text: Box::new("rl".into()),
+                    reference_name: "n".into(),
+                }),
+            ])),
         ]);
 
         let html = msg.to_html();
@@ -1759,6 +2594,7 @@ mod tests {
     fn renders_photo_block_with_its_caption() {
         let msg = RichMessage::new(vec![RichBlock::Photo(RichBlockPhoto {
             photo: vec![photo(320, 240), photo(800, 600)],
+            has_spoiler: false,
             caption: Some(RichBlockCaption {
                 text: RichText::Array(vec![
                     RichText::from("a "),
@@ -1782,6 +2618,7 @@ mod tests {
     fn photo_without_caption_renders_nothing() {
         let msg = RichMessage::new(vec![RichBlock::Photo(RichBlockPhoto {
             photo: vec![photo(800, 600)],
+            has_spoiler: false,
             caption: None,
         })]);
 
@@ -1796,11 +2633,235 @@ mod tests {
             cells: vec![vec![RichBlockTableCell::default()]],
             caption: None,
             is_bordered: true,
+            is_striped: false,
         })]);
 
         // `align`/`valign` are required by the API, so they are always
         // rendered.
         assert!(msg.to_html().contains("<td align=\"left\" valign=\"top\"></td>"));
+    }
+
+    /// `RichBlock`/`RichText` deserialization falls back to `Other` on any
+    /// error, which is what keeps unknown future kinds from breaking a whole
+    /// `Message` — but it also means a *known* kind that fails to parse
+    /// degrades silently. This pins that every kind teloxide models actually
+    /// survives a round trip.
+    #[test]
+    fn every_known_kind_survives_a_round_trip() {
+        fn media_file() -> FileMeta {
+            FileMeta { id: FileId("f".into()), unique_id: FileUniqueId("u".into()), size: 1 }
+        }
+        fn caption() -> Option<RichBlockCaption> {
+            Some(RichBlockCaption { text: "c".into(), credit: Some("cr".into()) })
+        }
+
+        let blocks = vec![
+            RichBlock::paragraph("x"),
+            RichBlock::heading("x", 1),
+            RichBlock::Preformatted(RichBlockPreformatted { text: "x".into(), language: None }),
+            RichBlock::Footer(RichBlockFooter { text: "x".into() }),
+            RichBlock::divider(),
+            RichBlock::MathematicalExpression(RichBlockMathematicalExpression {
+                expression: "e".into(),
+            }),
+            RichBlock::Anchor(RichBlockAnchor { name: "n".into() }),
+            RichBlock::List(RichBlockList {
+                items: vec![RichBlockListItem {
+                    label: "1.".into(),
+                    blocks: vec![],
+                    kind: Some("1".into()),
+                    value: Some(1),
+                    has_checkbox: true,
+                    is_checked: true,
+                }],
+            }),
+            RichBlock::BlockQuotation(RichBlockBlockQuotation {
+                blocks: vec![],
+                credit: Some("cr".into()),
+            }),
+            RichBlock::PullQuotation(RichBlockPullQuotation {
+                text: "x".into(),
+                credit: Some("cr".into()),
+            }),
+            RichBlock::Collage(RichBlockCollage { blocks: vec![], caption: caption() }),
+            RichBlock::Slideshow(RichBlockSlideshow { blocks: vec![], caption: caption() }),
+            RichBlock::Table(RichBlockTable {
+                cells: vec![vec![RichBlockTableCell::default()]],
+                caption: Some("c".into()),
+                is_bordered: true,
+                is_striped: true,
+            }),
+            RichBlock::Details(RichBlockDetails {
+                summary: "s".into(),
+                blocks: vec![],
+                is_open: true,
+            }),
+            RichBlock::Map(RichBlockMap {
+                location: Location {
+                    longitude: 1.0,
+                    latitude: 2.0,
+                    horizontal_accuracy: None,
+                    live_period: None,
+                    heading: None,
+                    proximity_alert_radius: None,
+                },
+                zoom: 1,
+                width: 1,
+                height: 1,
+                caption: caption(),
+            }),
+            // Media blocks: their `mime_type` is optional on the wire, so
+            // these also pin that an absent one doesn't sink the block.
+            RichBlock::Animation(RichBlockAnimation {
+                animation: Animation {
+                    file: media_file(),
+                    width: 1,
+                    height: 1,
+                    duration: Seconds::from_seconds(1),
+                    thumbnail: None,
+                    file_name: None,
+                    mime_type: None,
+                },
+                has_spoiler: true,
+                caption: caption(),
+            }),
+            RichBlock::Audio(RichBlockAudio {
+                audio: Audio {
+                    file: media_file(),
+                    duration: Seconds::from_seconds(1),
+                    performer: None,
+                    title: None,
+                    file_name: None,
+                    mime_type: None,
+                    thumbnail: None,
+                },
+                caption: caption(),
+            }),
+            RichBlock::Photo(RichBlockPhoto {
+                photo: vec![],
+                has_spoiler: true,
+                caption: caption(),
+            }),
+            RichBlock::Video(RichBlockVideo {
+                video: Video {
+                    file: media_file(),
+                    width: 1,
+                    height: 1,
+                    duration: Seconds::from_seconds(1),
+                    thumbnail: None,
+                    file_name: None,
+                    mime_type: None,
+                    cover: None,
+                    start_timestamp: None,
+                },
+                has_spoiler: true,
+                caption: caption(),
+            }),
+            RichBlock::VoiceNote(RichBlockVoiceNote {
+                voice_note: Voice {
+                    file: media_file(),
+                    duration: Seconds::from_seconds(1),
+                    mime_type: None,
+                },
+                caption: caption(),
+            }),
+            RichBlock::Thinking(RichBlockThinking { text: "x".into() }),
+        ];
+
+        let json = serde_json::to_string(&blocks).unwrap();
+        let back: Vec<RichBlock> = serde_json::from_str(&json).unwrap();
+        for (original, parsed) in blocks.iter().zip(&back) {
+            assert_eq!(original, parsed, "round trip changed a block");
+        }
+
+        let texts = vec![
+            RichText::Bold(RichTextSimple::new("x")),
+            RichText::Italic(RichTextSimple::new("x")),
+            RichText::Underline(RichTextSimple::new("x")),
+            RichText::Strikethrough(RichTextSimple::new("x")),
+            RichText::Spoiler(RichTextSimple::new("x")),
+            RichText::Subscript(RichTextSimple::new("x")),
+            RichText::Superscript(RichTextSimple::new("x")),
+            RichText::Marked(RichTextSimple::new("x")),
+            RichText::Code(RichTextSimple::new("x")),
+            RichText::Url(RichTextUrl { text: Box::new("x".into()), url: "u".into() }),
+            RichText::MathematicalExpression(RichTextMathematicalExpression {
+                expression: "e".into(),
+            }),
+            RichText::CustomEmoji(RichTextCustomEmoji {
+                custom_emoji_id: "c".into(),
+                alternative_text: "a".into(),
+            }),
+            RichText::DateTime(RichTextDateTime {
+                text: Box::new("x".into()),
+                unix_time: 1,
+                date_time_format: "wDT".into(),
+            }),
+            RichText::TextMention(RichTextTextMention {
+                text: Box::new("x".into()),
+                user: User {
+                    id: UserId(1),
+                    is_bot: false,
+                    first_name: "T".into(),
+                    last_name: None,
+                    username: None,
+                    language_code: None,
+                    is_premium: false,
+                    added_to_attachment_menu: false,
+                },
+            }),
+            RichText::EmailAddress(RichTextEmailAddress {
+                text: Box::new("x".into()),
+                email_address: "e@example.com".into(),
+            }),
+            RichText::PhoneNumber(RichTextPhoneNumber {
+                text: Box::new("x".into()),
+                phone_number: "+1".into(),
+            }),
+            RichText::BankCardNumber(RichTextBankCardNumber {
+                text: Box::new("x".into()),
+                bank_card_number: "4242".into(),
+            }),
+            RichText::Mention(RichTextMention { text: Box::new("x".into()), username: "u".into() }),
+            RichText::Hashtag(RichTextHashtag { text: Box::new("x".into()), hashtag: "h".into() }),
+            RichText::Cashtag(RichTextCashtag { text: Box::new("x".into()), cashtag: "c".into() }),
+            RichText::BotCommand(RichTextBotCommand {
+                text: Box::new("x".into()),
+                bot_command: "c".into(),
+            }),
+            RichText::Anchor(RichTextAnchor { name: "n".into() }),
+            RichText::AnchorLink(RichTextAnchorLink {
+                text: Box::new("x".into()),
+                anchor_name: "n".into(),
+            }),
+            RichText::Reference(RichTextReference { text: Box::new("x".into()), name: "n".into() }),
+            RichText::ReferenceLink(RichTextReferenceLink {
+                text: Box::new("x".into()),
+                reference_name: "n".into(),
+            }),
+        ];
+
+        let json = serde_json::to_string(&texts).unwrap();
+        let back: Vec<RichText> = serde_json::from_str(&json).unwrap();
+        for (original, parsed) in texts.iter().zip(&back) {
+            assert_eq!(original, parsed, "round trip changed a text node");
+        }
+    }
+
+    #[test]
+    fn rich_message_is_rtl_roundtrips() {
+        let json = serde_json::json!({ "blocks": [], "is_rtl": true });
+        let rich: RichMessage = serde_json::from_value(json.clone()).unwrap();
+        assert!(rich.is_rtl);
+        assert_eq!(serde_json::to_value(&rich).unwrap(), json);
+
+        // Absent on the wire means `false`, and `false` is omitted when
+        // serializing back out (matching how every other flag in this file
+        // behaves).
+        let rich: RichMessage =
+            serde_json::from_value(serde_json::json!({ "blocks": [] })).unwrap();
+        assert!(!rich.is_rtl);
+        assert_eq!(serde_json::to_value(&rich).unwrap(), serde_json::json!({ "blocks": [] }));
     }
 
     #[test]
