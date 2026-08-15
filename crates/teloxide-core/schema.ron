@@ -333,7 +333,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -393,7 +393,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -447,7 +447,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -555,7 +555,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -1588,7 +1588,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2003,7 +2003,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2122,7 +2122,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -2415,7 +2415,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -5726,7 +5726,7 @@ Schema(
                     name: "message_thread_id",
                     ty: Option(RawTy("ThreadId")),
                     descr: Doc(md: "Unique identifier for the target message thread (topic) of the forum; for forum supergroups only"),
-                ), 
+                ),
                 Param(
                     name: "direct_messages_topic_id",
                     ty: Option(RawTy("TopicId")),
@@ -6355,6 +6355,63 @@ Schema(
                     ty: RawTy("TargetMessage"),
                     descr: Doc(md: "Target message")
                 )
+            ],
+        ),
+        Method(
+            names: ("deleteMessageReaction", "DeleteMessageReaction", "delete_message_reaction"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to remove a reaction from a message in a group or a supergroup chat. The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deletemessagereaction",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target supergroup in the format @username"),
+                ),
+                Param(
+                    name: "message_id",
+                    ty: RawTy("MessageId"),
+                    descr: Doc(md: "Identifier of the target message"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: Option(RawTy("UserId")),
+                    descr: Doc(md: "Identifier of the user whose reaction will be removed, if the reaction was added by a user")
+                ),
+                Param(
+                    name: "actor_chat_id",
+                    ty: Option(RawTy("ChatId")),
+                    descr: Doc(md: "Identifier of the chat whose reaction will be removed, if the reaction was added by a chat")
+                ),
+            ],
+        ),
+        Method(
+            names: ("deleteAllMessageReactions", "DeleteAllMessageReactions", "delete_all_message_reactions"),
+            return_ty: True,
+            doc: Doc(
+                md: "Use this method to remove up to 10000 recent reactions in a group or a supergroup chat added by a given user or chat. The bot must have the 'can_delete_messages' administrator right in the chat. Returns True on success."
+            ),
+            tg_doc: "https://core.telegram.org/bots/api#deleteallmessagereactions",
+            tg_category: "Updating messages",
+            params: [
+                Param(
+                    name: "chat_id",
+                    ty: RawTy("Recipient"),
+                    descr: Doc(md: "Unique identifier for the target chat or username of the target supergroup in the format @username"),
+                ),
+                Param(
+                    name: "user_id",
+                    ty: Option(RawTy("UserId")),
+                    descr: Doc(md: "Identifier of the user whose reactions will be removed, if the reactions were added by a user")
+                ),
+                Param(
+                    name: "actor_chat_id",
+                    ty: Option(RawTy("ChatId")),
+                    descr: Doc(md: "Identifier of the chat whose reactions will be removed, if the reactions were added by a chat")
+                ),
             ],
         ),
     ],
