@@ -47,6 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `premium_animation` field of `StickerKind::Regular` enum variant is now of type `Option<File>`, not `Option<FileMeta>`
   - `users` field of `VideoChatParticipantsInvited` struct now is of type `Vec<User>`, not `Option<Vec<User>>`
 
+- `ExternalReplyInfo::kind` is now `Option<ExternalReplyInfoKind>` instead of `ExternalReplyInfoKind`, fixing deserialization of `external_reply` for replies to messages without media content (e.g. plain text quotes) ([#1421](https://github.com/teloxide/teloxide/pull/1421)) [**BC**]
+
 ## 0.13.0 - 2025-07-11
 
 ### Added
