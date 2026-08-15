@@ -190,6 +190,17 @@ pub trait Requester {
         C: Into<Recipient>,
         T: Into<String>;
 
+    type SendRichMessage: Request<Payload = SendRichMessage, Err = Self::Err>;
+
+    /// For Telegram documentation see [`SendRichMessage`].
+    fn send_rich_message<C>(
+        &self,
+        chat_id: C,
+        rich_message: InputRichMessage,
+    ) -> Self::SendRichMessage
+    where
+        C: Into<Recipient>;
+
     type ForwardMessage: Request<Payload = ForwardMessage, Err = Self::Err>;
 
     /// For Telegram documentation see [`ForwardMessage`].
@@ -1675,6 +1686,7 @@ macro_rules! forward_all {
             copy_message,
             copy_messages,
             send_message,
+            send_rich_message,
             send_photo,
             send_audio,
             send_document,
