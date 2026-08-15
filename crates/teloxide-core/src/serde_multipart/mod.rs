@@ -89,8 +89,9 @@ mod tests {
         payloads::{self, setters::*},
         types::{
             ChatId, InputFile, InputMedia, InputMediaAnimation, InputMediaAudio,
-            InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputSticker, MessageEntity,
-            MessageEntityKind, ParseMode, StickerFormat, UserId,
+            InputMediaDocument, InputMediaPhoto, InputMediaVideo, InputRichMessage,
+            InputRichMessageMedia, InputSticker, MessageEntity, MessageEntityKind, ParseMode,
+            StickerFormat, UserId,
         },
     };
 
@@ -139,6 +140,21 @@ mod tests {
                     &b"Hello world!"[..],
                 ))),
             ],
+        ))
+        .unwrap()
+        .await;
+    }
+
+    #[tokio::test]
+    async fn test_send_rich_message() {
+        to_form_ref(&payloads::SendRichMessage::new(
+            ChatId(0),
+            InputRichMessage::html("<img src=\"tg://photo?id=photo\"/><p>hi</p>")
+                .media([InputRichMessageMedia::new(
+                    "photo",
+                    InputMediaPhoto::new(InputFile::memory(&b"Hello world!"[..])),
+                )])
+                .skip_entity_detection(true),
         ))
         .unwrap()
         .await;
