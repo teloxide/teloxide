@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `delete_message_reaction` and `delete_all_message_reactions` methods ([#1481](https://github.com/teloxide/teloxide/pull/1481))
 - Support for rich messages and the `send_rich_message` method
   - `RichMessage` and `RichBlock`/`RichText` cover every block and inline-text kind the API documents (headings, quotations, lists, tables, collages, slideshows, maps, media blocks, mentions, hashtags, references, ...), with `to_html`, `to_markdown` and `plain_text` rendering helpers on `RichMessage` for *display* purposes (a web page, a log viewer, ...) — not for sending back. Media blocks (`Photo`, `Animation`, `Audio`, `Video`, `VoiceNote`) render only their caption: the API gives received media no link or id that would mean anything to Telegram, so `to_html`/`to_markdown` render nothing for the media itself
   - `InputRichMessage` describes an outgoing one; build it with `InputRichMessage::html`, `::markdown` or `::blocks`, since the Bot API takes exactly one of those three. The `html`/`markdown` forms are parsed by Telegram itself — attach the media they reference with `InputRichMessage::media` and `InputRichMessageMedia`

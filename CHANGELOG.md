@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `delete_message_reaction` and `delete_all_message_reactions` methods ([#1481](https://github.com/teloxide/teloxide/pull/1481))
 - Support for Rich Messages: `RichMessage` and `InputRichMessage`, the `send_rich_message` method, and HTML/Markdown/plain-text rendering of received rich messages
 - `MessageToEditHasNoText` variant to `ApiError` ([#1426](https://github.com/teloxide/teloxide/issues/1426))
 - `ParticipantIdInvalid` and `ChatAdminRequired` variants to `ApiError` ([#1349](https://github.com/teloxide/teloxide/issues/1349))
