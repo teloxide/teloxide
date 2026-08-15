@@ -1,8 +1,8 @@
 use serde::{de::Error as _, Deserialize, Deserializer, Serialize};
 
 use crate::types::{
-    Animation, Audio, InputMediaAnimation, InputMediaAudio, InputMediaPhoto, InputMediaVideo,
-    InputMediaVoiceNote, Location, PhotoSize, User, Video, Voice,
+    Animation, Audio, InputFile, InputFileLike, InputMediaAnimation, InputMediaAudio,
+    InputMediaPhoto, InputMediaVideo, InputMediaVoiceNote, Location, PhotoSize, User, Video, Voice,
 };
 
 /// The pseudo-URL a custom (Premium) emoji occupies inside Markdown's image
@@ -2131,6 +2131,155 @@ impl InputRichBlockListItem {
     }
 }
 
+/// Collecting the files that have to be uploaded with a rich message.
+///
+/// Unlike [`InputMedia::files`] these are visitors rather than iterators:
+/// blocks nest into each other (lists, collages, quotations, ...), and a
+/// recursive iterator would have to be boxed at every level.
+///
+/// [`InputMedia::files`]: crate::types::InputMedia
+impl InputRichMessage {
+    pub(crate) fn copy_files(&self, into: &mut dyn FnMut(InputFile)) {
+        if let Some(blocks) = &self.blocks {
+            blocks.iter().for_each(|block| block.copy_files(into));
+        }
+
+        if let Some(media) = &self.media {
+            media.iter().for_each(|media| media.media.copy_files(into));
+        }
+    }
+
+    pub(crate) fn move_files(&mut self, into: &mut dyn FnMut(InputFile)) {
+        if let Some(blocks) = &mut self.blocks {
+            blocks.iter_mut().for_each(|block| block.move_files(into));
+        }
+
+        if let Some(media) = &mut self.media {
+            media.iter_mut().for_each(|media| media.media.move_files(into));
+        }
+    }
+}
+
+impl InputRichMedia {
+    pub(crate) fn copy_files(&self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Photo(InputMediaPhoto { media, .. })
+            | Self::VoiceNote(InputMediaVoiceNote { media, .. }) => media.copy_into(into),
+            Self::Animation(InputMediaAnimation { media, thumbnail, .. })
+            | Self::Audio(InputMediaAudio { media, thumbnail, .. }) => {
+                media.copy_into(into);
+                thumbnail.copy_into(into);
+            }
+            Self::Video(InputMediaVideo { media, thumbnail, cover, .. }) => {
+                media.copy_into(into);
+                thumbnail.copy_into(into);
+                cover.copy_into(into);
+            }
+        }
+    }
+
+    pub(crate) fn move_files(&mut self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Photo(InputMediaPhoto { media, .. })
+            | Self::VoiceNote(InputMediaVoiceNote { media, .. }) => media.move_into(into),
+            Self::Animation(InputMediaAnimation { media, thumbnail, .. })
+            | Self::Audio(InputMediaAudio { media, thumbnail, .. }) => {
+                media.move_into(into);
+                thumbnail.move_into(into);
+            }
+            Self::Video(InputMediaVideo { media, thumbnail, cover, .. }) => {
+                media.move_into(into);
+                thumbnail.move_into(into);
+                cover.move_into(into);
+            }
+        }
+    }
+}
+
+impl InputRichBlock {
+    // NB. The file-less variants are listed one by one instead of using a `_`
+    // arm, so that a newly added block with media in it fails to compile here
+    // instead of silently losing its file.
+    pub(crate) fn copy_files(&self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Animation { animation: InputMediaAnimation { media, thumbnail, .. }, .. }
+            | Self::Audio { audio: InputMediaAudio { media, thumbnail, .. }, .. } => {
+                media.copy_into(into);
+                thumbnail.copy_into(into);
+            }
+            Self::Video { video: InputMediaVideo { media, thumbnail, cover, .. }, .. } => {
+                media.copy_into(into);
+                thumbnail.copy_into(into);
+                cover.copy_into(into);
+            }
+            Self::Photo { photo: InputMediaPhoto { media, .. }, .. }
+            | Self::VoiceNote { voice_note: InputMediaVoiceNote { media, .. }, .. } => {
+                media.copy_into(into)
+            }
+            Self::List { items } => {
+                items.iter().flat_map(|item| &item.blocks).for_each(|block| block.copy_files(into))
+            }
+            Self::BlockQuotation { blocks, .. }
+            | Self::Collage { blocks, .. }
+            | Self::Slideshow { blocks, .. }
+            | Self::Details { blocks, .. } => {
+                blocks.iter().for_each(|block| block.copy_files(into));
+            }
+            Self::Paragraph { .. }
+            | Self::SectionHeading { .. }
+            | Self::Preformatted { .. }
+            | Self::Footer { .. }
+            | Self::Divider
+            | Self::MathematicalExpression { .. }
+            | Self::Anchor { .. }
+            | Self::PullQuotation { .. }
+            | Self::Table { .. }
+            | Self::Map { .. }
+            | Self::Thinking { .. } => {}
+        }
+    }
+
+    pub(crate) fn move_files(&mut self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::Animation { animation: InputMediaAnimation { media, thumbnail, .. }, .. }
+            | Self::Audio { audio: InputMediaAudio { media, thumbnail, .. }, .. } => {
+                media.move_into(into);
+                thumbnail.move_into(into);
+            }
+            Self::Video { video: InputMediaVideo { media, thumbnail, cover, .. }, .. } => {
+                media.move_into(into);
+                thumbnail.move_into(into);
+                cover.move_into(into);
+            }
+            Self::Photo { photo: InputMediaPhoto { media, .. }, .. }
+            | Self::VoiceNote { voice_note: InputMediaVoiceNote { media, .. }, .. } => {
+                media.move_into(into)
+            }
+            Self::List { items } => items
+                .iter_mut()
+                .flat_map(|item| &mut item.blocks)
+                .for_each(|block| block.move_files(into)),
+            Self::BlockQuotation { blocks, .. }
+            | Self::Collage { blocks, .. }
+            | Self::Slideshow { blocks, .. }
+            | Self::Details { blocks, .. } => {
+                blocks.iter_mut().for_each(|block| block.move_files(into));
+            }
+            Self::Paragraph { .. }
+            | Self::SectionHeading { .. }
+            | Self::Preformatted { .. }
+            | Self::Footer { .. }
+            | Self::Divider
+            | Self::MathematicalExpression { .. }
+            | Self::Anchor { .. }
+            | Self::PullQuotation { .. }
+            | Self::Table { .. }
+            | Self::Map { .. }
+            | Self::Thinking { .. } => {}
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2932,6 +3081,60 @@ mod tests {
                 "skip_entity_detection": true
             })
         );
+    }
+
+    /// The files `copy_files` hands to the multipart layer, in order, as they
+    /// are referenced from the serialized payload.
+    fn copied_files(message: &InputRichMessage) -> Vec<String> {
+        let mut files = Vec::new();
+        message.copy_files(&mut |file| {
+            files.push(serde_json::to_value(file).unwrap().as_str().unwrap().to_owned());
+        });
+        files
+    }
+
+    #[test]
+    fn input_rich_message_media_files_are_collected() {
+        let message = InputRichMessage::html("<img src=\"tg://photo?id=cat\"/>").media([
+            InputRichMessageMedia::new("cat", InputMediaPhoto::new(InputFile::file_id("c".into()))),
+            InputRichMessageMedia::new(
+                "clip",
+                InputMediaVideo::new(InputFile::file_id("v".into()))
+                    .thumbnail(InputFile::file_id("t".into())),
+            ),
+        ]);
+
+        assert_eq!(copied_files(&message), ["c", "v", "t"]);
+    }
+
+    #[test]
+    fn input_rich_block_files_are_collected_recursively() {
+        let message = InputRichMessage::blocks([
+            InputRichBlock::Paragraph { text: "no files here".into() },
+            InputRichBlock::List {
+                items: vec![InputRichBlockListItem::new([InputRichBlock::Collage {
+                    blocks: vec![InputRichBlock::Photo {
+                        photo: InputMediaPhoto::new(InputFile::file_id("nested".into())),
+                        caption: None,
+                    }],
+                    caption: None,
+                }])],
+            },
+            InputRichBlock::VoiceNote {
+                voice_note: InputMediaVoiceNote::new(InputFile::file_id("voice".into())),
+                caption: None,
+            },
+        ]);
+
+        assert_eq!(copied_files(&message), ["nested", "voice"]);
+
+        let mut message = message;
+        let mut moved = Vec::new();
+        message.move_files(&mut |file| {
+            moved.push(serde_json::to_value(file).unwrap().as_str().unwrap().to_owned());
+        });
+
+        assert_eq!(moved, ["nested", "voice"]);
     }
 
     #[test]

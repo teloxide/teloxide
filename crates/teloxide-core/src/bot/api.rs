@@ -58,7 +58,7 @@ impl Requester for Bot {
         Self::SendMessage::new(self.clone(), payloads::SendMessage::new(chat_id, text))
     }
 
-    type SendRichMessage = JsonRequest<payloads::SendRichMessage>;
+    type SendRichMessage = MultipartRequest<payloads::SendRichMessage>;
 
     fn send_rich_message<C>(
         &self,
