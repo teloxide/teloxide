@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `RichMessage`, `InputRichMessage` types and `send_rich_message` method for Telegram's block-structured rich messages, with HTML/Markdown/plain-text rendering helpers on `RichMessage` and HTML/Markdown parsing via `InputRichMessage::parse`, both including photo blocks (`<figure><img>` / `![alt](file_id)`)
+- Support for rich messages and the `send_rich_message` method
+  - `RichMessage`, `RichBlock`, `RichText`, `RichBlockCaption` and `RichBlockTableCell` describe a received rich message, with `to_html`, `to_markdown` and `plain_text` rendering helpers on `RichMessage` for *display* purposes (a web page, a log viewer, ...) — not for sending back. A `RichBlock::Photo` renders only its caption: the API gives a received photo no link or id that would mean anything to Telegram, so `to_html`/`to_markdown` render nothing for the image itself
+  - `InputRichMessage` describes an outgoing one; build it with `InputRichMessage::html`, `::markdown` or `::blocks`, since the Bot API takes exactly one of those three. The `html`/`markdown` forms are parsed by Telegram itself — attach the media they reference with `InputRichMessage::media` and `InputRichMessageMedia`
+  - `InputRichBlock`, `InputRichBlockListItem` and `InputRichMedia` describe the blocks of an outgoing rich message. They are separate from the receiving `RichBlock` because the API models them differently — e.g. a photo block carries an `InputMediaPhoto` when sending but an array of `PhotoSize` when receiving
+- `InputMediaVoiceNote` struct
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_task_id` field to `Message` struct

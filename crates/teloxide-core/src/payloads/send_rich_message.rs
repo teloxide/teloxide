@@ -12,7 +12,7 @@ impl_payload! {
     ///
     /// [rich message]: https://core.telegram.org/bots/api#richmessage
     /// [`Message`]: crate::types::Message
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub SendRichMessage (SendRichMessageSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
