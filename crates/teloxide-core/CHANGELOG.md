@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `InputRichMessage` describes an outgoing one; build it with `InputRichMessage::html`, `::markdown` or `::blocks`, since the Bot API takes exactly one of those three. The `html`/`markdown` forms are parsed by Telegram itself — attach the media they reference with `InputRichMessage::media` and `InputRichMessageMedia`
   - `InputRichBlock`, `InputRichBlockListItem` and `InputRichMedia` describe the blocks of an outgoing rich message. They are separate from the receiving `RichBlock` because the API models them differently — e.g. a photo block carries an `InputMediaPhoto` when sending but an array of `PhotoSize` when receiving
 - `InputMediaVoiceNote` struct
+- Support for inline and reply button styles and custom emoji icons ([#1438](https://github.com/teloxide/teloxide/pull/1438))
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_task_id` field to `Message` struct
@@ -51,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `photo` field of `PaidMediaPhoto` struct now is of type `Vec<PhotoSize>`, not `PhotoSize`
   - `premium_animation` field of `StickerKind::Regular` enum variant is now of type `Option<File>`, not `Option<FileMeta>`
   - `users` field of `VideoChatParticipantsInvited` struct now is of type `Vec<User>`, not `Option<Vec<User>>`
+
+- `ExternalReplyInfo::kind` is now `Option<ExternalReplyInfoKind>` instead of `ExternalReplyInfoKind`, fixing deserialization of `external_reply` for replies to messages without media content (e.g. plain text quotes) ([#1421](https://github.com/teloxide/teloxide/pull/1421)) [**BC**]
 
 ## 0.13.0 - 2025-07-11
 
