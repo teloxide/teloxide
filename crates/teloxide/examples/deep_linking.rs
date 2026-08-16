@@ -9,7 +9,7 @@
 //! Also, deep linking is only supported with /start command!
 //! "https://t.me/some_bot?argument=123456789" will not work
 //!
-//! https://core.telegram.org/bots/features#deep-linking
+//! <https://core.telegram.org/bots/features#deep-linking>
 use dptree::{case, deps};
 use teloxide::{
     dispatching::dialogue::{self, InMemStorage},

@@ -355,7 +355,9 @@ where
         set_game_score_inline,
         get_game_high_scores,
         approve_chat_join_request,
-        decline_chat_join_request
+        decline_chat_join_request,
+        delete_message_reaction,
+        delete_all_message_reactions
         => fwd_erased, fty
     }
 }
@@ -1264,6 +1266,17 @@ trait ErasableRequester<'a> {
         user_id: UserId,
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err>;
+
+    fn delete_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeleteMessageReaction, Self::Err>;
+
+    fn delete_all_message_reactions(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteAllMessageReactions, Self::Err>;
 }
 
 impl<'a, B> ErasableRequester<'a> for B
@@ -2538,5 +2551,20 @@ where
         target: TargetMessage,
     ) -> ErasedRequest<'a, GetGameHighScores, Self::Err> {
         Requester::get_game_high_scores(self, user_id, target).erase()
+    }
+
+    fn delete_message_reaction(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, DeleteMessageReaction, Self::Err> {
+        Requester::delete_message_reaction(self, chat_id, message_id).erase()
+    }
+
+    fn delete_all_message_reactions(
+        &self,
+        chat_id: Recipient,
+    ) -> ErasedRequest<'a, DeleteAllMessageReactions, Self::Err> {
+        Requester::delete_all_message_reactions(self, chat_id).erase()
     }
 }
