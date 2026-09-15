@@ -321,7 +321,7 @@ A:
 
 **Q: Do you support the Telegram API for clients?**
 
-A: No, only the bots API.
+A: No, we only support the Bot API. See [Grammers](https://codeberg.org/Lonami/grammers).
 
 **Q: Can I use webhooks?**
 
