@@ -72,6 +72,9 @@ impl EventKind for Kind {
             DeletedBusinessMessages,
             MessageReaction,
             MessageReactionCount,
+            GuestMessage,
+            ManagedBot,
+            Subscription,
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
@@ -85,6 +88,7 @@ impl EventKind for Kind {
             ChatJoinRequest,
             ChatBoost,
             RemovedChatBoost,
+            StoppedMessageGeneration,
         ]
         .into_iter()
         .map(Kind)
@@ -177,6 +181,9 @@ mod tests {
                 | EditedChannelPost
                 | MessageReaction
                 | MessageReactionCount
+                | GuestMessage
+                | ManagedBot
+                | Subscription
                 | InlineQuery
                 | ChosenInlineResult
                 | CallbackQuery
@@ -190,6 +197,7 @@ mod tests {
                 | ChatJoinRequest
                 | ChatBoost
                 | RemovedChatBoost
+                | StoppedMessageGeneration
                 | BusinessMessage
                 | BusinessConnection
                 | EditedBusinessMessage

@@ -1,13 +1,13 @@
 {
   "version": {
-    "major": 9,
-    "minor": 2,
+    "major": 10,
+    "minor": 3,
     "patch": 0
   },
   "recent_changes": {
-    "year": 2025,
+    "year": 2026,
     "month": 8,
-    "day": 15
+    "day": 24
   },
   "methods": [
     {
@@ -262,6 +262,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "text",
           "description": "Text of the message to be sent, 1-4096 characters after entities parsing",
           "required": true,
@@ -468,6 +477,15 @@
           "required": false,
           "type_info": {
             "type": "bool"
+          }
+        },
+        {
+          "name": "message_effect_id",
+          "description": "Unique identifier of the message effect to add to the forwarded message; for private chats only",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
           }
         },
         {
@@ -734,6 +752,15 @@
           }
         },
         {
+          "name": "message_effect_id",
+          "description": "Unique identifier of the message effect to add to the copied message; for private chats only",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
           "name": "suggested_post_parameters",
           "description": "A JSON-serialized object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.",
           "required": false,
@@ -940,6 +967,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "photo",
           "description": "Photo to send. Pass a file\\_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20. [More information on Sending Files »](https://core.telegram.org/bots/api#sending-files)",
           "required": true,
@@ -1137,6 +1173,15 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
           }
         },
         {
@@ -1369,6 +1414,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "document",
           "description": "File to send. Pass a file\\_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More information on Sending Files »](https://core.telegram.org/bots/api#sending-files)",
           "required": true,
@@ -1576,6 +1630,15 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
           }
         },
         {
@@ -1859,6 +1922,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "animation",
           "description": "Animation to send. Pass a file\\_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. [More information on Sending Files »](https://core.telegram.org/bots/api#sending-files)",
           "required": true,
@@ -2104,6 +2176,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "voice",
           "description": "Audio file to send. Pass a file\\_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. [More information on Sending Files »](https://core.telegram.org/bots/api#sending-files)",
           "required": true,
@@ -2294,6 +2375,15 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
           }
         },
         {
@@ -2811,6 +2901,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "latitude",
           "description": "Latitude of the location",
           "required": true,
@@ -2993,6 +3092,15 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
           }
         },
         {
@@ -3200,6 +3308,15 @@
           }
         },
         {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
           "name": "phone_number",
           "description": "Contact's phone number",
           "required": true,
@@ -3394,7 +3511,7 @@
         },
         {
           "name": "options",
-          "description": "A JSON-serialized list of 2-12 answer options",
+          "description": "A JSON-serialized list of 1-12 answer options",
           "required": true,
           "type_info": {
             "type": "array",
@@ -3426,19 +3543,74 @@
         },
         {
           "name": "allows_multiple_answers",
-          "description": "*True*, if the poll allows multiple answers, ignored for polls in quiz mode, defaults to *False*",
+          "description": "Pass True if the poll allows multiple answers, defaults to False",
           "required": false,
           "type_info": {
             "type": "bool"
           }
         },
         {
-          "name": "correct_option_id",
-          "description": "0-based identifier of the correct answer option, required for polls in quiz mode",
+          "name": "allows_revoting",
+          "description": "Pass True if the poll allows changing chosen answer options; defaults to False for quizzes and True for regular polls",
           "required": false,
           "type_info": {
-            "type": "integer",
-            "enumeration": []
+            "type": "bool"
+          }
+        },
+        {
+          "name": "shuffle_options",
+          "description": "Pass True if the poll options must be shown in random order",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "allow_adding_options",
+          "description": "Pass True if answer options can be added after creation; not supported for anonymous polls and quizzes",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "hide_results_until_closes",
+          "description": "Pass True if poll results must be shown only after the poll closes",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "members_only",
+          "description": "Pass True if voting is limited to users who have been members of the target chat for more than 24 hours; for channel chats only",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "country_codes",
+          "description": "A JSON-serialized list of 0-12 two-letter ISO 3166-1 alpha-2 country codes allowed to vote; use FT for anonymous numbers",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "string",
+              "enumeration": []
+            }
+          }
+        },
+        {
+          "name": "correct_option_ids",
+          "description": "A JSON-serialized list of monotonically increasing 0-based identifiers of correct answers, required for quiz polls",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "integer",
+              "enumeration": []
+            }
           }
         },
         {
@@ -3474,8 +3646,17 @@
           }
         },
         {
+          "name": "explanation_media",
+          "description": "Media added to the quiz explanation",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputPollMedia"
+          }
+        },
+        {
           "name": "open_period",
-          "description": "Amount of time in seconds the poll will be active after creation, 5-600. Can't be used together with *close\\_date*.",
+          "description": "Amount of time in seconds the poll will be active after creation, 5-2628000. Can't be used together with close_date.",
           "required": false,
           "type_info": {
             "type": "integer",
@@ -3484,7 +3665,7 @@
         },
         {
           "name": "close_date",
-          "description": "Point in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with *open\\_period*.",
+          "description": "Point in time when the poll will automatically close. Must be at least 5 and no more than 2628000 seconds in the future. Can't be used together with open_period.",
           "required": false,
           "type_info": {
             "type": "integer",
@@ -3497,6 +3678,45 @@
           "required": false,
           "type_info": {
             "type": "bool"
+          }
+        },
+        {
+          "name": "description",
+          "description": "Description of the poll to be sent, 0-1024 characters after entities parsing",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "description_parse_mode",
+          "description": "Mode for parsing entities in the poll description",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "description_entities",
+          "description": "A JSON-serialized list of special entities in the poll description, specified instead of description_parse_mode",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "reference",
+              "reference": "MessageEntity"
+            }
+          }
+        },
+        {
+          "name": "media",
+          "description": "Media added to the poll description",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputPollMedia"
           }
         },
         {
@@ -4360,6 +4580,14 @@
         {
           "name": "can_manage_direct_messages",
           "description": "Pass *True* if the administrator can manage direct messages within the channel and decline suggested posts; for channels only",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "can_manage_tags",
+          "description": "Pass True if the administrator can edit tags of regular members; for groups and supergroups only",
           "required": false,
           "type_info": {
             "type": "bool"
@@ -5312,6 +5540,14 @@
                 "enumeration": []
               }
             ]
+          }
+        },
+        {
+          "name": "return_bots",
+          "description": "Pass True to additionally receive all bots that are administrators of the chat; other bots are omitted by default",
+          "required": false,
+          "type_info": {
+            "type": "bool"
           }
         }
       ],
@@ -7104,8 +7340,24 @@
           }
         },
         {
-          "name": "exclude_limited",
-          "description": "Pass *True* to exclude gifts that can be purchased a limited number of times",
+          "name": "exclude_limited_upgradable",
+          "description": "Pass True to exclude gifts that can be upgraded to a unique gift",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "exclude_limited_non_upgradable",
+          "description": "Pass True to exclude gifts that can't be upgraded to a unique gift",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "exclude_from_blockchain",
+          "description": "Pass True to exclude gifts that were assigned from the TON blockchain",
           "required": false,
           "type_info": {
             "type": "bool"
@@ -7545,12 +7797,21 @@
         {
           "name": "text",
           "description": "New text of the message, 1-4096 characters after entities parsing",
-          "required": true,
+          "required": false,
           "type_info": {
             "type": "string",
             "min_len": 1,
             "max_len": 4096,
             "enumeration": []
+          }
+        },
+        {
+          "name": "rich_message",
+          "description": "A new rich message to replace the current message content",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputRichMessage"
           }
         },
         {
@@ -7593,7 +7854,7 @@
           }
         }
       ],
-      "maybe_multipart": false,
+      "maybe_multipart": true,
       "return_type": {
         "type": "any_of",
         "any_of": [
@@ -8406,6 +8667,15 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
           }
         },
         {
@@ -10204,6 +10474,2117 @@
         }
       },
       "documentation_link": "https://core.telegram.org/bots/api#getgamehighscores"
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Latitude of new location",
+          "name": "latitude",
+          "required": true,
+          "type_info": {
+            "type": "float"
+          }
+        },
+        {
+          "description": "Longitude of new location",
+          "name": "longitude",
+          "required": true,
+          "type_info": {
+            "type": "float"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged",
+          "name": "live_period",
+          "required": false,
+          "type_info": {
+            "reference": "LivePeriod",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "The radius of uncertainty for the location, measured in meters; 0-1500",
+          "name": "horizontal_accuracy",
+          "required": false,
+          "type_info": {
+            "type": "float"
+          }
+        },
+        {
+          "description": "For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.",
+          "name": "heading",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.",
+          "name": "proximity_alert_radius",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "ReplyMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [`StopMessageLiveLocation`]. On success, True is returned.",
+      "documentation_link": "https://core.telegram.org/bots/api#editmessagelivelocation",
+      "maybe_multipart": false,
+      "name": "editMessageLiveLocationInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Additional interface options. A JSON-serialized object for an [inline keyboard], [custom reply keyboard], instructions to remove a reply keyboard or to force a reply from the user. Not supported for messages sent on behalf of a business account.",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "ReplyMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [`StopMessageLiveLocation`]. On success, True is returned.",
+      "documentation_link": "https://core.telegram.org/bots/api#stopmessagelivelocation",
+      "maybe_multipart": false,
+      "name": "stopMessageLiveLocationInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the target user",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Date when the user will be unbanned, unix time. If user is banned for more than 366 days or less than 30 seconds from the current time they are considered to be banned forever",
+          "name": "until_date",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "Pass True to delete all messages from the chat for the user that is being removed. If False, the user will be able to see messages in the group that were sent before the user was removed. Always True for supergroups and channels.",
+          "name": "revoke_messages",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        }
+      ],
+      "description": "Use this method to kick a user from a group, a supergroup or a channel. In the case of supergroups and channels, the user will not be able to return to the group on their own using invite links, etc., unless [unbanned] first. The bot must be an administrator in the chat for this to work and must have the appropriate admin rights. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#kickchatmember",
+      "maybe_multipart": false,
+      "name": "kickChatMember",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to get the number of members in a chat. Returns _Int_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#getchatmemberscount",
+      "maybe_multipart": false,
+      "name": "getChatMembersCount",
+      "return_type": {
+        "enumeration": [],
+        "type": "integer"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "New text of the message, 1-4096 characters after entities parsing",
+          "name": "text",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "A new rich message to replace the current message content",
+          "name": "rich_message",
+          "required": false,
+          "type_info": {
+            "reference": "InputRichMessage",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Mode for parsing entities in the message text. See [formatting options] for more details.",
+          "name": "parse_mode",
+          "required": false,
+          "type_info": {
+            "reference": "ParseMode",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "List of special entities that appear in message text, which can be specified instead of _parse\\_mode_",
+          "name": "entities",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "MessageEntity",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Link preview generation options for the message",
+          "name": "link_preview_options",
+          "required": false,
+          "type_info": {
+            "reference": "LinkPreviewOptions",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "A JSON-serialized object for an [inline keyboard].",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "InlineKeyboardMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit text and [games] messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
+      "documentation_link": "https://core.telegram.org/bots/api#editmessagetext",
+      "maybe_multipart": false,
+      "name": "editMessageTextInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "New caption of the message, 0-1024 characters after entities parsing",
+          "name": "caption",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Mode for parsing entities in the message text. See [formatting options] for more details.",
+          "name": "parse_mode",
+          "required": false,
+          "type_info": {
+            "reference": "ParseMode",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "List of special entities that appear in the caption, which can be specified instead of _parse\\_mode_",
+          "name": "caption_entities",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "MessageEntity",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Pass True, if the caption must be shown above the message media. Supported only for animation, photo and video messages",
+          "name": "show_caption_above_media",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "A JSON-serialized object for an [inline keyboard].",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "InlineKeyboardMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit captions of messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
+      "documentation_link": "https://core.telegram.org/bots/api#editmessagecaption",
+      "maybe_multipart": false,
+      "name": "editMessageCaptionInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "A JSON-serialized object for a new media content of the message",
+          "name": "media",
+          "required": true,
+          "type_info": {
+            "reference": "InputMedia",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "A JSON-serialized object for an [inline keyboard].",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "InlineKeyboardMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit animation, audio, document, photo, or video messages, or to add media to text messages. If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, message type can be changed arbitrarily. When inline message is edited, new file can't be uploaded. Use previously uploaded file via its file_id or specify a URL. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
+      "documentation_link": "https://core.telegram.org/bots/api#editmessagemedia",
+      "maybe_multipart": true,
+      "name": "editMessageMediaInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message to be edited was sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "A JSON-serialized object for an [inline keyboard].",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "InlineKeyboardMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to edit only the reply markup of messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.",
+      "documentation_link": "https://core.telegram.org/bots/api#editmessagereplymarkup",
+      "maybe_multipart": false,
+      "name": "editMessageReplyMarkupInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the chat or username of the channel that will receive the gift",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the gift",
+          "name": "gift_id",
+          "required": true,
+          "type_info": {
+            "reference": "GiftId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Pass _true_ to pay for the gift upgrade from the bot's balance, thereby making the upgrade free for the receiver",
+          "name": "pay_for_upgrade",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Text that will be shown along with the gift; 0-255 characters",
+          "name": "text",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Mode for parsing entities in the text. See [formatting options] for more details. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored",
+          "name": "text_parse_mode",
+          "required": false,
+          "type_info": {
+            "reference": "ParseMode",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "List of special entities that appear in the gift text. It can be specified instead of text_parse_mode. Entities other than “bold”, “italic”, “underline”, “strikethrough”, “spoiler”, and “custom_emoji” are ignored.",
+          "name": "text_entities",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "MessageEntity",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "description": "Sends a gift to the given channel chat. The gift can't be converted to Telegram Stars by the receiver. Returns True on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#sendgift",
+      "maybe_multipart": false,
+      "name": "sendGiftChat",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "User identifier",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "New score",
+          "name": "score",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "Pass True, if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters",
+          "name": "force",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True, if the game message should not be automatically edited to include the current scoreboard",
+          "name": "disable_edit_message",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Identifier of the inline message",
+          "name": "inline_message_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        }
+      ],
+      "description": "Use this method to set the score of the specified user in a game. On success, returns _True_. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.",
+      "documentation_link": "https://core.telegram.org/bots/api#setgamescore",
+      "maybe_multipart": false,
+      "name": "setGameScoreInline",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier of the business connection on behalf of which the message will be sent",
+          "name": "business_connection_id",
+          "required": false,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier for the target chat or username of the target channel",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier for the target message thread",
+          "name": "message_thread_id",
+          "required": false,
+          "type_info": {
+            "reference": "ThreadId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the direct messages topic to which the message will be sent",
+          "name": "direct_messages_topic_id",
+          "required": false,
+          "type_info": {
+            "reference": "TopicId",
+            "type": "reference"
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "A JSON-serialized object containing the parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
+          "description": "Live photo video to send",
+          "name": "live_photo",
+          "required": true,
+          "type_info": {
+            "reference": "InputFile",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "The static photo to send",
+          "name": "photo",
+          "required": true,
+          "type_info": {
+            "reference": "InputFile",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Live photo caption",
+          "name": "caption",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Mode for parsing entities in the caption",
+          "name": "parse_mode",
+          "required": false,
+          "type_info": {
+            "reference": "ParseMode",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "List of special entities that appear in the caption",
+          "name": "caption_entities",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "MessageEntity",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Pass True, if the caption must be shown above the message media",
+          "name": "show_caption_above_media",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True if the live photo needs to be covered with a spoiler animation",
+          "name": "has_spoiler",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Sends the message silently",
+          "name": "disable_notification",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Protects the contents of the sent message from forwarding and saving",
+          "name": "protect_content",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to allow up to 1000 messages per second",
+          "name": "allow_paid_broadcast",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Unique identifier of the message effect to be added to the message",
+          "name": "message_effect_id",
+          "required": false,
+          "type_info": {
+            "reference": "EffectId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Parameters of the suggested post to send",
+          "name": "suggested_post_parameters",
+          "required": false,
+          "type_info": {
+            "reference": "SuggestedPostParameters",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Description of the message to reply to",
+          "name": "reply_parameters",
+          "required": false,
+          "type_info": {
+            "reference": "ReplyParameters",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Additional interface options",
+          "name": "reply_markup",
+          "required": false,
+          "type_info": {
+            "reference": "ReplyMarkup",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to send live photos. On success, the sent [`Message`] is returned.",
+      "documentation_link": "https://core.telegram.org/bots/api#sendlivephoto",
+      "maybe_multipart": true,
+      "name": "sendLivePhoto",
+      "return_type": {
+        "reference": "Message",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target private chat",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier for the target message thread",
+          "name": "message_thread_id",
+          "required": false,
+          "type_info": {
+            "reference": "ThreadId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the message draft; must be non-zero",
+          "name": "draft_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "Text of the message to be sent",
+          "name": "text",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "Mode for parsing entities in the message text",
+          "name": "parse_mode",
+          "required": false,
+          "type_info": {
+            "reference": "ParseMode",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "List of special entities that appear in message text",
+          "name": "entities",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "MessageEntity",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        },
+        {
+          "description": "Pass True to show a Stop button while the message is being generated",
+          "name": "can_stop",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to keep the partial message when generation is stopped",
+          "name": "keep_on_stop",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        }
+      ],
+      "description": "Use this method to stream a partial message to a user while the message is being generated. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#sendmessagedraft",
+      "maybe_multipart": false,
+      "name": "sendMessageDraft",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier of the target user",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Sequential number of the first audio to be returned",
+          "name": "offset",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        },
+        {
+          "description": "Limits the number of audios to be retrieved",
+          "name": "limit",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        }
+      ],
+      "description": "Use this method to get a list of profile audios for a user. Returns a [`UserProfileAudios`] object.",
+      "documentation_link": "https://core.telegram.org/bots/api#getuserprofileaudios",
+      "maybe_multipart": false,
+      "name": "getUserProfileAudios",
+      "return_type": {
+        "reference": "UserProfileAudios",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target supergroup",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the target user",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "New tag for the member",
+          "name": "tag",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        }
+      ],
+      "description": "Use this method to set a tag for a regular member in a group or a supergroup. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#setchatmembertag",
+      "maybe_multipart": false,
+      "name": "setChatMemberTag",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target user",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "The maximum number of messages to return",
+          "name": "limit",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        }
+      ],
+      "description": "Use this method to get the last messages from the personal chat of a given user. On success, an array of [`Message`] objects is returned.",
+      "documentation_link": "https://core.telegram.org/bots/api#getuserpersonalchatmessages",
+      "maybe_multipart": false,
+      "name": "getUserPersonalChatMessages",
+      "return_type": {
+        "array": {
+          "reference": "Message",
+          "type": "reference"
+        },
+        "type": "array"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the query to be answered",
+          "name": "guest_query_id",
+          "required": true,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "An object describing the message to be sent",
+          "name": "result",
+          "required": true,
+          "type_info": {
+            "reference": "InlineQueryResult",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to reply to a received guest message. On success, a [`SentGuestMessage`] object is returned.",
+      "documentation_link": "https://core.telegram.org/bots/api#answerguestquery",
+      "maybe_multipart": false,
+      "name": "answerGuestQuery",
+      "return_type": {
+        "reference": "SentGuestMessage",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "User identifier of the managed bot whose token will be returned",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to get the token of a managed bot. Returns the token as _String_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#getmanagedbottoken",
+      "maybe_multipart": false,
+      "name": "getManagedBotToken",
+      "return_type": {
+        "enumeration": [],
+        "type": "string"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "User identifier of the managed bot whose token will be replaced",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to revoke the current token of a managed bot and generate a new one. Returns the new token as _String_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#replacemanagedbottoken",
+      "maybe_multipart": false,
+      "name": "replaceManagedBotToken",
+      "return_type": {
+        "enumeration": [],
+        "type": "string"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "User identifier of the managed bot whose access settings will be returned",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to get the access settings of a managed bot. Returns a [`BotAccessSettings`] object on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#getmanagedbotaccesssettings",
+      "maybe_multipart": false,
+      "name": "getManagedBotAccessSettings",
+      "return_type": {
+        "reference": "BotAccessSettings",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "User identifier of the managed bot whose access settings will be changed",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Pass True if only selected users can access the bot",
+          "name": "is_access_restricted",
+          "required": true,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "List of up to 10 identifiers of users who will have access to the bot",
+          "name": "added_user_ids",
+          "required": false,
+          "type_info": {
+            "array": {
+              "reference": "UserId",
+              "type": "reference"
+            },
+            "type": "array"
+          }
+        }
+      ],
+      "description": "Use this method to change the access settings of a managed bot. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#setmanagedbotaccesssettings",
+      "maybe_multipart": false,
+      "name": "setManagedBotAccessSettings",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "The new profile photo to set",
+          "name": "photo",
+          "required": true,
+          "type_info": {
+            "reference": "InputProfilePhoto",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Changes the profile photo of the bot. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#setmyprofilephoto",
+      "maybe_multipart": true,
+      "name": "setMyProfilePhoto",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [],
+      "description": "Removes the profile photo of the bot. Requires no parameters. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#removemyprofilephoto",
+      "maybe_multipart": false,
+      "name": "removeMyProfilePhoto",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier of the user",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Pass True to exclude unlimited gifts",
+          "name": "exclude_unlimited",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude limited upgradable gifts",
+          "name": "exclude_limited_upgradable",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude limited non-upgradable gifts",
+          "name": "exclude_limited_non_upgradable",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude gifts assigned from the TON blockchain",
+          "name": "exclude_from_blockchain",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude unique gifts",
+          "name": "exclude_unique",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to sort results by gift price",
+          "name": "sort_by_price",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Offset of the first entry to return",
+          "name": "offset",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "The maximum number of gifts to be returned",
+          "name": "limit",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        }
+      ],
+      "description": "Returns the gifts owned and hosted by a user. Returns [`OwnedGifts`] on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#getusergifts",
+      "maybe_multipart": false,
+      "name": "getUserGifts",
+      "return_type": {
+        "reference": "OwnedGifts",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target channel",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Pass True to exclude gifts that aren't saved",
+          "name": "exclude_unsaved",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude gifts that are saved",
+          "name": "exclude_saved",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude unlimited gifts",
+          "name": "exclude_unlimited",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude limited upgradable gifts",
+          "name": "exclude_limited_upgradable",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude limited non-upgradable gifts",
+          "name": "exclude_limited_non_upgradable",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude gifts assigned from the TON blockchain",
+          "name": "exclude_from_blockchain",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to exclude unique gifts",
+          "name": "exclude_unique",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True to sort results by gift price",
+          "name": "sort_by_price",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Offset of the first entry to return",
+          "name": "offset",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "string"
+          }
+        },
+        {
+          "description": "The maximum number of gifts to be returned",
+          "name": "limit",
+          "required": false,
+          "type_info": {
+            "enumeration": [],
+            "type": "integer"
+          }
+        }
+      ],
+      "description": "Returns the gifts owned by a chat. Returns [`OwnedGifts`] on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#getchatgifts",
+      "maybe_multipart": false,
+      "name": "getChatGifts",
+      "return_type": {
+        "reference": "OwnedGifts",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier of the business connection",
+          "name": "business_connection_id",
+          "required": true,
+          "type_info": {
+            "reference": "BusinessConnectionId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the chat which posted the story",
+          "name": "from_chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "ChatId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Unique identifier of the story that should be reposted",
+          "name": "from_story_id",
+          "required": true,
+          "type_info": {
+            "reference": "StoryId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Period after which the story is moved to the archive",
+          "name": "active_period",
+          "required": true,
+          "type_info": {
+            "reference": "Seconds",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Pass True to keep the story accessible after it expires",
+          "name": "post_to_chat_page",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "description": "Pass True if the content of the story must be protected",
+          "name": "protect_content",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        }
+      ],
+      "description": "Reposts a story on behalf of a business account from another business account. Returns [`Story`] on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#repoststory",
+      "maybe_multipart": false,
+      "name": "repostStory",
+      "return_type": {
+        "reference": "Story",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier of the target user that can use the button",
+          "name": "user_id",
+          "required": true,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "An object describing the button to be saved",
+          "name": "button",
+          "required": true,
+          "type_info": {
+            "reference": "KeyboardButton",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Stores a keyboard button that can be used by a user within a Mini App. Returns a [`PreparedKeyboardButton`] object.",
+      "documentation_link": "https://core.telegram.org/bots/api#savepreparedkeyboardbutton",
+      "maybe_multipart": false,
+      "name": "savePreparedKeyboardButton",
+      "return_type": {
+        "reference": "PreparedKeyboardButton",
+        "type": "reference"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target supergroup",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the target message",
+          "name": "message_id",
+          "required": true,
+          "type_info": {
+            "reference": "MessageId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the user whose reaction will be removed",
+          "name": "user_id",
+          "required": false,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the chat whose reaction will be removed",
+          "name": "actor_chat_id",
+          "required": false,
+          "type_info": {
+            "reference": "ChatId",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to remove a reaction from a message in a group or a supergroup chat. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#deletemessagereaction",
+      "maybe_multipart": false,
+      "name": "deleteMessageReaction",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "arguments": [
+        {
+          "description": "Unique identifier for the target chat or username of the target supergroup",
+          "name": "chat_id",
+          "required": true,
+          "type_info": {
+            "reference": "Recipient",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the user whose reactions will be removed",
+          "name": "user_id",
+          "required": false,
+          "type_info": {
+            "reference": "UserId",
+            "type": "reference"
+          }
+        },
+        {
+          "description": "Identifier of the chat whose reactions will be removed",
+          "name": "actor_chat_id",
+          "required": false,
+          "type_info": {
+            "reference": "ChatId",
+            "type": "reference"
+          }
+        }
+      ],
+      "description": "Use this method to remove up to 10000 recent reactions in a group or a supergroup chat added by a given user or chat. Returns _True_ on success.",
+      "documentation_link": "https://core.telegram.org/bots/api#deleteallmessagereactions",
+      "maybe_multipart": false,
+      "name": "deleteAllMessageReactions",
+      "return_type": {
+        "default": true,
+        "type": "bool"
+      }
+    },
+    {
+      "name": "answerChatJoinRequestQuery",
+      "description": "Use this method to process a received chat join request query. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_join_request_query_id",
+          "description": "Unique identifier of the join request query",
+          "required": true,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "result",
+          "description": "Result of the query",
+          "required": true,
+          "type_info": {
+            "type": "string",
+            "enumeration": [
+              "approve",
+              "decline",
+              "queue"
+            ]
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#answerchatjoinrequestquery",
+      "maybe_multipart": false
+    },
+    {
+      "name": "sendChatJoinRequestWebApp",
+      "description": "Use this method to show a Mini App while processing a chat join request query. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_join_request_query_id",
+          "description": "Unique identifier of the join request query",
+          "required": true,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "web_app_url",
+          "description": "HTTPS URL of a Web App to be opened",
+          "required": true,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#sendchatjoinrequestwebapp",
+      "maybe_multipart": false
+    },
+    {
+      "name": "editEphemeralMessageText",
+      "description": "Use this method to edit an ephemeral text message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiver_user_id",
+          "description": "Recipient user",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Ephemeral message identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "text",
+          "description": "New text; required if rich_message isn't specified",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "rich_message",
+          "description": "New rich message content; required if text isn't specified",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputRichMessage"
+          }
+        },
+        {
+          "name": "parse_mode",
+          "description": "Parse mode",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ParseMode"
+          }
+        },
+        {
+          "name": "entities",
+          "description": "Entities",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "reference",
+              "reference": "MessageEntity"
+            }
+          }
+        },
+        {
+          "name": "link_preview_options",
+          "description": "Link preview options",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "LinkPreviewOptions"
+          }
+        },
+        {
+          "name": "reply_markup",
+          "description": "Inline keyboard",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InlineKeyboardMarkup"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#editephemeralmessagetext",
+      "maybe_multipart": false
+    },
+    {
+      "name": "editEphemeralMessageMedia",
+      "description": "Use this method to edit the media of an ephemeral message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiver_user_id",
+          "description": "Recipient user",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Ephemeral message identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "media",
+          "description": "New media",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputMedia"
+          }
+        },
+        {
+          "name": "reply_markup",
+          "description": "Inline keyboard",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InlineKeyboardMarkup"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#editephemeralmessagemedia",
+      "maybe_multipart": true
+    },
+    {
+      "name": "editEphemeralMessageCaption",
+      "description": "Use this method to edit the caption of an ephemeral message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiver_user_id",
+          "description": "Recipient user",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Ephemeral message identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "caption",
+          "description": "New caption",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "parse_mode",
+          "description": "Parse mode",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ParseMode"
+          }
+        },
+        {
+          "name": "caption_entities",
+          "description": "Caption entities",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "reference",
+              "reference": "MessageEntity"
+            }
+          }
+        },
+        {
+          "name": "reply_markup",
+          "description": "Inline keyboard",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InlineKeyboardMarkup"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#editephemeralmessagecaption",
+      "maybe_multipart": false
+    },
+    {
+      "name": "editEphemeralMessageReplyMarkup",
+      "description": "Use this method to edit the reply markup of an ephemeral message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiver_user_id",
+          "description": "Recipient user",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Ephemeral message identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "reply_markup",
+          "description": "Inline keyboard",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "InlineKeyboardMarkup"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#editephemeralmessagereplymarkup",
+      "maybe_multipart": false
+    },
+    {
+      "name": "deleteEphemeralMessage",
+      "description": "Use this method to delete an ephemeral message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "receiver_user_id",
+          "description": "Recipient user",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Ephemeral message identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#deleteephemeralmessage",
+      "maybe_multipart": false
+    },
+    {
+      "name": "sendRichMessage",
+      "description": "Use this method to send rich messages. On success, the sent Message is returned.",
+      "arguments": [
+        {
+          "name": "business_connection_id",
+          "description": "Business connection",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "BusinessConnectionId"
+          }
+        },
+        {
+          "name": "chat_id",
+          "description": "Target chat",
+          "required": true,
+          "type_info": {
+            "type": "any_of",
+            "any_of": [
+              {
+                "type": "integer",
+                "enumeration": []
+              },
+              {
+                "type": "string",
+                "enumeration": []
+              }
+            ]
+          }
+        },
+        {
+          "name": "message_thread_id",
+          "description": "Message thread",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ThreadId"
+          }
+        },
+        {
+          "name": "direct_messages_topic_id",
+          "description": "Direct messages topic",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "TopicId"
+          }
+        },
+        {
+          "name": "ephemeral_message_parameters",
+          "description": "Parameters of the ephemeral message to send",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EphemeralMessageParameters"
+          }
+        },
+        {
+          "name": "rich_message",
+          "description": "The rich message to send",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputRichMessage"
+          }
+        },
+        {
+          "name": "disable_notification",
+          "description": "Send silently",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "protect_content",
+          "description": "Protect content",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "allow_paid_broadcast",
+          "description": "Allow paid broadcasting",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "message_effect_id",
+          "description": "Message effect",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "EffectId"
+          }
+        },
+        {
+          "name": "suggested_post_parameters",
+          "description": "Suggested post parameters",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "SuggestedPostParameters"
+          }
+        },
+        {
+          "name": "reply_parameters",
+          "description": "Reply parameters",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ReplyParameters"
+          }
+        },
+        {
+          "name": "reply_markup",
+          "description": "Reply markup",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ReplyMarkup"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "reference",
+        "reference": "Message"
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#sendrichmessage",
+      "maybe_multipart": true
+    },
+    {
+      "name": "sendRichMessageDraft",
+      "description": "Use this method to stream a partial rich message. Returns True on success.",
+      "arguments": [
+        {
+          "name": "chat_id",
+          "description": "Target private chat",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "UserId"
+          }
+        },
+        {
+          "name": "message_thread_id",
+          "description": "Message thread",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "ThreadId"
+          }
+        },
+        {
+          "name": "draft_id",
+          "description": "Draft identifier",
+          "required": true,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "rich_message",
+          "description": "Partial rich message",
+          "required": true,
+          "type_info": {
+            "type": "reference",
+            "reference": "InputRichMessage"
+          }
+        },
+        {
+          "name": "can_stop",
+          "description": "Pass True to show a Stop button while the message is being generated",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "keep_on_stop",
+          "description": "Pass True to keep the partial message when generation is stopped",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        }
+      ],
+      "return_type": {
+        "type": "bool",
+        "default": true
+      },
+      "documentation_link": "https://core.telegram.org/bots/api#sendrichmessagedraft",
+      "maybe_multipart": false
     }
   ],
   "objects": [
@@ -10426,6 +12807,15 @@
           "type_info": {
             "type": "reference",
             "reference": "ChatBoostRemoved"
+          }
+        },
+        {
+          "name": "stopped_message_generation",
+          "description": "*Optional*. A user stopped generation of a streamed message draft",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "MessageGenerationStopped"
           }
         }
       ],
@@ -11882,6 +14272,15 @@
           }
         },
         {
+          "name": "community_chat_joined",
+          "description": "*Optional*. Service message: the chat was joined by a user from a community",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "CommunityChatJoined"
+          }
+        },
+        {
           "name": "checklist_tasks_done",
           "description": "*Optional*. Service message: some tasks in a checklist were marked as done or not done",
           "required": false,
@@ -12559,7 +14958,16 @@
         {
           "name": "message_id",
           "description": "Identifier of the message that will be replied to in the current chat, or in the chat *chat\\_id* if it is specified",
-          "required": true,
+          "required": false,
+          "type_info": {
+            "type": "integer",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "ephemeral_message_id",
+          "description": "Identifier of an ephemeral message that will be replied to",
+          "required": false,
           "type_info": {
             "type": "integer",
             "enumeration": []
@@ -15884,6 +18292,14 @@
           "type_info": {
             "type": "bool"
           }
+        },
+        {
+          "name": "force_reply",
+          "description": "*Optional*. Requests clients to show the reply interface to the user",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
         }
       ],
       "documentation_link": "https://core.telegram.org/bots/api#replykeyboardmarkup"
@@ -16184,6 +18600,14 @@
               }
             }
           }
+        },
+        {
+          "name": "force_reply",
+          "description": "*Optional*. Requests clients to show the reply interface to the user",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
         }
       ],
       "documentation_link": "https://core.telegram.org/bots/api#inlinekeyboardmarkup"
@@ -16289,6 +18713,15 @@
           "required": false,
           "type_info": {
             "type": "bool"
+          }
+        },
+        {
+          "name": "disabled",
+          "description": "*Optional*. A disabled button which does nothing",
+          "required": false,
+          "type_info": {
+            "type": "reference",
+            "reference": "DisabledButton"
           }
         }
       ],
@@ -16792,6 +19225,14 @@
           "type_info": {
             "type": "bool"
           }
+        },
+        {
+          "name": "can_send_welcome_messages",
+          "description": "*Optional*. *True*, if the administrator can send welcome messages",
+          "required": false,
+          "type_info": {
+            "type": "bool"
+          }
         }
       ],
       "documentation_link": "https://core.telegram.org/bots/api#chatadministratorrights"
@@ -17106,6 +19547,14 @@
           "name": "can_manage_direct_messages",
           "description": "*Optional*. *True*, if the administrator can manage direct messages of the channel and decline suggested posts; for channels only",
           "required": false,
+          "type_info": {
+            "type": "bool"
+          }
+        },
+        {
+          "name": "can_send_welcome_messages",
+          "description": "*True*, if the administrator can send welcome messages",
+          "required": true,
           "type_info": {
             "type": "bool"
           }
@@ -18891,6 +21340,35 @@
           "type_info": {
             "type": "integer",
             "enumeration": []
+          }
+        },
+        {
+          "name": "text",
+          "description": "*Optional*. Text of the message added to the gift",
+          "required": false,
+          "type_info": {
+            "type": "string",
+            "enumeration": []
+          }
+        },
+        {
+          "name": "entities",
+          "description": "*Optional*. Special entities that appear in the gift text",
+          "required": false,
+          "type_info": {
+            "type": "array",
+            "array": {
+              "type": "reference",
+              "reference": "MessageEntity"
+            }
+          }
+        },
+        {
+          "name": "is_private",
+          "description": "*Optional*. *True*, if the sender and gift text are shown only to the gift receiver",
+          "required": false,
+          "type_info": {
+            "type": "bool"
           }
         }
       ],

@@ -14,5 +14,9 @@ impl_payload! {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`)
             pub chat_id: Recipient [into],
         }
+        optional {
+            /// Pass True to additionally receive all bots that are administrators of the chat; other bots are omitted by default
+            pub return_bots: bool,
+        }
     }
 }

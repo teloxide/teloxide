@@ -8,8 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for Telegram Bot API 10.3: rich-message buttons, documents, expandable quote blocks and compact tables; ephemeral message parameters and rich ephemeral editing; native Stop-button draft parameters; disabled inline buttons; force-reply markup flags; stopped-generation updates; and community-joined service messages.
+- Add integration coverage for 10.3 serialization, update routing and nested rich-document multipart uploads.
+- Add pre-dispatch validation for statically known Bot API 10.3 request constraints. Requests may now return `RequestError::Validation` before an HTTP request is sent [**BC**].
+
 - `MessageToEditHasNoText` variant to `ApiError` ([#1426](https://github.com/teloxide/teloxide/issues/1426))
 - `ParticipantIdInvalid` and `ChatAdminRequired` variants to `ApiError` ([#1349](https://github.com/teloxide/teloxide/issues/1349))
+- Support for TBA 10.0
+  - Add request methods introduced in TBA 9.3 through 10.0, including live photos, message drafts, guest queries, managed bots, prepared keyboard buttons, chat gifts, profile photos, story reposting and reaction deletion
+  - Add `filter_guest_message` and `filter_managed_bot` update filters to the `UpdateFilterExt` trait
+  - Add live photo, managed bot, gift background, poll media, poll option change, profile audio and video quality types
+  - Add TBA 9.3 through 10.0 fields to public API types [**BC**]
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `filter_suggested_post_approved`, `filter_suggested_post_approval_failed`, `filter_suggested_post_declined`, `filter_suggested_post_paid`, `filter_suggested_post_refunded` filters to the `MessageFilterExt` trait
   - `ChatFullInfoPublicKind::Supergroup` is now of type `Box<ChatFullInfoPublicSupergroup>` instead of `ChatFullInfoPublicSupergroup` [**BC**]

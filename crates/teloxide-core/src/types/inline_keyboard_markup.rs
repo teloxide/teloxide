@@ -20,6 +20,10 @@ pub struct InlineKeyboardMarkup {
     ///
     /// [`InlineKeyboardButton`]: crate::types::InlineKeyboardButton
     pub inline_keyboard: Vec<Vec<InlineKeyboardButton>>,
+
+    /// Requests clients to show the reply interface to the user.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub force_reply: bool,
 }
 
 /// Build `InlineKeyboardMarkup`.
@@ -44,6 +48,7 @@ impl InlineKeyboardMarkup {
                 .map(<_>::into_iter)
                 .map(<_>::collect)
                 .collect(),
+            force_reply: false,
         }
     }
 
@@ -72,6 +77,12 @@ impl InlineKeyboardMarkup {
         };
         self
     }
+
+    /// Sets `force_reply` to `true`.
+    pub fn force_reply(mut self) -> Self {
+        self.force_reply = true;
+        self
+    }
 }
 
 #[cfg(test)]
@@ -90,7 +101,10 @@ mod tests {
         let markup =
             InlineKeyboardMarkup::default().append_row(vec![button1.clone(), button2.clone()]);
 
-        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
+        let expected = InlineKeyboardMarkup {
+            inline_keyboard: vec![vec![button1, button2]],
+            force_reply: false,
+        };
 
         assert_eq!(markup, expected);
     }
@@ -104,7 +118,10 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(0, button2.clone());
 
-        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1, button2]] };
+        let expected = InlineKeyboardMarkup {
+            inline_keyboard: vec![vec![button1, button2]],
+            force_reply: false,
+        };
 
         assert_eq!(markup, expected);
     }
@@ -118,7 +135,10 @@ mod tests {
             .append_row(vec![button1.clone()])
             .append_to_row(1, button2.clone());
 
-        let expected = InlineKeyboardMarkup { inline_keyboard: vec![vec![button1], vec![button2]] };
+        let expected = InlineKeyboardMarkup {
+            inline_keyboard: vec![vec![button1], vec![button2]],
+            force_reply: false,
+        };
 
         assert_eq!(markup, expected);
     }

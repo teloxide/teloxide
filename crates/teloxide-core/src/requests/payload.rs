@@ -1,5 +1,7 @@
 use std::time::Duration;
 
+use super::validation::RequestValidationError;
+
 /// Payload of a request.
 ///
 /// Simply speaking, structures implementing this trait represent arguments of
@@ -30,5 +32,13 @@ pub trait Payload {
     /// [`GetUpdates`]: crate::payloads::GetUpdates
     fn timeout_hint(&self) -> Option<Duration> {
         None
+    }
+
+    /// Validates this payload before it is serialized and dispatched.
+    ///
+    /// Generated payloads use this default unless their schema declares a
+    /// handwritten validation hook.
+    fn validate(&self) -> Result<(), RequestValidationError> {
+        Ok(())
     }
 }

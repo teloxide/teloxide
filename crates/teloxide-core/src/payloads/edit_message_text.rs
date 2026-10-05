@@ -3,17 +3,19 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, InlineKeyboardMarkup, LinkPreviewOptions, Message, MessageEntity,
-    MessageId, ParseMode, Recipient,
+    BusinessConnectionId, InlineKeyboardMarkup, InputRichMessage, LinkPreviewOptions, Message,
+    MessageEntity, MessageId, ParseMode, Recipient,
 };
 
 impl_payload! {
+    @[multipart = rich_message]
+    @[validate = crate::requests::validation::validate_edit_message_text]
     /// Use this method to edit text and [games] messages. On success, the edited Message is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.
     ///
     /// See also: [`EditMessageTextInline`](crate::payloads::EditMessageTextInline)
     ///
     /// [games]: https://core.telegram.org/bots/api#games
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub EditMessageText (EditMessageTextSetters) => Message {
         required {
             /// Unique identifier for the target chat or username of the target channel (in the format `@channelusername`).
@@ -22,9 +24,12 @@ impl_payload! {
             #[serde(flatten)]
             pub message_id: MessageId,
             /// New text of the message, 1-4096 characters after entities parsing
+            #[serde(skip_serializing_if = "String::is_empty")]
             pub text: String [into],
         }
         optional {
+            /// A new rich message to replace the current message content
+            pub rich_message: InputRichMessage,
             /// Unique identifier of the business connection on behalf of which the message to be edited was sent
             pub business_connection_id: BusinessConnectionId,
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
@@ -40,5 +45,18 @@ impl_payload! {
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             pub reply_markup: InlineKeyboardMarkup,
         }
+    }
+}
+
+impl EditMessageText {
+    /// Creates a rich-only edit request.
+    pub fn rich(
+        chat_id: impl Into<Recipient>,
+        message_id: MessageId,
+        rich_message: InputRichMessage,
+    ) -> Self {
+        let mut payload = Self::new(chat_id, message_id, String::new());
+        payload.rich_message = Some(rich_message);
+        payload
     }
 }

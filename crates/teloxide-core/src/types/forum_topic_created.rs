@@ -18,6 +18,10 @@ pub struct ForumTopicCreated {
 
     /// Unique identifier of the custom emoji shown as the topic icon.
     pub icon_custom_emoji_id: Option<CustomEmojiId>,
+
+    /// `true`, if the name of the topic wasn't specified explicitly by its
+    /// creator and likely needs to be changed by the bot.
+    pub is_name_implicit: Option<crate::types::True>,
 }
 
 #[cfg(test)]

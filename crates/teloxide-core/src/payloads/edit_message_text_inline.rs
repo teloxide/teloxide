@@ -2,23 +2,30 @@
 
 use serde::Serialize;
 
-use crate::types::{BusinessConnectionId, InlineKeyboardMarkup, MessageEntity, ParseMode, True};
+use crate::types::{
+    BusinessConnectionId, InlineKeyboardMarkup, InputRichMessage, LinkPreviewOptions,
+    MessageEntity, ParseMode, True,
+};
 
 impl_payload! {
+    @[validate = crate::requests::validation::validate_edit_message_text_inline]
     /// Use this method to edit text and [games] messages. On success, _True_ is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within **48 hours** from the time they were sent.
     ///
     /// See also: [`EditMessageText`](crate::payloads::EditMessageText)
     ///
     /// [games]: https://core.telegram.org/bots/api#games
-    #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     pub EditMessageTextInline (EditMessageTextInlineSetters) => True {
         required {
             /// Identifier of the inline message
             pub inline_message_id: String [into],
             /// New text of the message, 1-4096 characters after entities parsing
+            #[serde(skip_serializing_if = "String::is_empty")]
             pub text: String [into],
         }
         optional {
+            /// A new rich message to replace the current message content
+            pub rich_message: InputRichMessage,
             /// Unique identifier of the business connection on behalf of which the message to be edited was sent
             pub business_connection_id: BusinessConnectionId,
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
@@ -27,12 +34,21 @@ impl_payload! {
             pub parse_mode: ParseMode,
             /// List of special entities that appear in message text, which can be specified instead of _parse\_mode_
             pub entities: Vec<MessageEntity> [collect],
-            /// Disables link previews for links in this message
-            pub disable_web_page_preview: bool,
+            /// Link preview generation options for the message
+            pub link_preview_options: LinkPreviewOptions,
             /// A JSON-serialized object for an [inline keyboard].
             ///
             /// [inline keyboard]: https://core.telegram.org/bots#inline-keyboards-and-on-the-fly-updating
             pub reply_markup: InlineKeyboardMarkup,
         }
+    }
+}
+
+impl EditMessageTextInline {
+    /// Creates a rich-only edit request.
+    pub fn rich(inline_message_id: impl Into<String>, rich_message: InputRichMessage) -> Self {
+        let mut payload = Self::new(inline_message_id, String::new());
+        payload.rich_message = Some(rich_message);
+        payload
     }
 }

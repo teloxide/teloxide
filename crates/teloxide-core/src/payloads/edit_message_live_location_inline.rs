@@ -2,7 +2,7 @@
 
 use serde::Serialize;
 
-use crate::types::{BusinessConnectionId, ReplyMarkup, True};
+use crate::types::{BusinessConnectionId, LivePeriod, ReplyMarkup, True};
 
 impl_payload! {
     /// Use this method to edit live location messages. A location can be edited until its live_period expires or editing is explicitly disabled by a call to [`StopMessageLiveLocation`]. On success, True is returned.
@@ -23,6 +23,8 @@ impl_payload! {
         optional {
             /// Unique identifier of the business connection on behalf of which the message to be edited was sent
             pub business_connection_id: BusinessConnectionId,
+            /// New period in seconds during which the location can be updated, starting from the message send date. If 0x7FFFFFFF is specified, then the location can be updated forever. Otherwise, the new value must not exceed the current live_period by more than a day, and the live location expiration date must remain within the next 90 days. If not specified, then live_period remains unchanged
+            pub live_period: LivePeriod,
             /// The radius of uncertainty for the location, measured in meters; 0-1500
             pub horizontal_accuracy: f64,
             /// For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.

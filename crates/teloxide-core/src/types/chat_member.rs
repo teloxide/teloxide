@@ -114,10 +114,20 @@ pub struct Administrator {
     #[serde(default)]
     pub can_manage_topics: bool,
 
+    /// `true`, if the administrator can edit the tags of regular members; for
+    /// groups and supergroups only.
+    #[serde(default)]
+    pub can_manage_tags: bool,
+
     /// `true`, if the administrator can manage direct messages of the channel
     /// and decline suggested posts; for channels only
     #[serde(default)]
     pub can_manage_direct_messages: bool,
+
+    /// `true`, if the administrator can send welcome messages; groups and
+    /// supergroups only.
+    #[serde(default)]
+    pub can_send_welcome_messages: bool,
 
     /// `true` if the administrator can add new administrators with a subset of
     /// his own privileges or demote administrators that he has promoted,
@@ -134,6 +144,9 @@ pub struct Administrator {
 pub struct Member {
     /// Date when the user's subscription will expire
     pub until_date: Option<UntilDate>,
+
+    /// Tag of the member.
+    pub tag: Option<String>,
 }
 
 /// User, restricted in the group. This struct is part of the [`ChatMemberKind`]
@@ -194,6 +207,17 @@ pub struct Restricted {
 
     /// `true` if the user is allowed to send polls.
     pub can_send_polls: bool,
+
+    /// `true`, if the user is allowed to react to messages.
+    #[serde(default)]
+    pub can_react_to_messages: bool,
+
+    /// `true`, if the user is allowed to edit their own tag.
+    #[serde(default)]
+    pub can_edit_tag: bool,
+
+    /// Tag of the member.
+    pub tag: Option<String>,
 }
 
 /// User that was banned in the chat and can't return to it or view chat
@@ -729,6 +753,11 @@ mod tests {
                 language_code: Some("en".to_string()),
                 is_premium: false,
                 added_to_attachment_menu: false,
+                supports_guest_queries: false,
+                supports_join_request_queries: false,
+                has_topics_enabled: false,
+                allows_users_to_create_topics: false,
+                can_manage_bots: false,
             },
             kind: ChatMemberKind::Administrator(Administrator {
                 custom_title: None,
@@ -748,7 +777,9 @@ mod tests {
                 can_pin_messages: true,
                 can_promote_members: true,
                 can_manage_direct_messages: true,
+                can_send_welcome_messages: false,
                 can_manage_topics: false,
+                can_manage_tags: false,
             }),
         };
         let actual = serde_json::from_str::<ChatMember>(json).unwrap();
@@ -795,6 +826,11 @@ mod tests {
                 language_code: Some("en".to_string()),
                 is_premium: false,
                 added_to_attachment_menu: false,
+                supports_guest_queries: false,
+                supports_join_request_queries: false,
+                has_topics_enabled: false,
+                allows_users_to_create_topics: false,
+                can_manage_bots: false,
             },
             kind: ChatMemberKind::Restricted(Restricted {
                 is_member: true,
@@ -812,6 +848,9 @@ mod tests {
                 can_change_info: true,
                 can_invite_users: true,
                 can_pin_messages: true,
+                can_react_to_messages: false,
+                can_edit_tag: false,
+                tag: None,
                 until_date: UntilDate::Date(
                     chrono::DateTime::from_timestamp(1620000000, 0).unwrap(),
                 ),

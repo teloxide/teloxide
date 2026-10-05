@@ -1,9 +1,18 @@
 //! Telegram API requests.
 
 pub use self::{
-    has_payload::HasPayload, json::JsonRequest, multipart::MultipartRequest,
-    multipart_payload::MultipartPayload, payload::Payload, request::Request, requester::Requester,
+    has_payload::HasPayload,
+    json::JsonRequest,
+    multipart::MultipartRequest,
+    multipart_payload::MultipartPayload,
+    payload::Payload,
+    request::Request,
+    requester::Requester,
     requester_ext::RequesterExt,
+    validation::{
+        InvalidValueReason, RequestFieldPath, RequestFieldPathSegment, RequestValidationError,
+        RichMessageContext, Validate, ValidateWith,
+    },
 };
 
 /// A type that is returned after making a request to Telegram.
@@ -20,3 +29,4 @@ mod payload;
 mod request;
 mod requester;
 mod requester_ext;
+pub mod validation;

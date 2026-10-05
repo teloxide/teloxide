@@ -1,10 +1,14 @@
+use std::collections::HashSet;
+
 use crate::codegen::{patch::escape_kw, schema, schema_check::api_schema::*};
 use derive_more::derive::Display;
 
 #[derive(Debug, Display)]
 enum ApiCheckError {
-    #[display("Method `{method}` does not exist")]
+    #[display("Method `{method}` does not exist in schema.ron")]
     MethodDoesNotExist { method: String },
+    #[display("Method `{method}` exists in schema.ron but is absent from custom_v2.json")]
+    MethodIsNotChecked { method: String },
     #[display("Method `{method}` does not have `{param}` parameter")]
     ParamDoesNotExist { method: String, param: String },
     #[display(
@@ -51,6 +55,7 @@ enum Exception {
     MethodField { method: String, param: String },
     FieldType { ron_raw_type: String, actual_type: String },
     SiblingParam { param: String },
+    Requiredness { method: String, param: String },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -77,6 +82,10 @@ impl Exceptions {
 
     fn is_sibling_param_exception(&self, param: String) -> bool {
         self.exceptions.contains(&Exception::SiblingParam { param })
+    }
+
+    fn is_requiredness_exception(&self, method: String, param: String) -> bool {
+        self.exceptions.contains(&Exception::Requiredness { method, param })
     }
 }
 
@@ -317,7 +326,10 @@ fn check_param(
             });
         }
         ron_param.ty = *ron_param_type.clone()
-    } else if !param.required && !ignore_optional {
+    } else if !param.required
+        && !ignore_optional
+        && !exceptions.is_requiredness_exception(method_name.clone(), param.name.clone())
+    {
         errors.push(ApiCheckError::ParamIsNotRequired {
             method: method_name.clone(),
             param: param.name.clone(),
@@ -437,6 +449,11 @@ mod tests {
         // Here you can set exceptions for fields that don't exist in our schema for
         // some reason
         let mut exceptions = Exceptions::new(vec![
+            // Legacy combined checking schema field, replaced by link_preview_options.
+            Exception::MethodField {
+                method: "editMessageText".to_owned(),
+                param: "disable_web_page_preview".to_owned(),
+            },
             // The Inline methods can't set these values
             Exception::MethodField {
                 method: "editMessageTextInline".to_owned(),
@@ -466,6 +483,10 @@ mod tests {
             Exception::MethodField {
                 method: "getGameHighScores".to_owned(),
                 param: "inline_message_id".to_owned(),
+            },
+            Exception::Requiredness {
+                method: "editMessageText".to_owned(),
+                param: "text".to_owned(),
             },
         ]);
 
@@ -501,6 +522,14 @@ mod tests {
                 "schema.ron is of api version {ron_version}, while the checking schema is \
                  {api_version}. Please update the checking schema."
             );
+        }
+
+        let checked_methods: HashSet<_> =
+            api_schema.methods.iter().map(|method| method.name.as_str()).collect();
+        for method in &ron_schema.methods {
+            if !checked_methods.contains(method.names.0.as_str()) {
+                errors.push(ApiCheckError::MethodIsNotChecked { method: method.names.0.clone() });
+            }
         }
 
         for method in api_schema.methods {

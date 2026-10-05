@@ -21,8 +21,12 @@ impl_payload! {
             pub exclude_saved: bool,
             /// Pass _true_ to exclude gifts that can be purchased an unlimited number of times
             pub exclude_unlimited: bool,
-            /// Pass _true_ to exclude gifts that can be purchased a limited number of times
-            pub exclude_limited: bool,
+            /// Pass _true_ to exclude gifts that can be upgraded to a unique gift
+            pub exclude_limited_upgradable: bool,
+            /// Pass _true_ to exclude gifts that can't be upgraded to a unique gift
+            pub exclude_limited_non_upgradable: bool,
+            /// Pass _true_ to exclude gifts that were assigned from the TON blockchain
+            pub exclude_from_blockchain: bool,
             /// Pass _true_ to exclude unique gifts
             pub exclude_unique: bool,
             /// Pass _true_ to sort results by gift price instead of send date. Sorting is applied before pagination

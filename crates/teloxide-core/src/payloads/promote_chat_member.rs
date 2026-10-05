@@ -47,6 +47,10 @@ impl_payload! {
             pub can_manage_topics: bool,
             /// Pass True if the administrator can manage direct messages within the channel and decline suggested posts; for channels only
             pub can_manage_direct_messages: bool,
+            /// Pass True if the administrator can send welcome messages
+            pub can_send_welcome_messages: bool,
+            /// Pass True if the administrator can edit tags of regular members; for groups and supergroups only
+            pub can_manage_tags: bool,
         }
     }
 }

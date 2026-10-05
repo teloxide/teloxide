@@ -13,6 +13,7 @@ use crate::types::{InputFile, Seconds};
 #[serde(rename_all = "snake_case")]
 pub enum InputPaidMedia {
     Photo(InputPaidMediaPhoto),
+    LivePhoto(InputPaidMediaLivePhoto),
     Video(Box<InputPaidMediaVideo>),
 }
 
@@ -20,6 +21,7 @@ impl From<InputPaidMedia> for InputFile {
     fn from(media: InputPaidMedia) -> InputFile {
         match media {
             InputPaidMedia::Photo(InputPaidMediaPhoto { media, .. }) => media,
+            InputPaidMedia::LivePhoto(InputPaidMediaLivePhoto { media, .. }) => media,
             InputPaidMedia::Video(input_paid_media_video) => input_paid_media_video.media,
         }
     }
@@ -32,6 +34,7 @@ impl InputPaidMedia {
 
         let (media, thumbnail) = match self {
             Photo(InputPaidMediaPhoto { media, .. }) => (media, None),
+            LivePhoto(InputPaidMediaLivePhoto { media, photo }) => (media, Some(photo)),
             Video(input_paid_media_video) => {
                 (&input_paid_media_video.media, input_paid_media_video.thumbnail.as_ref())
             }
@@ -46,12 +49,32 @@ impl InputPaidMedia {
 
         let (media, thumbnail) = match self {
             Photo(InputPaidMediaPhoto { media, .. }) => (media, None),
+            LivePhoto(InputPaidMediaLivePhoto { media, photo }) => (media, Some(photo)),
             Video(input_paid_media_video) => {
                 (&mut input_paid_media_video.media, input_paid_media_video.thumbnail.as_mut())
             }
         };
 
         iter::once(media).chain(thumbnail)
+    }
+}
+
+/// The paid media to send is a live photo.
+///
+/// [The official docs](https://core.telegram.org/bots/api#inputpaidmedialivephoto).
+#[derive(Clone, Debug, Serialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct InputPaidMediaLivePhoto {
+    /// Video of the live photo to send.
+    pub media: InputFile,
+
+    /// Static photo to send.
+    pub photo: InputFile,
+}
+
+impl InputPaidMediaLivePhoto {
+    pub const fn new(media: InputFile, photo: InputFile) -> Self {
+        Self { media, photo }
     }
 }
 

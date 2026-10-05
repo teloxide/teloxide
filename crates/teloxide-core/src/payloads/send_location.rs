@@ -3,8 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, EffectId, LivePeriod, Message, Recipient, ReplyMarkup, ReplyParameters,
-    SuggestedPostParameters, ThreadId, TopicId,
+    BusinessConnectionId, EffectId, EphemeralMessageParameters, LivePeriod, Message, Recipient,
+    ReplyMarkup, ReplyParameters, SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -28,6 +28,8 @@ impl_payload! {
             pub message_thread_id: ThreadId,
             /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
             pub direct_messages_topic_id: TopicId,
+            /// A JSON-serialized object containing the parameters of the ephemeral message to send
+            pub ephemeral_message_parameters: EphemeralMessageParameters,
             /// The radius of uncertainty for the location, measured in meters; 0-1500
             pub horizontal_accuracy: f64,
             /// Period in seconds for which the location will be updated (see [Live Locations], should be between 60 and 86400, or 0x7FFFFFFF for live locations that can be edited indefinitely.

@@ -37,7 +37,7 @@ throttle = ["vecrem"]
 # Trace bot adaptor
 trace_adaptor = []
 
-# Erased bot adaptor
+# Erased requester adaptor
 erased = []
 
 # CacheMe bot adaptor
@@ -93,6 +93,8 @@ tokio = { version = "1.39.0", features = [
     "rt-multi-thread",
 ] }
 cool_asserts = "2.0.3"
+# Used to collect the actual reqwest multipart body in wire-format tests.
+http-body-util = "0.1"
 
 xshell = "0.2.7"
 ron = "0.8.1"
@@ -113,9 +115,9 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples"]
 tag-prefix = "core-"
 enable-features = ["full"]
 pre-release-replacements = [
-    { file = "README.md", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
-    { file = "src/lib.rs", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
-    { file = "CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
+  { file = "README.md", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
+  { file = "src/lib.rs", search = "teloxide-core = \"[^\"]+\"", replace = "teloxide-core = \"{{version}}\"" },
+  { file = "CHANGELOG.md", search = "## unreleased", replace = "## unreleased\n\n## {{version}} - {{date}}", exactly = 1 },
 ]
 
 [lints.rust]

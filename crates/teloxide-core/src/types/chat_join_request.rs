@@ -10,6 +10,9 @@ use crate::types::{Chat, ChatId, ChatInviteLink, User};
 pub struct ChatJoinRequest {
     /// Chat to which the request was sent
     pub chat: Chat,
+    /// Identifier of the join-request query that can be passed to query
+    /// methods.
+    pub query_id: Option<String>,
     /// User that sent the join request
     pub from: User,
     /// Identifier of a private chat with the user who sent the join request.

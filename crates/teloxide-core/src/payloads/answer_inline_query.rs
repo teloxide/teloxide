@@ -5,6 +5,7 @@ use serde::Serialize;
 use crate::types::{InlineQueryId, InlineQueryResult, InlineQueryResultsButton, True};
 
 impl_payload! {
+    @[validate = crate::requests::validation::validate_answer_inline_query]
     /// Use this method to send answers to an inline query. On success, _True_ is returned. No more than **50** results per query are allowed.
     #[derive(Debug, PartialEq, Clone, Serialize)]
     pub AnswerInlineQuery (AnswerInlineQuerySetters) => True {

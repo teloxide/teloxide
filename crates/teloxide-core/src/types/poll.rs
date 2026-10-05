@@ -1,4 +1,4 @@
-use crate::types::{MessageEntity, PollType, Seconds, User};
+use crate::types::{Chat, MessageEntity, PollMedia, PollType, Seconds, User};
 
 use chrono::{DateTime, Utc};
 use derive_more::derive::From;
@@ -26,7 +26,7 @@ pub struct PollId(pub String);
 ///
 /// [The official docs](https://core.telegram.org/bots/api#poll).
 #[serde_with::skip_serializing_none]
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct Poll {
     /// Unique poll identifier.
@@ -58,10 +58,26 @@ pub struct Poll {
     /// True, if the poll allows multiple answers
     pub allows_multiple_answers: bool,
 
+    /// True, if the poll allows to change the chosen answer options.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub allows_revoting: bool,
+
+    /// True, if voting is limited to users who have been members of the chat
+    /// where the poll was originally sent for more than 24 hours.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub members_only: bool,
+
+    /// Two-letter ISO 3166-1 alpha-2 country codes indicating the countries
+    /// from which users can vote.
+    pub country_codes: Option<Vec<String>>,
+
     /// 0-based identifier of the correct answer option. Available only for
     /// polls in the quiz mode, which are closed, or was sent (not
     /// forwarded) by the bot or to the private chat with the bot.
     pub correct_option_id: Option<u8>,
+
+    /// 0-based identifiers of the correct answer options.
+    pub correct_option_ids: Option<Vec<u8>>,
 
     /// Text that is shown when a user chooses an incorrect answer or taps on
     /// the lamp icon in a quiz-style poll, 0-200 characters.
@@ -70,6 +86,18 @@ pub struct Poll {
     /// Special entities like usernames, URLs, bot commands, etc. that appear in
     /// the explanation.
     pub explanation_entities: Option<Vec<MessageEntity>>,
+
+    /// Media added to the quiz explanation.
+    pub explanation_media: Option<PollMedia>,
+
+    /// Description of the poll.
+    pub description: Option<String>,
+
+    /// Special entities that appear in the description.
+    pub description_entities: Option<Vec<MessageEntity>>,
+
+    /// Media added to the poll description.
+    pub media: Option<PollMedia>,
 
     /// Amount of time in seconds the poll will be active after creation.
     pub open_period: Option<Seconds>,
@@ -83,7 +111,8 @@ pub struct Poll {
 /// This object contains information about one answer option in a poll.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#polloption).
-#[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct PollOption {
     /// Option text, 1-100 characters.
@@ -95,6 +124,24 @@ pub struct PollOption {
 
     /// Number of users that voted for this option.
     pub voter_count: u32,
+
+    /// Unique identifier of the option, persistent on option addition and
+    /// deletion.
+    pub persistent_id: Option<String>,
+
+    /// Media added to the poll option.
+    pub media: Option<PollMedia>,
+
+    /// User who added the option.
+    pub added_by_user: Option<User>,
+
+    /// Chat that added the option.
+    pub added_by_chat: Option<Chat>,
+
+    /// Point in time when the option was added.
+    #[serde(default, with = "crate::types::serde_opt_date_from_unix_timestamp")]
+    #[cfg_attr(test, schemars(with = "Option<i64>"))]
+    pub addition_date: Option<DateTime<Utc>>,
 }
 
 impl Poll {

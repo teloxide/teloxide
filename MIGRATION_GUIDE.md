@@ -3,6 +3,50 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+### Bot API 10.3
+
+This release exposes Telegram Bot API 10.3. The generated send methods use
+`EphemeralMessageParameters` for ephemeral delivery, and message draft methods
+accept `can_stop` and `keep_on_stop` for the native Stop button flow.
+
+New public models cover rich-message buttons and document/expandable-quote/table
+blocks, disabled inline buttons, force-reply markup flags, stopped-generation
+updates, and community-joined service messages. Code that constructs affected
+structs with literals should initialize the new fields; constructors remain the
+preferred option where available.
+
+Requests with statically checkable Bot API 10.3 constraints now perform local
+validation before dispatch. Handle the new `RequestError::Validation` variant
+when matching request errors; validation failures do not send an HTTP request.
+
+
+### teloxide-core
+
+Bot API 10.0 support adds new public fields to several structs, including
+`User`, `Message`, `MessageCommon`, `KeyboardButton`, `InlineKeyboardButton`,
+`ChatPermissions`, chat member variants, gift types, poll types and media types.
+If you construct these structs manually, add the new fields explicitly:
+
+```diff
+ User {
+     id,
+     is_bot,
+     first_name,
+     last_name,
+     username,
+     language_code,
+     is_premium,
+     added_to_attachment_menu,
++    supports_guest_queries: false,
++    has_topics_enabled: false,
++    allows_users_to_create_topics: false,
++    can_manage_bots: false,
+ }
+```
+
+For optional fields, use `None`; for new boolean flags, use `false` unless you
+need a different value.
+
 ## 0.16 -> 0.17
 
 ### teloxide

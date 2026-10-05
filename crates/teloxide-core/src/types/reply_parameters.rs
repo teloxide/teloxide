@@ -10,9 +10,11 @@ pub struct ReplyParameters {
     /// Identifier of the message that will be replied to in the current chat,
     /// or in the chat _chat\_id_ if it is specified
     // Issue https://github.com/teloxide/teloxide/issues/1135
-    #[serde(with = "crate::types::msg_id_as_int")]
-    #[cfg_attr(test, schemars(with = "i32"))]
-    pub message_id: MessageId,
+    #[serde(default, with = "crate::types::option_msg_id_as_int")]
+    #[cfg_attr(test, schemars(with = "Option<i32>"))]
+    pub message_id: Option<MessageId>,
+    /// Identifier of an ephemeral message that will be replied to.
+    pub ephemeral_message_id: Option<i32>,
     /// If the message to be replied to is from a different chat, unique
     /// identifier for the chat or username of the channel (in the format
     /// `@channelusername`). Not supported for messages sent on behalf of a
@@ -42,11 +44,19 @@ pub struct ReplyParameters {
     pub quote_position: Option<u32>,
     /// Identifier of the specific checklist task to be replied to
     pub checklist_task_id: Option<ChecklistTaskId>,
+
+    /// Persistent identifier of the specific poll option to be replied to.
+    pub poll_option_id: Option<String>,
 }
 
 impl ReplyParameters {
     pub fn new(message_id: MessageId) -> Self {
-        Self { message_id, ..Self::default() }
+        Self { message_id: Some(message_id), ..Self::default() }
+    }
+
+    /// Creates reply parameters for an ephemeral message.
+    pub fn ephemeral(ephemeral_message_id: i32) -> Self {
+        Self { ephemeral_message_id: Some(ephemeral_message_id), ..Self::default() }
     }
 
     /// Setter for the `chat_id` field
@@ -71,5 +81,28 @@ impl ReplyParameters {
     pub fn checklist_task_id(mut self, checklist_task_id: ChecklistTaskId) -> Self {
         self.checklist_task_id = Some(checklist_task_id);
         self
+    }
+
+    /// Setter for the `poll_option_id` field.
+    pub fn poll_option_id(mut self, poll_option_id: String) -> Self {
+        self.poll_option_id = Some(poll_option_id);
+        self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serializes_exactly_one_reply_identifier() {
+        assert_eq!(
+            serde_json::to_value(ReplyParameters::new(MessageId(5))).unwrap(),
+            serde_json::json!({"message_id": 5})
+        );
+        assert_eq!(
+            serde_json::to_value(ReplyParameters::ephemeral(9)).unwrap(),
+            serde_json::json!({"ephemeral_message_id": 9})
+        );
     }
 }

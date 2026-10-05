@@ -1,13 +1,16 @@
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 
-use crate::types::{LabeledPrice, LinkPreviewOptions, LivePeriod, MessageEntity, ParseMode};
+use crate::types::{
+    InputFile, InputFileLike, InputRichMessageContent, LabeledPrice, LinkPreviewOptions,
+    LivePeriod, MessageEntity, ParseMode,
+};
 
 /// This object represents the content of a message to be sent as a result of an
 /// inline query.
 ///
 /// [The official docs](https://core.telegram.org/bots/api#inputmessagecontent).
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum InputMessageContent {
@@ -16,6 +19,52 @@ pub enum InputMessageContent {
     Venue(InputMessageContentVenue),
     Contact(InputMessageContentContact),
     Invoice(InputMessageContentInvoice),
+    Rich(InputRichMessageContent),
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum LegacyInputMessageContent {
+    Text(InputMessageContentText),
+    Location(InputMessageContentLocation),
+    Venue(InputMessageContentVenue),
+    Contact(InputMessageContentContact),
+    Invoice(InputMessageContentInvoice),
+}
+
+impl From<LegacyInputMessageContent> for InputMessageContent {
+    fn from(value: LegacyInputMessageContent) -> Self {
+        match value {
+            LegacyInputMessageContent::Text(value) => Self::Text(value),
+            LegacyInputMessageContent::Location(value) => Self::Location(value),
+            LegacyInputMessageContent::Venue(value) => Self::Venue(value),
+            LegacyInputMessageContent::Contact(value) => Self::Contact(value),
+            LegacyInputMessageContent::Invoice(value) => Self::Invoice(value),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for InputMessageContent {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        LegacyInputMessageContent::deserialize(deserializer).map(Into::into)
+    }
+}
+
+impl InputFileLike for InputMessageContent {
+    fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
+        if let Self::Rich(value) = self {
+            value.copy_into(into);
+        }
+    }
+
+    fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
+        if let Self::Rich(value) = self {
+            value.move_into(into);
+        }
+    }
 }
 /// Represents the content of a text message to be sent as the result of an
 /// inline query.
@@ -593,6 +642,20 @@ impl InputMessageContentInvoice {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{InputMediaPhoto, InputRichBlock, InputRichBlockPhoto, InputRichMessage};
+
+    #[test]
+    fn cloned_rich_content_with_upload_is_equal() {
+        let content =
+            InputMessageContent::Rich(InputRichMessageContent::new(InputRichMessage::blocks([
+                InputRichBlock::Photo(InputRichBlockPhoto {
+                    photo: InputMediaPhoto::new(InputFile::memory("photo")),
+                    caption: None,
+                }),
+            ])));
+
+        assert_eq!(content, content.clone());
+    }
 
     #[test]
     fn text_serialize() {

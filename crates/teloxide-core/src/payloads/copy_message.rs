@@ -3,8 +3,8 @@
 use serde::Serialize;
 
 use crate::types::{
-    MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters, Seconds,
-    SuggestedPostParameters, ThreadId, TopicId,
+    EffectId, MessageEntity, MessageId, ParseMode, Recipient, ReplyMarkup, ReplyParameters,
+    Seconds, SuggestedPostParameters, ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -49,6 +49,8 @@ impl_payload! {
             pub protect_content: bool,
             /// Pass `true` to allow up to 1000 messages per second, ignoring broadcasting limits for a fee of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
             pub allow_paid_broadcast: bool,
+            /// Unique identifier of the message effect to add to the copied message; for private chats only
+            pub message_effect_id: EffectId,
             /// An object containing the parameters of the suggested post to send; for direct messages chats only. If the message is sent as a reply to another suggested post, then that suggested post is automatically declined.
             pub suggested_post_parameters: SuggestedPostParameters,
             /// Description of the message to reply to

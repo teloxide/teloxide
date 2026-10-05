@@ -3,10 +3,11 @@ use serde::{de::MapAccess, Deserialize, Serialize, Serializer};
 use serde_json::Value;
 
 use crate::types::{
-    BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
-    ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
-    MessageReactionCountUpdated, MessageReactionUpdated, PaidMediaPurchased, Poll, PollAnswer,
-    PreCheckoutQuery, ShippingQuery, User,
+    BotSubscriptionUpdated, BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat,
+    ChatBoostRemoved, ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult,
+    InlineQuery, ManagedBotUpdated, Message, MessageGenerationStopped, MessageReactionCountUpdated,
+    MessageReactionUpdated, PaidMediaPurchased, Poll, PollAnswer, PreCheckoutQuery, ShippingQuery,
+    User,
 };
 
 /// This [object] represents an incoming update.
@@ -61,6 +62,9 @@ pub enum UpdateKind {
     /// New version of a channel post that is known to the bot and was edited.
     EditedChannelPost(Message),
 
+    /// New guest message.
+    GuestMessage(Message),
+
     /// The bot was connected to or disconnected from a business account, or a
     /// user edited an existing connection with the bot
     BusinessConnection(BusinessConnection),
@@ -73,6 +77,16 @@ pub enum UpdateKind {
 
     /// Messages were deleted from a connected business account
     DeletedBusinessMessages(BusinessMessagesDeleted),
+
+    /// A managed bot was created, or token or owner of a managed bot was
+    /// changed.
+    ManagedBot(ManagedBotUpdated),
+
+    /// A user stopped generation of a streamed message draft.
+    StoppedMessageGeneration(MessageGenerationStopped),
+
+    /// A user payment subscription changed.
+    Subscription(BotSubscriptionUpdated),
 
     /// A reaction to a message was changed by a user. The bot must be an
     /// administrator in the chat and must explicitly specify
@@ -178,6 +192,7 @@ impl Update {
             | EditedMessage(m)
             | ChannelPost(m)
             | EditedChannelPost(m)
+            | GuestMessage(m)
             | BusinessMessage(m)
             | EditedBusinessMessage(m) => m.from.as_ref()?,
 
@@ -196,10 +211,14 @@ impl Update {
             ChatJoinRequest(r) => &r.from,
             ChatBoost(b) => return b.boost.source.user(),
             RemovedChatBoost(b) => return b.source.user(),
+            ManagedBot(m) => &m.user,
+            Subscription(update) => &update.user,
 
-            MessageReactionCount(_) | DeletedBusinessMessages(_) | Poll(_) | Error(_) => {
-                return None
-            }
+            MessageReactionCount(_)
+            | DeletedBusinessMessages(_)
+            | StoppedMessageGeneration(_)
+            | Poll(_)
+            | Error(_) => return None,
         };
 
         Some(from)
@@ -246,6 +265,7 @@ impl Update {
             | UpdateKind::EditedMessage(message)
             | UpdateKind::ChannelPost(message)
             | UpdateKind::EditedChannelPost(message)
+            | UpdateKind::GuestMessage(message)
             | UpdateKind::BusinessMessage(message)
             | UpdateKind::EditedBusinessMessage(message) => i0(message.mentioned_users()),
 
@@ -291,6 +311,9 @@ impl Update {
             UpdateKind::ChatJoinRequest(_)
             | UpdateKind::MessageReactionCount(_)
             | UpdateKind::BusinessConnection(_)
+            | UpdateKind::ManagedBot(_)
+            | UpdateKind::Subscription(_)
+            | UpdateKind::StoppedMessageGeneration(_)
             | UpdateKind::DeletedBusinessMessages(_)
             | UpdateKind::Error(_) => i5(empty()),
         }
@@ -306,6 +329,7 @@ impl Update {
             | EditedMessage(m)
             | ChannelPost(m)
             | EditedChannelPost(m)
+            | GuestMessage(m)
             | BusinessMessage(m)
             | EditedBusinessMessage(m) => &m.chat,
             CallbackQuery(q) => q.message.as_ref()?.chat(),
@@ -318,8 +342,12 @@ impl Update {
             RemovedChatBoost(b) => &b.chat,
             DeletedBusinessMessages(m) => &m.chat,
 
+            StoppedMessageGeneration(update) => &update.chat,
+
             InlineQuery(_)
             | BusinessConnection(_)
+            | ManagedBot(_)
+            | Subscription(_)
             | ChosenInlineResult(_)
             | ShippingQuery(_)
             | PreCheckoutQuery(_)
@@ -363,20 +391,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
             where
                 A: MapAccess<'de>,
             {
-                let mut tmp = None;
-
-                // Try to deserialize a borrowed-str key, or else try deserializing an owned
-                // string key
-                let key = map.next_key::<&str>().or_else(|_| {
-                    map.next_key::<String>().map(|k| {
-                        tmp = k;
-                        tmp.as_deref()
-                    })
-                });
+                let key = map.next_key::<String>().ok().flatten();
 
                 let this = key
-                    .ok()
-                    .flatten()
+                    .as_deref()
                     .and_then(|key| match key {
                         "message" => map.next_value::<Message>().ok().map(UpdateKind::Message),
                         "edited_message" => {
@@ -387,6 +405,9 @@ impl<'de> Deserialize<'de> for UpdateKind {
                         }
                         "edited_channel_post" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedChannelPost)
+                        }
+                        "guest_message" => {
+                            map.next_value::<Message>().ok().map(UpdateKind::GuestMessage)
                         }
                         "business_connection" => map
                             .next_value::<BusinessConnection>()
@@ -402,6 +423,13 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<BusinessMessagesDeleted>()
                             .ok()
                             .map(UpdateKind::DeletedBusinessMessages),
+                        "managed_bot" => {
+                            map.next_value::<ManagedBotUpdated>().ok().map(UpdateKind::ManagedBot)
+                        }
+                        "subscription" => map
+                            .next_value::<BotSubscriptionUpdated>()
+                            .ok()
+                            .map(UpdateKind::Subscription),
                         "message_reaction" => map
                             .next_value::<MessageReactionUpdated>()
                             .ok()
@@ -452,6 +480,10 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<ChatBoostRemoved>()
                             .ok()
                             .map(UpdateKind::RemovedChatBoost),
+                        "stopped_message_generation" => map
+                            .next_value::<MessageGenerationStopped>()
+                            .ok()
+                            .map(UpdateKind::StoppedMessageGeneration),
                         _ => Some(empty_error()),
                     })
                     .unwrap_or_else(empty_error);
@@ -479,6 +511,9 @@ impl Serialize for UpdateKind {
             UpdateKind::EditedChannelPost(v) => {
                 s.serialize_newtype_variant(name, 3, "edited_channel_post", v)
             }
+            UpdateKind::GuestMessage(v) => {
+                s.serialize_newtype_variant(name, 23, "guest_message", v)
+            }
             UpdateKind::BusinessConnection(v) => {
                 s.serialize_newtype_variant(name, 4, "business_connection", v)
             }
@@ -490,6 +525,11 @@ impl Serialize for UpdateKind {
             }
             UpdateKind::DeletedBusinessMessages(v) => {
                 s.serialize_newtype_variant(name, 7, "deleted_business_messages", v)
+            }
+            UpdateKind::ManagedBot(v) => s.serialize_newtype_variant(name, 24, "managed_bot", v),
+            UpdateKind::Subscription(v) => s.serialize_newtype_variant(name, 25, "subscription", v),
+            UpdateKind::StoppedMessageGeneration(v) => {
+                s.serialize_newtype_variant(name, 26, "stopped_message_generation", v)
             }
             UpdateKind::MessageReaction(v) => {
                 s.serialize_newtype_variant(name, 8, "message_reaction", v)
@@ -593,8 +633,14 @@ mod test {
                     language_code: Some(String::from("en")),
                     is_premium: false,
                     added_to_attachment_menu: false,
+                    supports_guest_queries: false,
+                    supports_join_request_queries: false,
+                    has_topics_enabled: false,
+                    allows_users_to_create_topics: false,
+                    can_manage_bots: false,
                 }),
                 sender_chat: None,
+                sender_tag: None,
                 is_topic_message: false,
                 is_paid_post: false,
                 suggested_post_info: None,
@@ -608,6 +654,8 @@ mod test {
                     }),
                 },
                 sender_business_bot: None,
+                receiver_user: None,
+                ephemeral_message_id: None,
                 direct_messages_topic: None,
                 kind: MessageKind::Common(MessageCommon {
                     reply_to_message: None,
@@ -615,6 +663,10 @@ mod test {
                     external_reply: None,
                     quote: None,
                     reply_to_checklist_task_id: None,
+                    reply_to_poll_option_id: None,
+                    guest_query_id: None,
+                    guest_bot_caller_user: None,
+                    guest_bot_caller_chat: None,
                     reply_to_story: None,
                     sender_boost_count: None,
                     edit_date: None,
@@ -952,6 +1004,11 @@ mod test {
                     language_code: Some("en".to_owned()),
                     is_premium: true,
                     added_to_attachment_menu: false,
+                    supports_guest_queries: false,
+                    supports_join_request_queries: false,
+                    has_topics_enabled: false,
+                    allows_users_to_create_topics: false,
+                    can_manage_bots: false,
                 }),
                 date: DateTime::from_timestamp(1721306082, 0).unwrap(),
                 old_reaction: vec![],
@@ -1132,6 +1189,11 @@ mod test {
                             language_code: Some("en".to_owned()),
                             is_premium: true,
                             added_to_attachment_menu: false,
+                            supports_guest_queries: false,
+                            supports_join_request_queries: false,
+                            has_topics_enabled: false,
+                            allows_users_to_create_topics: false,
+                            can_manage_bots: false,
                         },
                     }),
                 },
@@ -1192,6 +1254,11 @@ mod test {
                         language_code: Some("en".to_owned()),
                         is_premium: true,
                         added_to_attachment_menu: false,
+                        supports_guest_queries: false,
+                        supports_join_request_queries: false,
+                        has_topics_enabled: false,
+                        allows_users_to_create_topics: false,
+                        can_manage_bots: false,
                     },
                 }),
             }),

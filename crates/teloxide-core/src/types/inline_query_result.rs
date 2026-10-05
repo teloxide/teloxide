@@ -10,7 +10,7 @@ use crate::types::{
     InlineQueryResultCachedVoice, InlineQueryResultContact, InlineQueryResultDocument,
     InlineQueryResultGame, InlineQueryResultGif, InlineQueryResultLocation,
     InlineQueryResultMpeg4Gif, InlineQueryResultPhoto, InlineQueryResultVenue,
-    InlineQueryResultVideo, InlineQueryResultVoice,
+    InlineQueryResultVideo, InlineQueryResultVoice, InputFile, InputFileLike, InputMessageContent,
 };
 
 /// This object represents one result of an inline query.
@@ -52,6 +52,85 @@ pub enum InlineQueryResult {
     Venue(InlineQueryResultVenue),
     Video(InlineQueryResultVideo),
     Voice(InlineQueryResultVoice),
+}
+
+impl InlineQueryResult {
+    pub(crate) fn input_message_content_ref(&self) -> Option<&InputMessageContent> {
+        match self {
+            Self::CachedAudio(value) => value.input_message_content.as_ref(),
+            Self::CachedDocument(value) => value.input_message_content.as_ref(),
+            Self::CachedGif(value) => value.input_message_content.as_ref(),
+            Self::CachedMpeg4Gif(value) => value.input_message_content.as_ref(),
+            Self::CachedPhoto(value) => value.input_message_content.as_ref(),
+            Self::CachedSticker(value) => value.input_message_content.as_ref(),
+            Self::CachedVideo(value) => value.input_message_content.as_ref(),
+            Self::CachedVoice(value) => value.input_message_content.as_ref(),
+            Self::Article(value) => Some(&value.input_message_content),
+            Self::Audio(value) => value.input_message_content.as_ref(),
+            Self::Contact(value) => value.input_message_content.as_ref(),
+            Self::Game(_) => None,
+            Self::Document(value) => value.input_message_content.as_ref(),
+            Self::Gif(value) => value.input_message_content.as_ref(),
+            Self::Location(value) => value.input_message_content.as_ref(),
+            Self::Mpeg4Gif(value) => value.input_message_content.as_ref(),
+            Self::Photo(value) => value.input_message_content.as_ref(),
+            Self::Venue(value) => value.input_message_content.as_ref(),
+            Self::Video(value) => value.input_message_content.as_ref(),
+            Self::Voice(value) => value.input_message_content.as_ref(),
+        }
+    }
+}
+
+impl InputFileLike for InlineQueryResult {
+    fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::CachedAudio(v) => v.input_message_content.copy_into(into),
+            Self::CachedDocument(v) => v.input_message_content.copy_into(into),
+            Self::CachedGif(v) => v.input_message_content.copy_into(into),
+            Self::CachedMpeg4Gif(v) => v.input_message_content.copy_into(into),
+            Self::CachedPhoto(v) => v.input_message_content.copy_into(into),
+            Self::CachedSticker(v) => v.input_message_content.copy_into(into),
+            Self::CachedVideo(v) => v.input_message_content.copy_into(into),
+            Self::CachedVoice(v) => v.input_message_content.copy_into(into),
+            Self::Article(v) => v.input_message_content.copy_into(into),
+            Self::Audio(v) => v.input_message_content.copy_into(into),
+            Self::Contact(v) => v.input_message_content.copy_into(into),
+            Self::Document(v) => v.input_message_content.copy_into(into),
+            Self::Gif(v) => v.input_message_content.copy_into(into),
+            Self::Location(v) => v.input_message_content.copy_into(into),
+            Self::Mpeg4Gif(v) => v.input_message_content.copy_into(into),
+            Self::Photo(v) => v.input_message_content.copy_into(into),
+            Self::Venue(v) => v.input_message_content.copy_into(into),
+            Self::Video(v) => v.input_message_content.copy_into(into),
+            Self::Voice(v) => v.input_message_content.copy_into(into),
+            Self::Game(_) => {}
+        }
+    }
+
+    fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
+        match self {
+            Self::CachedAudio(v) => v.input_message_content.move_into(into),
+            Self::CachedDocument(v) => v.input_message_content.move_into(into),
+            Self::CachedGif(v) => v.input_message_content.move_into(into),
+            Self::CachedMpeg4Gif(v) => v.input_message_content.move_into(into),
+            Self::CachedPhoto(v) => v.input_message_content.move_into(into),
+            Self::CachedSticker(v) => v.input_message_content.move_into(into),
+            Self::CachedVideo(v) => v.input_message_content.move_into(into),
+            Self::CachedVoice(v) => v.input_message_content.move_into(into),
+            Self::Article(v) => v.input_message_content.move_into(into),
+            Self::Audio(v) => v.input_message_content.move_into(into),
+            Self::Contact(v) => v.input_message_content.move_into(into),
+            Self::Document(v) => v.input_message_content.move_into(into),
+            Self::Gif(v) => v.input_message_content.move_into(into),
+            Self::Location(v) => v.input_message_content.move_into(into),
+            Self::Mpeg4Gif(v) => v.input_message_content.move_into(into),
+            Self::Photo(v) => v.input_message_content.move_into(into),
+            Self::Venue(v) => v.input_message_content.move_into(into),
+            Self::Video(v) => v.input_message_content.move_into(into),
+            Self::Voice(v) => v.input_message_content.move_into(into),
+            Self::Game(_) => {}
+        }
+    }
 }
 
 mod raw {
@@ -274,13 +353,30 @@ mod tests {
         InlineQueryResultContact, InlineQueryResultDocument, InlineQueryResultGame,
         InlineQueryResultGif, InlineQueryResultLocation, InlineQueryResultMpeg4Gif,
         InlineQueryResultPhoto, InlineQueryResultVenue, InlineQueryResultVideo,
-        InlineQueryResultVoice, InputMessageContent, InputMessageContentLocation,
-        InputMessageContentText, LinkPreviewOptions, Seconds,
+        InlineQueryResultVoice, InputFile, InputMediaPhoto, InputMessageContent,
+        InputMessageContentLocation, InputMessageContentText, InputRichBlock, InputRichBlockPhoto,
+        InputRichMessage, InputRichMessageContent, LinkPreviewOptions, Seconds,
     };
 
     use mime::Mime;
     use std::str::FromStr as _;
     use url::Url;
+
+    #[test]
+    fn rich_input_message_content_is_not_deserialized() {
+        let result = InlineQueryResult::Article(InlineQueryResultArticle::new(
+            "rich",
+            "Rich",
+            InputMessageContent::Rich(InputRichMessageContent::new(InputRichMessage::blocks([
+                InputRichBlock::Photo(InputRichBlockPhoto {
+                    photo: InputMediaPhoto::new(InputFile::memory("photo")),
+                    caption: None,
+                }),
+            ]))),
+        ));
+        let json = serde_json::to_value(result).unwrap();
+        assert!(serde_json::from_value::<InlineQueryResult>(json).is_err());
+    }
 
     #[test]
     fn cached_audio_min() {
@@ -298,7 +394,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -328,7 +425,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -351,7 +449,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -384,7 +483,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -405,7 +505,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -437,7 +538,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -462,7 +564,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -498,7 +601,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -519,7 +623,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -551,7 +656,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -577,7 +683,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -614,7 +721,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -635,7 +743,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -667,7 +776,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -693,7 +803,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -730,7 +841,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -752,7 +864,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -785,7 +898,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -810,7 +924,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -846,7 +961,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -862,7 +978,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -889,7 +1006,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -912,7 +1030,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -943,7 +1062,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -970,7 +1090,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1006,7 +1127,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1027,7 +1149,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1056,7 +1179,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1078,7 +1202,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1108,7 +1233,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1140,7 +1266,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1172,7 +1299,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1194,7 +1322,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1227,7 +1356,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1242,7 +1372,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1257,7 +1388,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1283,7 +1415,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1319,7 +1452,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1345,7 +1479,8 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 
     #[test]
@@ -1382,6 +1517,7 @@ mod tests {
         let actual_json = serde_json::to_string(&structure).unwrap();
 
         assert_eq!(expected_json, actual_json);
-        assert_eq!(structure, serde_json::from_str(&actual_json).unwrap());
+        let decoded: InlineQueryResult = serde_json::from_str(&actual_json).unwrap();
+        assert_eq!(structure, decoded);
     }
 }

@@ -51,6 +51,7 @@ pub(crate) fn mentioned_users_from_entities(
         | Strikethrough
         | Spoiler
         | Code
+        | DateTime { .. }
         | Pre { language: _ }
         | TextLink { url: _ }
         | CustomEmoji { custom_emoji_id: _ } => None,

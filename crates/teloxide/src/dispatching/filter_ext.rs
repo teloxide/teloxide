@@ -121,6 +121,9 @@ define_message_ext! {
     (filter_chat_background_set, Message::chat_background_set),
     (filter_checklist_tasks_done, Message::checklist_tasks_done),
     (filter_checklist_tasks_added, Message::checklist_tasks_added),
+    (filter_community_chat_added, Message::community_chat_added),
+    (filter_community_chat_joined, Message::community_chat_joined),
+    (filter_community_chat_removed, Message::community_chat_removed),
     (filter_direct_message_price_changed, Message::direct_message_price_changed),
     (filter_forum_topic_created, Message::forum_topic_created),
     (filter_forum_topic_edited, Message::forum_topic_edited),
@@ -173,6 +176,9 @@ define_update_ext! {
     (filter_business_message, UpdateKind::BusinessMessage, BusinessMessage),
     (filter_edited_business_message, UpdateKind::EditedBusinessMessage, EditedBusinessMessage),
     (filter_deleted_business_messages, UpdateKind::DeletedBusinessMessages, DeletedBusinessMessages),
+    (filter_guest_message, UpdateKind::GuestMessage, GuestMessage),
+    (filter_managed_bot, UpdateKind::ManagedBot, ManagedBot),
+    (filter_subscription, UpdateKind::Subscription, Subscription),
     (filter_message_reaction_updated, UpdateKind::MessageReaction, MessageReaction),
     (filter_message_reaction_count_updated, UpdateKind::MessageReactionCount, MessageReactionCount),
     (filter_inline_query, UpdateKind::InlineQuery, InlineQuery),
@@ -188,4 +194,9 @@ define_update_ext! {
     (filter_chat_join_request, UpdateKind::ChatJoinRequest, ChatJoinRequest),
     (filter_chat_boost, UpdateKind::ChatBoost, ChatBoost),
     (filter_removed_chat_boost, UpdateKind::RemovedChatBoost, RemovedChatBoost),
+    (
+        filter_stopped_message_generation,
+        UpdateKind::StoppedMessageGeneration,
+        StoppedMessageGeneration
+    ),
 }

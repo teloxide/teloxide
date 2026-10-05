@@ -1,4 +1,4 @@
-use crate::types::{Chat, Rgb, Sticker};
+use crate::types::{Chat, GiftId, Rgb, Sticker, True, UniqueGiftColors};
 use serde::{Deserialize, Serialize};
 
 /// This object describes a unique gift that was upgraded from a regular gift.
@@ -11,6 +11,9 @@ pub struct UniqueGift {
     /// Human-readable name of the regular gift from which this unique gift was
     /// upgraded
     pub base_name: String,
+
+    /// Identifier of the regular gift from which the gift was upgraded.
+    pub gift_id: Option<GiftId>,
 
     /// Unique name of the gift. This name can be used in `https://t.me/nft/...` links and story areas
     pub name: String,
@@ -30,6 +33,21 @@ pub struct UniqueGift {
 
     /// Information about the chat that published the gift
     pub publisher_chat: Option<Chat>,
+
+    /// `true`, if the original regular gift was exclusively purchaseable by
+    /// Telegram Premium subscribers.
+    pub is_premium: Option<True>,
+
+    /// `true`, if the gift was used to craft another gift and isn't available
+    /// anymore.
+    pub is_burned: Option<True>,
+
+    /// `true`, if the gift is assigned from the TON blockchain and can't be
+    /// resold or transferred in Telegram.
+    pub is_from_blockchain: Option<True>,
+
+    /// Color scheme that can be used by the gift owner.
+    pub colors: Option<UniqueGiftColors>,
 }
 
 /// This object describes the model of a unique gift.
@@ -48,6 +66,9 @@ pub struct UniqueGiftModel {
     /// The number of unique gifts that receive this model for every 1000 gifts
     /// upgraded
     pub rarity_per_mille: u32,
+
+    /// Rarity of the model if it is a crafted model.
+    pub rarity: Option<String>,
 }
 
 /// This object describes the symbol shown on the pattern of a unique gift.
@@ -132,12 +153,14 @@ mod tests {
 
         let unique_gift = UniqueGift {
             base_name: "name".to_owned(),
+            gift_id: None,
             name: "name".to_owned(),
             number: 123,
             model: UniqueGiftModel {
                 name: "name".to_owned(),
                 sticker: sticker.clone(),
                 rarity_per_mille: 123,
+                rarity: None,
             },
             symbol: UniqueGiftSymbol {
                 name: "name".to_owned(),
@@ -155,6 +178,10 @@ mod tests {
                 rarity_per_mille: 123,
             },
             publisher_chat: None,
+            is_premium: None,
+            is_burned: None,
+            is_from_blockchain: None,
+            colors: None,
         };
 
         let unique_gift_json = r#"{

@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// [The official docs](https://core.telegram.org/bots/api#botcommand).
 #[serde_with::skip_serializing_none]
+#[serde_with::skip_serializing_none]
 #[derive(Clone, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 pub struct BotCommand {
@@ -12,8 +13,12 @@ pub struct BotCommand {
     /// Can contain only lowercase English letters, digits and underscores.
     pub command: String,
 
-    /// Description of the command, 3-256 characters.
+    /// Description of the command, 1-256 characters.
     pub description: String,
+
+    /// `true` if the command sends an ephemeral message visible only to its
+    /// sender and the bot.
+    pub is_ephemeral: Option<bool>,
 }
 
 impl BotCommand {
@@ -22,7 +27,7 @@ impl BotCommand {
         S1: Into<String>,
         S2: Into<String>,
     {
-        Self { command: command.into(), description: description.into() }
+        Self { command: command.into(), description: description.into(), is_ephemeral: None }
     }
 
     pub fn command<S>(mut self, val: S) -> Self
@@ -38,6 +43,12 @@ impl BotCommand {
         S: Into<String>,
     {
         self.description = val.into();
+        self
+    }
+
+    /// Marks whether this command produces an ephemeral interaction.
+    pub const fn is_ephemeral(mut self, is_ephemeral: bool) -> Self {
+        self.is_ephemeral = Some(is_ephemeral);
         self
     }
 }

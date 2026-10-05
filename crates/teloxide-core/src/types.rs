@@ -12,6 +12,7 @@ pub use bot_command_scope::*;
 pub use bot_description::*;
 pub use bot_name::*;
 pub use bot_short_description::*;
+pub use bot_subscription_updated::*;
 pub use business_bot_rights::*;
 pub use business_connection::*;
 pub use business_connection_id::*;
@@ -43,15 +44,18 @@ pub use chat_shared::*;
 pub use chat_type::*;
 pub use checklist::*;
 pub use chosen_inline_result::*;
+pub use community::*;
 pub use contact::*;
 pub use copy_text_button::*;
 pub use dice::*;
 pub use dice_emoji::*;
 pub use direct_message_price_changed::*;
 pub use direct_messages_topic::*;
+pub use disabled_button::*;
 pub use document::*;
 pub use encrypted_credentials::*;
 pub use encrypted_passport_element::*;
+pub use ephemeral_message_parameters::*;
 pub use external_reply_info::*;
 pub use file::*;
 pub use force_reply::*;
@@ -65,6 +69,7 @@ pub use game_high_score::*;
 pub use general_forum_topic_hidden::*;
 pub use general_forum_topic_unhidden::*;
 pub use gift::*;
+pub use gift_background::*;
 pub use gift_info::*;
 pub use giveaway::*;
 pub use giveaway_completed::*;
@@ -102,6 +107,7 @@ pub use input_message_content::*;
 pub use input_paid_media::*;
 pub use input_poll_option::*;
 pub use input_profile_photo::*;
+pub use input_rich_message::*;
 pub use input_sticker::*;
 pub use input_story_content::*;
 pub use invoice::*;
@@ -112,8 +118,10 @@ pub use keyboard_button_request_users::*;
 pub use label_price::*;
 pub use link_preview_options::*;
 pub use live_period::*;
+pub use live_photo::*;
 pub use location::*;
 pub use login_url::*;
+pub use managed_bot::*;
 pub use mask_position::*;
 pub use maybe_anonymous_user::*;
 pub use maybe_inaccessible_message::*;
@@ -122,6 +130,7 @@ pub use menu_button::*;
 pub use message::*;
 pub use message_auto_delete_timer_changed::*;
 pub use message_entity::*;
+pub use message_generation_stopped::*;
 pub use message_id::*;
 pub use message_origin::*;
 pub use message_reaction_count_updated::*;
@@ -139,6 +148,8 @@ pub use percentage::*;
 pub use photo_size::*;
 pub use poll::*;
 pub use poll_answer::*;
+pub use poll_media::*;
+pub use poll_option_changed::*;
 pub use poll_type::*;
 pub use pre_checkout_query::*;
 pub use prepared_inline_message::*;
@@ -153,6 +164,7 @@ pub use request_id::*;
 pub use response_parameters::*;
 pub use revenue_withdrawal_state::*;
 pub use rgb::*;
+pub use rich_message::*;
 pub use sent_web_app_message::*;
 pub use shared_user::*;
 pub use shipping_address::*;
@@ -195,6 +207,7 @@ pub use video_chat_participants_invited::*;
 pub use video_chat_scheduled::*;
 pub use video_chat_started::*;
 pub use video_note::*;
+pub use video_quality::*;
 pub use voice::*;
 pub use web_app_data::*;
 pub use web_app_info::*;
@@ -213,6 +226,7 @@ mod bot_command_scope;
 mod bot_description;
 mod bot_name;
 mod bot_short_description;
+mod bot_subscription_updated;
 mod business_bot_rights;
 mod business_connection;
 mod business_connection_id;
@@ -243,13 +257,16 @@ mod chat_shared;
 mod chat_type;
 mod checklist;
 mod chosen_inline_result;
+mod community;
 mod contact;
 mod copy_text_button;
 mod dice;
 mod dice_emoji;
 mod direct_message_price_changed;
 mod direct_messages_topic;
+mod disabled_button;
 mod document;
+mod ephemeral_message_parameters;
 mod external_reply_info;
 mod file;
 mod force_reply;
@@ -263,6 +280,7 @@ mod game_high_score;
 mod general_forum_topic_hidden;
 mod general_forum_topic_unhidden;
 mod gift;
+mod gift_background;
 mod gift_info;
 mod giveaway;
 mod giveaway_completed;
@@ -278,6 +296,7 @@ mod input_message_content;
 mod input_paid_media;
 mod input_poll_option;
 mod input_profile_photo;
+mod input_rich_message;
 mod input_sticker;
 mod input_story_content;
 mod invoice;
@@ -288,8 +307,10 @@ mod keyboard_button_request_users;
 mod label_price;
 mod link_preview_options;
 mod live_period;
+mod live_photo;
 mod location;
 mod login_url;
+mod managed_bot;
 mod mask_position;
 mod maybe_anonymous_user;
 mod maybe_inaccessible_message;
@@ -298,6 +319,7 @@ mod menu_button;
 mod message;
 mod message_auto_delete_timer_changed;
 mod message_entity;
+mod message_generation_stopped;
 mod message_id;
 mod message_origin;
 mod message_reaction_count_updated;
@@ -312,6 +334,8 @@ mod percentage;
 mod photo_size;
 mod poll;
 mod poll_answer;
+mod poll_media;
+mod poll_option_changed;
 mod poll_type;
 mod pre_checkout_query;
 mod prepared_inline_message;
@@ -326,6 +350,7 @@ mod request_id;
 mod response_parameters;
 mod revenue_withdrawal_state;
 mod rgb;
+mod rich_message;
 mod sent_web_app_message;
 mod shared_user;
 mod shipping_address;
@@ -367,6 +392,7 @@ mod video_chat_participants_invited;
 mod video_chat_scheduled;
 mod video_chat_started;
 mod video_note;
+mod video_quality;
 mod voice;
 mod web_app_data;
 mod web_app_info;
@@ -544,45 +570,6 @@ pub(crate) mod option_url_from_string {
             let url: Struct = serde_json::from_str(json).unwrap();
             assert_eq!(url.url, Some(Url::from_str("https://github.com/token").unwrap()));
             assert_eq!(serde_json::to_string(&url).unwrap(), json.to_owned());
-        }
-    }
-}
-
-// Issue https://github.com/teloxide/teloxide/issues/1135
-// Workaround to avoid flattening with serde-multipart requests (involving
-// file-manipulations)
-pub(crate) mod msg_id_as_int {
-    use crate::types::MessageId;
-
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-    pub(crate) fn serialize<S>(MessageId(id): &MessageId, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        id.serialize(serializer)
-    }
-
-    pub(crate) fn deserialize<'de, D>(deserializer: D) -> Result<MessageId, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        i32::deserialize(deserializer).map(MessageId)
-    }
-
-    #[test]
-    fn test() {
-        #[derive(Serialize, Deserialize)]
-        struct Struct {
-            #[serde(with = "crate::types::msg_id_as_int")]
-            message_id: MessageId,
-        }
-
-        {
-            let json = r#"{"message_id":123}"#;
-            let s: Struct = serde_json::from_str(json).unwrap();
-            assert_eq!(s.message_id, MessageId(123));
-            assert_eq!(serde_json::to_string(&s).unwrap(), json.to_owned());
         }
     }
 }

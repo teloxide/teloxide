@@ -81,6 +81,9 @@ where
 }
 
 #[cfg(test)]
+mod integration_tests;
+
+#[cfg(test)]
 mod tests {
     use tokio::fs::File;
 

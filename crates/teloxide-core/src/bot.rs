@@ -6,7 +6,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use crate::{
     net,
     requests::{MultipartPayload, Payload, ResponseResult},
-    serde_multipart,
+    serde_multipart, RequestError,
 };
 
 mod api;
@@ -236,12 +236,19 @@ impl Bot {
         let api_url = Arc::clone(&self.api_url);
 
         let timeout_hint = payload.timeout_hint();
-        let params = stacker::maybe_grow(256 * 1024, 1024 * 1024, || serde_json::to_vec(payload))
-            // this `expect` should be ok since we don't write request those may trigger error here
-            .expect("serialization of request to be infallible");
+        let params = match payload.validate() {
+            Ok(()) => {
+                Ok(stacker::maybe_grow(256 * 1024, 1024 * 1024, || serde_json::to_vec(payload))
+                    // this `expect` should be ok since we don't write request those may trigger
+                    // error here
+                    .expect("serialization of request to be infallible"))
+            }
+            Err(error) => Err(RequestError::Validation(error)),
+        };
 
         // async move to capture client&token&api_url&params
         async move {
+            let params = params?;
             net::request_json(
                 &client,
                 token.as_ref(),
@@ -267,7 +274,10 @@ impl Bot {
         let api_url = Arc::clone(&self.api_url);
 
         let timeout_hint = payload.timeout_hint();
-        let params = serde_multipart::to_form(payload);
+        let params = match payload.validate() {
+            Ok(()) => serde_multipart::to_form(payload).map_err(RequestError::from),
+            Err(error) => Err(RequestError::Validation(error)),
+        };
 
         // async move to capture client&token&api_url&params
         async move {
@@ -297,7 +307,10 @@ impl Bot {
         let api_url = self.api_url.clone();
 
         let timeout_hint = payload.timeout_hint();
-        let params = serde_multipart::to_form_ref(payload);
+        let params = match payload.validate() {
+            Ok(()) => serde_multipart::to_form_ref(payload).map_err(RequestError::from),
+            Err(error) => Err(RequestError::Validation(error)),
+        };
 
         // async move to capture client&token&api_url&params
         async move {

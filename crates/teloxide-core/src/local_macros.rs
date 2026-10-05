@@ -94,6 +94,9 @@ macro_rules! impl_payload {
             @[multipart = $($multipart_attr:ident),*]
         )?
         $(
+            @[validate = $validation:path]
+        )?
+        $(
             @[timeout_secs = $timeout_secs:ident]
         )?
         $(
@@ -184,6 +187,12 @@ macro_rules! impl_payload {
                     self.$timeout_secs.map(<_>::into).map(std::time::Duration::from_secs)
                 }
             )?
+
+            impl_payload! {
+                @validation $($validation)?;
+                req { $($($fields : $FTy),*)? }
+                opt { $($($opt_fields : $OptFTy),*)? }
+            }
         }
 
         calculated_doc! {
@@ -209,6 +218,33 @@ macro_rules! impl_payload {
         impl<P> $Setters for P where P: crate::requests::HasPayload<Payload = $Method> {}
 
         impl_payload! { @[$(multipart = $($multipart_attr),*)?] $Method req { $($($fields),*)? } opt { $($($opt_fields),*)? } }
+    };
+    (@validation $validation:path; req { $($field:ident : $FTy:ty),* } opt { $($opt_field:ident : $OptFTy:ty),* }) => {
+        fn validate(&self) -> Result<(), $crate::requests::RequestValidationError> {
+            $validation(self)?;
+            $($crate::requests::validation::validate_payload_field(
+                &self.$field,
+                stringify!($field),
+            )?;)*
+            $($crate::requests::validation::validate_payload_field(
+                &self.$opt_field,
+                stringify!($opt_field),
+            )?;)*
+            Ok(())
+        }
+    };
+    (@validation ; req { $($field:ident : $FTy:ty),* } opt { $($opt_field:ident : $OptFTy:ty),* }) => {
+        fn validate(&self) -> Result<(), $crate::requests::RequestValidationError> {
+            $($crate::requests::validation::validate_payload_field(
+                &self.$field,
+                stringify!($field),
+            )?;)*
+            $($crate::requests::validation::validate_payload_field(
+                &self.$opt_field,
+                stringify!($opt_field),
+            )?;)*
+            Ok(())
+        }
     };
     (@setter_opt $Method:ident $field:ident : $FTy:ty [into]) => {
         calculated_doc! {
@@ -1793,12 +1829,228 @@ macro_rules! requester_forward {
             $body!(set_game_score_inline this (user_id: UserId, score: u64, inline_message_id: I))
         }
     };
+    (@method send_live_photo $body:ident $ty:ident) => {
+        type SendLivePhoto = $ty![SendLivePhoto];
+
+        fn send_live_photo<C>(&self, chat_id: C, live_photo: InputFile, photo: InputFile) -> Self::SendLivePhoto where C: Into<Recipient> {
+            let this = self;
+            $body!(send_live_photo this (chat_id: C, live_photo: InputFile, photo: InputFile))
+        }
+    };
+    (@method send_message_draft $body:ident $ty:ident) => {
+        type SendMessageDraft = $ty![SendMessageDraft];
+
+        fn send_message_draft(&self, chat_id: UserId, draft_id: i32) -> Self::SendMessageDraft {
+            let this = self;
+            $body!(send_message_draft this (chat_id: UserId, draft_id: i32))
+        }
+    };
+    (@method get_user_profile_audios $body:ident $ty:ident) => {
+        type GetUserProfileAudios = $ty![GetUserProfileAudios];
+
+        fn get_user_profile_audios(&self, user_id: UserId) -> Self::GetUserProfileAudios {
+            let this = self;
+            $body!(get_user_profile_audios this (user_id: UserId))
+        }
+    };
+    (@method set_chat_member_tag $body:ident $ty:ident) => {
+        type SetChatMemberTag = $ty![SetChatMemberTag];
+
+        fn set_chat_member_tag<C>(&self, chat_id: C, user_id: UserId) -> Self::SetChatMemberTag where C: Into<Recipient> {
+            let this = self;
+            $body!(set_chat_member_tag this (chat_id: C, user_id: UserId))
+        }
+    };
+    (@method get_user_personal_chat_messages $body:ident $ty:ident) => {
+        type GetUserPersonalChatMessages = $ty![GetUserPersonalChatMessages];
+
+        fn get_user_personal_chat_messages(&self, user_id: UserId, limit: u8) -> Self::GetUserPersonalChatMessages {
+            let this = self;
+            $body!(get_user_personal_chat_messages this (user_id: UserId, limit: u8))
+        }
+    };
+    (@method answer_guest_query $body:ident $ty:ident) => {
+        type AnswerGuestQuery = $ty![AnswerGuestQuery];
+
+        fn answer_guest_query<G>(&self, guest_query_id: G, result: InlineQueryResult) -> Self::AnswerGuestQuery where G: Into<String> {
+            let this = self;
+            $body!(answer_guest_query this (guest_query_id: G, result: InlineQueryResult))
+        }
+    };
+    (@method get_managed_bot_token $body:ident $ty:ident) => {
+        type GetManagedBotToken = $ty![GetManagedBotToken];
+
+        fn get_managed_bot_token(&self, user_id: UserId) -> Self::GetManagedBotToken {
+            let this = self;
+            $body!(get_managed_bot_token this (user_id: UserId))
+        }
+    };
+    (@method replace_managed_bot_token $body:ident $ty:ident) => {
+        type ReplaceManagedBotToken = $ty![ReplaceManagedBotToken];
+
+        fn replace_managed_bot_token(&self, user_id: UserId) -> Self::ReplaceManagedBotToken {
+            let this = self;
+            $body!(replace_managed_bot_token this (user_id: UserId))
+        }
+    };
+    (@method get_managed_bot_access_settings $body:ident $ty:ident) => {
+        type GetManagedBotAccessSettings = $ty![GetManagedBotAccessSettings];
+
+        fn get_managed_bot_access_settings(&self, user_id: UserId) -> Self::GetManagedBotAccessSettings {
+            let this = self;
+            $body!(get_managed_bot_access_settings this (user_id: UserId))
+        }
+    };
+    (@method set_managed_bot_access_settings $body:ident $ty:ident) => {
+        type SetManagedBotAccessSettings = $ty![SetManagedBotAccessSettings];
+
+        fn set_managed_bot_access_settings(&self, user_id: UserId, is_access_restricted: bool) -> Self::SetManagedBotAccessSettings {
+            let this = self;
+            $body!(set_managed_bot_access_settings this (user_id: UserId, is_access_restricted: bool))
+        }
+    };
+    (@method set_my_profile_photo $body:ident $ty:ident) => {
+        type SetMyProfilePhoto = $ty![SetMyProfilePhoto];
+
+        fn set_my_profile_photo(&self, photo: InputProfilePhoto) -> Self::SetMyProfilePhoto {
+            let this = self;
+            $body!(set_my_profile_photo this (photo: InputProfilePhoto))
+        }
+    };
+    (@method remove_my_profile_photo $body:ident $ty:ident) => {
+        type RemoveMyProfilePhoto = $ty![RemoveMyProfilePhoto];
+
+        fn remove_my_profile_photo(&self, ) -> Self::RemoveMyProfilePhoto {
+            let this = self;
+            $body!(remove_my_profile_photo this ())
+        }
+    };
+    (@method get_user_gifts $body:ident $ty:ident) => {
+        type GetUserGifts = $ty![GetUserGifts];
+
+        fn get_user_gifts(&self, user_id: UserId) -> Self::GetUserGifts {
+            let this = self;
+            $body!(get_user_gifts this (user_id: UserId))
+        }
+    };
+    (@method get_chat_gifts $body:ident $ty:ident) => {
+        type GetChatGifts = $ty![GetChatGifts];
+
+        fn get_chat_gifts<C>(&self, chat_id: C) -> Self::GetChatGifts where C: Into<Recipient> {
+            let this = self;
+            $body!(get_chat_gifts this (chat_id: C))
+        }
+    };
+    (@method repost_story $body:ident $ty:ident) => {
+        type RepostStory = $ty![RepostStory];
+
+        fn repost_story<F>(&self, business_connection_id: BusinessConnectionId, from_chat_id: F, from_story_id: StoryId, active_period: Seconds) -> Self::RepostStory where F: Into<ChatId> {
+            let this = self;
+            $body!(repost_story this (business_connection_id: BusinessConnectionId, from_chat_id: F, from_story_id: StoryId, active_period: Seconds))
+        }
+    };
+    (@method save_prepared_keyboard_button $body:ident $ty:ident) => {
+        type SavePreparedKeyboardButton = $ty![SavePreparedKeyboardButton];
+
+        fn save_prepared_keyboard_button(&self, user_id: UserId, button: KeyboardButton) -> Self::SavePreparedKeyboardButton {
+            let this = self;
+            $body!(save_prepared_keyboard_button this (user_id: UserId, button: KeyboardButton))
+        }
+    };
+    (@method delete_message_reaction $body:ident $ty:ident) => {
+        type DeleteMessageReaction = $ty![DeleteMessageReaction];
+
+        fn delete_message_reaction<C>(&self, chat_id: C, message_id: MessageId) -> Self::DeleteMessageReaction where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_message_reaction this (chat_id: C, message_id: MessageId))
+        }
+    };
+    (@method delete_all_message_reactions $body:ident $ty:ident) => {
+        type DeleteAllMessageReactions = $ty![DeleteAllMessageReactions];
+
+        fn delete_all_message_reactions<C>(&self, chat_id: C) -> Self::DeleteAllMessageReactions where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_all_message_reactions this (chat_id: C))
+        }
+    };
     (@method get_game_high_scores $body:ident $ty:ident) => {
         type GetGameHighScores = $ty![GetGameHighScores];
 
         fn get_game_high_scores<T>(&self, user_id: UserId, target: T) -> Self::GetGameHighScores where T: Into<TargetMessage> {
             let this = self;
             $body!(get_game_high_scores this (user_id: UserId, target: T))
+        }
+    };
+    (@method answer_chat_join_request_query $body:ident $ty:ident) => {
+        type AnswerChatJoinRequestQuery = $ty![AnswerChatJoinRequestQuery];
+
+        fn answer_chat_join_request_query<C>(&self, chat_join_request_query_id: C, result: ChatJoinRequestQueryResult) -> Self::AnswerChatJoinRequestQuery where C: Into<String> {
+            let this = self;
+            $body!(answer_chat_join_request_query this (chat_join_request_query_id: C, result: ChatJoinRequestQueryResult))
+        }
+    };
+    (@method send_chat_join_request_web_app $body:ident $ty:ident) => {
+        type SendChatJoinRequestWebApp = $ty![SendChatJoinRequestWebApp];
+
+        fn send_chat_join_request_web_app<C>(&self, chat_join_request_query_id: C, web_app_url: Url) -> Self::SendChatJoinRequestWebApp where C: Into<String> {
+            let this = self;
+            $body!(send_chat_join_request_web_app this (chat_join_request_query_id: C, web_app_url: Url))
+        }
+    };
+    (@method edit_ephemeral_message_text $body:ident $ty:ident) => {
+        type EditEphemeralMessageText = $ty![EditEphemeralMessageText];
+
+        fn edit_ephemeral_message_text<C>(&self, chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32) -> Self::EditEphemeralMessageText where C: Into<Recipient> {
+            let this = self;
+            $body!(edit_ephemeral_message_text this (chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32))
+        }
+    };
+    (@method edit_ephemeral_message_media $body:ident $ty:ident) => {
+        type EditEphemeralMessageMedia = $ty![EditEphemeralMessageMedia];
+
+        fn edit_ephemeral_message_media<C>(&self, chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32, media: InputMedia) -> Self::EditEphemeralMessageMedia where C: Into<Recipient> {
+            let this = self;
+            $body!(edit_ephemeral_message_media this (chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32, media: InputMedia))
+        }
+    };
+    (@method edit_ephemeral_message_caption $body:ident $ty:ident) => {
+        type EditEphemeralMessageCaption = $ty![EditEphemeralMessageCaption];
+
+        fn edit_ephemeral_message_caption<C>(&self, chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32) -> Self::EditEphemeralMessageCaption where C: Into<Recipient> {
+            let this = self;
+            $body!(edit_ephemeral_message_caption this (chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32))
+        }
+    };
+    (@method edit_ephemeral_message_reply_markup $body:ident $ty:ident) => {
+        type EditEphemeralMessageReplyMarkup = $ty![EditEphemeralMessageReplyMarkup];
+
+        fn edit_ephemeral_message_reply_markup<C>(&self, chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32) -> Self::EditEphemeralMessageReplyMarkup where C: Into<Recipient> {
+            let this = self;
+            $body!(edit_ephemeral_message_reply_markup this (chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32))
+        }
+    };
+    (@method delete_ephemeral_message $body:ident $ty:ident) => {
+        type DeleteEphemeralMessage = $ty![DeleteEphemeralMessage];
+
+        fn delete_ephemeral_message<C>(&self, chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32) -> Self::DeleteEphemeralMessage where C: Into<Recipient> {
+            let this = self;
+            $body!(delete_ephemeral_message this (chat_id: C, receiver_user_id: UserId, ephemeral_message_id: i32))
+        }
+    };
+    (@method send_rich_message $body:ident $ty:ident) => {
+        type SendRichMessage = $ty![SendRichMessage];
+
+        fn send_rich_message<C>(&self, chat_id: C, rich_message: InputRichMessage) -> Self::SendRichMessage where C: Into<Recipient> {
+            let this = self;
+            $body!(send_rich_message this (chat_id: C, rich_message: InputRichMessage))
+        }
+    };
+    (@method send_rich_message_draft $body:ident $ty:ident) => {
+        type SendRichMessageDraft = $ty![SendRichMessageDraft];
+
+        fn send_rich_message_draft(&self, chat_id: UserId, draft_id: i32, rich_message: InputRichMessage) -> Self::SendRichMessageDraft {
+            let this = self;
+            $body!(send_rich_message_draft this (chat_id: UserId, draft_id: i32, rich_message: InputRichMessage))
         }
     };// END BLOCK requester_forward_at_method
 }

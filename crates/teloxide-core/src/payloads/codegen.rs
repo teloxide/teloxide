@@ -56,9 +56,16 @@ fn codegen_payloads() {
             .map(|field| format!("    @[multipart = {}]\n", field.join(", ")))
             .unwrap_or_default();
 
+        let validation = method
+            .validation
+            .as_deref()
+            .map(|function| format!("    @[validate = {function}]\n"))
+            .unwrap_or_default();
+
         // FIXME: CreateNewStickerSet has to be be only Debug + Clone + Serialize (maybe
         // better fix?)
         let derive = if !multipart.is_empty()
+            || !partial_eq_suitable(&method)
             || matches!(
                 &*method.names.1,
                 "SendPaidMedia"
@@ -85,7 +92,7 @@ fn codegen_payloads() {
 {uses}
 
 impl_payload! {{
-{multipart}{timeout_secs}{method_doc}
+{multipart}{validation}{timeout_secs}{method_doc}
     {derive}
     pub {Method} ({Method}Setters) => {return_ty} {{
 {required}{optional}
@@ -94,6 +101,47 @@ impl_payload! {{
 ",
             Method = method.names.1,
         );
+
+        let contents = match method.names.2.as_str() {
+            "edit_message_text" | "edit_message_text_inline" => {
+                let contents = contents.replace(
+                    "            pub text: String [into],",
+                    "            #[serde(skip_serializing_if = \"String::is_empty\")]\n            pub text: String [into],",
+                );
+                let constructor = if method.names.2 == "edit_message_text" {
+                    r#"
+impl EditMessageText {
+    /// Creates a rich-only edit request.
+    pub fn rich(
+        chat_id: impl Into<Recipient>,
+        message_id: MessageId,
+        rich_message: InputRichMessage,
+    ) -> Self {
+        let mut payload = Self::new(chat_id, message_id, String::new());
+        payload.rich_message = Some(rich_message);
+        payload
+    }
+}
+"#
+                } else {
+                    r#"
+impl EditMessageTextInline {
+    /// Creates a rich-only edit request.
+    pub fn rich(
+        inline_message_id: impl Into<String>,
+        rich_message: InputRichMessage,
+    ) -> Self {
+        let mut payload = Self::new(inline_message_id, String::new());
+        payload.rich_message = Some(rich_message);
+        payload
+    }
+}
+"#
+                };
+                format!("{contents}{constructor}")
+            }
+            _ => contents,
+        };
 
         files.push((path, reformat(add_preamble("codegen_payloads", contents))));
     }
@@ -179,6 +227,29 @@ fn render_doc(doc: &Doc, sibling: Option<&str>) -> String {
     ["    /// ", &doc.md.replace('\n', "\n    /// "), &sibling_note, &links].concat()
 }
 
+fn partial_eq_suitable(method: &Method) -> bool {
+    fn ty_partial_eq_suitable(ty: &Type) -> bool {
+        match ty {
+            Type::Option(inner) | Type::ArrayOf(inner) => ty_partial_eq_suitable(inner),
+            Type::RawTy(raw) => !matches!(
+                raw.as_str(),
+                "InputSticker"
+                    | "InputProfilePhoto"
+                    | "InputStoryContent"
+                    | "InputMedia"
+                    | "InputPaidMedia"
+                    | "InputPollMedia"
+                    | "InputPollOption"
+                    | "InputPollOptionMedia"
+                    | "InputRichMessage"
+            ),
+            _ => true,
+        }
+    }
+
+    method.params.iter().all(|param| ty_partial_eq_suitable(&param.ty))
+}
+
 fn eq_hash_suitable(method: &Method) -> bool {
     fn ty_eq_hash_suitable(ty: &Type) -> bool {
         match ty {
@@ -254,8 +325,10 @@ fn params(params: impl Iterator<Item = impl Borrow<Param>>) -> String {
 }
 
 fn multipart_input_file_fields(m: &Method) -> Option<Vec<&str>> {
-    let fields: Vec<_> =
+    let mut fields: Vec<_> =
         m.params.iter().filter(|&p| ty_is_multiparty(&p.ty)).map(|p| &*p.name).collect();
+
+    fields.extend(m.multipart.iter().map(String::as_str));
 
     if fields.is_empty() {
         None
@@ -265,6 +338,6 @@ fn multipart_input_file_fields(m: &Method) -> Option<Vec<&str>> {
 }
 
 fn ty_is_multiparty(ty: &Type) -> bool {
-    matches!(ty, Type::RawTy(x) if x == "InputFile" || x == "InputSticker")
+    matches!(ty, Type::RawTy(x) if x == "InputFile" || x == "InputSticker" || x == "InputProfilePhoto")
         || matches!(ty, Type::Option(inner) if ty_is_multiparty(inner))
 }

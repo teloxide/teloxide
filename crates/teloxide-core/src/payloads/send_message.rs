@@ -3,8 +3,9 @@
 use serde::Serialize;
 
 use crate::types::{
-    BusinessConnectionId, EffectId, LinkPreviewOptions, Message, MessageEntity, ParseMode,
-    Recipient, ReplyMarkup, ReplyParameters, SuggestedPostParameters, ThreadId, TopicId,
+    BusinessConnectionId, EffectId, EphemeralMessageParameters, LinkPreviewOptions, Message,
+    MessageEntity, ParseMode, Recipient, ReplyMarkup, ReplyParameters, SuggestedPostParameters,
+    ThreadId, TopicId,
 };
 
 impl_payload! {
@@ -26,6 +27,8 @@ impl_payload! {
             pub message_thread_id: ThreadId,
             /// Identifier of the direct messages topic to which the message will be sent; required if the message is sent to a direct messages chat
             pub direct_messages_topic_id: TopicId,
+            /// A JSON-serialized object containing the parameters of the ephemeral message to send
+            pub ephemeral_message_parameters: EphemeralMessageParameters,
             /// Mode for parsing entities in the message text. See [formatting options] for more details.
             ///
             /// [formatting options]: https://core.telegram.org/bots/api#formatting-options

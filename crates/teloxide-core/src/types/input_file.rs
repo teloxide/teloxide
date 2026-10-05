@@ -23,6 +23,10 @@ use crate::types::{self, InputSticker};
 
 /// This object represents the contents of a file to be uploaded.
 ///
+/// Equality compares the file source and optional filename. Multipart
+/// attachment ids are deliberately ignored; reader-backed files compare by
+/// shared reader identity.
+///
 /// [The official docs](https://core.telegram.org/bots/api#inputfile).
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(schemars::JsonSchema))]
@@ -43,6 +47,37 @@ enum InnerFile {
 }
 
 use InnerFile::*;
+
+/// The source category of an [`InputFile`].
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum InputFileSourceKind {
+    /// A file read from an asynchronous reader.
+    Reader,
+    /// A file read from a local path.
+    Path,
+    /// Bytes held in memory.
+    Memory,
+    /// A URL that Telegram fetches.
+    Url,
+    /// A file already stored by Telegram.
+    FileId,
+}
+
+impl PartialEq for InputFile {
+    fn eq(&self, other: &Self) -> bool {
+        self.file_name == other.file_name
+            && match (&self.inner, &other.inner) {
+                (Read(left), Read(right)) => Arc::ptr_eq(&left.inner, &right.inner),
+                (File(left), File(right)) => left == right,
+                (Bytes(left), Bytes(right)) => left == right,
+                (Url(left), Url(right)) => left == right,
+                (FileId(left), FileId(right)) => left == right,
+                _ => false,
+            }
+    }
+}
+
+impl Eq for InputFile {}
 
 impl InputFile {
     /// Creates an `InputFile` from an url.
@@ -122,10 +157,30 @@ impl InputFile {
         self.id.get_or_init(random)
     }
 
+    /// Returns the source category without initializing a multipart attachment
+    /// id.
+    pub(crate) fn source_kind(&self) -> InputFileSourceKind {
+        match &self.inner {
+            Read(_) => InputFileSourceKind::Reader,
+            File(_) => InputFileSourceKind::Path,
+            Bytes(_) => InputFileSourceKind::Memory,
+            Url(_) => InputFileSourceKind::Url,
+            FileId(_) => InputFileSourceKind::FileId,
+        }
+    }
+
     /// Returns `true` if this file needs an attachment i.e. it's not a file_id
     /// or url that can be serialized without any additional multipart parts.
     pub(crate) fn needs_attach(&self) -> bool {
-        !matches!(self.inner, Url(_) | FileId(_))
+        matches!(
+            self.source_kind(),
+            InputFileSourceKind::Reader | InputFileSourceKind::Path | InputFileSourceKind::Memory
+        )
+    }
+
+    #[cfg(test)]
+    pub(crate) fn attachment_id_initialized(&self) -> bool {
+        self.id.get().is_some()
     }
 
     /// Takes this file out.
@@ -404,7 +459,10 @@ impl InputFileLike for InputFile {
     }
 }
 
-impl InputFileLike for Option<InputFile> {
+impl<T> InputFileLike for Option<T>
+where
+    T: InputFileLike,
+{
     fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
         if let Some(this) = self {
             this.copy_into(into)
@@ -414,6 +472,23 @@ impl InputFileLike for Option<InputFile> {
     fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
         if let Some(this) = self {
             this.move_into(into)
+        }
+    }
+}
+
+impl<T> InputFileLike for Vec<T>
+where
+    T: InputFileLike,
+{
+    fn copy_into(&self, into: &mut dyn FnMut(InputFile)) {
+        for value in self {
+            value.copy_into(into);
+        }
+    }
+
+    fn move_into(&mut self, into: &mut dyn FnMut(InputFile)) {
+        for value in self {
+            value.move_into(into);
         }
     }
 }

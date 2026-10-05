@@ -4,11 +4,20 @@ use std::{io, sync::Arc};
 
 use thiserror::Error;
 
-use crate::types::{ChatId, ResponseParameters, Seconds};
+use crate::{
+    requests::RequestValidationError,
+    types::{ChatId, ResponseParameters, Seconds},
+};
 
 /// An error caused by sending a request to Telegram.
 #[derive(Debug, Error, Clone)]
 pub enum RequestError {
+    /// A request violated a statically known constraint before dispatch.
+    ///
+    /// This error is local: no HTTP request was sent to Telegram.
+    #[error("request validation failed: {0}")]
+    Validation(#[from] RequestValidationError),
+
     /// A Telegram API error.
     #[error("A Telegram's error: {0}")]
     Api(#[from] ApiError),
