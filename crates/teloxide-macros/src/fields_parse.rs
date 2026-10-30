@@ -85,7 +85,8 @@ fn create_parser<'a>(
                     (
                         |s: ::std::string::String| {
                             let res = <#ty>::from_str(&s)
-                                .map_err(|e| teloxide::utils::command::ParseError::IncorrectFormat(e.into()))?;
+                                .map_err(::std::convert::Into::into)
+                                .map_err(teloxide::utils::command::ParseError::IncorrectFormat)?;
 
                             ::std::result::Result::Ok((res,))
                         }
@@ -124,7 +125,9 @@ fn parser_with_separator<'a>(
                             message: format!("Expected but not found arg number {}", #found + 1),
                         })?;
 
-                        <#types>::from_str(s).map_err(|e| teloxide::utils::command::ParseError::IncorrectFormat(e.into()))?
+                        <#types>::from_str(s)
+                            .map_err(::std::convert::Into::into)
+                            .map_err(teloxide::utils::command::ParseError::IncorrectFormat)?
                     },
                 )*
             )
