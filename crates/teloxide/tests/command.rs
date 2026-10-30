@@ -2,13 +2,17 @@
 #![allow(clippy::nonstandard_macro_braces)]
 
 #[cfg(feature = "macros")]
-use teloxide::utils::command::BotCommands;
+use std::num::ParseIntError;
+
+#[cfg(feature = "macros")]
+use teloxide::utils::command::{BotCommands, ParseError};
 
 // We put tests here because macro expand in unit tests in module
 // teloxide::utils::command was a failure
 
 #[test]
 #[cfg(feature = "macros")]
+#[deny(unreachable_code)]
 fn parse_command_with_args() {
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
@@ -36,7 +40,11 @@ fn parse_command_with_non_string_arg() {
     let data = "/start -50";
     let expected = DefaultCommands::Start("-50".parse().unwrap());
     let actual = DefaultCommands::parse(data, "").unwrap();
-    assert_eq!(actual, expected)
+    assert_eq!(actual, expected);
+    assert!(matches!(
+        DefaultCommands::parse("/start invalid", ""),
+        Err(ParseError::IncorrectFormat(error)) if error.is::<ParseIntError>()
+    ));
 }
 
 #[test]
@@ -106,6 +114,7 @@ fn parse_command_with_bot_name() {
 
 #[test]
 #[cfg(feature = "macros")]
+#[deny(unreachable_code)]
 fn parse_with_split() {
     #[derive(BotCommands, Debug, PartialEq)]
     #[command(rename_rule = "lowercase")]
@@ -119,6 +128,10 @@ fn parse_with_split() {
         DefaultCommands::Start(10, "hello".to_string()),
         DefaultCommands::parse("/start 10 hello", "").unwrap(),
     );
+    assert!(matches!(
+        DefaultCommands::parse("/start invalid hello", ""),
+        Err(ParseError::IncorrectFormat(error)) if error.is::<ParseIntError>()
+    ));
 }
 
 #[test]
