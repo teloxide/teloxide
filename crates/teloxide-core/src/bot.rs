@@ -58,6 +58,15 @@ pub struct Bot {
     token: Arc<str>,
     api_url: Arc<reqwest::Url>,
     client: Client,
+    environment: ApiEnvironment,
+}
+
+/// Telegram server environment. Test bots use a separate account and token.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum ApiEnvironment {
+    #[default]
+    Production,
+    Test,
 }
 
 /// Constructors
@@ -97,7 +106,7 @@ impl Bot {
                 .expect("Failed to parse the default TBA URL"),
         );
 
-        Self { token, api_url, client }
+        Self { token, api_url, client, environment: ApiEnvironment::Production }
     }
 
     /// Creates a new `Bot` with the `TELOXIDE_TOKEN` & `TELOXIDE_API_URL` &
@@ -201,6 +210,21 @@ impl Bot {
     }
 }
 
+/// Server environment selection.
+impl Bot {
+    /// Select production or Telegram's separate test environment for requests
+    /// and file downloads. Existing clones retain their own environment.
+    pub fn set_environment(mut self, environment: ApiEnvironment) -> Self {
+        self.environment = environment;
+        self
+    }
+
+    /// The environment used by this bot instance.
+    pub fn environment(&self) -> ApiEnvironment {
+        self.environment
+    }
+}
+
 /// Getters
 impl Bot {
     /// Returns currently used token.
@@ -235,6 +259,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = Arc::clone(&self.api_url);
 
+        let environment = self.environment;
         let timeout_hint = payload.timeout_hint();
         let params = stacker::maybe_grow(256 * 1024, 1024 * 1024, || serde_json::to_vec(payload))
             // this `expect` should be ok since we don't write request those may trigger error here
@@ -246,6 +271,7 @@ impl Bot {
                 &client,
                 token.as_ref(),
                 reqwest::Url::clone(&*api_url),
+                environment,
                 P::NAME,
                 params,
                 timeout_hint,
@@ -266,6 +292,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = Arc::clone(&self.api_url);
 
+        let environment = self.environment;
         let timeout_hint = payload.timeout_hint();
         let params = serde_multipart::to_form(payload);
 
@@ -276,6 +303,7 @@ impl Bot {
                 &client,
                 token.as_ref(),
                 reqwest::Url::clone(&*api_url),
+                environment,
                 P::NAME,
                 params,
                 timeout_hint,
@@ -296,6 +324,7 @@ impl Bot {
         let token = Arc::clone(&self.token);
         let api_url = self.api_url.clone();
 
+        let environment = self.environment;
         let timeout_hint = payload.timeout_hint();
         let params = serde_multipart::to_form_ref(payload);
 
@@ -306,6 +335,7 @@ impl Bot {
                 &client,
                 token.as_ref(),
                 reqwest::Url::clone(&*api_url),
+                environment,
                 P::NAME,
                 params,
                 timeout_hint,

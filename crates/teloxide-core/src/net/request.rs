@@ -14,6 +14,7 @@ pub async fn request_multipart<T>(
     client: &Client,
     token: &str,
     api_url: reqwest::Url,
+    environment: crate::ApiEnvironment,
     method_name: &str,
     params: reqwest::multipart::Form,
     _timeout_hint: Option<Duration>,
@@ -35,7 +36,7 @@ where
     let method_name = method_name.trim_end_matches("Inline");
 
     let request = client
-        .post(crate::net::method_url(api_url, token, method_name))
+        .post(crate::net::method_url(api_url, token, environment, method_name))
         .multipart(params)
         .build()?;
 
@@ -53,6 +54,7 @@ pub async fn request_json<T>(
     client: &Client,
     token: &str,
     api_url: reqwest::Url,
+    environment: crate::ApiEnvironment,
     method_name: &str,
     params: Vec<u8>,
     _timeout_hint: Option<Duration>,
@@ -74,7 +76,7 @@ where
     let method_name = method_name.trim_end_matches("Inline");
 
     let request = client
-        .post(crate::net::method_url(api_url, token, method_name))
+        .post(crate::net::method_url(api_url, token, environment, method_name))
         .header(CONTENT_TYPE, HeaderValue::from_static("application/json"))
         .body(params)
         .build()?;

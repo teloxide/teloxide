@@ -75,6 +75,8 @@ impl EventKind for Kind {
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
+            WidgetQuery,
+            SharedWidgetQuery,
             ShippingQuery,
             PreCheckoutQuery,
             PurchasedPaidMedia,
@@ -113,6 +115,21 @@ mod tests {
     #[command(rename_rule = "lowercase")]
     enum Cmd {
         B,
+    }
+
+    #[test]
+    fn widget_filters_subscribe_to_both_query_updates() {
+        use crate::{
+            dispatching::UpdateFilterExt,
+            types::{AllowedUpdate, Update},
+        };
+        let handler = dptree::entry()
+            .branch(Update::filter_widget_query().endpoint(|| async {}))
+            .branch(Update::filter_shared_widget_query().endpoint(|| async {}));
+        let subscriptions = handler.description().allowed_updates();
+        assert_eq!(subscriptions.len(), 2);
+        assert!(subscriptions.contains(&AllowedUpdate::WidgetQuery));
+        assert!(subscriptions.contains(&AllowedUpdate::SharedWidgetQuery));
     }
 
     // <https://github.com/teloxide/teloxide/discussions/648>
@@ -156,6 +173,8 @@ mod tests {
             InlineQuery,
             ChosenInlineResult,
             CallbackQuery,
+            WidgetQuery,
+            SharedWidgetQuery,
             ShippingQuery,
             PreCheckoutQuery,
             PurchasedPaidMedia,
@@ -180,6 +199,8 @@ mod tests {
                 | InlineQuery
                 | ChosenInlineResult
                 | CallbackQuery
+                | WidgetQuery
+                | SharedWidgetQuery
                 | ShippingQuery
                 | PreCheckoutQuery
                 | PurchasedPaidMedia

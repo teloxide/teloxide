@@ -8,8 +8,8 @@ use crate::{
         EditMessageCaptionInline, EditMessageChecklist, EditMessageMedia, EditMessageMediaInline,
         EditMessageText, EditMessageTextInline, EditStory, GiftPremiumSubscription, PostStory,
         SavePreparedInlineMessage, SendAnimation, SendAudio, SendChecklist, SendDocument, SendGift,
-        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll, SendVideo,
-        SendVoice,
+        SendGiftChat, SendMediaGroup, SendMessage, SendPaidMedia, SendPhoto, SendPoll,
+        SendSharedWidget, SendVideo, SendVoice, SendWidget,
     },
     prelude::Requester,
     requests::{HasPayload, Output, Request},
@@ -136,6 +136,8 @@ impl<B> Requester for DefaultParseMode<B>
 where
     B: Requester,
     B::SendMessage: Clone,
+    B::SendWidget: Clone,
+    B::SendSharedWidget: Clone,
     B::SendPhoto: Clone,
     B::SendVideo: Clone,
     B::SendAudio: Clone,
@@ -167,6 +169,8 @@ where
 
     requester_forward! {
         send_message,
+        send_widget,
+        send_shared_widget,
         send_photo,
         send_video,
         send_audio,
@@ -215,6 +219,10 @@ where
         stop_message_live_location_inline,
         send_venue,
         send_contact,
+        answer_widget_query,
+        edit_message_widget_data,
+        edit_message_widget_data_inline,
+        edit_shared_widget_data,
         send_dice,
         send_chat_action,
         set_message_reaction,
@@ -377,6 +385,8 @@ macro_rules! impl_visit_parse_modes {
 
 impl_visit_parse_modes! {
     SendMessage => [parse_mode],
+    SendWidget => [parse_mode],
+    SendSharedWidget => [parse_mode],
     SendPhoto => [parse_mode],
     SendVideo => [parse_mode],
     SendAudio => [parse_mode],
@@ -457,6 +467,40 @@ fn visit_parse_modes_in_inline_query_result(
 ) {
     use InlineQueryResult::*;
 
+    let content = match result {
+        CachedAudio(r) => r.input_message_content.as_mut(),
+        CachedDocument(r) => r.input_message_content.as_mut(),
+        CachedGif(r) => r.input_message_content.as_mut(),
+        CachedMpeg4Gif(r) => r.input_message_content.as_mut(),
+        CachedPhoto(r) => r.input_message_content.as_mut(),
+        CachedSticker(r) => r.input_message_content.as_mut(),
+        CachedVideo(r) => r.input_message_content.as_mut(),
+        CachedVoice(r) => r.input_message_content.as_mut(),
+        Audio(r) => r.input_message_content.as_mut(),
+        Contact(r) => r.input_message_content.as_mut(),
+        Document(r) => r.input_message_content.as_mut(),
+        Gif(r) => r.input_message_content.as_mut(),
+        Location(r) => r.input_message_content.as_mut(),
+        Mpeg4Gif(r) => r.input_message_content.as_mut(),
+        Photo(r) => r.input_message_content.as_mut(),
+        Venue(r) => r.input_message_content.as_mut(),
+        Video(r) => r.input_message_content.as_mut(),
+        Voice(r) => r.input_message_content.as_mut(),
+        Article(r) => Some(&mut r.input_message_content),
+        Game(_) => None,
+    };
+    match content {
+        Some(InputMessageContent::Widget(widget)) => {
+            visitor(&mut widget.parse_mode);
+            return;
+        }
+        Some(InputMessageContent::SharedWidget(widget)) => {
+            visitor(&mut widget.parse_mode);
+            return;
+        }
+        _ => {}
+    }
+
     let parse_mode = match result {
         // Simply contain `parse_mode`
         CachedAudio(r) => &mut r.parse_mode,
@@ -477,22 +521,32 @@ fn visit_parse_modes_in_inline_query_result(
         // Can contain parse mode if `InputMessageContent::Text`
         CachedSticker(r) => match &mut r.input_message_content {
             Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::Widget(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::SharedWidget(t)) => &mut t.parse_mode,
             _ => return,
         },
         Article(r) => match &mut r.input_message_content {
             InputMessageContent::Text(t) => &mut t.parse_mode,
+            InputMessageContent::Widget(t) => &mut t.parse_mode,
+            InputMessageContent::SharedWidget(t) => &mut t.parse_mode,
             _ => return,
         },
         Contact(r) => match &mut r.input_message_content {
             Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::Widget(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::SharedWidget(t)) => &mut t.parse_mode,
             _ => return,
         },
         Location(r) => match &mut r.input_message_content {
             Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::Widget(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::SharedWidget(t)) => &mut t.parse_mode,
             _ => return,
         },
         Venue(r) => match &mut r.input_message_content {
             Some(InputMessageContent::Text(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::Widget(t)) => &mut t.parse_mode,
+            Some(InputMessageContent::SharedWidget(t)) => &mut t.parse_mode,
             _ => return,
         },
 
@@ -518,4 +572,35 @@ fn visit_parse_modes_in_input_media(
     };
 
     visitor(parse_mode);
+}
+
+#[cfg(test)]
+mod widget_tests {
+    use super::*;
+
+    #[test]
+    fn nested_widget_caption_overrides_outer_media_caption_mode() {
+        let mut widget = InputWidgetMessageContent::new("<p>Widget</p>");
+        widget.caption = Some("<b>caption</b>".into());
+        for explicit in [None, Some(ParseMode::MarkdownV2)] {
+            widget.parse_mode = explicit;
+            let photo = InlineQueryResultPhoto::new(
+                "id",
+                "https://example.com/p.png".parse().unwrap(),
+                "https://example.com/t.png".parse().unwrap(),
+            )
+            .parse_mode(ParseMode::MarkdownV2)
+            .input_message_content(InputMessageContent::Widget(widget.clone()));
+            let mut result = InlineQueryResult::Photo(photo);
+            visit_parse_modes_in_inline_query_result(&mut result, &mut |mode| {
+                mode.get_or_insert(ParseMode::Html);
+            });
+            let InlineQueryResult::Photo(photo) = result else { unreachable!() };
+            let Some(InputMessageContent::Widget(nested)) = photo.input_message_content else {
+                panic!("widget missing")
+            };
+            assert_eq!(nested.parse_mode, Some(explicit.unwrap_or(ParseMode::Html)));
+            assert_eq!(photo.parse_mode, Some(ParseMode::MarkdownV2));
+        }
+    }
 }

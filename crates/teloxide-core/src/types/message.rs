@@ -439,6 +439,7 @@ pub enum MediaKind {
     // (for backward compatability telegram duplicates some fields)
     //
     // See <https://github.com/teloxide/teloxide/issues/481>
+    Widget(MediaWidget),
     Animation(MediaAnimation),
     Audio(MediaAudio),
     Contact(MediaContact),
@@ -457,6 +458,18 @@ pub enum MediaKind {
     VideoNote(MediaVideoNote),
     Voice(MediaVoice),
     Migration(ChatMigration),
+}
+
+#[serde_with::skip_serializing_none]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(schemars::JsonSchema))]
+pub struct MediaWidget {
+    pub widget: crate::types::Widget,
+    pub caption: Option<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub caption_entities: Vec<MessageEntity>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub show_caption_above_media: bool,
 }
 
 #[serde_with::skip_serializing_none]
@@ -991,6 +1004,7 @@ mod getters {
         MaybeInaccessibleMessage, MediaAnimation, MediaAudio, MediaChecklist, MediaContact,
         MediaDocument, MediaGame, MediaKind, MediaLocation, MediaPaid, MediaPhoto, MediaPoll,
         MediaSticker, MediaStory, MediaText, MediaVenue, MediaVideo, MediaVideoNote, MediaVoice,
+        MediaWidget,
         Message, MessageChannelChatCreated, MessageChatShared, MessageChecklistTasksAdded,
         MessageChecklistTasksDone, MessageCommon, MessageConnectedWebsite, MessageDeleteChatPhoto,
         MessageDice, MessageDirectMessagePriceChanged, MessageEntity, MessageGroupChatCreated,
@@ -1228,6 +1242,10 @@ mod getters {
         pub fn caption_entities(&self) -> Option<&[MessageEntity]> {
             match &self.kind {
                 Common(MessageCommon {
+                    media_kind: MediaKind::Widget(MediaWidget { caption_entities, .. }),
+                    ..
+                })
+                | Common(MessageCommon {
                     media_kind: MediaKind::Animation(MediaAnimation { caption_entities, .. }),
                     ..
                 })
@@ -1264,7 +1282,8 @@ mod getters {
         pub fn show_caption_above_media(&self) -> bool {
             self.common()
                 .map(|m| match m.media_kind {
-                    MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
+                    MediaKind::Widget(MediaWidget { show_caption_above_media, .. })
+                    | MediaKind::Animation(MediaAnimation { show_caption_above_media, .. })
                     | MediaKind::Photo(MediaPhoto { show_caption_above_media, .. })
                     | MediaKind::Video(MediaVideo { show_caption_above_media, .. }) => {
                         show_caption_above_media
@@ -1301,7 +1320,8 @@ mod getters {
                     MediaKind::Animation(MediaAnimation { has_media_spoiler, .. })
                     | MediaKind::Photo(MediaPhoto { has_media_spoiler, .. })
                     | MediaKind::Video(MediaVideo { has_media_spoiler, .. }) => has_media_spoiler,
-                    MediaKind::Audio(_)
+                    MediaKind::Widget(_)
+                    | MediaKind::Audio(_)
                     | MediaKind::Contact(_)
                     | MediaKind::Document(_)
                     | MediaKind::PaidMedia(_)
@@ -1442,6 +1462,16 @@ mod getters {
         }
 
         #[must_use]
+        pub fn widget(&self) -> Option<&crate::types::Widget> {
+            match &self.kind {
+                Common(MessageCommon { media_kind: MediaKind::Widget(media), .. }) => {
+                    Some(&media.widget)
+                }
+                _ => None,
+            }
+        }
+
+        #[must_use]
         pub fn caption(&self) -> Option<&str> {
             match &self.kind {
                 Common(MessageCommon {
@@ -1450,6 +1480,7 @@ mod getters {
                         | MediaKind::Audio(MediaAudio { caption, .. })
                         | MediaKind::Document(MediaDocument { caption, .. })
                         | MediaKind::Photo(MediaPhoto { caption, .. })
+                        | MediaKind::Widget(MediaWidget { caption, .. })
                         | MediaKind::Video(MediaVideo { caption, .. })
                         | MediaKind::Voice(MediaVoice { caption, .. }),
                     ..

@@ -79,11 +79,19 @@ pub fn default_reqwest_settings() -> reqwest::ClientBuilder {
 /// Creates URL for making HTTPS requests. See the [Telegram documentation].
 ///
 /// [Telegram documentation]: https://core.telegram.org/bots/api#making-requests
-fn method_url(base: reqwest::Url, token: &str, method_name: &str) -> reqwest::Url {
+fn method_url(
+    base: reqwest::Url,
+    token: &str,
+    environment: crate::ApiEnvironment,
+    method_name: &str,
+) -> reqwest::Url {
     let mut url = base;
     {
         let mut segments = url.path_segments_mut().expect("base URL cannot be a cannot-be-a-base");
         segments.push(&format!("bot{token}"));
+        if environment == crate::ApiEnvironment::Test {
+            segments.push("test");
+        }
         segments.push(method_name);
     }
     url
@@ -92,12 +100,20 @@ fn method_url(base: reqwest::Url, token: &str, method_name: &str) -> reqwest::Ur
 /// Creates URL for downloading a file. See the [Telegram documentation].
 ///
 /// [Telegram documentation]: https://core.telegram.org/bots/api#file
-fn file_url(base: reqwest::Url, token: &str, file_path: &str) -> reqwest::Url {
+fn file_url(
+    base: reqwest::Url,
+    token: &str,
+    environment: crate::ApiEnvironment,
+    file_path: &str,
+) -> reqwest::Url {
     let mut url = base;
     {
         let mut segments = url.path_segments_mut().expect("base URL cannot be a cannot-be-a-base");
         segments.push("file");
         segments.push(&format!("bot{token}"));
+        if environment == crate::ApiEnvironment::Test {
+            segments.push("test");
+        }
         segments.push(file_path);
     }
     url
@@ -108,10 +124,29 @@ mod tests {
     use crate::net::*;
 
     #[test]
+    fn test_environment_routes_methods_and_downloads() {
+        let base = reqwest::Url::parse(TELEGRAM_API_URL).unwrap();
+        assert_eq!(
+            method_url(base.clone(), "fixture-token", crate::ApiEnvironment::Test, "sendWidget")
+                .as_str(),
+            "https://api.telegram.org/botfixture-token/test/sendWidget"
+        );
+        assert_eq!(
+            file_url(base, "fixture-token", crate::ApiEnvironment::Test, "file.bin").as_str(),
+            "https://api.telegram.org/file/botfixture-token/test/file.bin"
+        );
+        let bot = crate::Bot::new("fixture-token");
+        assert_eq!(bot.environment(), crate::ApiEnvironment::Production);
+        let bot = bot.set_environment(crate::ApiEnvironment::Test);
+        assert_eq!(bot.clone().environment(), crate::ApiEnvironment::Test);
+    }
+
+    #[test]
     fn method_url_test() {
         let url = method_url(
             reqwest::Url::parse(TELEGRAM_API_URL).unwrap(),
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
+            crate::ApiEnvironment::Production,
             "methodName",
         );
 
@@ -126,6 +161,7 @@ mod tests {
         let url = method_url(
             reqwest::Url::parse("https://example.com/telegram").unwrap(),
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
+            crate::ApiEnvironment::Production,
             "methodName",
         );
 
@@ -140,6 +176,7 @@ mod tests {
         let url = file_url(
             reqwest::Url::parse(TELEGRAM_API_URL).unwrap(),
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
+            crate::ApiEnvironment::Production,
             "AgADAgADyqoxG2g8aEsu_KjjVsGF4-zetw8ABAEAAwIAA20AA_8QAwABFgQ",
         );
 
@@ -154,6 +191,7 @@ mod tests {
         let url = file_url(
             reqwest::Url::parse("https://example.com/telegram").unwrap(),
             "535362388:AAF7-g0gYncWnm5IyfZlpPRqRRv6kNAGlao",
+            crate::ApiEnvironment::Production,
             "AgADAgADyqoxG2g8aEsu_KjjVsGF4-zetw8ABAEAAwIAA20AA_8QAwABFgQ",
         );
 

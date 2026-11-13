@@ -40,6 +40,7 @@ impl Download for Bot {
             &self.client,
             reqwest::Url::clone(&*self.api_url),
             &self.token,
+            self.environment,
             path,
             destination,
         )
@@ -55,6 +56,7 @@ impl Download for Bot {
             &self.client,
             reqwest::Url::clone(&*self.api_url),
             &self.token,
+            self.environment,
             path,
         )
         .map(|res| res.map_err(crate::errors::hide_token))

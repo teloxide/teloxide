@@ -37,11 +37,25 @@ macro_rules! ftyid {
     };
 }
 
+macro_rules! fglobal {
+    ($m:ident $this:ident ($($arg:ident : $T:ty),*)) => {
+        ThrottlingRequest {
+            request: Arc::new($this.inner().$m($($arg),*)),
+            chat_id: |_| super::ThrottleTarget::Global,
+            worker: $this.queue.clone(),
+        }
+    };
+}
+
 impl<B: Requester> Requester for Throttle<B>
 where
     B::Err: AsResponseParameters,
 
     B::SendMessage: Clone + Send + Sync + 'static,
+    B::EditMessageWidgetDataInline: Clone + Send + Sync + 'static,
+    B::EditMessageWidgetData: Clone + Send + Sync + 'static,
+    B::SendWidget: Clone + Send + Sync + 'static,
+    B::SendSharedWidget: Clone + Send + Sync + 'static,
     B::ForwardMessage: Clone + Send + Sync + 'static,
     B::ForwardMessages: Clone + Send + Sync + 'static,
     B::CopyMessage: Clone + Send + Sync + 'static,
@@ -67,8 +81,13 @@ where
 {
     type Err = B::Err;
 
+    requester_forward! { edit_message_widget_data_inline, => fglobal, fty }
+
     requester_forward! {
         send_message,
+        send_widget,
+        edit_message_widget_data,
+        send_shared_widget,
         forward_message,
         forward_messages,
         copy_message,
@@ -96,6 +115,9 @@ where
 
     requester_forward! {
         get_me,
+        answer_widget_query,
+
+        edit_shared_widget_data,
         log_out,
         close,
         get_updates,

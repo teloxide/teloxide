@@ -6,7 +6,7 @@ use crate::types::{
     BusinessConnection, BusinessMessagesDeleted, CallbackQuery, Chat, ChatBoostRemoved,
     ChatBoostUpdated, ChatJoinRequest, ChatMemberUpdated, ChosenInlineResult, InlineQuery, Message,
     MessageReactionCountUpdated, MessageReactionUpdated, PaidMediaPurchased, Poll, PollAnswer,
-    PreCheckoutQuery, ShippingQuery, User,
+    PreCheckoutQuery, SharedWidgetQuery, ShippingQuery, User, WidgetQuery,
 };
 
 /// This [object] represents an incoming update.
@@ -108,6 +108,12 @@ pub enum UpdateKind {
     /// New incoming callback query.
     CallbackQuery(CallbackQuery),
 
+    /// Query from a widget in an original message.
+    WidgetQuery(WidgetQuery),
+
+    /// Query from a forwarded shared widget.
+    SharedWidgetQuery(SharedWidgetQuery),
+
     /// New incoming shipping query. Only for invoices with flexible price.
     ShippingQuery(ShippingQuery),
 
@@ -184,6 +190,8 @@ impl Update {
             BusinessConnection(conn) => &conn.user,
 
             CallbackQuery(query) => &query.from,
+            WidgetQuery(query) => &query.from,
+            SharedWidgetQuery(query) => &query.from,
             ChosenInlineResult(chosen) => &chosen.from,
             MessageReaction(reaction) => return reaction.user(),
             InlineQuery(query) => &query.from,
@@ -256,6 +264,8 @@ impl Update {
                 i5(empty())
             }
 
+            UpdateKind::WidgetQuery(query) => i1(once(&query.from)),
+            UpdateKind::SharedWidgetQuery(query) => i1(once(&query.from)),
             UpdateKind::InlineQuery(query) => i1(once(&query.from)),
             UpdateKind::ChosenInlineResult(query) => i1(once(&query.from)),
             UpdateKind::CallbackQuery(query) => i2(query.mentioned_users()),
@@ -309,6 +319,7 @@ impl Update {
             | BusinessMessage(m)
             | EditedBusinessMessage(m) => &m.chat,
             CallbackQuery(q) => q.message.as_ref()?.chat(),
+            WidgetQuery(q) => return q.chat.as_ref(),
             ChatMember(m) => &m.chat,
             MyChatMember(m) => &m.chat,
             ChatJoinRequest(c) => &c.chat,
@@ -318,7 +329,8 @@ impl Update {
             RemovedChatBoost(b) => &b.chat,
             DeletedBusinessMessages(m) => &m.chat,
 
-            InlineQuery(_)
+            SharedWidgetQuery(_)
+            | InlineQuery(_)
             | BusinessConnection(_)
             | ChosenInlineResult(_)
             | ShippingQuery(_)
@@ -363,21 +375,12 @@ impl<'de> Deserialize<'de> for UpdateKind {
             where
                 A: MapAccess<'de>,
             {
-                let mut tmp = None;
-
-                // Try to deserialize a borrowed-str key, or else try deserializing an owned
-                // string key
-                let key = map.next_key::<&str>().or_else(|_| {
-                    map.next_key::<String>().map(|k| {
-                        tmp = k;
-                        tmp.as_deref()
-                    })
-                });
+                let key = map.next_key::<String>();
 
                 let this = key
                     .ok()
                     .flatten()
-                    .and_then(|key| match key {
+                    .and_then(|key| match key.as_str() {
                         "message" => map.next_value::<Message>().ok().map(UpdateKind::Message),
                         "edited_message" => {
                             map.next_value::<Message>().ok().map(UpdateKind::EditedMessage)
@@ -417,6 +420,13 @@ impl<'de> Deserialize<'de> for UpdateKind {
                             .next_value::<ChosenInlineResult>()
                             .ok()
                             .map(UpdateKind::ChosenInlineResult),
+                        "widget_query" => {
+                            map.next_value::<WidgetQuery>().ok().map(UpdateKind::WidgetQuery)
+                        }
+                        "shared_widget_query" => map
+                            .next_value::<SharedWidgetQuery>()
+                            .ok()
+                            .map(UpdateKind::SharedWidgetQuery),
                         "callback_query" => {
                             map.next_value::<CallbackQuery>().ok().map(UpdateKind::CallbackQuery)
                         }
@@ -525,6 +535,10 @@ impl Serialize for UpdateKind {
             UpdateKind::ChatBoost(v) => s.serialize_newtype_variant(name, 21, "chat_boost", v),
             UpdateKind::RemovedChatBoost(v) => {
                 s.serialize_newtype_variant(name, 22, "removed_chat_boost", v)
+            }
+            UpdateKind::WidgetQuery(v) => s.serialize_newtype_variant(name, 23, "widget_query", v),
+            UpdateKind::SharedWidgetQuery(v) => {
+                s.serialize_newtype_variant(name, 24, "shared_widget_query", v)
             }
             UpdateKind::Error(v) => v.serialize(s),
         }

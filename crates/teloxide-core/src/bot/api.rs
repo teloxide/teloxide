@@ -18,6 +18,83 @@ use crate::{
 impl Requester for Bot {
     type Err = crate::errors::RequestError;
 
+    type SendWidget = JsonRequest<payloads::SendWidget>;
+    fn send_widget<C, H>(&self, chat_id: C, html: H) -> Self::SendWidget
+    where
+        C: Into<Recipient>,
+        H: Into<String>,
+    {
+        Self::SendWidget::new(self.clone(), payloads::SendWidget::new(chat_id, html))
+    }
+
+    type SendSharedWidget = JsonRequest<payloads::SendSharedWidget>;
+    fn send_shared_widget<C, W>(&self, chat_id: C, widget_id: W) -> Self::SendSharedWidget
+    where
+        C: Into<Recipient>,
+        W: Into<String>,
+    {
+        Self::SendSharedWidget::new(
+            self.clone(),
+            payloads::SendSharedWidget::new(chat_id, widget_id),
+        )
+    }
+
+    type AnswerWidgetQuery = JsonRequest<payloads::AnswerWidgetQuery>;
+    fn answer_widget_query<W>(&self, widget_query_id: W) -> Self::AnswerWidgetQuery
+    where
+        W: Into<String>,
+    {
+        Self::AnswerWidgetQuery::new(
+            self.clone(),
+            payloads::AnswerWidgetQuery::new(widget_query_id),
+        )
+    }
+
+    type EditMessageWidgetData = JsonRequest<payloads::EditMessageWidgetData>;
+    fn edit_message_widget_data<C>(
+        &self,
+        chat_id: C,
+        message_id: MessageId,
+    ) -> Self::EditMessageWidgetData
+    where
+        C: Into<Recipient>,
+    {
+        Self::EditMessageWidgetData::new(
+            self.clone(),
+            payloads::EditMessageWidgetData::new(chat_id, message_id),
+        )
+    }
+
+    type EditMessageWidgetDataInline = JsonRequest<payloads::EditMessageWidgetDataInline>;
+    fn edit_message_widget_data_inline<I>(
+        &self,
+        inline_message_id: I,
+    ) -> Self::EditMessageWidgetDataInline
+    where
+        I: Into<String>,
+    {
+        Self::EditMessageWidgetDataInline::new(
+            self.clone(),
+            payloads::EditMessageWidgetDataInline::new(inline_message_id),
+        )
+    }
+
+    type EditSharedWidgetData = JsonRequest<payloads::EditSharedWidgetData>;
+    fn edit_shared_widget_data<W, P>(
+        &self,
+        widget_id: W,
+        public_data: P,
+    ) -> Self::EditSharedWidgetData
+    where
+        W: Into<String>,
+        P: Into<String>,
+    {
+        Self::EditSharedWidgetData::new(
+            self.clone(),
+            payloads::EditSharedWidgetData::new(widget_id, public_data),
+        )
+    }
+
     type GetUpdates = JsonRequest<payloads::GetUpdates>;
 
     fn get_updates(&self) -> Self::GetUpdates {

@@ -219,6 +219,12 @@ where
         send_contact,
         send_poll,
         send_checklist,
+        send_widget,
+        send_shared_widget,
+        answer_widget_query,
+        edit_message_widget_data,
+        edit_message_widget_data_inline,
+        edit_shared_widget_data,
         send_dice,
         send_chat_action,
         set_message_reaction,
@@ -364,6 +370,40 @@ where
 trait ErasableRequester<'a> {
     /// Error type returned by all requests.
     type Err: std::error::Error + Send;
+
+    fn send_widget(
+        &self,
+        chat_id: Recipient,
+        html: String,
+    ) -> ErasedRequest<'a, SendWidget, Self::Err>;
+
+    fn send_shared_widget(
+        &self,
+        chat_id: Recipient,
+        widget_id: String,
+    ) -> ErasedRequest<'a, SendSharedWidget, Self::Err>;
+
+    fn answer_widget_query(
+        &self,
+        widget_query_id: String,
+    ) -> ErasedRequest<'a, AnswerWidgetQuery, Self::Err>;
+
+    fn edit_message_widget_data_inline(
+        &self,
+        inline_message_id: String,
+    ) -> ErasedRequest<'a, EditMessageWidgetDataInline, Self::Err>;
+
+    fn edit_message_widget_data(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, EditMessageWidgetData, Self::Err>;
+
+    fn edit_shared_widget_data(
+        &self,
+        widget_id: String,
+        public_data: String,
+    ) -> ErasedRequest<'a, EditSharedWidgetData, Self::Err>;
 
     fn get_updates(&self) -> ErasedRequest<'a, GetUpdates, Self::Err>;
 
@@ -1271,6 +1311,52 @@ where
     B: Requester + 'a,
 {
     type Err = B::Err;
+
+    fn send_widget(
+        &self,
+        chat_id: Recipient,
+        html: String,
+    ) -> ErasedRequest<'a, SendWidget, Self::Err> {
+        Requester::send_widget(self, chat_id, html).erase()
+    }
+
+    fn send_shared_widget(
+        &self,
+        chat_id: Recipient,
+        widget_id: String,
+    ) -> ErasedRequest<'a, SendSharedWidget, Self::Err> {
+        Requester::send_shared_widget(self, chat_id, widget_id).erase()
+    }
+
+    fn answer_widget_query(
+        &self,
+        widget_query_id: String,
+    ) -> ErasedRequest<'a, AnswerWidgetQuery, Self::Err> {
+        Requester::answer_widget_query(self, widget_query_id).erase()
+    }
+
+    fn edit_message_widget_data_inline(
+        &self,
+        inline_message_id: String,
+    ) -> ErasedRequest<'a, EditMessageWidgetDataInline, Self::Err> {
+        Requester::edit_message_widget_data_inline(self, inline_message_id).erase()
+    }
+
+    fn edit_message_widget_data(
+        &self,
+        chat_id: Recipient,
+        message_id: MessageId,
+    ) -> ErasedRequest<'a, EditMessageWidgetData, Self::Err> {
+        Requester::edit_message_widget_data(self, chat_id, message_id).erase()
+    }
+
+    fn edit_shared_widget_data(
+        &self,
+        widget_id: String,
+        public_data: String,
+    ) -> ErasedRequest<'a, EditSharedWidgetData, Self::Err> {
+        Requester::edit_shared_widget_data(self, widget_id, public_data).erase()
+    }
 
     fn get_updates(&self) -> ErasedRequest<'a, GetUpdates, Self::Err> {
         Requester::get_updates(self).erase()

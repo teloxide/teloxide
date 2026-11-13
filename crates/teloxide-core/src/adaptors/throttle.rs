@@ -74,7 +74,7 @@ pub use settings::{Limits, Settings};
 pub struct Throttle<B> {
     bot: B,
     // `RequestLock` allows to unlock requests (allowing them to be sent).
-    queue: mpsc::Sender<(ChatIdHash, RequestLock)>,
+    queue: mpsc::Sender<(ThrottleTarget, RequestLock)>,
     info_tx: mpsc::Sender<InfoMessage>,
 }
 
@@ -174,42 +174,45 @@ impl<B> Throttle<B> {
     }
 }
 
-/// An ID used in the worker.
+/// The rate-limit scope of an outgoing request.
 ///
 /// It is used instead of `ChatId` to make copying cheap even in case of
 /// usernames. (It is just a hashed username.)
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq)]
-enum ChatIdHash {
+enum ThrottleTarget {
+    /// Counts toward bot-wide limits without implying any chat identity.
+    Global,
     Id(ChatId),
     ChannelUsernameHash(u64),
 }
 
-impl ChatIdHash {
+impl ThrottleTarget {
     fn is_channel_or_supergroup(&self) -> bool {
         match self {
             &Self::Id(id) => id.is_channel_or_supergroup(),
             Self::ChannelUsernameHash(_) => true,
+            Self::Global => false,
         }
     }
 }
 
-impl From<&ChatId> for ChatIdHash {
+impl From<&ChatId> for ThrottleTarget {
     fn from(value: &ChatId) -> Self {
-        ChatIdHash::Id(*value)
+        ThrottleTarget::Id(*value)
     }
 }
 
-impl From<&Recipient> for ChatIdHash {
+impl From<&Recipient> for ThrottleTarget {
     fn from(value: &Recipient) -> Self {
         match value {
-            Recipient::Id(id) => ChatIdHash::Id(*id),
+            Recipient::Id(id) => ThrottleTarget::Id(*id),
             Recipient::ChannelUsername(username) => {
                 // FIXME: this could probably use a faster hasher, `DefaultHasher` is known to
                 //        be slow (it's not like we _need_ this to be fast, but still)
                 let mut hasher = std::collections::hash_map::DefaultHasher::new();
                 username.hash(&mut hasher);
                 let hash = hasher.finish();
-                ChatIdHash::ChannelUsernameHash(hash)
+                ThrottleTarget::ChannelUsernameHash(hash)
             }
         }
     }

@@ -18,6 +18,8 @@ pub enum AllowedUpdate {
     InlineQuery,
     ChosenInlineResult,
     CallbackQuery,
+    WidgetQuery,
+    SharedWidgetQuery,
     ShippingQuery,
     PreCheckoutQuery,
     PurchasedPaidMedia,

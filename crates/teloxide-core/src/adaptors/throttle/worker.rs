@@ -10,7 +10,7 @@ use tokio::sync::{mpsc, mpsc::error::TryRecvError, oneshot::Sender};
 use vecrem::VecExt;
 
 use crate::{
-    adaptors::throttle::{request_lock::RequestLock, ChatIdHash, Limits, Settings},
+    adaptors::throttle::{request_lock::RequestLock, Limits, Settings, ThrottleTarget},
     errors::AsResponseParameters,
     requests::Requester,
 };
@@ -40,14 +40,14 @@ type RequestsSent = u32;
 // (waffle)
 #[derive(Default)]
 struct RequestsSentToChats {
-    per_min: HashMap<ChatIdHash, RequestsSent>,
-    per_sec: HashMap<ChatIdHash, RequestsSent>,
+    per_min: HashMap<ThrottleTarget, RequestsSent>,
+    per_sec: HashMap<ThrottleTarget, RequestsSent>,
 }
 
 pub(super) struct FreezeUntil {
     pub(super) until: Instant,
     pub(super) after: Duration,
-    pub(super) chat: ChatIdHash,
+    pub(super) chat: ThrottleTarget,
 }
 
 // Throttling is quite complicated. This comment describes the algorithm of the
@@ -94,7 +94,7 @@ pub(super) struct FreezeUntil {
 // history.
 pub(super) async fn worker<B>(
     Settings { mut limits, mut on_queue_full, retry, check_slow_mode }: Settings,
-    mut rx: mpsc::Receiver<(ChatIdHash, RequestLock)>,
+    mut rx: mpsc::Receiver<(ThrottleTarget, RequestLock)>,
     mut info_rx: mpsc::Receiver<InfoMessage>,
     bot: B,
 ) where
@@ -104,13 +104,13 @@ pub(super) async fn worker<B>(
     // FIXME(waffle): Make an research about data structures for this queue.
     //                Currently this is O(n) removing (n = number of elements
     //                stayed), amortized O(1) push (vec+vecrem).
-    let mut queue: Vec<(ChatIdHash, RequestLock)> =
+    let mut queue: Vec<(ThrottleTarget, RequestLock)> =
         Vec::with_capacity(limits.messages_per_sec_overall as usize);
 
-    let mut history: VecDeque<(ChatIdHash, Instant)> = VecDeque::new();
+    let mut history: VecDeque<(ThrottleTarget, Instant)> = VecDeque::new();
     let mut requests_sent = RequestsSentToChats::default();
 
-    let mut slow_mode: Option<HashMap<ChatIdHash, (Duration, Instant)>> =
+    let mut slow_mode: Option<HashMap<ThrottleTarget, (Duration, Instant)>> =
         check_slow_mode.then(HashMap::new);
 
     let mut rx_is_closed = false;
@@ -223,7 +223,9 @@ pub(super) async fn worker<B>(
         }
 
         for (chat, _) in history.iter().rev().take_while(|(_, time)| time > &sec_back) {
-            *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
+            if *chat != ThrottleTarget::Global {
+                *requests_sent.per_sec.entry(*chat).or_insert(0) += 1;
+            }
         }
 
         let mut queue_removing = queue.removing();
@@ -248,8 +250,9 @@ pub(super) async fn worker<B>(
                 limits.messages_per_min_chat
             };
 
-            let limits_not_exceeded = requests_sent_per_sec_count < limits.messages_per_sec_chat
-                && requests_sent_per_min_count < messages_per_min_limit;
+            let limits_not_exceeded = *chat == ThrottleTarget::Global
+                || (requests_sent_per_sec_count < limits.messages_per_sec_chat
+                    && requests_sent_per_min_count < messages_per_min_limit);
 
             if limits_not_exceeded {
                 // Unlock the associated request.
@@ -259,8 +262,10 @@ pub(super) async fn worker<B>(
 
                 // Only count request as sent if the request wasn't dropped before unlocked
                 if lock.unlock(retry, freeze_tx.clone()).is_ok() {
-                    *requests_sent.per_sec.entry(chat).or_insert(0) += 1;
-                    *requests_sent.per_min.entry(chat).or_insert(0) += 1;
+                    if chat != ThrottleTarget::Global {
+                        *requests_sent.per_sec.entry(chat).or_insert(0) += 1;
+                        *requests_sent.per_min.entry(chat).or_insert(0) += 1;
+                    }
                     history.push_back((chat, Instant::now()));
 
                     if let Some((_, last)) = slow_mode {
@@ -301,7 +306,7 @@ fn answer_info(rx: &mut mpsc::Receiver<InfoMessage>, limits: &mut Limits) {
 #[allow(clippy::needless_pass_by_ref_mut)]
 async fn freeze(
     rx: &mut mpsc::Receiver<FreezeUntil>,
-    mut slow_mode: Option<&mut HashMap<ChatIdHash, (Duration, Instant)>>,
+    mut slow_mode: Option<&mut HashMap<ThrottleTarget, (Duration, Instant)>>,
     bot: &impl Requester,
     mut imm: Option<FreezeUntil>,
 ) {
@@ -315,7 +320,7 @@ async fn freeze(
         #[allow(clippy::needless_option_as_deref)]
         if let Some(slow_mode) = slow_mode.as_deref_mut() {
             // TODO: do something with channels?...
-            if let hash @ ChatIdHash::Id(id) = chat {
+            if let hash @ ThrottleTarget::Id(id) = chat {
                 // TODO: maybe not call `get_chat` every time?
 
                 // At this point there isn't much we can do with the error besides ignoring
@@ -397,5 +402,54 @@ mod tests {
 
         // Previously this caused an infinite loop
         super::read_from_rx::<()>(&mut rx, &mut Vec::new(), &mut false).await;
+    }
+}
+
+#[cfg(test)]
+mod global_tests {
+    use super::*;
+    use crate::{adaptors::throttle::channel, types::ChatId, Bot};
+
+    #[tokio::test]
+    async fn global_only_requests_consume_the_overall_quota() {
+        let settings = Settings {
+            limits: Limits { messages_per_sec_overall: 1, ..Limits::default() },
+            ..Settings::default()
+        };
+        let (tx, rx) = mpsc::channel(4);
+        let (_info, info_rx) = mpsc::channel(2);
+        let task = tokio::spawn(worker(settings, rx, info_rx, Bot::new("fixture-token")));
+        let (first, wait_first) = channel();
+        let (second, mut wait_second) = channel();
+        tx.send((ThrottleTarget::Global, first)).await.unwrap();
+        tx.send((ThrottleTarget::Id(ChatId(7)), second)).await.unwrap();
+        tokio::time::timeout(SECOND, wait_first).await.unwrap();
+        assert!(tokio::time::timeout(Duration::from_millis(100), &mut wait_second).await.is_err());
+        tokio::time::timeout(SECOND * 2, wait_second).await.unwrap();
+        task.abort();
+        let _ = task.await;
+    }
+
+    #[tokio::test]
+    async fn global_only_requests_have_no_per_chat_quota() {
+        let settings = Settings {
+            limits: Limits {
+                messages_per_sec_chat: 0,
+                messages_per_min_chat: 0,
+                ..Limits::default()
+            },
+            ..Settings::default()
+        };
+        let (tx, rx) = mpsc::channel(4);
+        let (_info, info_rx) = mpsc::channel(2);
+        let task = tokio::spawn(worker(settings, rx, info_rx, Bot::new("fixture-token")));
+        let (first, wait_first) = channel();
+        let (second, wait_second) = channel();
+        tx.send((ThrottleTarget::Global, first)).await.unwrap();
+        tx.send((ThrottleTarget::Global, second)).await.unwrap();
+        tokio::time::timeout(SECOND, wait_first).await.unwrap();
+        tokio::time::timeout(SECOND, wait_second).await.unwrap();
+        task.abort();
+        let _ = task.await;
     }
 }

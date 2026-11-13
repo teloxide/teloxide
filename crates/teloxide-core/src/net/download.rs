@@ -93,13 +93,14 @@ pub fn download_file<'o, D>(
     client: &Client,
     api_url: Url,
     token: &str,
+    environment: crate::ApiEnvironment,
     path: &str,
     dst: &'o mut D,
 ) -> impl Future<Output = Result<(), DownloadError>> + 'o
 where
     D: ?Sized + AsyncWrite + Unpin,
 {
-    client.get(file_url(api_url, token, path)).send().then(move |r| async move {
+    client.get(file_url(api_url, token, environment, path)).send().then(move |r| async move {
         let mut res = r?.error_for_status()?;
 
         while let Some(chunk) = res.chunk().await? {
@@ -119,9 +120,10 @@ pub fn download_file_stream(
     client: &Client,
     api_url: Url,
     token: &str,
+    environment: crate::ApiEnvironment,
     path: &str,
 ) -> impl Stream<Item = reqwest::Result<Bytes>> + 'static {
-    client.get(file_url(api_url, token, path)).send().into_stream().flat_map(|res| {
+    client.get(file_url(api_url, token, environment, path)).send().into_stream().flat_map(|res| {
         match res.and_then(Response::error_for_status) {
             Ok(res) => Either::Left(unfold(res, |mut res| async {
                 match res.chunk().await {

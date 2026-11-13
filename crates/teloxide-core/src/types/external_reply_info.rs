@@ -18,7 +18,7 @@ pub struct ExternalReplyInfo {
     pub chat: Option<Chat>,
     /// Unique message identifier inside the original chat. Available only if
     /// the original chat is a supergroup or a channel.
-    #[serde(with = "crate::types::option_msg_id_as_int")]
+    #[serde(default, with = "crate::types::option_msg_id_as_int")]
     #[cfg_attr(test, schemars(with = "Option<i32>"))]
     pub message_id: Option<MessageId>,
     /// Options used for link preview generation for the original message, if it
@@ -44,6 +44,7 @@ pub enum ExternalReplyInfoKind {
     // (for backward compatability telegram duplicates some fields).
     //
     // See <https://github.com/teloxide/teloxide/issues/481>
+    Widget(crate::types::Widget),
     Animation(Animation),
     Audio(Audio),
     Contact(Contact),

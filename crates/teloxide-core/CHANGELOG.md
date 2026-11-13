@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Native HTML widgets, query updates, inline content and dispatcher filters.
+- Explicit production/test API environment selection.
+
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_task_id` field to `Message` struct
@@ -112,6 +115,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `can_reply` field in `BusinessConnection` struct was replaced by `rights`
 
 ### Fixed
+
+- Update decoding from owned JSON values retains update keys.
+- Optional external-reply message identifiers may be omitted.
 
 - Fixed `create_forum_topic` to not require `icon_color` and `icon_custom_emoji_id` ([#1382](https://github.com/teloxide/teloxide/pull/1382))
 - Fixed `send_gift` and `send_gift_chat` with `ParseMode` adaptor ([#1385](pr1385))

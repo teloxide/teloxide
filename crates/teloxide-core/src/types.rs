@@ -199,6 +199,7 @@ pub use voice::*;
 pub use web_app_data::*;
 pub use web_app_info::*;
 pub use webhook_info::*;
+pub use widget::*;
 pub use write_access_allowed::*;
 
 mod accepted_gift_types;
@@ -692,3 +693,5 @@ pub(crate) mod vec_msg_id_as_vec_int {
         }
     }
 }
+
+mod widget;

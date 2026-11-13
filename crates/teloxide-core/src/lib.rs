@@ -108,7 +108,7 @@
 mod local_macros;
 
 pub use self::{
-    bot::Bot,
+    bot::{ApiEnvironment, Bot},
     errors::{ApiError, DownloadError, RequestError},
 };
 

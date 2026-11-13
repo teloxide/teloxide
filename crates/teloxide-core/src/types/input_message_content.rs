@@ -11,6 +11,8 @@ use crate::types::{LabeledPrice, LinkPreviewOptions, LivePeriod, MessageEntity, 
 #[cfg_attr(test, derive(schemars::JsonSchema))]
 #[serde(untagged)]
 pub enum InputMessageContent {
+    Widget(crate::types::InputWidgetMessageContent),
+    SharedWidget(crate::types::InputSharedWidgetMessageContent),
     Text(InputMessageContentText),
     Location(InputMessageContentLocation),
     Venue(InputMessageContentVenue),
