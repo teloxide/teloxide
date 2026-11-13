@@ -183,7 +183,7 @@ mod tests {
     #[test]
     fn smoke_err() {
         let json =
-            r#"{"ok":false,"description":"Forbidden: bot was blocked by the user"}"#.to_owned();
+            r#"{"ok":false,"error_code":403,"description":"Forbidden: bot was blocked by the user"}"#.to_owned();
 
         let res = deserialize_response::<True>(json);
         assert_matches!(res, Err(RequestError::Api(ApiError::BotBlocked)));
@@ -191,7 +191,7 @@ mod tests {
 
     #[test]
     fn migrate() {
-        let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"migrate_to_chat_id":123456}}"#.to_owned();
+        let json = r#"{"ok":false,"error_code":400,"description":"this string is ignored","parameters":{"migrate_to_chat_id":123456}}"#.to_owned();
 
         let res = deserialize_response::<True>(json);
         assert_matches!(res, Err(RequestError::MigrateToChatId(ChatId(123456))));
@@ -199,7 +199,7 @@ mod tests {
 
     #[test]
     fn retry_after() {
-        let json = r#"{"ok":false,"description":"this string is ignored","parameters":{"retry_after":123456}}"#.to_owned();
+        let json = r#"{"ok":false,"error_code":429,"description":"this string is ignored","parameters":{"retry_after":123456}}"#.to_owned();
 
         let res = deserialize_response::<True>(json);
         assert_matches!(res, Err(RequestError::RetryAfter(duration)) if duration == Seconds::from_seconds(123456));

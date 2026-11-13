@@ -13,6 +13,11 @@ pub enum RequestError {
     #[error("A Telegram's error: {0}")]
     Api(#[from] ApiError),
 
+    /// Telegram reported a server-side failure. In particular, a new-message
+    /// request may have taken effect before this failure was returned.
+    #[error("Telegram server error {code}: {description}")]
+    Server { code: u16, description: String },
+
     /// The group has been migrated to a supergroup with the specified
     /// identifier.
     #[error("The group has been migrated to a supergroup with ID #{0}")]

@@ -25,9 +25,7 @@ pub(crate) enum TelegramResponse<R> {
         #[serde(rename = "description")]
         error: ApiError,
 
-        // // This field is present in the json sent by telegram, but isn't currently used anywhere
-        // // and as such - ignored
-        // error_code: u16,
+        error_code: u16,
         #[serde(rename = "parameters")]
         response_parameters: Option<ResponseParameters>,
     },
@@ -37,6 +35,9 @@ impl<R> From<TelegramResponse<R>> for ResponseResult<R> {
     fn from(this: TelegramResponse<R>) -> ResponseResult<R> {
         match this {
             TelegramResponse::Ok { response, .. } => Ok(response),
+            TelegramResponse::Err { error_code, error, .. } if error_code >= 500 => {
+                Err(RequestError::Server { code: error_code, description: error.to_string() })
+            }
             TelegramResponse::Err { response_parameters: Some(params), .. } => Err(match params {
                 ResponseParameters::RetryAfter(i) => RequestError::RetryAfter(i),
                 ResponseParameters::MigrateToChatId(to) => RequestError::MigrateToChatId(to),
@@ -70,5 +71,31 @@ mod tests {
         assert!(
             matches!(val, TelegramResponse::Err { error: ApiError::Unknown(s), .. } if s == "Unknown description that won't match anything")
         );
+    }
+
+    #[test]
+    fn server_failure_remains_distinct_from_client_rejection() {
+        for code in [500, 502, 503] {
+            let raw = format!(
+                r#"{{"ok":false,"error_code":{code},"description":"Internal Server Error"}}"#
+            );
+            let response: TelegramResponse<bool> = serde_json::from_str(&raw).unwrap();
+            let response: ResponseResult<bool> = response.into();
+            assert!(
+                matches!(response, Err(RequestError::Server {code: actual, ..}) if actual == code)
+            );
+        }
+        let raw = r#"{"ok":false,"error_code":400,"description":"Unrecognized client error"}"#;
+        let response: TelegramResponse<bool> = serde_json::from_str(raw).unwrap();
+        let response: ResponseResult<bool> = response.into();
+        assert!(matches!(response, Err(RequestError::Api(ApiError::Unknown(_)))));
+    }
+
+    #[test]
+    fn rejection_without_error_code_is_a_malformed_acknowledgement() {
+        assert!(serde_json::from_str::<TelegramResponse<bool>>(
+            r#"{"ok":false,"description":"failure"}"#
+        )
+        .is_err());
     }
 }
