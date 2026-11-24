@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `MessageToEditHasNoText` variant to `ApiError` ([#1426](https://github.com/teloxide/teloxide/issues/1426))
 - `ParticipantIdInvalid` and `ChatAdminRequired` variants to `ApiError` ([#1349](https://github.com/teloxide/teloxide/issues/1349))
+- `BankCardNumber` and `TonAddress` variants to `MessageEntityKind` (TBA 10.4) [**BC**]
+- `MessageEntityKind::Unknown` for entity types that are not supported yet [**BC**]
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `filter_suggested_post_approved`, `filter_suggested_post_approval_failed`, `filter_suggested_post_declined`, `filter_suggested_post_paid`, `filter_suggested_post_refunded` filters to the `MessageFilterExt` trait
   - `ChatFullInfoPublicKind::Supergroup` is now of type `Box<ChatFullInfoPublicSupergroup>` instead of `ChatFullInfoPublicSupergroup` [**BC**]
 
 ### Fixed
 
+- Messages containing entities of a type unknown to `teloxide` (e.g. `bank_card_number`, which Telegram puts on 15-digit numbers such as IMEIs) no longer make the whole update fail to parse
 - Make sure `postgres-storage-rustls` feature actually enables rustls-based postgres storage ([#1400](https://github.com/teloxide/teloxide/pull/1400))
 - Escape `@` mentions in `markdown::user_mention_or_link` ([#1411](https://github.com/teloxide/teloxide/pull/1411))
 - Add local TBA file downloading support in `crate::net::download` ([#1173](https://github.com/teloxide/teloxide/pull/1173))
