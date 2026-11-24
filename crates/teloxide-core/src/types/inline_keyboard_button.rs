@@ -1,5 +1,6 @@
 use crate::types::{
-    CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True, WebAppInfo,
+    ButtonStyle, CallbackGame, CopyTextButton, LoginUrl, SwitchInlineQueryChosenChat, True,
+    WebAppInfo,
 };
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +13,12 @@ use serde::{Deserialize, Serialize};
 pub struct InlineKeyboardButton {
     /// Label text on the button.
     pub text: String,
+
+    /// Button style
+    pub style: Option<ButtonStyle>,
+
+    /// Custom emoji
+    pub icon_custom_emoji_id: Option<String>,
 
     #[serde(flatten)]
     pub kind: InlineKeyboardButtonKind,
@@ -113,7 +120,24 @@ impl InlineKeyboardButton {
     where
         S: Into<String>,
     {
-        Self { text: text.into(), kind }
+        Self { text: text.into(), kind, style: None, icon_custom_emoji_id: None }
+    }
+
+    /// Set button style
+    pub fn style(mut self, style: ButtonStyle) -> Self {
+        self.style = Some(style);
+
+        self
+    }
+
+    /// Set custom emoji
+    pub fn icon_custom_emoji_id<T>(mut self, icon_custom_emoji_id: T) -> Self
+    where
+        T: ToString,
+    {
+        self.icon_custom_emoji_id = Some(icon_custom_emoji_id.to_string());
+
+        self
     }
 
     /// Constructor for `InlineKeyboardButton` with [`Url`] kind.
@@ -217,5 +241,36 @@ impl InlineKeyboardButton {
         T: Into<String>,
     {
         Self::new(text, InlineKeyboardButtonKind::Pay(True))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serialize_style_and_icon() {
+        let button = InlineKeyboardButton {
+            text: String::from("Buy"),
+            style: Some(ButtonStyle::Primary),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+            kind: InlineKeyboardButtonKind::CallbackData(String::from("buy")),
+        };
+        let expected = r#"{"text":"Buy","style":"primary","icon_custom_emoji_id":"5368324170671202286","callback_data":"buy"}"#;
+        let actual = serde_json::to_string(&button).unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn deserialize_style_and_icon() {
+        let json = r#"{"text":"Buy","style":"primary","icon_custom_emoji_id":"5368324170671202286","callback_data":"buy"}"#;
+        let expected = InlineKeyboardButton {
+            text: String::from("Buy"),
+            style: Some(ButtonStyle::Primary),
+            icon_custom_emoji_id: Some(String::from("5368324170671202286")),
+            kind: InlineKeyboardButtonKind::CallbackData(String::from("buy")),
+        };
+        let actual: InlineKeyboardButton = serde_json::from_str(json).unwrap();
+        assert_eq!(expected, actual);
     }
 }
