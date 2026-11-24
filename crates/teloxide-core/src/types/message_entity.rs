@@ -256,6 +256,8 @@ pub enum MessageEntityKind {
     Url,
     Email,
     PhoneNumber,
+    BankCardNumber,
+    TonAddress,
     Bold,
     Blockquote,
     ExpandableBlockquote,
@@ -264,10 +266,23 @@ pub enum MessageEntityKind {
     Strikethrough,
     Spoiler,
     Code,
-    Pre { language: Option<String> },
-    TextLink { url: reqwest::Url },
-    TextMention { user: User },
-    CustomEmoji { custom_emoji_id: CustomEmojiId },
+    Pre {
+        language: Option<String>,
+    },
+    TextLink {
+        url: reqwest::Url,
+    },
+    TextMention {
+        user: User,
+    },
+    CustomEmoji {
+        custom_emoji_id: CustomEmojiId,
+    },
+    /// An entity type not supported by this version of `teloxide` yet. Only for
+    /// incoming messages, so that a new entity type does not make the whole
+    /// update fail to parse.
+    #[serde(other)]
+    Unknown,
 }
 
 #[cfg(test)]
@@ -319,6 +334,34 @@ mod tests {
             },
             from_str::<MessageEntity>(
                 r#"{"type": "expandable_blockquote", "offset": 69, "length": 420}"#
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn bank_card_number_and_ton_address() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity { kind: MessageEntityKind::BankCardNumber, offset: 0, length: 15 },
+            from_str::<MessageEntity>(r#"{"type":"bank_card_number","offset":0,"length":15}"#)
+                .unwrap()
+        );
+        assert_eq!(
+            MessageEntity { kind: MessageEntityKind::TonAddress, offset: 3, length: 48 },
+            from_str::<MessageEntity>(r#"{"type":"ton_address","offset":3,"length":48}"#).unwrap()
+        );
+    }
+
+    #[test]
+    fn unknown_kind() {
+        use serde_json::from_str;
+
+        assert_eq!(
+            MessageEntity { kind: MessageEntityKind::Unknown, offset: 1, length: 2 },
+            from_str::<MessageEntity>(
+                r#"{"type":"some_future_entity","offset":1,"length":2,"extra":{"a":1}}"#
             )
             .unwrap()
         );

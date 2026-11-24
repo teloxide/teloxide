@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `BankCardNumber` and `TonAddress` variants to `MessageEntityKind` (TBA 10.4) [**BC**]
+- `MessageEntityKind::Unknown` for entity types that are not supported yet [**BC**]
 - Support for TBA 9.2 ([#1403](https://github.com/teloxide/teloxide/pull/1403))
   - Add `checklist_task_id` field to `ReplyParameters` struct
   - Add `reply_to_checklist_task_id` field to `Message` struct
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed 
 
+- Messages containing entities of a type unknown to `teloxide` (e.g. `bank_card_number`, which Telegram puts on 15-digit numbers such as IMEIs) no longer make the whole update fail to parse
 - Add local TBA file downloading support in `crate::net::download` ([#1173](https://github.com/teloxide/teloxide/pull/1173))
 
 - Added schema and rust types checking ([#1396](https://github.com/teloxide/teloxide/pull/1396))

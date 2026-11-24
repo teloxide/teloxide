@@ -777,6 +777,43 @@ mod test {
         }
     }
 
+    // Telegram marks 15-digit Luhn-valid numbers (e.g. IMEIs) as
+    // `bank_card_number`; an entity kind unknown to teloxide used to turn the
+    // whole update into `UpdateKind::Error`.
+    #[test]
+    fn de_text_message_with_new_entity_kinds() {
+        let json = r#"{
+    "message": {
+        "chat": {"id": -1001234567890, "title": "Group", "type": "group"},
+        "date": 1795500000,
+        "from": {"first_name": "User", "id": 123456789, "is_bot": false},
+        "message_id": 42,
+        "text": "490154203237518\n356938035643809",
+        "entities": [
+            {"offset": 0, "length": 15, "type": "bank_card_number"},
+            {"offset": 16, "length": 15, "type": "some_future_entity"}
+        ]
+    },
+    "update_id": 100000001
+}"#;
+
+        let Update { kind, .. } = serde_json::from_str::<Update>(json).unwrap();
+        match kind {
+            UpdateKind::Message(message) => {
+                assert_eq!(message.text(), Some("490154203237518\n356938035643809"));
+                let kinds: Vec<_> = message.entities().unwrap().iter().map(|e| &e.kind).collect();
+                assert_eq!(
+                    kinds,
+                    [
+                        &crate::types::MessageEntityKind::BankCardNumber,
+                        &crate::types::MessageEntityKind::Unknown
+                    ]
+                );
+            }
+            other => panic!("Expected `Message`, got {other:?}"),
+        }
+    }
+
     #[test]
     fn pinned_message_works() {
         let json = r#"{

@@ -3,6 +3,20 @@ Note that the list of required changes is not fully exhaustive and it may lack s
 
 ## unreleased
 
+### teloxide-core
+
+`MessageEntityKind` got new variants: `BankCardNumber`, `TonAddress` and `Unknown` (any entity type `teloxide` does not support yet). Exhaustive `match`es on it need new arms:
+
+```diff
+ match entity.kind {
+     MessageEntityKind::Bold => { /* ... */ }
+     // ...
++    MessageEntityKind::BankCardNumber
++    | MessageEntityKind::TonAddress
++    | MessageEntityKind::Unknown => (),
+ }
+```
+
 ## 0.16 -> 0.17
 
 ### teloxide
